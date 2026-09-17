@@ -71,6 +71,7 @@ body[data-mode="fight"] .hud, body[data-mode="result"] .hud { display: block; }
 .logo { display: flex; flex-direction: column; line-height: .85; font-family: var(--logo); font-style: italic; }
 .logo .l1 { font-size: 78px; color: #fff; -webkit-text-stroke: 2px #1a2a55; text-shadow: 5px 5px 0 #1a2a55; letter-spacing: 6px; }
 .logo .l2 { font-size: 150px; color: var(--yellow); background: linear-gradient(180deg, #fff3a0, #ffd23f 45%, #ff8a00); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(5px 6px 0 #6b1c00) drop-shadow(0 0 18px rgba(255,140,0,.35)); letter-spacing: 4px; }
+.logo .l3 { font-family: var(--pix); font-size: 16px; letter-spacing: 8px; color: #fff; text-shadow: 3px 3px 0 #7a1c8e, 0 0 14px rgba(255,80,200,.6); margin-top: 14px; font-style: normal; }
 .tag { margin-top: 6px; }
 .press { font-size: 20px; color: #fff; animation: blink 1s steps(1) infinite; margin-top: 16px; }
 .title-sm { font-family: var(--logo); font-size: 48px; color: var(--yellow); -webkit-text-stroke: 2px #7a2a00; text-shadow: 4px 4px 0 #000; letter-spacing: 3px; }
@@ -142,7 +143,7 @@ body[data-mode="fight"] .hud, body[data-mode="result"] .hud { display: block; }
 .rounds i.won { background: var(--yellow); }
 
 /* ---------- seleção estilo SF2 */
-.screens.select { background: #1a1f8a url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='120'%3E%3Ctext x='0' y='60' font-family='Impact,sans-serif' font-size='44' font-style='italic' fill='%23ffffff' fill-opacity='0.06' transform='skewX(-12)'%3EOFFICE FIGHTER%3C/text%3E%3C/svg%3E"); }
+.screens.select { background: #1a1f8a url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='120'%3E%3Ctext x='0' y='60' font-family='Impact,sans-serif' font-size='44' font-style='italic' fill='%23ffffff' fill-opacity='0.06' transform='skewX(-12)'%3EV4 FIGHTERS%3C/text%3E%3C/svg%3E"); }
 .sf2 { position: absolute; inset: 0; display: grid; grid-template-columns: 250px 1fr 250px; grid-template-rows: 350px 1fr; padding: 24px 30px 14px; gap: 0 10px; }
 .sf2-side { display: flex; flex-direction: column; align-items: center; gap: 6px; }
 .sf2-portrait { width: 240px; height: 220px; overflow: hidden; display: flex; align-items: center; justify-content: center; }

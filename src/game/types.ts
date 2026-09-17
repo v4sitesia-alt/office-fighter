@@ -40,6 +40,8 @@ export interface ProjectileDef {
   speed: number;               // px de tela por frame
   lifetime: number;
   scale?: number;              // escala extra da imagem
+  count?: number;              // rajada: quantos projéteis
+  every?: number;              // rajada: frames entre um e outro
   hitbox: Box;                 // relativo ao centro do projétil (unidades do sprite)
 }
 
@@ -78,7 +80,8 @@ export type MoveName =
 export interface FighterDef {
   id: string; name: string; role: string; tagline?: string;
   colors: { primary: string; secondary: string };
-  origin?: { region: string; city: string; lon: number; lat: number };
+  origin?: { region: string; city: string; lon: number; lat: number; label?: 'left' | 'right' | 'above' | 'below' };
+  stage?: string;               // public/stages/<stage>.png (cenário do lutador)
   scale: number;
   stats: { speed: number; power: number; weight: number };
   hurtbox: Box; crouchHurtbox: Box;

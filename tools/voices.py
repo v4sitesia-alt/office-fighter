@@ -7,8 +7,8 @@ tom (pitch), distorção, bitcrush e reverb por personagem. Saída: public/audio
   python3 tools/voices.py
 
 Locutor: Daniel (en-GB), grave + reverb + bitcrush (locutor de fliperama).
-Santana: Rocko pt-BR, muito grave, com raiva (distorção forte).
-Edgard: Eddy pt-BR, voz média, risadas malignas (leve distorção + reverb).
+Os lutadores não têm voz: só o som do especial, que vem de um arquivo enviado pelo usuário em
+Personagens/Mais-movimentos/especial-<id>.(mp3|wav) e é copiado como <id>-special.<ext>.
 """
 import os, subprocess, json, wave, tempfile
 import numpy as np
@@ -30,28 +30,7 @@ CLIPS = [
     ('ann-you-lose','Daniel', 'You lose.', 150, 0.84),
     ('ann-edgard',  'Daniel', 'Edgard!', 160, 0.86),
     ('ann-santana', 'Daniel', 'Santana!', 160, 0.86),
-    # Edgard — voz média, risadas malignas
-    ('edgard-laugh-1',  'Eddy (Português (Brasil))', 'Mua ha ha ha ha ha!', 190, 0.95),
-    ('edgard-laugh-2',  'Eddy (Português (Brasil))', 'He he he he he!', 210, 0.97),
-    ('edgard-attack-1', 'Eddy (Português (Brasil))', 'Toma!', 220, 0.95),
-    ('edgard-attack-2', 'Eddy (Português (Brasil))', 'Ha!', 220, 0.95),
-    ('edgard-attack-3', 'Eddy (Português (Brasil))', 'Alinha!', 230, 0.95),
-    ('edgard-special',  'Eddy (Português (Brasil))', 'Grid sagrado!', 200, 0.95),
-    ('edgard-super',    'Eddy (Português (Brasil))', 'Portal dos morcegos! Mua ha ha ha ha!', 200, 0.95),
-    ('edgard-hurt-1',   'Eddy (Português (Brasil))', 'Ai!', 240, 0.95),
-    ('edgard-hurt-2',   'Eddy (Português (Brasil))', 'Ugh!', 240, 0.95),
-    ('edgard-ko',       'Eddy (Português (Brasil))', 'Não! Aaah!', 200, 0.95),
-    ('edgard-win',      'Eddy (Português (Brasil))', 'Aprovado. Mua ha ha ha ha ha!', 190, 0.95),
-    # Santana — gritos graves e com raiva
-    ('santana-attack-1', 'Rocko (Português (Brasil))', 'Raaah!', 230, 0.68),
-    ('santana-attack-2', 'Rocko (Português (Brasil))', 'Hua!', 240, 0.68),
-    ('santana-attack-3', 'Rocko (Português (Brasil))', 'Toma!', 240, 0.68),
-    ('santana-special',  'Rocko (Português (Brasil))', 'Impulsiona!', 220, 0.68),
-    ('santana-super',    'Rocko (Português (Brasil))', 'Soco sísmico! Graaaaah!', 210, 0.66),
-    ('santana-hurt-1',   'Rocko (Português (Brasil))', 'Argh!', 240, 0.68),
-    ('santana-hurt-2',   'Rocko (Português (Brasil))', 'Ugh!', 240, 0.68),
-    ('santana-ko',       'Rocko (Português (Brasil))', 'Aaaargh!', 200, 0.66),
-    ('santana-win',      'Rocko (Português (Brasil))', 'É isso! Raaah!', 210, 0.68),
+    ('ann-kevin',   'Daniel', 'Kevin!', 160, 0.86),
 ]
 
 
@@ -159,8 +138,16 @@ def main():
         write(os.path.join(OUT, cid + '.wav'), y)
         ids.append(cid)
         print(f'{cid:20s} {len(y) / SR:5.2f}s  {voice}: "{text}"')
+    # sons de especial enviados pelo usuário
+    import glob, shutil
+    for src in sorted(glob.glob('Personagens/Mais-movimentos/especial-*.*')):
+        fid = os.path.basename(src).split('.')[0].replace('especial-', '')
+        ext = os.path.splitext(src)[1].lower()
+        dst = f'{fid}-special{ext}'
+        shutil.copy(src, os.path.join(OUT, dst)); ids.append(dst); print(f'{dst:20s} <- {src}')
+    files = [i if '.' in i else i + '.wav' for i in ids]
     with open(os.path.join(OUT, 'manifest.json'), 'w') as f:
-        json.dump({'ids': ids}, f, indent=1)
+        json.dump({'files': files}, f, indent=1)
 
 
 if __name__ == '__main__':

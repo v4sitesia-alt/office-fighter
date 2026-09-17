@@ -37,8 +37,11 @@ export function brazilMapSvg(roster: FighterAssets[]): string {
   const marks = roster.map((f, i) => {
     const o = f.def.origin; if (!o) return '';
     const [x, y] = project(o.lon, o.lat);
-    const right = x > SW * 0.62; // perto da borda direita, rótulo à esquerda do ponto
-    return `<g class="mark" data-i="${i}"><circle class="dot" cx="${x}" cy="${y}" r="7"/><text class="lbl" x="${right ? x - 11 : x + 11}" y="${y + 4}" text-anchor="${right ? 'end' : 'start'}">${o.city.toUpperCase()}</text></g>`;
+    const pos = o.label ?? (x > SW * 0.62 ? 'left' : 'right'); // perto da borda direita, rótulo à esquerda
+    const lx = pos === 'left' ? x - 11 : pos === 'right' ? x + 11 : x;
+    const ly = pos === 'above' ? y - 11 : pos === 'below' ? y + 16 : y + 4;
+    const anchor = pos === 'left' ? 'end' : pos === 'right' ? 'start' : 'middle';
+    return `<g class="mark" data-i="${i}"><circle class="dot" cx="${x}" cy="${y}" r="7"/><text class="lbl" x="${lx}" y="${ly}" text-anchor="${anchor}">${o.city.toUpperCase()}</text></g>`;
   }).join('');
   return `<svg viewBox="0 0 ${SW} ${SH}" xmlns="http://www.w3.org/2000/svg">
     <ellipse class="globe" cx="${SW / 2}" cy="${SH / 2}" rx="${SW / 2 - 4}" ry="${SH / 2 - 4}"/>

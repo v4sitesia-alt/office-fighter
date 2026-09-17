@@ -70,9 +70,10 @@ class AudioEngine {
   async preloadVoices(base: string) {
     try {
       const r = await fetch(`${base}audio/voice/manifest.json`);
-      const { ids } = (await r.json()) as { ids: string[] };
-      await Promise.all(ids.map(async (id) => {
-        const ab = await fetch(`${base}audio/voice/${id}.wav`).then((x) => x.arrayBuffer());
+      const { files } = (await r.json()) as { files: string[] };
+      await Promise.all(files.map(async (file) => {
+        const id = file.replace(/\.[a-z0-9]+$/i, '');
+        const ab = await fetch(`${base}audio/voice/${file}`).then((x) => x.arrayBuffer());
         if (this.ctx) this.decode(id, ab); else this.raw.set(id, ab);
       }));
     } catch (e) { console.warn('vozes não carregaram', e); }
@@ -130,9 +131,19 @@ class AudioEngine {
     if (!this.ctx) return;
     const t = this.ctx.currentTime, B = this.sfxBus;
     switch (name) {
-      case 'hit': this.noise(t, 0.09, 0.5, B, { type: 'lowpass', f0: 1800, f1: 300 }); this.osc('sine', 160, 50, t, 0.14, 0.7, B); break;
-      case 'hitBig': this.noise(t, 0.18, 0.7, B, { type: 'lowpass', f0: 2400, f1: 200 }); this.osc('sine', 120, 35, t, 0.28, 0.9, B); this.osc('square', 90, 40, t, 0.12, 0.2, B); break;
-      case 'block': this.osc('square', 520, 380, t, 0.06, 0.25, B); this.noise(t, 0.05, 0.3, B, { type: 'highpass', f0: 2000 }); break;
+      // golpes no estilo SF2: "thwack" curto (ruído com banda média + baque grave + estalo)
+      case 'hit':
+        this.noise(t, 0.07, 0.6, B, { type: 'bandpass', f0: 1400, f1: 600, q: 0.7 });
+        this.osc('sine', 190, 60, t, 0.09, 0.6, B);
+        this.osc('square', 240, 110, t, 0.03, 0.15, B); break;
+      case 'hitBig':
+        this.noise(t, 0.16, 0.8, B, { type: 'lowpass', f0: 1200, f1: 150 });
+        this.osc('sine', 140, 40, t, 0.22, 0.9, B);
+        this.osc('square', 180, 60, t, 0.07, 0.25, B); break;
+      case 'block':
+        this.osc('square', 1100, 900, t, 0.045, 0.25, B);
+        this.noise(t, 0.045, 0.35, B, { type: 'highpass', f0: 2500 });
+        this.osc('sine', 300, 200, t, 0.05, 0.2, B); break;
       case 'swing': this.noise(t, 0.12, 0.18, B, { type: 'bandpass', f0: 2200, f1: 500, q: 1.5 }); break;
       case 'jump': this.osc('pulse', 260, 620, t, 0.16, 0.18, B); break;
       case 'land': this.noise(t, 0.06, 0.25, B, { type: 'lowpass', f0: 600 }); break;

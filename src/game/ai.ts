@@ -84,8 +84,9 @@ export class Ai {
     }
     // super com barra cheia
     if (me.meter >= 100 && M.super) {
-      const kind = M.super.kind;
-      if ((kind === 'portal' && this.rng.chance(p.specialChance * 0.6)) || (kind === 'dive' && dx < 430 && this.rng.chance(p.specialChance))) {
+      const kind = M.super.kind ?? (M.super.projectile ? 'shot' : 'ground');
+      if ((kind === 'portal' && this.rng.chance(p.specialChance * 0.6)) || (kind === 'dive' && dx < 430 && this.rng.chance(p.specialChance))
+        || (kind === 'shot' && dx > 220 && this.rng.chance(p.specialChance * 0.7))) {
         this.debug = 'super'; this.set(['special'], 2); return;
       }
     }

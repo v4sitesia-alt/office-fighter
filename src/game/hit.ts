@@ -40,7 +40,6 @@ export function resolveHits(fighters: [Fighter, Fighter], projectiles: Projectil
         if (!blocked) { atk.comboHits++; def.lastHitBy = atk.moveName; }
         fx.hit(px, py, blocked ? '#9ec5ff' : atk.def.colors.primary, !blocked && m.damage >= 12);
         audio.sfx(blocked ? 'block' : m.damage >= 12 ? 'hitBig' : 'hit');
-        if (!blocked && m.knockdown) audio.voiceRandom(`${atk.def.id}-laugh`, atk.voiceChannel);
       });
       hitstop = Math.max(hitstop, blocked ? 3 : (m.hitstop ?? 5));
     }
@@ -76,7 +75,6 @@ export function resolveHits(fighters: [Fighter, Fighter], projectiles: Projectil
         def.takeHit({ damage: h.damage, hitstun: z.def.hitstun, blockstun: z.def.blockstun, knockback: z.def.knockback, knockdown: h.knockdown, launch: h.launch }, owner, blocked, z.x - owner.facing);
         fx.hit(def.x, hurt.y + hurt.h * 0.45, blocked ? '#9ec5ff' : owner.def.colors.primary, !blocked);
         audio.sfx(blocked ? 'block' : 'hitBig');
-        if (!blocked && h.knockdown) audio.voiceRandom(`${owner.def.id}-laugh`, owner.voiceChannel);
       });
       hitstop = Math.max(hitstop, blocked ? 4 : (z.def.hitstop ?? 8));
     }

@@ -1,6 +1,6 @@
-# Office Fighter
+# V4 Fighters – Trouble Work
 
-Jogo de luta 2D estilo arcade anos 90, no navegador. Vite + TypeScript + Canvas 2D, sem engine.
+Jogo de luta 2D estilo arcade anos 90, no navegador (antes "Office Fighter"). Vite + TypeScript + Canvas 2D, sem engine.
 Spec completa em `HANDOFF-office-fighter_1.md`.
 
 ## Rodar
@@ -55,14 +55,18 @@ no ar viram os aéreos (só defende em pé). B com meia barra (50) = especial co
 
 - Música e efeitos são sintetizados no navegador (Web Audio): `src/core/audio.ts` tem o sequenciador chiptune e os efeitos;
   as músicas (título, seleção, luta) estão em `src/data/songs.ts` como padrões de semicolcheias.
-- Vozes ficam em `public/audio/voice/*.wav`, geradas por `python3 tools/voices.py` com a síntese de fala do macOS:
-  locutor (Round 1/2/3, Fight!, K.O., Perfect, nomes), Edgard (voz média, risadas malignas) e Santana (gritos graves com raiva).
-  Pra trocar por gravações reais, basta substituir os arquivos mantendo os ids do `manifest.json`.
+- Golpes têm som sintetizado estilo SF2 ("thwack" curto, baque grave nos fortes, "clang" na defesa). Os lutadores não falam.
+- `public/audio/voice/` tem o locutor (Round 1/2/3, Fight!, K.O., Perfect, nomes), gerado por `python3 tools/voices.py` com a
+  síntese de fala do macOS, e o som do especial de cada lutador, copiado de `Personagens/Mais-movimentos/especial-<id>.(mp3|wav)`
+  pelo mesmo script (toca no especial e no super). O `manifest.json` lista os arquivos.
 - Botão 🔊 no gabinete silencia tudo (fica salvo no navegador). O som só começa depois do primeiro toque/tecla.
 
 Luta é melhor de 3 (dois rounds). A tela de seleção mostra o mapa do Brasil com a origem de cada lutador (`origin` no `fighter.json`).
 
-Cenário: `public/stages/office-{far,mid,floor}.png` (placeholder gerado por `tools/stage.py`, substitua pela arte final).
+Cenários: uma imagem 16:9 por lutador em `public/stages/<nome>.png` (960×540, chão em ~87% da altura), apontada pelo campo
+`stage` do `fighter.json`. A luta acontece no cenário do oponente; a luta espelho, no seu. `alley` (Edgard), `factory` (Santana);
+Kevin ainda usa o `office` placeholder (gerado por `tools/stage.py`).
 
-Pra adicionar um lutador: rode o script no board novo, crie `fighter.json` (copie de um existente) e inclua o id em `src/data/roster.ts`.
+Pra adicionar um lutador: rode o script no board novo, crie `fighter.json` (copie de um existente), coloque `portrait.png`, o cenário e o som do especial, e inclua o id em `src/data/roster.ts`.
+Lutadores: Edgard (Curitiba), Santana (Rio de Janeiro), Kevin (Colombo, o atirador mercenário: meia barra = 1 tiro, barra cheia = rajada de 3).
 A campanha é "todos os outros lutadores + luta espelho final".

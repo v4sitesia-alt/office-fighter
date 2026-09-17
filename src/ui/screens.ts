@@ -52,7 +52,7 @@ export class Screens {
     this.set('title', `
       <div class="center">
         <div class="pix small">ESCRITÓRIO · 199X</div>
-        <div class="logo"><span class="l1">OFFICE</span><span class="l2">FIGHTER</span></div>
+        <div class="logo"><span class="l1">V4</span><span class="l2">FIGHTERS</span><span class="l3">TROUBLE WORK</span></div>
         <div class="pix small tag">O DEADLINE É HOJE. O NOCAUTE TAMBÉM.</div>
         <div class="pix press">PRESS START</div>
         <div class="pix tiny">${fighters} LUTADORES · CAMPANHA · UM ESCRITÓRIO</div>

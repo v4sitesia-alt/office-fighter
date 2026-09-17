@@ -3,7 +3,7 @@ import { loadFighter, loadStage, type StageAssets } from './core/assets';
 import { audio } from './core/audio';
 import { Input } from './core/input';
 import { startLoop } from './core/loop';
-import { ROSTER, STAGE } from './data/roster';
+import { DEFAULT_STAGE, ROSTER } from './data/roster';
 import { H, W } from './game/consts';
 import { Match } from './game/match';
 import type { Difficulty, FighterAssets } from './game/types';
@@ -40,7 +40,8 @@ fit();
 // ---------- estado do jogo
 let mode: Mode = 'loading';
 let roster: FighterAssets[] = [];
-let stage: StageAssets;
+let stages = new Map<string, StageAssets>();
+const stageOf = (f: FighterAssets) => stages.get(f.def.stage ?? DEFAULT_STAGE) ?? stages.get(DEFAULT_STAGE)!;
 let match: Match | null = null;
 let demo: Match | null = null;
 let paused = false;
@@ -76,6 +77,7 @@ function startFight() {
   const opp = campaign[fightNo];
   const level = DIFF_RAMP[['easy', 'normal', 'hard'].indexOf(difficulty)][Math.min(fightNo, 3)];
   const isLast = fightNo === campaign.length - 1;
+  const stage = opp.hue ? stageOf(roster[playerIdx]) : stageOf(roster[opp.idx]); // luta no cenário do oponente
   match = new Match(roster[playerIdx], roster[opp.idx], stage, { cpu: level, hueP2: opp.hue, label: isLast ? 'LUTA FINAL' : `LUTA ${fightNo + 1}` }, {
     message: (t, f, k) => hud.message(t, f, k),
     end: (winner, perfect) => {
@@ -151,13 +153,16 @@ startLoop({
 
 // ---------- boot
 (async () => {
-  const total = ROSTER.length * 5 + 3; let done = 0;
+  const total = ROSTER.length * 5 + 4; let done = 0;
   const tick = () => { done++; screens.loading(done, total); };
   screens.loading(0, total);
-  const [fighters, st] = await Promise.all([Promise.all(ROSTER.map((id) => loadFighter(id, tick))), loadStage(STAGE, tick)]);
+  const fighters = await Promise.all(ROSTER.map((id) => loadFighter(id, tick)));
+  const names = [...new Set([DEFAULT_STAGE, ...fighters.map((f) => f.def.stage ?? DEFAULT_STAGE)])];
+  const loaded = await Promise.all(names.map((n) => loadStage(n, tick).catch(() => null)));
+  loaded.forEach((st, i) => { if (st) stages.set(names[i], st); });
   void audio.preloadVoices(import.meta.env.BASE_URL);
-  roster = fighters; stage = st;
-  demo = new Match(roster[0], roster[1 % roster.length], stage, { cpu: null }, { message() {}, end() {} });
+  roster = fighters;
+  demo = new Match(roster[0], roster[1 % roster.length], stageOf(roster[0]), { cpu: null }, { message() {}, end() {} });
   demo.phase = 'over';
   goTitle();
 })().catch((err) => { console.error(err); screens.loading(0, 1); document.getElementById('screens')!.innerHTML += `<div class="err">${String(err)}</div>`; });

@@ -139,7 +139,7 @@ export class Match {
         if (this.roundWinner >= 0) {
           const rw = this.roundWinner as 0 | 1;
           const w = this.fighters[rw];
-          if (w.state !== 'ko') { w.setState('win'); audio.voice(`${w.def.id}-win`, w.voiceChannel); }
+          if (w.state !== 'ko') w.setState('win');
           this.wins[rw]++;
         } else {
           this.wins[0]++; this.wins[1]++; // empate: os dois levam o round

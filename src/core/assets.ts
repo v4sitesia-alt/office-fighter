@@ -30,12 +30,10 @@ export async function loadFighter(id: string, onProgress?: () => void): Promise<
   return { def, frames, sheet, fx, portrait };
 }
 
-export interface StageAssets { far: HTMLImageElement; mid: HTMLImageElement; floor: HTMLImageElement }
+export interface StageAssets { name: string; img: HTMLImageElement }
 
+/** Cenário = uma imagem 16:9 em public/stages/<name>.png (chão dos lutadores em ~87% da altura). */
 export async function loadStage(name: string, onProgress?: () => void): Promise<StageAssets> {
-  const dir = `${BASE}stages/${name}-`;
-  const [far, mid, floor] = await Promise.all(
-    ['far', 'mid', 'floor'].map((l) => loadImage(`${dir}${l}.png`).then((v) => (onProgress?.(), v))),
-  );
-  return { far, mid, floor };
+  const img = await loadImage(`${BASE}stages/${name}.png`); onProgress?.();
+  return { name, img };
 }

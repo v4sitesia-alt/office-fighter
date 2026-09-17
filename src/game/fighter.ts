@@ -179,7 +179,10 @@ export class Fighter {
     // chão
     this.vx *= 0.8; this.x += this.vx;
     if (m.kind === 'portal' && this.stateFrame === m.startup) this.spawns.push({ kind: 'zone', move: m, x: other.x });
-    if (m.projectile && this.stateFrame === m.startup + 1) this.spawns.push({ kind: 'projectile', move: m, x: this.x });
+    if (m.projectile) {
+      const count = m.projectile.count ?? 1, every = m.projectile.every ?? 0;
+      for (let k = 0; k < count; k++) if (this.stateFrame === m.startup + 1 + k * every) this.spawns.push({ kind: 'projectile', move: m, x: this.x });
+    }
     if (this.stateFrame >= total) this.setState('idle');
   }
 
@@ -256,15 +259,9 @@ export class Fighter {
       this.vx = Math.max(-14, Math.min(14, dx / DIVE_FRAMES));
       this.facing = dx >= 0 ? 1 : -1;
     }
-    // som e voz do golpe
-    const id = this.def.id, ch = this.voiceChannel;
-    if (name === 'super') audio.voice(`${id}-super`, ch);
-    else if (name === 'special') audio.voice(`${id}-special`, ch);
-    else {
-      audio.sfx('swing');
-      const heavy = name === 'heavy' || name === 'airHeavy' || name === 'lowHeavy';
-      if (heavy || Math.random() < 0.35) audio.voiceRandom(`${id}-attack`, ch);
-    }
+    // som do golpe: especial/super tocam o áudio enviado pro lutador; o resto só o whoosh
+    if (name === 'super' || name === 'special') audio.voice(`${this.def.id}-special`, this.voiceChannel);
+    else audio.sfx('swing');
     return true;
   }
 
@@ -281,9 +278,8 @@ export class Fighter {
     this.buffered = null;
     if (this.life <= 0) {
       this.setState('ko'); this.knockdownAir = true; this.vy = -8; this.vx = 4 * dir; this.y = Math.min(this.y, -0.01);
-      this.flash = 8; audio.voice(`${this.def.id}-ko`, this.voiceChannel); return;
+      this.flash = 8; return;
     }
-    if (!blocked && Math.random() < 0.55) audio.voiceRandom(`${this.def.id}-hurt`, this.voiceChannel);
     if (blocked) {
       this.setState('blockstun'); this.stun = h.blockstun; return;
     }
