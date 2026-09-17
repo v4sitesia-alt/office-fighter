@@ -79,7 +79,7 @@ export class Screens {
         <div class="crole">${f.def.role}</div>
         <div class="ctag">${f.def.tagline ?? ''}</div>
         <div class="cstats">VEL ${stat(f.def.stats.speed)} · FORÇA ${stat(f.def.stats.power)}</div>
-        <div class="cspecial">★ ${f.def.moves.special.name ?? 'ESPECIAL'}</div>
+        <div class="cspecial">★ ${f.def.moves.super?.name ?? f.def.moves.special?.name ?? 'ESPECIAL'}</div>
       </div>`).join('');
     this.set('select', `
       <div class="center">

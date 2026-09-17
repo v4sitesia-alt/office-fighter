@@ -31,7 +31,7 @@ from PIL import Image, ImageDraw
 
 ALPHA_T  = 40    # alpha mínimo pra considerar o pixel sólido
 FEET_PCT = 0.12  # faixa inferior do sprite usada pra achar o eixo do corpo
-CUT_WIN  = 60    # janela (px) em volta da linha da grade onde se procura o corte mais fino
+CUT_FRAC = 0.45  # janela (fração da célula) em volta da linha da grade onde se procura o corte mais fino
 
 try:
     from scipy import ndimage  # opcional, só acelera
@@ -74,31 +74,44 @@ def label(mask):
 
 
 def split_straddling(ys, xs, cw, ch):
-    """Divide um componente que emenda sprites vizinhos: corta na linha (ou coluna)
-    com menos pixels perto de cada linha da grade que ele atravessa."""
+    """Divide um componente que emenda sprites vizinhos: primeiro pelas colunas, depois
+    (em cada parte) pelas linhas, cortando sempre na linha/coluna com menos pixels perto
+    da linha da grade atravessada. Cada parte tem seu próprio vão, por isso o corte em y
+    é procurado parte a parte."""
     def cuts(vals, lo, hi, cell):
         out = []
         g = (int(lo // cell) + 1) * cell
         while g < hi - 1:
-            a, b = int(max(lo + 1, g - CUT_WIN)), int(min(hi - 1, g + CUT_WIN))
+            win = cell * CUT_FRAC
+            a, b = int(max(lo + 1, g - win)), int(min(hi - 1, g + win))
             if b > a:
                 sel = (vals >= a) & (vals < b)
                 hist = np.bincount((vals[sel] - a).astype(int), minlength=b - a)
-                out.append(a + int(np.argmin(hist)))
+                zeros = np.nonzero(hist == 0)[0]
+                if len(zeros):
+                    # há vão real: usa o vazio mais perto da linha da grade
+                    cut = a + int(zeros[np.argmin(np.abs(zeros + a - g))])
+                elif hist.min() < 0.15 * hist.max():
+                    cut = a + int(np.argmin(hist))      # linha bem fina (sprites se encostando)
+                else:
+                    cut = int(g)                         # sem vão: corta na grade mesmo
+                print(f'   corte em {cut} (grade {g:.0f}, vão={len(zeros) > 0})', file=sys.stderr)
+                out.append(cut)
             g += cell
         return out
 
-    y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1
-    cy = cuts(ys, y0, y1, ch) if (y1 - y0) > 1.25 * ch else []
-    cx = cuts(xs, x0, x1, cw) if (x1 - x0) > 1.25 * cw else []
-    by = np.searchsorted(np.array(cy), ys, side='right') if cy else np.zeros(len(ys), int)
-    bx = np.searchsorted(np.array(cx), xs, side='right') if cx else np.zeros(len(xs), int)
+    def split_axis(pys, pxs, vals, cell):
+        lo, hi = vals.min(), vals.max() + 1
+        c = cuts(vals, lo, hi, cell) if (hi - lo) > 1.25 * cell else []
+        if not c:
+            return [(pys, pxs)]
+        bins = np.searchsorted(np.array(c), vals, side='right')
+        return [(pys[bins == k], pxs[bins == k]) for k in set(bins.tolist())]
+
     parts = []
-    for key in set(zip(by.tolist(), bx.tolist())):
-        sel = (by == key[0]) & (bx == key[1])
-        if sel.sum() >= 20:
-            parts.append((ys[sel], xs[sel]))
-    return parts
+    for pys, pxs in split_axis(ys, xs, xs, cw):
+        parts.extend(split_axis(pys, pxs, pys, ch))
+    return [(pys, pxs) for pys, pxs in parts if len(pys) >= 20]
 
 
 def main():
@@ -141,30 +154,54 @@ def main():
     lab_full[:He, :We] = np.repeat(np.repeat(lab_half, 2, axis=0), 2, axis=1)
 
     cw, ch = W / args.cols, H / args.rows
-    cells = {}  # (row, col) -> [x0, y0, x1, y1]
-
-    def add(ys, xs):
-        cy, cx = ys.mean(), xs.mean()
-        key = (min(args.rows - 1, int(cy // ch)), min(args.cols - 1, int(cx // cw)))
-        box = [xs.min(), ys.min(), xs.max() + 1, ys.max() + 1]
-        if key in cells:
-            b = cells[key]
-            cells[key] = [min(b[0], box[0]), min(b[1], box[1]), max(b[2], box[2]), max(b[3], box[3])]
-        else:
-            cells[key] = box
-
+    # componentes (já divididos quando emendam células)
+    comps = []
     for i in range(1, n + 1):
         ys, xs = np.nonzero(solid & (lab_full == i))
         if len(xs) == 0:
             continue
         w, h = xs.max() + 1 - xs.min(), ys.max() + 1 - ys.min()
+        parts = [(ys, xs)]
         if w > 1.25 * cw or h > 1.25 * ch:
             parts = split_straddling(ys, xs, cw, ch)
             print(f'AVISO: componente {i} ({w}x{h}) atravessa células; dividido em {len(parts)}', file=sys.stderr)
-            for pys, pxs in parts:
-                add(pys, pxs)
+        for pys, pxs in parts:
+            comps.append({'n': len(pys), 'box': [int(pxs.min()), int(pys.min()), int(pxs.max()) + 1, int(pys.max()) + 1],
+                          'cell': (min(args.rows - 1, int(pys.mean() // ch)), min(args.cols - 1, int(pxs.mean() // cw)))})
+
+    # principal de cada célula = maior componente cujo centroide cai nela; os demais
+    # (faíscas, pedras, chamas soltas) vão pro principal mais próximo, não pela grade —
+    # efeitos mais altos que a célula soltam fragmentos na célula de cima.
+    main = {}
+    for c in comps:
+        if c['cell'] not in main or c['n'] > main[c['cell']]['n']:
+            main[c['cell']] = c
+    mains = set(id(c) for c in main.values())
+
+    def box_dist(a, b):
+        dx = max(0, max(a[0], b[0]) - min(a[2], b[2]))
+        dy = max(0, max(a[1], b[1]) - min(a[3], b[3]))
+        return (dx * dx + dy * dy) ** 0.5
+
+    cells = {}  # (row, col) -> [x0, y0, x1, y1]
+
+    def add(key, box):
+        if key in cells:
+            b = cells[key]
+            cells[key] = [min(b[0], box[0]), min(b[1], box[1]), max(b[2], box[2]), max(b[3], box[3])]
         else:
-            add(ys, xs)
+            cells[key] = list(box)
+
+    for c in comps:
+        if id(c) in mains:
+            add(c['cell'], c['box'])
+    for c in comps:
+        if id(c) in mains:
+            continue
+        key, m = min(main.items(), key=lambda kv: box_dist(c['box'], kv[1]['box']))
+        if box_dist(c['box'], m['box']) > 0.6 * min(cw, ch):
+            key = c['cell']
+        add(key, c['box'])
 
     frames = []
     for r in range(args.rows):

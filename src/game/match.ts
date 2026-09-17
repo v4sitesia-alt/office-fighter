@@ -6,6 +6,7 @@ import { Fighter } from './fighter';
 import { Fx } from './fx';
 import { resolveHits, separate } from './hit';
 import { Projectile } from './projectile';
+import { Zone } from './zone';
 import { drawStage } from './stage';
 import type { Difficulty, FighterAssets } from './types';
 
@@ -27,6 +28,7 @@ export class Match {
   fighters: [Fighter, Fighter];
   ai: Ai | null = null;
   projectiles: Projectile[] = [];
+  zones: Zone[] = [];
   fx = new Fx();
   hitstop = 0;
   phase: MatchPhase = 'intro';
@@ -72,15 +74,12 @@ export class Match {
       p2.update(c2, p1, frozen);
       separate(p1, p2);
       if (!frozen) {
-        for (const f of this.fighters) {
-          if (f.state === 'attacking' && f.move?.projectile && f.stateFrame === f.move.startup + 1) {
-            this.projectiles.push(new Projectile(f, f.move, f.assets.fx));
-            this.ev.message(f.move.name ?? 'ESPECIAL', 40, 'small');
-          }
-        }
+        this.drainSpawns();
         this.projectiles.forEach((p) => p.update());
         this.projectiles = this.projectiles.filter((p) => !p.dead);
-        const r = resolveHits(this.fighters, this.projectiles, this.fx);
+        this.zones.forEach((z) => z.update());
+        this.zones = this.zones.filter((z) => !z.dead);
+        const r = resolveHits(this.fighters, this.projectiles, this.zones, this.fx);
         if (r.hitstop) this.hitstop = r.hitstop;
         if (!this.training) this.timer = Math.max(0, this.timer - 1);
         else { p1.life = Math.max(p1.life, 50); p1.meter = 100; p2.life = Math.max(p2.life, 50); }
@@ -105,8 +104,11 @@ export class Match {
       // deixa o nocauteado cair e os outros terminarem o golpe
       const frozen = false;
       p1.update(nullCtrl, p2, frozen); p2.update(nullCtrl, p1, frozen);
+      this.drainSpawns();
       this.projectiles.forEach((p) => p.update());
       this.projectiles = this.projectiles.filter((p) => !p.dead);
+      this.zones.forEach((z) => z.update());
+      this.zones = this.zones.filter((z) => !z.dead);
       this.fx.update();
       if (this.phaseFrame > 30) this.slowmo = 0;
       if (this.phaseFrame > 70) {
@@ -126,6 +128,18 @@ export class Match {
     }
   }
 
+  /** Cria projéteis/zonas pedidos pelos lutadores neste frame. */
+  private drainSpawns() {
+    for (const f of this.fighters) {
+      for (const sp of f.spawns) {
+        if (sp.kind === 'projectile') this.projectiles.push(new Projectile(f, sp.move, f.assets.fx));
+        else this.zones.push(new Zone(f, sp.move, sp.x));
+        if (sp.move.name) this.ev.message(sp.move.name, 45, 'small');
+      }
+      f.spawns.length = 0;
+    }
+  }
+
   /** Lutadores parados respirando (intro / telas de menu). */
   idleUpdate() {
     const [p1, p2] = this.fighters;
@@ -139,16 +153,18 @@ export class Match {
     ctx.translate(ox, oy);
     drawStage(ctx, this.stage, this.midX);
     // quem está apanhando fica por cima
-    const order = this.fighters[0].state === 'hitstun' || this.fighters[0].state === 'knockdown' ? [1, 0] : [0, 1];
+    const f0 = this.fighters[0];
+    const order = f0.state === 'hitstun' || f0.state === 'knockdown' || (f0.state === 'attacking' && f0.sub === 'dive') ? [1, 0] : [0, 1];
     for (const i of order) this.fighters[i].draw(ctx, debug);
     this.projectiles.forEach((p) => p.draw(ctx, debug));
+    this.zones.forEach((z) => z.draw(ctx, debug));
     this.fx.draw(ctx);
     if (debug) {
       ctx.strokeStyle = 'rgba(255,255,255,0.3)';
       ctx.beginPath(); ctx.moveTo(ARENA_MIN, GROUND_Y - 300); ctx.lineTo(ARENA_MIN, GROUND_Y);
       ctx.moveTo(ARENA_MAX, GROUND_Y - 300); ctx.lineTo(ARENA_MAX, GROUND_Y); ctx.moveTo(0, GROUND_Y); ctx.lineTo(W, GROUND_Y); ctx.stroke();
       ctx.fillStyle = '#fff'; ctx.font = '11px monospace'; ctx.textAlign = 'left';
-      ctx.fillText(`fase ${this.phase}  hitstop ${this.hitstop}  IA: ${this.ai?.debug ?? '-'}  proj ${this.projectiles.length}`, 8, H - 8);
+      ctx.fillText(`fase ${this.phase}  hitstop ${this.hitstop}  IA: ${this.ai?.debug ?? '-'}  proj ${this.projectiles.length} zonas ${this.zones.length}`, 8, H - 8);
     }
     ctx.restore();
   }

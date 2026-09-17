@@ -28,15 +28,28 @@ Debug (só teclado): **F1** hitboxes/hurtboxes/estado · **F2** câmera lenta ·
 
 Cada lutador vive em `public/fighters/<id>/`:
 
-- `sheet.png` + `frames.json` — gerados por `tools/sprites.py` a partir do board 5×4 em `Personagens/`
+- `sheet.png` + `frames.json` — gerados por `tools/sprites.py` a partir do board 5×7 em `Personagens/Mais-movimentos/`
   (`npm run sprites` regenera os dois). O script acha cada sprite pelo alpha, então a grade não precisa ser exata.
 - `fighter.json` — nome, cores, escala, stats, animações (índices dos 20 frames) e frame data dos golpes.
   Balanceamento é aqui, nunca no código. Hitboxes em unidades do sprite, origem nos pés, X pra frente, Y negativo pra cima.
 - `portrait.png` — thumb da seleção.
-- `special_fx.png` — projétil, recortado do frame de especial pelo `--fx` do script.
+- `special_fx.png` — projétil, recortado do frame de disparo pelo `--fx` do script (o do Edgard veio do board antigo).
 
-Ordem dos 20 frames (linha a linha): guarda ×2, andar ×3 · agachar, pulo ×2, defesa em pé, defesa agachada ·
-soco, guarda, chute, preparação do forte, forte · especial carga, especial disparo, dano, queda, nocaute.
+Board de cada lutador: 5 colunas × 7 linhas (35 poses), fundo transparente, todos olhando pra direita.
+Índice do frame = linha × 5 + coluna.
+
+| Linha | Conteúdo (esq → dir) | Usado em |
+|-------|----------------------|----------|
+| 1 | guarda ×2, caminhada ×3 | idle, walk |
+| 2 | salto ×2, agachar, defesa em pé, defesa agachada (ordem pode variar por lutador; ver `anims`) | jump, crouch, block |
+| 3 | soco, soco forte, chute, chute alto, golpe forte | punch, kick, heavy |
+| 4 | especial (carga, disparo), dano, queda, nocaute | special (projétil), hit, fall, down |
+| 5 | golpes no ar: neutro, soco aéreo, neutro 2, voadora, forte aéreo | airPunch, airKick, airHeavy |
+| 6 | golpes rasteiros: soco baixo, guarda baixa, rasteira ×2, forte baixo | lowPunch, lowKick, lowHeavy |
+| 7 | super: 2 frames do lutador, 2 frames de efeito (portal / explosão), recuperação | super (zona com hitbox própria) |
+
+Comandos: no chão A/S/D dão soco/chute/forte; segurando ↓ viram os rasteiros (só defende agachado);
+no ar viram os aéreos (só defende em pé). B com meia barra (50) = especial com projétil; B com barra cheia = super.
 
 Cenário: `public/stages/office-{far,mid,floor}.png` (placeholder gerado por `tools/stage.py`, substitua pela arte final).
 

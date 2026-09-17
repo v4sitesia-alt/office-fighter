@@ -240,3 +240,25 @@ Mapeamento fica num único objeto em `input.ts`, remapeável.
 > Antes de escrever código, confira as dimensões reais do sheet que já está em `public/fighters/` e me diga se batem com a spec do handoff — se não baterem, ajuste o `fighter.json` e a spec pro que existe de fato, em vez de assumir.
 >
 > Inclua desde já um modo debug (tecla F1) que desenha hurtbox, hitbox ativa e o número do frame atual na tela. Vou depender dele nos próximos passos.
+
+
+---
+
+## 9. Anexo — board v2 (5 × 7, 35 poses) — 2026-09-17
+
+Substitui a spec de sprite sheet da seção 3 para os dois primeiros lutadores. Cada célula tem ~216 × 208 px;
+a grade não precisa ser exata porque `tools/sprites.py` recorta cada sprite pelo alpha.
+
+| Linha | Poses (esq → dir) |
+|-------|-------------------|
+| 1 | guarda, guarda, andar 1, andar 2, andar 3 |
+| 2 | salto (subida), salto (ápice), agachar, defesa em pé, defesa agachada |
+| 3 | soco, soco forte, chute, chute alto, golpe forte (gancho) |
+| 4 | especial carga, especial disparo, dano, queda, nocaute |
+| 5 | aéreo neutro, soco no ar, aéreo neutro 2, voadora, forte no ar |
+| 6 | soco baixo, guarda baixa, rasteira (início), rasteira (estendida), forte baixo |
+| 7 | super frame 1, super frame 2, efeito 1, efeito 2, recuperação |
+
+Supers da v2:
+- **Edgard — Portal dos Morcegos:** mão no chão (frames 1-2), portal abre sob o adversário (efeitos 1-2, zona com 2 acertos rápidos), recuperação.
+- **Santana — Soco Sísmico:** salta (frame 1) sobre o adversário, mergulha com o soco (frame 2), impacto no chão (efeito 1) e explosão em área (efeito 2), recuperação.

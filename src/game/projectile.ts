@@ -20,7 +20,7 @@ export class Projectile {
   }
   get worldBox(): Box { return { x: this.x + this.hitbox.x, y: this.y + this.hitbox.y, w: this.hitbox.w, h: this.hitbox.h }; }
   draw(ctx: CanvasRenderingContext2D, debug = false) {
-    const s = this.owner.scale;
+    const s = this.owner.scale * (this.move.projectile?.scale ?? 1);
     ctx.save();
     ctx.translate(this.x, this.y);
     ctx.scale(this.owner.facing, 1);
