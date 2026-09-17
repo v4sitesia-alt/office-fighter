@@ -13,8 +13,9 @@ export const BUTTONS: Button[] = ['left', 'right', 'up', 'down', 'block', 'punch
 export const KEYMAP: Record<number, Record<string, Button>> = {
   0: {
     ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'up', ArrowDown: 'down',
-    KeyZ: 'block', KeyA: 'punch', KeyS: 'kick', KeyD: 'heavy', KeyX: 'special',
-    Enter: 'start', Escape: 'pause', KeyP: 'pause',
+    KeyA: 'left', KeyD: 'right', KeyW: 'up', KeyS: 'down',
+    KeyG: 'punch', KeyH: 'kick', KeyJ: 'heavy', KeyV: 'block', KeyB: 'special', KeyZ: 'block',
+    Enter: 'start', Space: 'start', Escape: 'pause', KeyP: 'pause',
   },
   1: {
     KeyJ: 'left', KeyL: 'right', KeyI: 'up', KeyK: 'down',

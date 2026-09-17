@@ -65,7 +65,7 @@ export class Screens {
           <div class="item" data-item><b>PLENO</b><i>normal · defende e pune</i></div>
           <div class="item" data-item><b>DIRETORIA</b><i>difícil · reage em 5 frames</i></div>
         </div>
-        <div class="pix tiny">↑↓ ESCOLHER · A / ENTER CONFIRMAR · Z VOLTAR</div>
+        <div class="pix tiny">W S ESCOLHER · G / ENTER CONFIRMAR · V VOLTAR</div>
       </div>`);
     this.onConfirm = (i) => onPick((['easy', 'normal', 'hard'] as Difficulty[])[i]);
     this.onBack = onBack;
@@ -85,7 +85,7 @@ export class Screens {
       <div class="center">
         <div class="title-sm">ESCOLHA SEU LUTADOR</div>
         <div class="cards">${cards}</div>
-        <div class="pix tiny">← → ESCOLHER · A / ENTER CONFIRMAR · Z VOLTAR</div>
+        <div class="pix tiny">A D ESCOLHER · G / ENTER CONFIRMAR · V VOLTAR</div>
       </div>`);
     this.onConfirm = onPick; this.onBack = onBack;
   }
@@ -100,7 +100,7 @@ export class Screens {
           <div class="vsx">VS</div>
           <div class="vscard"><div class="thumb">${img(b, hueB)}</div><div class="cname">${b.def.name}${hueB ? ' 2.0' : ''}</div><div class="crole">${hueB ? 'Versão Corporativa' : b.def.role}</div></div>
         </div>
-        <div class="pix tiny">A / ENTER PARA LUTAR</div>
+        <div class="pix tiny">G / ENTER PARA LUTAR</div>
       </div>`);
     this.onConfirm = onGo;
   }
@@ -124,7 +124,7 @@ export class Screens {
         <div class="thumb big">${winner.portrait ? `<img src="${winner.portrait.src}" alt="">` : ''}</div>
         <div class="title-big win">CAMPEÃO</div>
         <div class="pix small">${winner.def.name} venceu a campanha.<br>O escritório está em paz. Até a próxima sprint.</div>
-        <div class="pix tiny">A / ENTER PARA VOLTAR</div>
+        <div class="pix tiny">G / ENTER PARA VOLTAR</div>
       </div>`);
     this.onConfirm = onDone;
   }

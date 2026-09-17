@@ -15,11 +15,11 @@ npm run build      # gera dist/ (estático, serve em qualquer host)
 
 | Ação | Teclado | Gabinete (toque/mouse) |
 |------|---------|------------------------|
-| Andar / pular / agachar | ← → ↑ ↓ | joystick |
-| Defender | Z | botão Z |
-| Soco / Chute / Golpe forte | A / S / D | botões A S D |
-| Especial (barra cheia) | X | botão X |
-| Confirmar / Start | Enter ou A | START |
+| Andar / pular / agachar | A D W S (ou setas) | joystick |
+| Defender | V (ou Z) | botão V |
+| Soco / Chute / Golpe forte | G / H / J | botões G H J |
+| Especial (barra cheia) | B | botão B |
+| Confirmar / Start | Enter, Espaço ou G | START |
 | Pausa | Esc ou P | PAUSE |
 
 Debug (só teclado): **F1** hitboxes/hurtboxes/estado · **F2** câmera lenta · **F3** treino (barra e vida infinitas).
