@@ -78,6 +78,7 @@ export type MoveName =
 export interface FighterDef {
   id: string; name: string; role: string; tagline?: string;
   colors: { primary: string; secondary: string };
+  origin?: { region: string; city: string; lon: number; lat: number };
   scale: number;
   stats: { speed: number; power: number; weight: number };
   hurtbox: Box; crouchHurtbox: Box;

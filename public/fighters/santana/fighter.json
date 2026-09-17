@@ -4,6 +4,7 @@
   "role": "O Tráfego",
   "tagline": "Escalou a campanha. E a porrada.",
   "colors": { "primary": "#21e6ff", "secondary": "#4d7cff" },
+  "origin": {"region": "RIO DE JANEIRO", "city": "Rio de Janeiro", "lon": -43.2, "lat": -22.9},
   "scale": 1.1,
   "stats": { "speed": 0.9, "power": 1.15, "weight": 1.15 },
   "hurtbox": { "x": -44, "y": -195, "w": 88, "h": 195 },

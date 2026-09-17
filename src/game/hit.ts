@@ -3,6 +3,7 @@ import type { Fighter } from './fighter';
 import type { Projectile } from './projectile';
 import type { Zone } from './zone';
 import type { Fx } from './fx';
+import { audio } from '../core/audio';
 
 export function overlaps(a: Box, b: Box) {
   return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
@@ -38,6 +39,8 @@ export function resolveHits(fighters: [Fighter, Fighter], projectiles: Projectil
         atk.meter = Math.min(100, atk.meter + (m.meterGain ?? m.damage) * (blocked ? 0.5 : 1));
         if (!blocked) { atk.comboHits++; def.lastHitBy = atk.moveName; }
         fx.hit(px, py, blocked ? '#9ec5ff' : atk.def.colors.primary, !blocked && m.damage >= 12);
+        audio.sfx(blocked ? 'block' : m.damage >= 12 ? 'hitBig' : 'hit');
+        if (!blocked && m.knockdown) audio.voiceRandom(`${atk.def.id}-laugh`, atk.voiceChannel);
       });
       hitstop = Math.max(hitstop, blocked ? 3 : (m.hitstop ?? 5));
     }
@@ -53,6 +56,7 @@ export function resolveHits(fighters: [Fighter, Fighter], projectiles: Projectil
       pending.push(() => {
         def.takeHit(p.move, owner, blocked, owner.x);
         fx.hit(p.x + p.vx * 2, p.y, blocked ? '#9ec5ff' : owner.def.colors.primary, !blocked);
+        audio.sfx(blocked ? 'block' : 'hitBig');
       });
       hitstop = Math.max(hitstop, blocked ? 4 : (p.move.hitstop ?? 8));
     }
@@ -71,6 +75,8 @@ export function resolveHits(fighters: [Fighter, Fighter], projectiles: Projectil
       pending.push(() => {
         def.takeHit({ damage: h.damage, hitstun: z.def.hitstun, blockstun: z.def.blockstun, knockback: z.def.knockback, knockdown: h.knockdown, launch: h.launch }, owner, blocked, z.x - owner.facing);
         fx.hit(def.x, hurt.y + hurt.h * 0.45, blocked ? '#9ec5ff' : owner.def.colors.primary, !blocked);
+        audio.sfx(blocked ? 'block' : 'hitBig');
+        if (!blocked && h.knockdown) audio.voiceRandom(`${owner.def.id}-laugh`, owner.voiceChannel);
       });
       hitstop = Math.max(hitstop, blocked ? 4 : (z.def.hitstop ?? 8));
     }

@@ -1,9 +1,10 @@
 import type { Match } from '../game/match';
 
-/** Barras de vida/especial, timer e mensagens centrais. DOM sobre o canvas. */
+/** Barras de vida/especial, timer, rounds e mensagens centrais. DOM sobre o canvas. */
 export class Hud {
   el: HTMLElement;
   private life: HTMLElement[]; private lifeGhost: HTMLElement[]; private meter: HTMLElement[]; private names: HTMLElement[];
+  private rounds: HTMLElement[];
   private timer: HTMLElement; private msg: HTMLElement; private msgFrames = 0;
   private ghost = [100, 100];
   private portraits: HTMLElement[];
@@ -12,9 +13,9 @@ export class Hud {
     this.el = root;
     root.innerHTML = `
       <div class="hud-top">
-        <div class="side p1"><div class="portrait"></div><div class="bars"><div class="name"></div><div class="life"><div class="ghost"></div><div class="fill"></div></div></div></div>
+        <div class="side p1"><div class="portrait"></div><div class="bars"><div class="name"></div><div class="life"><div class="ghost"></div><div class="fill"></div></div><div class="rounds"><i></i><i></i></div></div></div>
         <div class="timer">60</div>
-        <div class="side p2"><div class="bars"><div class="name"></div><div class="life"><div class="ghost"></div><div class="fill"></div></div></div><div class="portrait"></div></div>
+        <div class="side p2"><div class="bars"><div class="name"></div><div class="life"><div class="ghost"></div><div class="fill"></div></div><div class="rounds"><i></i><i></i></div></div><div class="portrait"></div></div>
       </div>
       <div class="hud-bottom">
         <div class="meter p1"><div class="fill"></div><span>ESPECIAL</span></div>
@@ -26,6 +27,7 @@ export class Hud {
     this.lifeGhost = Array.from(q('.life .ghost'));
     this.meter = Array.from(q('.meter .fill'));
     this.names = Array.from(q('.name'));
+    this.rounds = Array.from(q('.rounds'));
     this.portraits = Array.from(q('.portrait'));
     this.timer = root.querySelector('.timer')!;
     this.msg = root.querySelector('.hud-msg')!;
@@ -54,6 +56,7 @@ export class Hud {
       this.lifeGhost[i].style.width = `${Math.max(f.life, this.ghost[i])}%`;
       this.meter[i].style.width = `${f.meter}%`;
       this.meter[i].parentElement!.classList.toggle('full', f.meter >= 100);
+      Array.from(this.rounds[i].children).forEach((dot, k) => dot.classList.toggle('won', k < m.wins[i]));
     });
     this.timer.textContent = m.training ? '∞' : String(m.seconds).padStart(2, '0');
     this.timer.classList.toggle('low', m.seconds <= 10 && !m.training);

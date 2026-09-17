@@ -1,5 +1,6 @@
 import type { Box, FighterAssets, FrameDef, HitDef, MoveDef, MoveName } from './types';
 import type { Button, Controller } from '../core/input';
+import { audio } from '../core/audio';
 import {
   ARENA_MAX, ARENA_MIN, BACK_SPEED, GRAVITY, GROUND_Y, INPUT_BUFFER, JUMP_VX, JUMP_VY,
   SPRITE_SCALE, WALK_SPEED,
@@ -143,7 +144,10 @@ export class Fighter {
   private land() {
     this.y = 0; this.vy = 0; this.vx = 0; this.airAttackUsed = false;
     this.setState('idle');
+    audio.sfx('land');
   }
+
+  get voiceChannel() { return this.playerIndex === 0 ? 'p1' as const : 'p2' as const; }
 
   private updateAttack(other: Fighter) {
     const m = this.move!;
@@ -225,7 +229,7 @@ export class Fighter {
       this.vy = JUMP_VY;
       this.vx = ctrl.held(fwd) ? JUMP_VX * this.facing : ctrl.held(back) ? -JUMP_VX * this.facing : 0;
       this.y = -0.01; this.airAttackUsed = false;
-      this.setState('jumping'); return;
+      this.setState('jumping'); audio.sfx('jump'); return;
     }
     const sp = this.def.stats.speed;
     if (ctrl.held(fwd)) { this.x += WALK_SPEED * sp * this.facing; this.setState('walking'); this.vx = 1; }
@@ -252,6 +256,15 @@ export class Fighter {
       this.vx = Math.max(-14, Math.min(14, dx / DIVE_FRAMES));
       this.facing = dx >= 0 ? 1 : -1;
     }
+    // som e voz do golpe
+    const id = this.def.id, ch = this.voiceChannel;
+    if (name === 'super') audio.voice(`${id}-super`, ch);
+    else if (name === 'special') audio.voice(`${id}-special`, ch);
+    else {
+      audio.sfx('swing');
+      const heavy = name === 'heavy' || name === 'airHeavy' || name === 'lowHeavy';
+      if (heavy || Math.random() < 0.35) audio.voiceRandom(`${id}-attack`, ch);
+    }
     return true;
   }
 
@@ -268,8 +281,9 @@ export class Fighter {
     this.buffered = null;
     if (this.life <= 0) {
       this.setState('ko'); this.knockdownAir = true; this.vy = -8; this.vx = 4 * dir; this.y = Math.min(this.y, -0.01);
-      this.flash = 8; return;
+      this.flash = 8; audio.voice(`${this.def.id}-ko`, this.voiceChannel); return;
     }
+    if (!blocked && Math.random() < 0.55) audio.voiceRandom(`${this.def.id}-hurt`, this.voiceChannel);
     if (blocked) {
       this.setState('blockstun'); this.stun = h.blockstun; return;
     }

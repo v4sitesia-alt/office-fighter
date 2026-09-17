@@ -129,3 +129,46 @@ body[data-mode="fight"] .hud, body[data-mode="result"] .hud { display: block; }
   .pills { position: absolute; top: 8px; right: 12px; flex-direction: row; gap: 6px; }
   .pill { padding: 6px 10px; font-size: 7px; }
 }
+
+/* ---------- marquee: som */
+.marquee-right { display: flex; align-items: center; gap: 14px; }
+.mute { background: #1b2230; border: 2px solid #4e5c72; color: #dfe7f3; border-radius: 8px; padding: 4px 8px; font-size: 14px; cursor: pointer; }
+.mute.off { opacity: .5; }
+
+/* ---------- HUD: rounds */
+.rounds { display: flex; gap: 6px; margin-top: 6px; }
+.p2 .rounds { justify-content: flex-end; }
+.rounds i { width: 12px; height: 12px; border: 2px solid #fff; background: #222; box-shadow: 0 2px 0 #000; transform: rotate(45deg); }
+.rounds i.won { background: var(--yellow); }
+
+/* ---------- seleção estilo SF2 */
+.screens.select { background: #1a1f8a url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='120'%3E%3Ctext x='0' y='60' font-family='Impact,sans-serif' font-size='44' font-style='italic' fill='%23ffffff' fill-opacity='0.06' transform='skewX(-12)'%3EOFFICE FIGHTER%3C/text%3E%3C/svg%3E"); }
+.sf2 { position: absolute; inset: 0; display: grid; grid-template-columns: 250px 1fr 250px; grid-template-rows: 350px 1fr; padding: 24px 30px 14px; gap: 0 10px; }
+.sf2-side { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.sf2-portrait { width: 240px; height: 220px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.sf2-portrait img { width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }
+.sf2-portrait.cpu img { filter: hue-rotate(var(--hue, 0deg)); }
+.sf2-name { font-family: var(--logo); font-style: italic; font-size: 46px; letter-spacing: 3px; line-height: 1; background: linear-gradient(180deg, #ffe97a 0%, #ffb12e 45%, #ff3c8e 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(3px 3px 0 #2a0c4a); }
+.sf2-tag { font-size: 20px; color: #ff3c5a; text-shadow: 3px 3px 0 #000; margin-top: 4px; }
+.sf2-tag.cpu { color: #4ab3ff; }
+.sf2-region { font-size: 9px; color: #ffe97a; text-shadow: 2px 2px 0 #000; letter-spacing: 1px; }
+.sf2-center { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; }
+.sf2-map { width: 340px; height: 300px; }
+.sf2-map svg { width: 100%; height: 100%; }
+.sf2-map .globe { fill: #2a63d8; stroke: #9fd2ff; stroke-width: 2; }
+.sf2-map .land { fill: #6da85a; stroke: #2f5a2a; stroke-width: 1.5; }
+.sf2-map .dot { fill: #3d8bff; stroke: #dff1ff; stroke-width: 1.5; }
+.sf2-map .dot.dim { fill: #24408a; stroke: #6f8fd0; }
+.sf2-map .dot.on { fill: #fff; stroke: #ffe97a; stroke-width: 2.5; animation: blink .5s steps(1) infinite; }
+.sf2-map .dot.cpu { fill: #ff3c5a; stroke: #fff; }
+.sf2-map .lbl { font-family: var(--pix); font-size: 8px; fill: #fff; paint-order: stroke; stroke: #000; stroke-width: 2px; }
+.sf2-title { font-family: 'Times New Roman', serif; font-weight: 700; font-size: 30px; letter-spacing: 2px; color: #fff; text-shadow: 2px 2px 0 #7a1c8e, 4px 4px 0 #000; }
+.sf2-grid { grid-column: 1 / -1; display: flex; justify-content: center; gap: 6px; padding: 8px; align-self: start; }
+.sf2-slot { width: 96px; height: 96px; border: 3px solid #0b1030; background: #0b1030; position: relative; overflow: hidden; cursor: pointer; }
+.sf2-slot img { width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; }
+.sf2-slot.locked { display: flex; align-items: center; justify-content: center; font-family: var(--logo); font-size: 56px; color: #e64bd3; background: #3a3a4a; cursor: default; }
+.sf2-slot.sel { border-color: var(--yellow); box-shadow: 0 0 0 2px #000, 0 0 16px var(--yellow); }
+.sf2-slot.sel::after { content: '1P'; position: absolute; top: -2px; left: 4px; font-family: var(--pix); font-size: 10px; color: #ff3c5a; text-shadow: 2px 2px 0 #000; }
+.sf2-slot.cpu { border-color: #4ab3ff; }
+.sf2-slot.cpu::before { content: 'CPU'; position: absolute; bottom: 2px; right: 4px; font-family: var(--pix); font-size: 8px; color: #4ab3ff; text-shadow: 2px 2px 0 #000; }
+.sf2-hint { grid-column: 1 / -1; text-align: center; align-self: end; }

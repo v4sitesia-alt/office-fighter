@@ -4,6 +4,7 @@
   "role": "O Designer",
   "tagline": "Alinhou. Centralizou. Nocauteou.",
   "colors": { "primary": "#c43cff", "secondary": "#ff2e88" },
+  "origin": {"region": "PARANÁ", "city": "Curitiba", "lon": -49.27, "lat": -25.43},
   "scale": 0.94,
   "stats": { "speed": 1.15, "power": 0.9, "weight": 1.0 },
   "hurtbox": { "x": -40, "y": -200, "w": 80, "h": 200 },

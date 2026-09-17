@@ -1,6 +1,8 @@
 // Telas DOM sobre o canvas: título, dificuldade, seleção, versus, resultado, fim, pausa, loading.
 import type { Input } from '../core/input';
 import type { Difficulty, FighterAssets } from '../game/types';
+import { audio } from '../core/audio';
+import { brazilMapSvg } from './brazil';
 
 export class Screens {
   root: HTMLElement;
@@ -8,21 +10,23 @@ export class Screens {
   private menuItems: HTMLElement[] = [];
   private onConfirm: ((i: number) => void) | null = null;
   private onBack: (() => void) | null = null;
+  private onMove: ((i: number) => void) | null = null;
   private blink = 0;
 
   constructor(root: HTMLElement) { this.root = root; }
 
-  hide() { this.root.innerHTML = ''; this.root.className = 'screens'; this.menuItems = []; this.onConfirm = null; this.onBack = null; }
+  hide() { this.root.innerHTML = ''; this.root.className = 'screens'; this.menuItems = []; this.onConfirm = null; this.onBack = null; this.onMove = null; }
 
   private set(cls: string, html: string) {
     this.root.className = `screens show ${cls}`;
     this.root.innerHTML = html;
     this.menuItems = Array.from(this.root.querySelectorAll<HTMLElement>('[data-item]'));
     this.menuIndex = 0;
+    this.onMove = null;
     this.menuItems.forEach((el, i) => { el.onclick = () => { this.menuIndex = i; this.paintMenu(); this.onConfirm?.(i); }; });
     this.paintMenu();
   }
-  private paintMenu() { this.menuItems.forEach((el, i) => el.classList.toggle('sel', i === this.menuIndex)); }
+  private paintMenu() { this.menuItems.forEach((el, i) => el.classList.toggle('sel', i === this.menuIndex)); this.onMove?.(this.menuIndex); }
 
   /** Navegação de menus por input (chamado a cada passo fixo). */
   update(input: Input) {
@@ -31,13 +35,13 @@ export class Screens {
     if (this.menuItems.length) {
       const horizontal = this.root.classList.contains('select');
       const prev = horizontal ? 'left' : 'up', next = horizontal ? 'right' : 'down';
-      if (p.pressed(prev)) { this.menuIndex = (this.menuIndex + this.menuItems.length - 1) % this.menuItems.length; this.paintMenu(); }
-      if (p.pressed(next)) { this.menuIndex = (this.menuIndex + 1) % this.menuItems.length; this.paintMenu(); }
-      if (p.pressed('start') || p.pressed('punch')) this.onConfirm?.(this.menuIndex);
+      if (p.pressed(prev)) { this.menuIndex = (this.menuIndex + this.menuItems.length - 1) % this.menuItems.length; audio.sfx('menuMove'); this.paintMenu(); }
+      if (p.pressed(next)) { this.menuIndex = (this.menuIndex + 1) % this.menuItems.length; audio.sfx('menuMove'); this.paintMenu(); }
+      if (p.pressed('start') || p.pressed('punch')) { audio.sfx('menuConfirm'); this.onConfirm?.(this.menuIndex); }
     } else if (input.anyPressed) {
-      this.onConfirm?.(0);
+      audio.sfx('menuConfirm'); this.onConfirm?.(0);
     }
-    if (p.pressed('block') || p.pressed('pause')) this.onBack?.();
+    if (p.pressed('block') || p.pressed('pause')) { if (this.onBack) audio.sfx('menuBack'); this.onBack?.(); }
   }
 
   loading(progress: number, total: number) {
@@ -72,22 +76,33 @@ export class Screens {
   }
 
   select(roster: FighterAssets[], onPick: (i: number) => void, onBack: () => void) {
-    const cards = roster.map((f) => `
-      <div class="card" data-item style="--c:${f.def.colors.primary}">
-        <div class="thumb">${f.portrait ? `<img src="${f.portrait.src}" alt="">` : ''}</div>
-        <div class="cname">${f.def.name}</div>
-        <div class="crole">${f.def.role}</div>
-        <div class="ctag">${f.def.tagline ?? ''}</div>
-        <div class="cstats">VEL ${stat(f.def.stats.speed)} · FORÇA ${stat(f.def.stats.power)}</div>
-        <div class="cspecial">★ ${f.def.moves.super?.name ?? f.def.moves.special?.name ?? 'ESPECIAL'}</div>
-      </div>`).join('');
+    const img = (f: FighterAssets) => (f.portrait ? `<img src="${f.portrait.src}" alt="">` : '');
+    const slots = roster.map((f, i) => `<div class="sf2-slot" data-item data-i="${i}">${img(f)}</div>`).join('')
+      + Array.from({ length: Math.max(0, 6 - roster.length) }, () => '<div class="sf2-slot locked">?</div>').join('');
     this.set('select', `
-      <div class="center">
-        <div class="title-sm">ESCOLHA SEU LUTADOR</div>
-        <div class="cards">${cards}</div>
-        <div class="pix tiny">A D ESCOLHER · G / ENTER CONFIRMAR · V VOLTAR</div>
+      <div class="sf2">
+        <div class="sf2-side left"><div class="sf2-portrait p1"></div><div class="sf2-name p1"></div><div class="sf2-tag">1P</div><div class="sf2-region p1"></div></div>
+        <div class="sf2-center"><div class="sf2-map">${brazilMapSvg(roster)}</div><div class="sf2-title">PLAYER SELECT</div></div>
+        <div class="sf2-side right"><div class="sf2-portrait cpu"></div><div class="sf2-name cpu"></div><div class="sf2-tag cpu">CPU</div><div class="sf2-region cpu"></div></div>
+        <div class="sf2-grid">${slots}</div>
+        <div class="pix tiny sf2-hint">A D ESCOLHER · G / ENTER CONFIRMAR · V VOLTAR</div>
       </div>`);
-    this.onConfirm = onPick; this.onBack = onBack;
+    const q = (sel: string) => this.root.querySelector<HTMLElement>(sel)!;
+    const marks = Array.from(this.root.querySelectorAll<SVGGElement>('.mark'));
+    const fill = (side: 'p1' | 'cpu', f: FighterAssets) => {
+      q(`.sf2-portrait.${side}`).innerHTML = img(f);
+      q(`.sf2-name.${side}`).textContent = f.def.name;
+      q(`.sf2-region.${side}`).textContent = f.def.origin?.region ?? f.def.role;
+    };
+    this.onMove = (i) => {
+      const cpu = roster.length > 1 ? (i + 1) % roster.length : i;
+      fill('p1', roster[i]); fill('cpu', roster[cpu]);
+      marks.forEach((m) => { const k = Number(m.dataset.i); m.querySelector('.dot')!.setAttribute('class', `dot${k === i ? ' on' : k === cpu ? ' cpu' : ''}`); });
+      this.menuItems.forEach((el, k) => el.classList.toggle('cpu', k === cpu && k !== i));
+    };
+    this.onMove(0);
+    this.onConfirm = (i) => { audio.sfx('selectChar'); audio.voice(`ann-${roster[i].def.id}`, 'ann'); onPick(i); };
+    this.onBack = onBack;
   }
 
   versus(a: FighterAssets, b: FighterAssets, label: string, hueB: number, onGo: () => void) {
@@ -143,5 +158,3 @@ export class Screens {
     this.onBack = onResume;
   }
 }
-
-function stat(v: number) { return '●'.repeat(Math.round(v * 3)) + '○'.repeat(Math.max(0, 4 - Math.round(v * 3))); }

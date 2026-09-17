@@ -51,6 +51,17 @@ Board de cada lutador: 5 colunas × 7 linhas (35 poses), fundo transparente, tod
 Comandos: no chão A/S/D dão soco/chute/forte; segurando ↓ viram os rasteiros (só defende agachado);
 no ar viram os aéreos (só defende em pé). B com meia barra (50) = especial com projétil; B com barra cheia = super.
 
+## Áudio
+
+- Música e efeitos são sintetizados no navegador (Web Audio): `src/core/audio.ts` tem o sequenciador chiptune e os efeitos;
+  as músicas (título, seleção, luta) estão em `src/data/songs.ts` como padrões de semicolcheias.
+- Vozes ficam em `public/audio/voice/*.wav`, geradas por `python3 tools/voices.py` com a síntese de fala do macOS:
+  locutor (Round 1/2/3, Fight!, K.O., Perfect, nomes), Edgard (voz média, risadas malignas) e Santana (gritos graves com raiva).
+  Pra trocar por gravações reais, basta substituir os arquivos mantendo os ids do `manifest.json`.
+- Botão 🔊 no gabinete silencia tudo (fica salvo no navegador). O som só começa depois do primeiro toque/tecla.
+
+Luta é melhor de 3 (dois rounds). A tela de seleção mostra o mapa do Brasil com a origem de cada lutador (`origin` no `fighter.json`).
+
 Cenário: `public/stages/office-{far,mid,floor}.png` (placeholder gerado por `tools/stage.py`, substitua pela arte final).
 
 Pra adicionar um lutador: rode o script no board novo, crie `fighter.json` (copie de um existente) e inclua o id em `src/data/roster.ts`.

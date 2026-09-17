@@ -1,5 +1,6 @@
 import './styles.css';
 import { loadFighter, loadStage, type StageAssets } from './core/assets';
+import { audio } from './core/audio';
 import { Input } from './core/input';
 import { startLoop } from './core/loop';
 import { ROSTER, STAGE } from './data/roster';
@@ -51,7 +52,19 @@ let fightNo = 0;
 
 const DIFF_RAMP: Difficulty[][] = [['easy', 'easy', 'normal', 'normal'], ['normal', 'normal', 'hard', 'hard'], ['hard', 'hard', 'hard', 'hard']];
 
-function setMode(m: Mode) { mode = m; document.body.dataset.mode = m; }
+const MUSIC: Record<Mode, 'title' | 'select' | 'fight' | null> = {
+  loading: null, title: 'title', difficulty: 'select', select: 'select', versus: 'select', fight: 'fight', result: null, ending: null,
+};
+function setMode(m: Mode) { mode = m; document.body.dataset.mode = m; audio.music(MUSIC[m]); }
+
+// áudio só pode nascer depois de um gesto do usuário
+const unlock = () => audio.unlock();
+window.addEventListener('keydown', unlock);
+window.addEventListener('pointerdown', unlock);
+const muteBtn = document.getElementById('mute') as HTMLButtonElement;
+const paintMute = () => { muteBtn.textContent = audio.muted ? '🔇' : '🔊'; muteBtn.classList.toggle('off', audio.muted); };
+muteBtn.addEventListener('click', () => { audio.unlock(); audio.toggleMute(); paintMute(); });
+paintMute();
 
 function buildCampaign() {
   const others = roster.map((_, i) => i).filter((i) => i !== playerIdx);
@@ -68,6 +81,7 @@ function startFight() {
     end: (winner, perfect) => {
       setMode('result');
       const won = winner === 0;
+      audio.sfx(won ? 'win' : 'lose'); audio.voice(won ? 'ann-you-win' : 'ann-you-lose', 'ann');
       screens.result(won, perfect, isLast, () => {
         if (won) { fightNo++; if (fightNo >= campaign.length) { setMode('ending'); screens.ending(roster[playerIdx], goTitle); } else showVersus(); }
         else showVersus();
@@ -105,7 +119,7 @@ window.addEventListener('keydown', (e) => {
 });
 
 // acesso de debug no console: __of().match.fighters[0]
-(window as unknown as { __of: () => unknown }).__of = () => ({ mode, match, debug, input });
+(window as unknown as { __of: () => unknown }).__of = () => ({ mode, match, debug, input, audio });
 
 // ---------- loop
 startLoop({
@@ -141,6 +155,7 @@ startLoop({
   const tick = () => { done++; screens.loading(done, total); };
   screens.loading(0, total);
   const [fighters, st] = await Promise.all([Promise.all(ROSTER.map((id) => loadFighter(id, tick))), loadStage(STAGE, tick)]);
+  void audio.preloadVoices(import.meta.env.BASE_URL);
   roster = fighters; stage = st;
   demo = new Match(roster[0], roster[1 % roster.length], stage, { cpu: null }, { message() {}, end() {} });
   demo.phase = 'over';
