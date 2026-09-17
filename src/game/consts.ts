@@ -1,0 +1,15 @@
+export const W = 960;
+export const H = 540;
+export const GROUND_Y = 470;        // linha do chão em px de tela
+export const ARENA_MIN = 50;        // limites do eixo dos pés
+export const ARENA_MAX = 910;
+export const SPRITE_SCALE = 0.6;    // px do sheet -> px de tela (lutador com scale 1.0)
+export const GRAVITY = 0.6;
+export const JUMP_VY = -13.5;
+export const JUMP_VX = 3.4;
+export const WALK_SPEED = 3.2;
+export const BACK_SPEED = 2.4;
+export const ROUND_SECONDS = 60;
+export const INPUT_BUFFER = 6;      // frames que um ataque fica guardado esperando o lutador ficar livre
+export const BLOCK_DAMAGE = 0.25;   // dano que passa na defesa
+export const BLOCK_KNOCKBACK = 0.5;

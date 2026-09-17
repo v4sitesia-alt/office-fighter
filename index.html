@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Office Fighter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Press+Start+2P&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <main class="cabinet">
+    <header class="marquee">
+      <div class="brand"><span>OFFICE FIGHTER</span><small>EDIÇÃO ESCRITÓRIO · v0.1</small></div>
+      <div class="credit">CREDIT 01</div>
+    </header>
+    <div class="bezel">
+      <div id="screen-wrap"><div class="screen">
+        <canvas id="game"></canvas>
+        <div id="hud" class="hud"></div>
+        <div id="screens" class="screens"></div>
+      </div></div>
+    </div>
+    <section id="panel" class="panel">
+      <div class="stick"><div class="knob"></div><span class="arrow l">◀</span><span class="arrow r">▶</span><span class="arrow u">▲</span><span class="arrow d">▼</span></div>
+      <div class="buttons">
+        <div class="btn red" data-btn="punch"><b>A</b><i>SOCO</i></div>
+        <div class="btn yellow" data-btn="kick"><b>S</b><i>CHUTE</i></div>
+        <div class="btn green" data-btn="heavy"><b>D</b><i>FORTE</i></div>
+        <div class="btn blue" data-btn="block"><b>Z</b><i>DEFESA</i></div>
+        <div class="btn purple" data-btn="special"><b>X</b><i>ESPECIAL</i></div>
+      </div>
+      <div class="pills">
+        <div class="pill" data-btn="start">START</div>
+        <div class="pill" data-btn="pause">PAUSE</div>
+      </div>
+    </section>
+  </main>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

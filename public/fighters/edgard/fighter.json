@@ -1,0 +1,41 @@
+{
+  "id": "edgard",
+  "name": "EDGARD",
+  "role": "O Designer",
+  "tagline": "Alinhou. Centralizou. Nocauteou.",
+  "colors": { "primary": "#c43cff", "secondary": "#ff2e88" },
+  "scale": 1.0,
+  "stats": { "speed": 1.15, "power": 0.9, "weight": 1.0 },
+  "hurtbox": { "x": -52, "y": -262, "w": 104, "h": 262 },
+  "crouchHurtbox": { "x": -56, "y": -195, "w": 112, "h": 195 },
+  "pushbox": { "x": -40, "w": 80 },
+  "anims": {
+    "idle":        { "frames": [0, 1], "fps": 3, "loop": true },
+    "walk":        { "frames": [2, 3, 4, 3], "fps": 9, "loop": true },
+    "jump":        { "frames": [6, 7], "anchor": "center" },
+    "crouch":      { "frames": [5] },
+    "block":       { "frames": [8] },
+    "crouchBlock": { "frames": [9] },
+    "hit":         { "frames": [17] },
+    "fall":        { "frames": [18], "anchor": "center" },
+    "down":        { "frames": [19], "anchor": "center" },
+    "getup":       { "frames": [5] },
+    "win":         { "frames": [14, 11], "fps": 2, "loop": true }
+  },
+  "moves": {
+    "punch":   { "phases": { "startup": [11], "active": [10], "recovery": [10, 11] },
+                 "startup": 3, "active": 3, "recovery": 6, "damage": 5, "hitstun": 12, "blockstun": 8,
+                 "hitbox": { "x": 50, "y": -190, "w": 100, "h": 50 }, "knockback": 4, "meterGain": 6, "hitstop": 5 },
+    "kick":    { "phases": { "startup": [11], "active": [12], "recovery": [12, 11] },
+                 "startup": 6, "active": 3, "recovery": 9, "damage": 8, "hitstun": 15, "blockstun": 10,
+                 "hitbox": { "x": 60, "y": -235, "w": 130, "h": 75 }, "knockback": 6, "meterGain": 8, "hitstop": 6 },
+    "heavy":   { "phases": { "startup": [13], "active": [14], "recovery": [14, 11] },
+                 "startup": 10, "active": 4, "recovery": 16, "damage": 14, "hitstun": 24, "blockstun": 14,
+                 "hitbox": { "x": 20, "y": -300, "w": 90, "h": 150 }, "knockback": 12, "launch": -5, "meterGain": 12, "hitstop": 9 },
+    "special": { "phases": { "startup": [15], "active": [16], "recovery": [16] },
+                 "startup": 14, "active": 4, "recovery": 22, "damage": 22, "hitstun": 30, "blockstun": 18,
+                 "hitbox": { "x": 0, "y": 0, "w": 0, "h": 0 }, "knockback": 16, "knockdown": true, "meterCost": 100, "hitstop": 10,
+                 "name": "GRID SAGRADO",
+                 "projectile": { "x": 175, "y": -165, "speed": 7, "lifetime": 110, "hitbox": { "x": -40, "y": -50, "w": 80, "h": 100 } } }
+  }
+}

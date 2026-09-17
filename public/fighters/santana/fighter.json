@@ -1,0 +1,41 @@
+{
+  "id": "santana",
+  "name": "SANTANA",
+  "role": "O Tráfego",
+  "tagline": "Escalou a campanha. E a porrada.",
+  "colors": { "primary": "#21e6ff", "secondary": "#4d7cff" },
+  "scale": 1.1,
+  "stats": { "speed": 0.9, "power": 1.15, "weight": 1.15 },
+  "hurtbox": { "x": -58, "y": -265, "w": 116, "h": 265 },
+  "crouchHurtbox": { "x": -62, "y": -195, "w": 124, "h": 195 },
+  "pushbox": { "x": -46, "w": 92 },
+  "anims": {
+    "idle":        { "frames": [0, 1], "fps": 3, "loop": true },
+    "walk":        { "frames": [2, 3, 4, 3], "fps": 8, "loop": true },
+    "jump":        { "frames": [6, 7], "anchor": "center" },
+    "crouch":      { "frames": [5] },
+    "block":       { "frames": [8] },
+    "crouchBlock": { "frames": [9] },
+    "hit":         { "frames": [17] },
+    "fall":        { "frames": [18], "anchor": "center" },
+    "down":        { "frames": [19], "anchor": "center" },
+    "getup":       { "frames": [5] },
+    "win":         { "frames": [14, 11], "fps": 2, "loop": true }
+  },
+  "moves": {
+    "punch":   { "phases": { "startup": [11], "active": [10], "recovery": [10, 11] },
+                 "startup": 4, "active": 3, "recovery": 7, "damage": 6, "hitstun": 12, "blockstun": 8,
+                 "hitbox": { "x": 50, "y": -195, "w": 120, "h": 55 }, "knockback": 5, "meterGain": 6, "hitstop": 5 },
+    "kick":    { "phases": { "startup": [11], "active": [12], "recovery": [12, 11] },
+                 "startup": 7, "active": 3, "recovery": 10, "damage": 9, "hitstun": 15, "blockstun": 10,
+                 "hitbox": { "x": 60, "y": -240, "w": 140, "h": 80 }, "knockback": 7, "meterGain": 8, "hitstop": 6 },
+    "heavy":   { "phases": { "startup": [13], "active": [14], "recovery": [14, 11] },
+                 "startup": 11, "active": 4, "recovery": 18, "damage": 16, "hitstun": 26, "blockstun": 14,
+                 "hitbox": { "x": 20, "y": -320, "w": 95, "h": 160 }, "knockback": 13, "launch": -6, "meterGain": 12, "hitstop": 10 },
+    "special": { "phases": { "startup": [15], "active": [16], "recovery": [16] },
+                 "startup": 15, "active": 4, "recovery": 24, "damage": 24, "hitstun": 30, "blockstun": 18,
+                 "hitbox": { "x": 0, "y": 0, "w": 0, "h": 0 }, "knockback": 18, "knockdown": true, "meterCost": 100, "hitstop": 10,
+                 "name": "IMPULSIONAMENTO",
+                 "projectile": { "x": 190, "y": -160, "speed": 6, "lifetime": 110, "hitbox": { "x": -35, "y": -55, "w": 70, "h": 110 } } }
+  }
+}

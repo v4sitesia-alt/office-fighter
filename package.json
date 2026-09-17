@@ -1,0 +1,16 @@
+{
+  "name": "office-fighter",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "sprites": "python3 tools/sprites.py Personagens/Edgard.png public/fighters/edgard --fx 465,888,560,1053 && python3 tools/sprites.py Personagens/Santana.png public/fighters/santana --fx 500,885,570,1065"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2",
+    "vite": "^8.3.0"
+  }
+}
