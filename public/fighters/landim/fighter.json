@@ -3,9 +3,17 @@
  "name": "LANDIM",
  "role": "A Cineasta",
  "tagline": "Luz, câmera, porrada.",
+ "bio": "Cineasta de Nova Cinelândia. As IAs encheram o cinema de ator com seis dedos. Ela veio filmar a revanche do olhar humano.",
+ "side": "heroi",
  "colors": {
   "primary": "#ffd21f",
   "secondary": "#3a2a1a"
+ },
+ "origin": {
+  "region": "VALE QUATRO",
+  "city": "Nova Cinelândia",
+  "x": 0.241,
+  "y": 0.273
  },
  "stage": "office",
  "scale": 0.98,
@@ -448,7 +456,5 @@
    "hitstop": 12,
    "name": "PLANO SEQUÊNCIA"
   }
- },
- "bio": "Quer resgatar o olhar cinematográfico que as IAs apagaram.",
- "side": "heroi"
+ }
 }

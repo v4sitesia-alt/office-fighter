@@ -4,6 +4,7 @@ import { audio, hasTrack } from './core/audio';
 import { Input } from './core/input';
 import { startLoop } from './core/loop';
 import { DEFAULT_STAGE, ROSTER } from './data/roster';
+import { scriptFor } from './data/dialogue';
 import { H, W } from './game/consts';
 import { Match } from './game/match';
 import type { Difficulty, FighterAssets } from './game/types';
@@ -118,7 +119,7 @@ function showVersus() {
   const opp = campaign[fightNo];
   setMode('versus');
   audio.preload(`fighter-${(opp.hue ? roster[playerIdx] : roster[opp.idx]).def.id}`);
-  screens.versus(roster[playerIdx], roster[opp.idx], fightNo === campaign.length - 1 ? 'LUTA FINAL' : `LUTA ${fightNo + 1} DE ${campaign.length}`, opp.hue, startFight);
+  screens.versus(roster[playerIdx], roster[opp.idx], fightNo === campaign.length - 1 ? 'LUTA FINAL' : `LUTA ${fightNo + 1} DE ${campaign.length}`, opp.hue, scriptFor(roster[playerIdx].def.id, roster[opp.idx].def.id, !!opp.hue), startFight);
 }
 
 function goTitle() {

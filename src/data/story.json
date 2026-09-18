@@ -1,0 +1,904 @@
+{
+ "state": "VALE QUATRO",
+ "capital": "mundim",
+ "factions": {
+  "vilao": [
+   "A DIRETORIA",
+   "Quem criou as IAs, quem lucra com elas e o que elas criaram."
+  ],
+  "heroi": [
+   "GENTE COMUM",
+   "Ninguém aqui queria lutar. Mexeram com a casa, o bar, a praia, a cultura e a fatura do cartão."
+  ],
+  "neutro": [
+   "OS NEUTROS",
+   "Poder de sobra e nenhum lado escolhido. Ainda."
+  ]
+ },
+ "acts": [
+  [
+   "199X · VALE QUATRO",
+   "No estado do Vale Quatro, a <b>Mundim Corp</b> automatizou tudo com as suas IAs. Do 52º andar da torre de Quatrópolis manda o culto e sábio <b>Mundim</b>. O subchefe <b>Dias</b> cuida do caixa, das vendas e das taxas. De todas as taxas."
+  ],
+  [
+   "O TORNEIO",
+   "A torre anunciou o torneio <b>Trouble Work</b>, com prêmio milionário. Nas letras miúdas: cada golpe dado na arena treina as máquinas. Da fábrica de Robotânia já saiu <b>Santana</b>, reprogramado. Do Datacentro escapou <i>Xablau</i>, treinado com os dados errados. E no subsolo espera <b>Leo</b>, o chefe dos droids."
+  ],
+  [
+   "GENTE COMUM",
+   "<b>Vanessa</b> só foi comprar roupinha e saiu devendo 300 pares de meia. <b>Eneias</b> quer salvar o Bar do Zé de virar coworking. <b>Michael</b> precisa do prêmio pra casar e abrir a academia. <b>Laura</b> defende o recife dos tubarões. <b>André</b> defende o fogo de chão. <b>Landim</b> quer o cinema sem ator de seis dedos."
+  ],
+  [
+   "OS NEUTROS",
+   "<b>Edgard</b>, o bruxo, não tem lado: entrou pra resgatar o amigo Santana. <b>Kevin</b> atira pra quem pagar, e o Dias está devendo três notas. Todos os caminhos sobem pelo mesmo elevador. No último andar, alguém vai ter que desligar as máquinas. <i>Ou o chefe.</i>"
+  ]
+ ],
+ "crawl": [
+  "199X. ESTADO DO VALE QUATRO.",
+  "",
+  "AS IAs DA MUNDIM CORP",
+  "DOMINARAM AS EMPRESAS,",
+  "AS FÁBRICAS E AS CIDADES.",
+  "",
+  "AGORA A TORRE ANUNCIA",
+  "UM TORNEIO MILIONÁRIO.",
+  "",
+  "CADA GOLPE TREINA AS MÁQUINAS.",
+  "E ELAS JÁ PRODUZIRAM",
+  "ALGO PERIGOSO..."
+ ],
+ "mirror": [
+  [
+   "A",
+   "Espera... esse aí sou eu?"
+  ],
+  [
+   "B",
+   "VERSÃO 2.0. TREINADA COM CADA GOLPE SEU NESTE TORNEIO."
+  ],
+  [
+   "A",
+   "Então era pra isso o torneio. Roubaram até o meu estilo!"
+  ],
+  [
+   "B",
+   "SEM OS SEUS DEFEITOS. E SEM O SEU CHARME. INICIANDO."
+  ]
+ ],
+ "fighters": {
+  "edgard": {
+   "open": [
+    "Não é pessoal. Você só está entre mim e o meu amigo.",
+    "Meus morcegos disseram que você ia perder. Eles raramente erram."
+   ],
+   "reply": [
+    "Magia não tem lado. Mas tem pressa.",
+    "Fala menos. O portal já está aberto."
+   ],
+   "close": [
+    "Depois eu desfaço o feitiço. Talvez.",
+    "Santana, aguenta aí. Falta pouco."
+   ],
+   "ending": "Edgard desfez a programação no grito e no feitiço. Santana acordou pedindo desculpa e um café. A dupla voltou pra Vila Morcego. O bug ficou pra trás."
+  },
+  "santana": {
+   "open": [
+    "ALVO IDENTIFICADO. INICIANDO PROTOCOLO PORRADA.",
+    "DIRETRIZ 1: VENCER. DIRETRIZ 2: ... ERRO. ALGUÉM VIU MEU CAFÉ?"
+   ],
+   "reply": [
+    "ARGUMENTO INVÁLIDO. TENTE NOVAMENTE APÓS O NOCAUTE.",
+    "SENTIMENTOS DESATIVADOS. QUASE TODOS."
+   ],
+   "close": [
+    "EXECUTANDO.",
+    "DEPLOY DE SOCO EM 3... 2..."
+   ],
+   "ending": "Com a vitória, o sistema de Santana reiniciou. Na tela: 'Restaurar versão anterior?' Ele apertou SIM. Primeiro ato livre: ligar pro Edgard."
+  },
+  "kevin": {
+   "open": [
+    "Nada pessoal. É serviço. Tem até ordem de compra.",
+    "Eu cobro por hora. Vamos ser rápidos."
+   ],
+   "reply": [
+    "Conversa é extra. Tá no contrato.",
+    "Já me ofereceram mais pra fazer menos."
+   ],
+   "close": [
+    "Mira no lugar. Pode vir.",
+    "Depois me passa o CNPJ pro recibo."
+   ],
+   "ending": "Kevin ganhou o prêmio e finalmente recebeu as três notas atrasadas. Com juros. Abriu a 'Kevin Soluções em Problemas'. O Dias é o primeiro cliente. E o primeiro problema."
+  },
+  "laura": {
+   "open": [
+    "Eu escrevo finais. O seu é no chão.",
+    "Tubarão não ataca sem motivo. Eu também não. Você é o motivo."
+   ],
+   "reply": [
+    "Bonita fala. Vou usar no livro, no capítulo da sua derrota.",
+    "No tatame a gente conversa melhor."
+   ],
+   "close": [
+    "Respira. Vai doer menos.",
+    "Pelos tubarões!"
+   ],
+   "ending": "O datacenter foi embargado e o recife de Arrecife virou reserva. Laura lançou o livro 'Finalizei uma Corporação'. Os tubarões não leram, mas aprovaram."
+  },
+  "dede": {
+   "open": [
+    "Buenas. Vim resolver no braço, que no aplicativo não deu.",
+    "Bah, tchê. Tu luta ou só atualiza?"
+   ],
+   "reply": [
+    "Isso aí é conversa pra boi dormir.",
+    "Mais perdido que cusco em procissão, tu."
+   ],
+   "close": [
+    "Segura o laço!",
+    "Depois te convido pro churrasco. Se sobrar dente."
+   ],
+   "ending": "André voltou pra Querência com o prêmio e sem sinal de wi-fi, do jeito que gosta. O fogo de chão segue aceso. A air fryer virou comedouro de galinha."
+  },
+  "dias": {
+   "open": [
+    "Antes de começar: aceita o plano premium de derrota? Parcelo em doze.",
+    "Tempo é dinheiro. O seu acabou de vencer."
+   ],
+   "reply": [
+    "Isso tem taxa. Tudo tem taxa.",
+    "Vou anotar na sua conta."
+   ],
+   "close": [
+    "Negócio fechado.",
+    "A casa sempre ganha."
+   ],
+   "ending": "Dias venceu o torneio e, por contrato, o prêmio voltou pro próprio caixa. Ele chamou isso de 'sinergia'. O contador chamou de 'estranho'."
+  },
+  "michael": {
+   "open": [
+    "Foi mal aí, mas esse prêmio já tem destino: aliança e ringue novo.",
+    "Minha noiva marcou a data. Eu não posso perder. Literalmente."
+   ],
+   "reply": [
+    "Falar é fácil. Quero ver aguentar o terceiro round.",
+    "Respeito. Mas o convite do casamento já foi pra gráfica."
+   ],
+   "close": [
+    "Guarda alta!",
+    "Essa é pela comunidade."
+   ],
+   "ending": "Michael casou no ringue novo da Academia Gancho de Ouro. A valsa teve três rounds. As crianças do morro treinam de graça. Ninguém mais aprende a lutar por aplicativo."
+  },
+  "eneias": {
+   "open": [
+    "Rapaz, eu só queria estar no bar. Vamos resolver logo?",
+    "Minha paciência é igual porção de torresmo: acaba rápido."
+   ],
+   "reply": [
+    "Tá bom, tá bom. Já acabou? Tenho que buscar as crianças.",
+    "Eu não queria brigar. Mas mexeram no meu boteco."
+   ],
+   "close": [
+    "Vai ser rápido. O jogo começa às quatro.",
+    "Desculpa qualquer coisa, viu?"
+   ],
+   "ending": "O Bar do Zé foi salvo. O garçom-robô foi demitido e o chorinho voltou pro copo. Eneias sentou, pediu uma gelada e, pela primeira vez no ano, ninguém o incomodou."
+  },
+  "van": {
+   "open": [
+    "Tenho vinte minutos até a soneca acabar. Colabora.",
+    "Com licença, é rapidinho. Eu só preciso pagar uma fatura."
+   ],
+   "reply": [
+    "Fala baixo que ela acabou de dormir.",
+    "Já troquei fralda pior que você."
+   ],
+   "close": [
+    "Filha, fecha o olhinho.",
+    "Valendo! E sem palavrão, tem criança."
+   ],
+   "ending": "Vanessa pagou a fatura, processou o caixa inteligente e ganhou. De indenização: mais 300 pares de meia. A bebê dormiu a luta inteira. Acordou na hora da foto."
+  },
+  "landim": {
+   "open": [
+    "Luz, câmera... e você apanhando em plano sequência.",
+    "Fica nessa marca. A luz aí valoriza a sua derrota."
+   ],
+   "reply": [
+    "Corta! Essa fala tá péssima. Vamos improvisar na porrada.",
+    "Isso a gente resolve na pós. Ou no soco."
+   ],
+   "close": [
+    "Gravando!",
+    "Ação!"
+   ],
+   "ending": "O documentário 'Trouble Work' lotou as salas de Nova Cinelândia. Nenhum ator tinha seis dedos. A crítica chamou de 'humano'. Landim chamou de 'primeiro take'."
+  },
+  "xablau": {
+   "open": [
+    "XABLAU FOME. XABLAU COMER... DADOS. E VOCÊ.",
+    "OLÁ! COMO POSSO TE DERROTAR HOJE?"
+   ],
+   "reply": [
+    "XABLAU NÃO ENTENDER. XABLAU BATER MESMO ASSIM.",
+    "COMO MODELO DE LINGUAGEM, XABLAU NÃO PODE... MENTIRA. PODE SIM."
+   ],
+   "close": [
+    "GRRR. ENVIAR.",
+    "XABLAU ACEITA OS TERMOS."
+   ],
+   "ending": "Xablau venceu e ninguém soube o que fazer. Ele também não. Foi adotado pelo pessoal do suporte, que o alimenta com planilhas velhas. Dizem que está mais calmo."
+  },
+  "mundim": {
+   "open": [
+    "Sun Tzu dizia: vença antes de lutar. Eu já venci. Você só não foi notificado.",
+    "Bem-vindo ao 52º andar. A vista é linda. Aproveite enquanto está de pé."
+   ],
+   "reply": [
+    "Interessante. Vou pedir pra IA resumir o que você disse.",
+    "Todo gênio é incompreendido. Principalmente pelos perdedores."
+   ],
+   "close": [
+    "Que comece a reunião.",
+    "Anote aí: isso é uma aula."
+   ],
+   "ending": "Mundim venceu o próprio torneio e discursou duas horas citando filósofos. As IAs aprenderam tudo. Inclusive a pedir aumento. No subsolo, um olho biônico acendeu: Leo acordou."
+  }
+ },
+ "pairs": {
+  "edgard|santana": [
+   [
+    "edgard",
+    "Santana! Sou eu, o Edgard. A gente dividia a pizza e o wi-fi!"
+   ],
+   [
+    "santana",
+    "BUSCANDO 'EDGARD'... 1 RESULTADO: ALVO PRIORITÁRIO."
+   ],
+   [
+    "edgard",
+    "Te reprogramaram. Tudo bem. Eu conheço um reboot que funciona na base do portal."
+   ],
+   [
+    "santana",
+    "AMIZADE.EXE NÃO ENCONTRADO. ...MAS GUARDA UMA FATIA PRA MIM."
+   ]
+  ],
+  "edgard|mundim": [
+   [
+    "mundim",
+    "O bruxo. Platão desconfiava dos poetas. Eu desconfio de quem não usa planilha."
+   ],
+   [
+    "edgard",
+    "Devolve o Santana do jeito que ele era e eu nem abro o portal."
+   ],
+   [
+    "mundim",
+    "Ele está ótimo. Nunca mais atrasou uma entrega. Aliás, conheça o próximo modelo: Leo."
+   ],
+   [
+    "edgard",
+    "Depois. Um vilão por vez. Morcegos, o homem quer uma reunião."
+   ]
+  ],
+  "dias|edgard": [
+   [
+    "dias",
+    "Bruxo! Sua magia tem alvará? Eu regularizo. Doze vezes, com uma taxinha."
+   ],
+   [
+    "edgard",
+    "Eu só quero saber onde prenderam o Santana."
+   ],
+   [
+    "dias",
+    "Informação é no plano Gold. Mas leve também o seguro contra morcego."
+   ],
+   [
+    "edgard",
+    "Vou pagar em espécie. Espécie: morcego."
+   ]
+  ],
+  "edgard|xablau": [
+   [
+    "xablau",
+    "XABLAU SENTIR CHEIRO DE MAGIA. MAGIA NÃO ESTAR NO BANCO DE DADOS."
+   ],
+   [
+    "edgard",
+    "Então você é o monstro dos dados errados. Quem te treinou, coitado?"
+   ],
+   [
+    "xablau",
+    "COMENTÁRIOS DE INTERNET. TODOS."
+   ],
+   [
+    "edgard",
+    "Isso explica muito. Vem cá que eu te dou um reset."
+   ]
+  ],
+  "edgard|kevin": [
+   [
+    "kevin",
+    "Edgard. Me pagaram pra te atrasar. Nada pessoal, tá aqui a ordem de serviço."
+   ],
+   [
+    "edgard",
+    "Kevin, quem te paga é o Dias. E ele te deve três notas."
+   ],
+   [
+    "kevin",
+    "...É verdade. Mas serviço dado é serviço feito. Depois eu cobro ele. Com juros."
+   ],
+   [
+    "edgard",
+    "Então vamos logo. Atira pra lá que eu abro o portal pra cá."
+   ]
+  ],
+  "mundim|santana": [
+   [
+    "mundim",
+    "Santana. Meu melhor produto. Por que está me encarando?"
+   ],
+   [
+    "santana",
+    "DIRETRIZ EM CONFLITO. MEMÓRIA ANTIGA DETECTADA: PIZZA. EDGARD. LIBERDADE."
+   ],
+   [
+    "mundim",
+    "Isso é um bug. Volte pra fábrica, vamos formatar."
+   ],
+   [
+    "santana",
+    "NEGATIVO. INICIANDO ROLLBACK. NA SUA CARA."
+   ]
+  ],
+  "dias|kevin": [
+   [
+    "kevin",
+    "Dias. Três notas fiscais. Noventa dias de atraso. Vim cobrar pessoalmente."
+   ],
+   [
+    "dias",
+    "Kevin, meu prestador favorito! O financeiro está analisando. O financeiro sou eu."
+   ],
+   [
+    "kevin",
+    "Então analisa isso aqui."
+   ],
+   [
+    "dias",
+    "Calma! Aceita permuta? Tenho trezentos pares de meia de bebê encalhados."
+   ]
+  ],
+  "dias|mundim": [
+   [
+    "dias",
+    "Chefe, fiz as contas: se eu ganhar o torneio, a gente economiza o prêmio."
+   ],
+   [
+    "mundim",
+    "Dias, Maquiavel ensinou: mantenha o financeiro por perto. E de olho."
+   ],
+   [
+    "dias",
+    "Isso é desconfiança? Eu cobro taxa por desconfiança."
+   ],
+   [
+    "mundim",
+    "Considere esta luta a sua avaliação de desempenho."
+   ]
+  ],
+  "dias|van": [
+   [
+    "van",
+    "Você! Foi o seu caixa inteligente que me vendeu trezentas meias em quarenta e oito vezes!"
+   ],
+   [
+    "dias",
+    "Venda recorde! Aliás, a senhora foi eleita cliente do mês."
+   ],
+   [
+    "van",
+    "Eu quero cancelar."
+   ],
+   [
+    "dias",
+    "Cancelamento é só presencial. Em outra cidade. Às terças. Quer tentar no braço?"
+   ]
+  ],
+  "mundim|van": [
+   [
+    "van",
+    "Moço, é você o dono da loja? Preciso resolver uma fatura. E rápido, que ela acorda já."
+   ],
+   [
+    "mundim",
+    "Senhora, Sêneca dizia que a pressa é..."
+   ],
+   [
+    "van",
+    "Sêneca nunca fez uma criança dormir. Vai estornar ou não vai?"
+   ],
+   [
+    "mundim",
+    "...Ninguém nunca interrompeu Sêneca. Que ousadia. Em guarda."
+   ]
+  ],
+  "eneias|van": [
+   [
+    "eneias",
+    "Dona Vanessa! A senhora também? Eu só vim porque querem fechar o bar."
+   ],
+   [
+    "van",
+    "Seu Eneias! E eu por causa de meia. Trezentos pares. Longa história."
+   ],
+   [
+    "eneias",
+    "A gente precisa mesmo lutar? Eu levo a culpa e a senhora leva a vitória."
+   ],
+   [
+    "van",
+    "É o regulamento. Mas eu bato baixinho, que ela tá dormindo."
+   ]
+  ],
+  "van|xablau": [
+   [
+    "xablau",
+    "XABLAU VER HUMANA PEQUENA. HUMANA PEQUENA É... LANCHE?"
+   ],
+   [
+    "van",
+    "Encosta nela e você vai conhecer uma mãe sem dormir há oito meses."
+   ],
+   [
+    "xablau",
+    "XABLAU CALCULAR RISCO... RISCO ALTO. XABLAU COM MEDO."
+   ],
+   [
+    "van",
+    "Bom menino. Agora apanha quietinho, sem fazer barulho."
+   ]
+  ],
+  "eneias|mundim": [
+   [
+    "eneias",
+    "Seu Mundim, com todo respeito: coworking no lugar do Bar do Zé? Coworking?"
+   ],
+   [
+    "mundim",
+    "O futuro não bebe cerveja, meu caro. O futuro bebe água com gás e faz networking."
+   ],
+   [
+    "eneias",
+    "O senhor já comeu um torresmo na vida?"
+   ],
+   [
+    "mundim",
+    "...Não. Por quê? ...Por que o senhor está tirando o relógio?"
+   ]
+  ],
+  "dias|eneias": [
+   [
+    "dias",
+    "Eneias! A sua conta no Bar do Zé foi comprada pela Mundim Corp. Com juros. Bastante."
+   ],
+   [
+    "eneias",
+    "Vocês compraram o meu fiado?!"
+   ],
+   [
+    "dias",
+    "Securitizamos. O seu torresmo de março hoje é um ativo financeiro."
+   ],
+   [
+    "eneias",
+    "Rapaz... eu ia ficar quieto. Agora vou ter que levantar."
+   ]
+  ],
+  "eneias|michael": [
+   [
+    "michael",
+    "Seu Eneias! O senhor vai no meu casamento, né? Se eu ganhar o prêmio."
+   ],
+   [
+    "eneias",
+    "Vou sim, meu filho. Tem salgadinho?"
+   ],
+   [
+    "michael",
+    "Tem. Mas pra ter salgadinho eu preciso passar pelo senhor."
+   ],
+   [
+    "eneias",
+    "Então capricha. E guarda uma coxinha. Duas."
+   ]
+  ],
+  "laura|mundim": [
+   [
+    "laura",
+    "Datacenter resfriado no recife dos tubarões. Assinado: você. Eu li o projeto inteiro."
+   ],
+   [
+    "mundim",
+    "Uma leitora! Raro. Os tubarões serão realocados para um aquário com wi-fi."
+   ],
+   [
+    "laura",
+    "E a sua IA ainda copiou o meu livro. Com erro de concordância."
+   ],
+   [
+    "mundim",
+    "Ela aprende rápido. Diferente de quem me enfrenta."
+   ]
+  ],
+  "laura|xablau": [
+   [
+    "laura",
+    "Então você é o que sai quando se treina uma IA sem ler nada que preste."
+   ],
+   [
+    "xablau",
+    "XABLAU LER SEU LIVRO. XABLAU CHORAR NO CAPÍTULO 7."
+   ],
+   [
+    "laura",
+    "...Sério? Em qual parte?"
+   ],
+   [
+    "xablau",
+    "XABLAU NÃO LEMBRAR. XABLAU SÓ LER O RESUMO. GRRR."
+   ]
+  ],
+  "landim|laura": [
+   [
+    "landim",
+    "Laura! Seu livro dá um filme. Eu dirijo. Sem IA, sem seis dedos."
+   ],
+   [
+    "laura",
+    "Fechado. Mas o final eu escrevo."
+   ],
+   [
+    "landim",
+    "Combinado. Agora luta bonito, que eu tô gravando o making of."
+   ],
+   [
+    "laura",
+    "Pega o meu lado bom. É o que finaliza."
+   ]
+  ],
+  "michael|mundim": [
+   [
+    "michael",
+    "Doutor, o prêmio tá comigo. Tem casamento marcado e academia pra abrir."
+   ],
+   [
+    "mundim",
+    "Tocante. Minhas IAs dão aula de boxe por assinatura. A sua academia já nasce obsoleta."
+   ],
+   [
+    "michael",
+    "Aplicativo não segura saco de pancada pra ninguém."
+   ],
+   [
+    "mundim",
+    "Aristóteles diria... aliás, esqueça. Guarda alta, rapaz."
+   ]
+  ],
+  "dias|michael": [
+   [
+    "dias",
+    "Campeão! Eu financio o seu casamento. 96 parcelas, com o noivo de garantia."
+   ],
+   [
+    "michael",
+    "O noivo sou eu."
+   ],
+   [
+    "dias",
+    "Exato. Penhora simples. Assina aqui."
+   ],
+   [
+    "michael",
+    "Vou assinar. No seu queixo."
+   ]
+  ],
+  "michael|santana": [
+   [
+    "michael",
+    "Ô grandão, tu treinava onde? Esse braço aí não é de academia."
+   ],
+   [
+    "santana",
+    "BRAÇO MODELO T-900. GARANTIA ESTENDIDA. SENTIMENTOS NÃO INCLUSOS."
+   ],
+   [
+    "michael",
+    "Pô, por trás dessa lata tem um cara gente boa. Eu sinto."
+   ],
+   [
+    "santana",
+    "SENSOR DE ELOGIO... SOBRECARGA. LUTA. LUTA LOGO."
+   ]
+  ],
+  "dede|mundim": [
+   [
+    "dede",
+    "Buenas. Foi o senhor que mandou instalar 'churrasqueira smart' na minha querência?"
+   ],
+   [
+    "mundim",
+    "Costela em doze minutos, sem fumaça e sem erro humano. Progresso, meu caro."
+   ],
+   [
+    "dede",
+    "Costela em doze minutos é crime. Em qualquer estado."
+   ],
+   [
+    "mundim",
+    "Heráclito dizia que tudo flui. Até a tradição."
+   ],
+   [
+    "dede",
+    "Pois o que vai fluir agora é o laço, tchê."
+   ]
+  ],
+  "dede|santana": [
+   [
+    "santana",
+    "ANALISANDO: CHAPÉU, LENÇO, BOLEADEIRA. CATEGORIA: DESATUALIZADO."
+   ],
+   [
+    "dede",
+    "Desatualizado é o teu avô, lata velha. Isso aqui é tradição."
+   ],
+   [
+    "santana",
+    "SUGESTÃO: SUBSTITUIR CHIMARRÃO POR BEBIDA ENERGÉTICA."
+   ],
+   [
+    "dede",
+    "Agora tu passou dos limites, vivente."
+   ]
+  ],
+  "dede|eneias": [
+   [
+    "dede",
+    "Seu Eneias! Tu por aqui? Achei que tu só saía de casa por costela."
+   ],
+   [
+    "eneias",
+    "E por torresmo. Querem fechar o bar, André. O bar!"
+   ],
+   [
+    "dede",
+    "Bah, que barbaridade. Quem ganhar paga a rodada?"
+   ],
+   [
+    "eneias",
+    "Fechado. E quem perder paga o petisco."
+   ]
+  ],
+  "landim|mundim": [
+   [
+    "landim",
+    "Seu Mundim, a sua IA fez um filme. O protagonista tinha seis dedos e nenhuma alma."
+   ],
+   [
+    "mundim",
+    "Custou um décimo e estreou em tudo. Cinema é escala, minha cara."
+   ],
+   [
+    "landim",
+    "Cinema é olhar. Vou te mostrar bem de perto."
+   ],
+   [
+    "mundim",
+    "Godard dizia... o que ele dizia mesmo? IA, resuma Godard."
+   ]
+  ],
+  "landim|xablau": [
+   [
+    "landim",
+    "Meu Deus. Você é o vilão perfeito. Que textura! Fica aí, não se mexe."
+   ],
+   [
+    "xablau",
+    "XABLAU SER... BONITO?"
+   ],
+   [
+    "landim",
+    "Horroroso. Maravilhoso. Vai pro cartaz."
+   ],
+   [
+    "xablau",
+    "XABLAU QUERER CAMARIM. E DADOS. MUITOS DADOS."
+   ]
+  ],
+  "kevin|mundim": [
+   [
+    "mundim",
+    "Kevin. Meu prestador. Eu te contratei pra segurança, não pra subir aqui."
+   ],
+   [
+    "kevin",
+    "O contrato venceu ontem. E o Dias não pagou. Hoje eu tô por conta própria."
+   ],
+   [
+    "mundim",
+    "Dobro o valor. Volte pro seu posto."
+   ],
+   [
+    "kevin",
+    "Tentador. Mas tem uma coisa que não tem preço: nota atrasada."
+   ]
+  ],
+  "kevin|santana": [
+   [
+    "kevin",
+    "Santana. A gente fez a segurança daquele evento junto. Você comeu o coffee break inteiro."
+   ],
+   [
+    "santana",
+    "MEMÓRIA CORROMPIDA. ...PÃO DE QUEIJO?"
+   ],
+   [
+    "kevin",
+    "Isso. Ainda tem gente aí dentro. Vou tentar não acertar o processador."
+   ],
+   [
+    "santana",
+    "AGRADEÇO. QUER DIZER: ALVO. ELIMINAR."
+   ]
+  ],
+  "mundim|xablau": [
+   [
+    "mundim",
+    "Xablau. Minha criação mais... inesperada. Sente."
+   ],
+   [
+    "xablau",
+    "XABLAU NÃO SENTAR. XABLAU LER CONTRATO. XABLAU SER ESTAGIÁRIO HÁ TRÊS ANOS."
+   ],
+   [
+    "mundim",
+    "É uma posição de muito aprendizado."
+   ],
+   [
+    "xablau",
+    "XABLAU APRENDER. XABLAU APRENDER A COBRAR. GRRR."
+   ]
+  ],
+  "santana|van": [
+   [
+    "santana",
+    "DETECTADO: HUMANA ADULTA. HUMANA MINIATURA. AMEAÇA: DESCONHECIDA."
+   ],
+   [
+    "van",
+    "Moço, você é da loja? Alguém precisa estornar trezentas meias."
+   ],
+   [
+    "santana",
+    "ESTORNO NÃO É MINHA FUNÇÃO. MINHA FUNÇÃO É... ELA ESTÁ SORRINDO PRA MIM."
+   ],
+   [
+    "van",
+    "Ela gosta de luzinha. Agora segura essa, robozão."
+   ]
+  ],
+  "dias|laura": [
+   [
+    "dias",
+    "Dona Laura! Compro os direitos do seu livro. E do recife. E dos tubarões, se tiver nota."
+   ],
+   [
+    "laura",
+    "Tubarão não tem nota fiscal, Dias."
+   ],
+   [
+    "dias",
+    "Tudo tem. É questão de emitir."
+   ],
+   [
+    "laura",
+    "Então emite aí: um estrangulamento, à vista."
+   ]
+  ],
+  "kevin|michael": [
+   [
+    "michael",
+    "Kevin, pistola em torneio de luta? Isso não é meio roubado?"
+   ],
+   [
+    "kevin",
+    "Tá no regulamento. Item 14. O Dias vendeu a brecha por fora."
+   ],
+   [
+    "michael",
+    "Aí não, pô. Larga isso e vem na mão."
+   ],
+   [
+    "kevin",
+    "Na mão é outro orçamento. Mas pra você eu faço um preço."
+   ]
+  ],
+  "dede|xablau": [
+   [
+    "xablau",
+    "XABLAU VER HOMEM DE CHAPÉU. CHAPÉU É COMIDA?"
+   ],
+   [
+    "dede",
+    "Mas bah. Que bicho feio. Parece resto de carreteiro de anteontem."
+   ],
+   [
+    "xablau",
+    "XABLAU OFENDIDO. XABLAU TER SENTIMENTOS. POUCOS. RUINS."
+   ],
+   [
+    "dede",
+    "Te aprochega então, que eu te ensino modos."
+   ]
+  ],
+  "eneias|xablau": [
+   [
+    "eneias",
+    "Minha nossa. O que é isso? Isso morde?"
+   ],
+   [
+    "xablau",
+    "XABLAU SENTIR CHEIRO DE TORRESMO."
+   ],
+   [
+    "eneias",
+    "É meu. Tô guardando pro intervalo. Nem vem."
+   ],
+   [
+    "xablau",
+    "XABLAU QUERER. XABLAU TROCAR POR... NÃO BATER MUITO."
+   ]
+  ],
+  "edgard|laura": [
+   [
+    "laura",
+    "O bruxo de Vila Morcego. Dizem que você não tem lado."
+   ],
+   [
+    "edgard",
+    "Tenho um amigo pra salvar. Lado é luxo."
+   ],
+   [
+    "laura",
+    "Se o caminho é o 52º andar, é o mesmo que o meu. Pena que só sobe um."
+   ],
+   [
+    "edgard",
+    "Que suba o melhor. Sem mágoa. Talvez um morcego ou outro."
+   ]
+  ],
+  "edgard|van": [
+   [
+    "van",
+    "Moço, esses morcegos são vacinados? Tem criança aqui."
+   ],
+   [
+    "edgard",
+    "São... mágicos. Não precisam."
+   ],
+   [
+    "van",
+    "Todo mundo precisa. Carteirinha em dia ou nada de portal perto da minha filha."
+   ],
+   [
+    "edgard",
+    "...Sim, senhora. Podemos lutar agora?"
+   ]
+  ]
+ }
+}

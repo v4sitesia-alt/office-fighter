@@ -3,9 +3,17 @@
  "name": "XABLAU",
  "role": "O Capanga",
  "tagline": "Treinado com os dados errados.",
+ "bio": "Nasceu no Datacentro, treinado com os dados errados. Capanga da diretoria. Não leu os termos de uso. Ninguém leu.",
+ "side": "vilao",
  "colors": {
   "primary": "#b5c22a",
   "secondary": "#a31d1d"
+ },
+ "origin": {
+  "region": "VALE QUATRO",
+  "city": "Datacentro",
+  "x": 0.576,
+  "y": 0.22
  },
  "stage": "xablau",
  "scale": 1.15,
@@ -447,7 +455,5 @@
    "hitstop": 12,
    "name": "LÍNGUA DE FOGO"
   }
- },
- "bio": "Monstro que as IAs criaram. Capanga dos chefes.",
- "side": "vilao"
+ }
 }

@@ -53,6 +53,12 @@ Board de cada lutador: 5 colunas × 7 linhas (35 poses), fundo transparente, tod
 Comandos: no chão A/S/D dão soco/chute/forte; segurando ↓ viram os rasteiros (só defende agachado);
 no ar viram os aéreos (só defende em pé). B com meia barra (50) = especial com projétil; B com barra cheia = super.
 
+## História e diálogos
+
+`src/data/story.json` é a bíblia narrativa: o estado fictício do Vale Quatro, as facções, os atos do enredo (usados no manual), o texto da abertura,
+as falas genéricas e o final de cada lutador, e os roteiros par a par (`pairs`, chave com os dois ids em ordem alfabética).
+Par sem roteiro próprio usa as falas genéricas; luta espelho usa `mirror`. A cidade de cada um fica em `origin` no `fighter.json` (x e y de 0 a 1 no mapa).
+
 ## Manual
 
 `public/manual.html` (link MANUAL no gabinete) é gerado por `npm run manual` a partir dos `fighter.json`. Rode de novo ao mudar lutadores, atributos ou golpes.

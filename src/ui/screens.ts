@@ -2,7 +2,8 @@
 import type { Input } from '../core/input';
 import type { Difficulty, FighterAssets } from '../game/types';
 import { audio } from '../core/audio';
-import { brazilMapSvg } from './brazil';
+import { stateMapSvg } from './map';
+import { endingOf, type Line } from '../data/dialogue';
 
 export class Screens {
   root: HTMLElement;
@@ -12,17 +13,18 @@ export class Screens {
   private onBack: (() => void) | null = null;
   private onMove: ((i: number) => void) | null = null;
   private blink = 0;
+  private onTick: (() => void) | null = null;
 
   constructor(root: HTMLElement) { this.root = root; }
 
-  hide() { this.root.onclick = null; this.root.innerHTML = ''; this.root.className = 'screens'; this.menuItems = []; this.onConfirm = null; this.onBack = null; this.onMove = null; }
+  hide() { this.root.onclick = null; this.root.innerHTML = ''; this.root.className = 'screens'; this.menuItems = []; this.onConfirm = null; this.onBack = null; this.onMove = null; this.onTick = null; }
 
   private set(cls: string, html: string) {
     this.root.className = `screens show ${cls}`;
     this.root.innerHTML = html;
     this.menuItems = Array.from(this.root.querySelectorAll<HTMLElement>('[data-item]'));
     this.menuIndex = 0;
-    this.onMove = null;
+    this.onMove = null; this.onTick = null; this.root.onclick = null;
     this.menuItems.forEach((el, i) => { el.onclick = () => { this.menuIndex = i; this.paintMenu(); this.onConfirm?.(i); }; });
     this.paintMenu();
   }
@@ -31,6 +33,7 @@ export class Screens {
   /** Navegação de menus por input (chamado a cada passo fixo). */
   update(input: Input) {
     this.blink++;
+    this.onTick?.();
     const p = input.ports[0];
     if (this.menuItems.length) {
       const horizontal = this.root.classList.contains('select');
@@ -102,7 +105,7 @@ export class Screens {
     this.set('select', `
       <div class="sf2">
         <div class="sf2-side left"><div class="sf2-portrait p1"></div><div class="sf2-name p1"></div><div class="sf2-tag">1P</div><div class="sf2-region p1"></div><div class="sf2-stats p1"></div></div>
-        <div class="sf2-center"><div class="sf2-map">${brazilMapSvg(roster)}</div><div class="sf2-title">PLAYER SELECT</div></div>
+        <div class="sf2-center"><div class="sf2-map">${stateMapSvg(roster)}</div><div class="sf2-title">PLAYER SELECT</div></div>
         <div class="sf2-side right"><div class="sf2-portrait cpu"></div><div class="sf2-name cpu"></div><div class="sf2-tag cpu">CPU</div><div class="sf2-region cpu"></div><div class="sf2-stats cpu"></div></div>
         <div class="sf2-grid">${slots}</div>
         <div class="pix tiny sf2-hint">A D ESCOLHER · G / ENTER CONFIRMAR · V VOLTAR</div>
@@ -143,19 +146,44 @@ export class Screens {
     show();
   }
 
-  versus(a: FighterAssets, b: FighterAssets, label: string, hueB: number, onGo: () => void) {
+  /** Enfrentamento: os dois frente a frente e, em seguida, a conversa em tela dividida na diagonal (quem fala ganha a tela). */
+  versus(a: FighterAssets, b: FighterAssets, label: string, hueB: number, script: Line[], onGo: () => void) {
     const base = import.meta.env.BASE_URL;
-    const card = (f: FighterAssets, hue: number, side: string) => `<div class="vs-side ${side}" style="--c:${f.def.colors.primary}">
-      <div class="vs-glow"></div>
-      <img class="vs-face" src="${base}versus/${f.def.id}.png" onerror="this.onerror=null;this.src='${f.portrait?.src ?? ''}';this.classList.add('thumbfall')" style="--hue:${hue}deg" alt="">
-      <div class="vs-plate"><div class="vs-name">${f.def.name}${hue ? ' 2.0' : ''}</div><div class="vs-role">${f.def.role}${f.def.origin ? ' · ' + f.def.origin.city : ''}</div></div></div>`;
-    this.set('versus', `<div class="vs-stage" style="background-image:url(${base}versus/base.jpg)">
-        ${card(a, 0, 'l')}${card(b, hueB, 'r')}
-        <div class="vs-floor"></div>
+    const panel = (f: FighterAssets, hue: number, side: string) => `<div class="vs-panel ${side}" style="--c:${f.def.colors.primary}"><div class="vs-bg"></div>
+      <img class="vs-face" src="${base}versus/${f.def.id}.png" onerror="this.onerror=null;this.src='${f.portrait?.src ?? ''}';this.classList.add('thumbfall')" style="--hue:${hue}deg" alt=""></div>`;
+    const plate = (f: FighterAssets, hue: number, side: string) => `<div class="vs-plate ${side}" style="--c:${f.def.colors.primary}"><div class="vs-name">${f.def.name}${hue ? ' 2.0' : ''}</div><div class="vs-role">${f.def.role}${f.def.origin ? ' · ' + f.def.origin.city : ''}</div></div>`;
+    this.set('versus', `<div class="vs-stage" data-speaker="none" style="background-image:url(${base}versus/base.jpg)">
+        ${panel(a, 0, 'l')}${panel(b, hueB, 'r')}<div class="vs-cut"></div><div class="vs-floor"></div>
+        ${plate(a, 0, 'l')}${plate(b, hueB, 'r')}
         <div class="pix small vs-label">${label}</div>
         <img class="vs-logo" src="${base}versus/vs.png" alt="VS">
-        <div class="pix tiny vs-hint">G / ENTER PARA LUTAR</div></div>`);
-    this.onConfirm = onGo;
+        <div class="vs-talk"><div class="vs-who"></div><div class="vs-text"></div><div class="vs-next">▼</div></div>
+        <div class="pix tiny vs-hint">G / ENTER CONTINUA</div></div>`);
+    const stage = this.root.querySelector<HTMLElement>('.vs-stage')!, talk = stage.querySelector<HTMLElement>('.vs-talk')!;
+    const whoEl = stage.querySelector<HTMLElement>('.vs-who')!, textEl = stage.querySelector<HTMLElement>('.vs-text')!;
+    let idx = -1, shown = 0, full = '';
+    const next = () => {
+      if (idx >= 0 && shown < full.length) { shown = full.length; textEl.textContent = full; return; }   // completa a fala antes de avançar
+      if (++idx >= script.length) { onGo(); return; }
+      const ln = script[idx], f = ln.who === 0 ? a : b;
+      stage.dataset.speaker = ln.who === 0 ? 'l' : 'r'; stage.classList.add('talking');
+      stage.querySelector('.vs-hint')!.textContent = 'G / ENTER AVANÇA · V PULA';
+      talk.style.setProperty('--c', f.def.colors.primary);
+      whoEl.textContent = f.def.name + (ln.who === 1 && hueB ? ' 2.0' : '');
+      full = ln.text; shown = 0; textEl.textContent = '';
+      // fonte grande e dinâmica: fala curta é gritada em letra enorme; fala em maiúsculas (robôs, monstro) treme
+      const shout = full === full.toUpperCase() && /[A-ZÀ-Ú]{3}/.test(full);
+      textEl.style.fontSize = `${full.length < 28 ? 46 : full.length < 55 ? 36 : full.length < 90 ? 29 : 24}px`;
+      textEl.className = `vs-text${shout ? ' shout' : ''}`; talk.classList.remove('pop'); void talk.offsetWidth; talk.classList.add('pop');
+    };
+    this.onConfirm = next;
+    this.onBack = onGo;
+    this.root.onclick = () => next();
+    this.onTick = () => {
+      if (idx < 0 || shown >= full.length) return;
+      shown++; textEl.textContent = full.slice(0, shown);
+      if (shown % 3 === 0 && full[shown - 1] !== ' ') audio.sfx(script[idx].who === 0 ? 'talkA' : 'talkB');
+    };
   }
 
   result(won: boolean, perfect: boolean, isLast: boolean, onNext: () => void, onQuit: () => void) {
@@ -176,7 +204,7 @@ export class Screens {
       <div class="center">
         <div class="thumb big">${winner.portrait ? `<img src="${winner.portrait.src}" alt="">` : ''}</div>
         <div class="title-big win">CAMPEÃO</div>
-        <div class="pix small">${winner.def.name} venceu a campanha.<br>O escritório está em paz. Até a próxima sprint.</div>
+        <div class="end-text">${endingOf(winner.def.id)}</div>
         <div class="pix tiny">G / ENTER PARA VOLTAR</div>
       </div>`);
     this.onConfirm = onDone;

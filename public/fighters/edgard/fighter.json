@@ -3,15 +3,17 @@
  "name": "EDGARD",
  "role": "O Designer",
  "tagline": "Alinhou. Centralizou. Nocauteou.",
+ "bio": "Bruxo de Vila Morcego. Entrou no torneio pra trazer de volta o parceiro Santana, reprogramado pela Mundim Corp.",
+ "side": "neutro",
  "colors": {
   "primary": "#c43cff",
   "secondary": "#ff2e88"
  },
  "origin": {
-  "region": "PARANÁ",
-  "city": "Curitiba",
-  "lon": -49.27,
-  "lat": -25.43
+  "region": "VALE QUATRO",
+  "city": "Vila Morcego",
+  "x": 0.412,
+  "y": 0.593
  },
  "stage": "alley",
  "scale": 0.94,
@@ -481,7 +483,5 @@
    "launch": -8,
    "hitstop": 8
   }
- },
- "bio": "Bruxo rebelde. Tem a magia e não está do lado de ninguém.",
- "side": "neutro"
+ }
 }

@@ -12,7 +12,7 @@ export type SongName = keyof typeof SONGS | string;
 export type SfxName =
   | 'hit' | 'hitBig' | 'block' | 'swing' | 'jump' | 'land'
   | 'menuMove' | 'menuConfirm' | 'menuBack' | 'selectChar'
-  | 'projectile' | 'portal' | 'explosion' | 'ko' | 'tick' | 'win' | 'lose' | 'meter1' | 'meter2';
+  | 'projectile' | 'portal' | 'explosion' | 'ko' | 'tick' | 'win' | 'lose' | 'meter1' | 'meter2' | 'talkA' | 'talkB';
 
 export type VoiceChannel = 'ann' | 'p1' | 'p2';
 
@@ -168,6 +168,8 @@ class AudioEngine {
       case 'ko': this.osc('sine', 110, 28, t, 0.9, 0.9, B); this.noise(t, 0.5, 0.5, B, { type: 'lowpass', f0: 1500, f1: 100 }); break;
       case 'meter1': [784, 1175].forEach((f, i) => this.osc('pulse', f, f, t + i * 0.07, 0.12, 0.2, B)); break;
       case 'meter2': [523, 784, 1047, 1568].forEach((f, i) => this.osc('pulse', f, f * 1.01, t + i * 0.06, 0.2, 0.24, B)); this.noise(t, 0.35, 0.18, B, { type: 'highpass', f0: 3000, f1: 9000 }); break;
+      case 'talkA': this.osc('square', 300, 280, t, 0.03, 0.06, B); break;
+      case 'talkB': this.osc('square', 190, 175, t, 0.03, 0.07, B); break;
       case 'tick': this.osc('square', 1200, 1200, t, 0.04, 0.12, B); break;
       case 'win': [392, 523, 659, 784, 1047].forEach((f, i) => this.osc('pulse', f, f, t + i * 0.11, 0.35, 0.2, B)); break;
       case 'lose': [440, 415, 392, 370, 349].forEach((f, i) => this.osc('square', f, f * 0.9, t + i * 0.2, 0.28, 0.16, B)); break;

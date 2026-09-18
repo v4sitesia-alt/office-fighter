@@ -3,15 +3,17 @@
  "name": "VANESSA",
  "role": "A Mãe",
  "tagline": "Conciliou a agenda. E o nocaute.",
+ "bio": "Só foi ao shopping de Boa Compra comprar roupinha com a filha. O caixa inteligente 'otimizou' a compra: 300 pares de meia em 48 vezes. O prêmio paga a fatura.",
+ "side": "heroi",
  "colors": {
   "primary": "#ff4fa0",
   "secondary": "#7dff5a"
  },
  "origin": {
-  "region": "PERNAMBUCO",
-  "city": "Recife",
-  "lon": -34.88,
-  "lat": -8.05
+  "region": "VALE QUATRO",
+  "city": "Boa Compra",
+  "x": 0.735,
+  "y": 0.773
  },
  "stage": "van",
  "scale": 0.98,
@@ -455,7 +457,5 @@
    "hitstop": 12,
    "name": "FRALDA TÓXICA"
   }
- },
- "bio": "Mãe que luta pra sobreviver com a filha no mundo corporativo.",
- "side": "heroi"
+ }
 }

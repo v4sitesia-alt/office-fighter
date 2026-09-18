@@ -4,6 +4,7 @@
 //  12,5–20  torre: câmera sobe até o letreiro V4; aos 20 s entra a tela de título
 import { loadImage } from '../core/assets';
 import { H, W } from '../game/consts';
+import story from '../data/story.json';
 
 export const INTRO_END = 19;
 const T_LOGO = 5.5, T_CITY = 9.5;
@@ -88,8 +89,8 @@ export class Intro {
 
   /** Texto correndo de baixo pra cima sobre a cidade e a torre (some antes do título). */
   private crawl(ctx: CanvasRenderingContext2D, t: number) {
-    const lines = ['199X.', '', 'O PODER DAS IAs DOMINOU', 'AS EMPRESAS, AS FÁBRICAS,', 'AS CIDADES.', '', 'NINGUÉM MAIS AS CONTROLA.', '', 'E DO ÚLTIMO ANDAR', 'ELAS PRODUZIRAM', 'ALGO PERIGOSO...'];
-    const gap = 30, top = H * 0.3, span = H - top + lines.length * gap;
+    const lines: string[] = story.crawl;
+    const gap = 28, top = H * 0.3, span = H - top + lines.length * gap;
     const k = (t - T_LOGO) / (INTRO_END - 1.2 - T_LOGO);           // termina 1,2 s antes do título
     const g = ctx.createLinearGradient(0, top - 40, 0, H);
     g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(0.35, 'rgba(0,0,10,0.62)'); g.addColorStop(1, 'rgba(0,0,10,0.8)');

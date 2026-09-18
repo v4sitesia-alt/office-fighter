@@ -3,15 +3,17 @@
  "name": "LAURA",
  "role": "A Lutadora",
  "tagline": "Faixa-preta em resolver problema.",
+ "bio": "Escritora e faixa-preta de Arrecife. A Mundim Corp quer resfriar um datacenter no recife dos tubarões. Não vai.",
+ "side": "heroi",
  "colors": {
   "primary": "#3ddc84",
   "secondary": "#f5f5e6"
  },
  "origin": {
-  "region": "PERNAMBUCO",
-  "city": "Recife",
-  "lon": -34.88,
-  "lat": -8.05
+  "region": "VALE QUATRO",
+  "city": "Arrecife",
+  "x": 0.859,
+  "y": 0.667
  },
  "stage": "recife",
  "scale": 0.98,
@@ -480,7 +482,5 @@
    "launch": -8,
    "hitstop": 8
   }
- },
- "bio": "Não vai deixar as IAs destruírem Recife. Nem os tubarões.",
- "side": "heroi"
+ }
 }

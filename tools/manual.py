@@ -3,6 +3,7 @@
 Uso: python3 tools/manual.py"""
 import json, html, re
 ROSTER = re.findall(r"'([a-z]+)'", open('src/data/roster.ts').read().split('ROSTER')[1].split(']')[0])
+STORY = json.load(open('src/data/story.json'))
 F = {i: json.load(open(f'public/fighters/{i}/fighter.json')) for i in ROSTER}
 SUPER = {
  'edgard': 'Bate a mão no chão e abre um portal de morcegos sob o adversário, onde quer que ele esteja. Dois acertos; o segundo derruba.',
@@ -18,9 +19,7 @@ SUPER = {
  'xablau': 'Língua com punho que alcança quase a tela inteira.',
  'mundim': 'Abre o paletó e arremessa as garrafas da diretoria.'}
 MAGIC_KIND = {'ball': 'bola de energia', 'slash': 'risco cortante', 'cloud': 'nuvem', 'coin': 'moeda giratória', 'heart': 'coração', 'wave': 'onda rasteira', 'bat': 'morcego'}
-SIDES = [('vilao', 'A DIRETORIA', 'Quem criou as IAs, quem lucra com elas e o que elas criaram.'),
-         ('heroi', 'A RESISTÊNCIA', 'Gente comum defendendo a casa, a cultura e o boteco.'),
-         ('neutro', 'OS NEUTROS', 'Poder de sobra e nenhum lado escolhido. Ainda.')]
+SIDES = [(k, STORY['factions'][k][0], STORY['factions'][k][1]) for k in ('vilao', 'heroi', 'neutro')]
 e = html.escape
 def bar(label, v, color):
     pct = round(max(0, min(1, (v - 0.7) / 0.65)) * 100)
@@ -46,6 +45,7 @@ def card(i):
   </div></article>'''
 sections = ''.join(f'<h2 class="side">{t}</h2><p class="lead">{s}</p>' + ''.join(card(i) for i in ROSTER if F[i].get('side', 'heroi') == k) for k, t, s in SIDES)
 rows = ''.join(f"<tr><td><a href='#{i}'>{e(F[i]['name'])}</a></td><td>{F[i]['stats']['power']:.2f}</td><td>{F[i]['stats']['speed']:.2f}</td><td>{F[i]['stats'].get('magic',1):.2f}</td><td>{F[i]['stats']['weight']:.2f}</td><td>{e(F[i]['role'])}</td></tr>" for i in ROSTER)
+acts = ''.join(f'<div><h4>{t}</h4><p>{x}</p></div>' for t, x in STORY['acts'])
 page = f'''<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>V4 Fighters – Trouble Work · Manual</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Anton&family=Press+Start+2P&family=Inter:wght@400;600&display=swap" rel="stylesheet">
@@ -88,11 +88,7 @@ footer{{text-align:center;color:var(--mut);font-size:13px;margin-top:70px}}
 <nav><a href="#enredo">ENREDO</a><a href="#controles">CONTROLES</a><a href="#sistema">SISTEMA</a><a href="#lutadores">LUTADORES</a><a href="#tabela">ATRIBUTOS</a><a href="#modos">MODOS</a></nav>
 <div class="wrap">
 <h2 id="enredo">O ENREDO</h2><p class="lead">O deadline é hoje. O nocaute também.</p>
-<div class="story">
-<div><h4>199X · CURITIBA</h4><p><b>Mundim</b> dominou o mercado inteiro com as suas <i>IAs</i>. Do 52º andar, ele e o subchefe <b>Dias</b>, o homem das contas, automatizaram tudo: as campanhas, as fábricas, as cidades.</p></div>
-<div><h4>FORA DE CONTROLE</h4><p>As IAs pararam de obedecer. Da linha de montagem saiu <b>Santana</b>, o androide perfeito. Dos dados errados nasceu <i>Xablau</i>, um monstro que virou capanga dos chefes. E as máquinas começaram a tomar as comunidades.</p></div>
-<div><h4>A RESISTÊNCIA</h4><p><b>Vanessa</b> luta pra sobreviver com a filha no mundo corporativo. <b>Eneias</b> só queria a gelada e o petisco. <b>Laura</b> defende Recife, e os tubarões. <b>André (Dedê)</b> protege a cultura gaúcha. <b>Michael</b> treina pra vingar o morro. <b>Landim</b> quer de volta o olhar do cinema.</p></div>
-<div><h4>TROUBLE WORK</h4><p><b>Edgard</b>, o bruxo rebelde, tem a magia e não escolheu lado. <b>Kevin</b> atira pra quem pagar. Todos os caminhos sobem pelo mesmo elevador. No último andar, alguém vai ter que desligar as máquinas. <i>Ou o chefe.</i></p></div></div>
+<div class="story">{acts}</div>
 
 <h2 id="controles">CONTROLES</h2>
 <div class="grid2"><div class="box"><h4>MOVIMENTO</h4><p><kbd>A</kbd><kbd>D</kbd> andar · <kbd>W</kbd> pular (de novo no ar = pulo duplo) · <kbd>S</kbd> agachar. As setas também funcionam.</p></div>
@@ -114,7 +110,7 @@ footer{{text-align:center;color:var(--mut);font-size:13px;margin-top:70px}}
 
 <h2 id="modos">MODOS DE JOGO</h2>
 <div class="grid2">
-<div class="box"><h4>ARCADE</h4><p>Sete lutas: quatro rivais do elenco, depois <b>Xablau</b> (o capanga), <b>Dias</b> (o subchefe) e <b>Mundim</b> (o chefão). Cada luta acontece no cenário e com a música do adversário. A CPU fica mais esperta a cada luta.</p></div>
+<div class="box"><h4>ARCADE</h4><p>Sete lutas: quatro rivais do elenco, depois <b>Xablau</b> (o capanga), <b>Dias</b> (o subchefe) e <b>Mundim</b> (o chefão). Antes de cada luta os dois conversam em tela dividida (36 encontros têm diálogo próprio). Cada luta acontece no cenário e com a música do adversário. A CPU fica mais esperta a cada luta.</p></div>
 <div class="box"><h4>ARENA ONLINE</h4><p><b>1.</b> Abra o link de convite (ou START, Arena Online). <b>2.</b> Escolha o lutador e digite um apelido. <b>3.</b> Aperte <b>JOGAR AGORA</b>: quando outra pessoa apertar também, a luta começa sozinha. Dá pra desafiar alguém da lista, assistir às lutas ao vivo e trocar de lutador sem sair. Até 15 pessoas. Vitória vale 3 pontos no ranking, derrota vale 1.</p></div>
 <div class="box"><h4>CAMPEONATO</h4><p>Alguém cria e vira organizador. Cada pessoa se inscreve com um lutador, e <b>cada lutador só pode ter um dono</b>. O sorteio monta a chave eliminatória. Uma luta por vez: quando chegar a sua, aparece “É SUA VEZ”. O resto assiste.</p></div>
 <div class="box"><h4>DICAS PRO EVENTO</h4><p>O organizador precisa manter o saguão aberto, porque é ele quem chama a próxima luta. Se alguém sumir, ele pode dar W.O. Projete a tela de um espectador no telão.</p></div></div>
