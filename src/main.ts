@@ -9,9 +9,10 @@ import { Match } from './game/match';
 import type { Difficulty, FighterAssets } from './game/types';
 import { Hud } from './ui/hud';
 import { Screens } from './ui/screens';
+import { Intro, INTRO_END } from './ui/intro';
 import { bindCabinet } from './ui/touch';
 
-type Mode = 'loading' | 'title' | 'difficulty' | 'select' | 'versus' | 'fight' | 'result' | 'ending';
+type Mode = 'loading' | 'boot' | 'intro' | 'title' | 'difficulty' | 'select' | 'versus' | 'fight' | 'result' | 'ending';
 
 const canvas = document.getElementById('game') as HTMLCanvasElement;
 canvas.width = W; canvas.height = H;
@@ -53,9 +54,11 @@ let fightNo = 0;
 
 const DIFF_RAMP: Difficulty[][] = [['easy', 'easy', 'normal', 'normal'], ['normal', 'normal', 'hard', 'hard'], ['hard', 'hard', 'hard', 'hard']];
 
-const MUSIC: Record<Mode, 'menu' | 'fight' | null> = {
-  loading: null, title: 'menu', difficulty: 'menu', select: 'menu', versus: 'menu', fight: 'fight', result: null, ending: null,
+const MUSIC: Record<Mode, 'intro' | 'select' | 'fight' | null> = {
+  loading: null, boot: null, intro: 'intro', title: 'intro', difficulty: 'select', select: 'select', versus: 'select', fight: 'fight', result: null, ending: null,
 };
+const cinematic = new Intro();
+let introClock = 0;
 audio.base = import.meta.env.BASE_URL;
 function setMode(m: Mode) { mode = m; document.body.dataset.mode = m; audio.music(MUSIC[m]); }
 
@@ -105,7 +108,9 @@ function showVersus() {
 
 function goTitle() {
   match = null;
+  const fromIntro = mode === 'intro';
   setMode('title');
+  if (!fromIntro || audio.musicTime() < INTRO_END - 1) audio.seekMusic(INTRO_END); // título sempre no trecho dos 20 s
   screens.title(() => showSelect(), roster.length); // dificuldade fixa em 'normal' (sobe por luta)
 }
 
@@ -140,12 +145,20 @@ startLoop({
       hud.update(match);
       return;
     }
+    if (mode === 'intro') {
+      introClock += 1 / 60;
+      const t = audio.musicTime() >= 0 ? audio.musicTime() : introClock;
+      if (t >= INTRO_END || input.anyPressed) goTitle();
+      return;
+    }
     screens.update(input);
     if (match && (mode === 'result')) { match.update(input, false); hud.update(match); }
     else if (demo) demo.idleUpdate();
   },
   render() {
     ctx.clearRect(0, 0, W, H);
+    if (mode === 'boot') { ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H); return; }
+    if (mode === 'intro') { cinematic.render(ctx, audio.musicTime() >= 0 ? audio.musicTime() : introClock); ctx.imageSmoothingEnabled = false; return; }
     if (mode === 'fight' || mode === 'result') { match?.render(ctx, debug); return; }
     const intro = stages.get('intro');
     if (mode === 'title' && intro) { ctx.drawImage(intro.img, 0, 0, W, H); ctx.fillStyle = 'rgba(6,10,30,0.35)'; ctx.fillRect(0, 0, W, H); return; }
@@ -156,7 +169,7 @@ startLoop({
 
 // ---------- boot
 (async () => {
-  const total = ROSTER.length * 5 + 4; let done = 0;
+  const total = ROSTER.length * 5 + 6; let done = 0;
   const tick = () => { done++; screens.loading(done, total); };
   screens.loading(0, total);
   const fighters = await Promise.all(ROSTER.map((id) => loadFighter(id, tick)));
@@ -167,5 +180,8 @@ startLoop({
   roster = fighters;
   demo = new Match(roster[0], roster[1 % roster.length], stageOf(roster[0]), { cpu: null }, { message() {}, end() {} });
   demo.phase = 'over';
-  goTitle();
+  await cinematic.load(import.meta.env.BASE_URL).catch(() => undefined);
+  // o navegador só libera som depois de um gesto: a abertura começa no primeiro toque/tecla
+  setMode('boot');
+  screens.boot(() => { screens.hide(); introClock = 0; setMode('intro'); });
 })().catch((err) => { console.error(err); screens.loading(0, 1); document.getElementById('screens')!.innerHTML += `<div class="err">${String(err)}</div>`; });

@@ -4,7 +4,7 @@
 import { SONGS, type Song } from '../data/songs';
 
 /** Músicas de arquivo (public/audio/music/*.mp3), tocadas em loop por <audio>. */
-const FILE_TRACKS: Record<string, string> = { menu: 'audio/music/menu.mp3' };
+const FILE_TRACKS: Record<string, string> = { intro: 'audio/music/intro.mp3', select: 'audio/music/select.mp3' };
 export type SongName = keyof typeof SONGS | keyof typeof FILE_TRACKS;
 
 export type SfxName =
@@ -189,6 +189,9 @@ class AudioEngine {
     this.fileEl = el;
     el.play().catch(() => { /* toca no próximo gesto (unlock) */ });
   }
+  /** Tempo atual da música de arquivo (s), ou -1 se não estiver tocando. */
+  musicTime() { return this.fileEl && !this.fileEl.paused ? this.fileEl.currentTime : -1; }
+  seekMusic(t: number) { if (this.fileEl) this.fileEl.currentTime = t; }
   private stopFile() { if (this.fileEl) { this.fileEl.pause(); this.fileEl = null; } }
   private startSequencer() {
     this.nextStepTime = this.ctx!.currentTime + 0.05;

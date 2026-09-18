@@ -32,6 +32,9 @@ CLIPS = [
     ('ann-santana', 'Daniel', 'Santana!', 160, 0.86),
     ('ann-kevin',   'Daniel', 'Kevin!', 160, 0.86),
     ('ann-laura',   'Daniel', 'Laura!', 160, 0.86),
+    ('ann-dede',    'Daniel', 'Dedeh!', 160, 0.86),
+    ('ann-dias',    'Daniel', 'Dee-as!', 160, 0.86),
+    ('ann-michael', 'Daniel', 'Michael!', 160, 0.86),
 ]
 
 

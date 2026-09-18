@@ -71,6 +71,7 @@ export interface MoveDef extends HitDef {
   kind?: MoveKind;
   phases: { startup: number[]; active: number[]; recovery: number[]; impact?: number[]; hold?: number[]; lift?: number[]; throw?: number[] };
   startup: number; active: number; recovery: number;
+  dash?: number;               // avanço em px/frame durante startup+active
   impact?: number;             // dive: frames parado no chão após o impacto
   landingLag?: number;         // air: frames travado ao pousar
   anchor?: 'feet' | 'center';

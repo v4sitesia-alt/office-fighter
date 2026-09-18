@@ -15,7 +15,7 @@ export class Screens {
 
   constructor(root: HTMLElement) { this.root = root; }
 
-  hide() { this.root.innerHTML = ''; this.root.className = 'screens'; this.menuItems = []; this.onConfirm = null; this.onBack = null; this.onMove = null; }
+  hide() { this.root.onclick = null; this.root.innerHTML = ''; this.root.className = 'screens'; this.menuItems = []; this.onConfirm = null; this.onBack = null; this.onMove = null; }
 
   private set(cls: string, html: string) {
     this.root.className = `screens show ${cls}`;
@@ -48,6 +48,12 @@ export class Screens {
     this.set('loading', `<div class="center"><div class="pix">CARREGANDO</div><div class="bar"><div style="width:${(progress / Math.max(1, total)) * 100}%"></div></div></div>`);
   }
 
+  boot(onStart: () => void) {
+    this.set('boot', `<div class="center"><div class="pix press">INSERT COIN</div><div class="pix tiny">TOQUE OU APERTE QUALQUER BOTÃO</div></div>`);
+    this.onConfirm = onStart;
+    this.root.onclick = () => { this.root.onclick = null; onStart(); };
+  }
+
   title(onStart: () => void, fighters: number) {
     this.set('title', `
       <div class="center">
@@ -78,7 +84,7 @@ export class Screens {
   select(roster: FighterAssets[], onPick: (i: number) => void, onBack: () => void) {
     const img = (f: FighterAssets) => (f.portrait ? `<img src="${f.portrait.src}" alt="">` : '');
     const slots = roster.map((f, i) => `<div class="sf2-slot" data-item data-i="${i}">${img(f)}</div>`).join('')
-      + Array.from({ length: Math.max(0, 6 - roster.length) }, () => '<div class="sf2-slot locked">?</div>').join('');
+      + Array.from({ length: Math.max(0, 8 - roster.length) }, () => '<div class="sf2-slot locked">?</div>').join('');
     this.set('select', `
       <div class="sf2">
         <div class="sf2-side left"><div class="sf2-portrait p1"></div><div class="sf2-name p1"></div><div class="sf2-tag">1P</div><div class="sf2-region p1"></div></div>

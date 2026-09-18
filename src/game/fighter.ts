@@ -198,6 +198,7 @@ export class Fighter {
 
     // chão
     this.vx *= 0.8; this.x += this.vx;
+    if (m.dash && this.phase !== 'recovery') this.x += m.dash * this.facing;
     if (m.kind === 'portal' && this.stateFrame === m.startup) this.spawns.push({ kind: 'zone', move: m, x: other.x });
     if (m.projectile) {
       const count = m.projectile.count ?? 1, every = m.projectile.every ?? 0;
