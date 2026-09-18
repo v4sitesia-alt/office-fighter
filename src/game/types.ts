@@ -43,6 +43,8 @@ export interface ProjectileDef {
   count?: number;              // rajada: quantos projéteis
   every?: number;              // rajada: frames entre um e outro
   sprite?: string;             // arquivo em public/fighters/<id>/ (padrão special_fx.png)
+  style?: 'ball' | 'slash' | 'cloud' | 'bat' | 'coin' | 'heart' | 'wave';   // magia desenhada por código (sem sprite)
+  color?: string; size?: number;
   hitbox: Box;                 // relativo ao centro do projétil (unidades do sprite)
 }
 
@@ -95,7 +97,7 @@ export interface FighterDef {
   origin?: { region: string; city: string; lon: number; lat: number; label?: 'left' | 'right' | 'above' | 'below' };
   stage?: string;               // public/stages/<stage>.png (cenário do lutador)
   scale: number;
-  stats: { speed: number; power: number; weight: number };
+  stats: { speed: number; power: number; weight: number; magic?: number };   // força = power, agilidade = speed, poder = magic
   hurtbox: Box; crouchHurtbox: Box;
   pushbox: { x: number; w: number };
   anims: Record<string, AnimDef>;

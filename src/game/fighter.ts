@@ -221,7 +221,7 @@ export class Fighter {
   private release(T: ThrowDef) {
     const v = this.victim; if (!v) return;
     v.setState('idle'); v.grabbedBy = null; this.victim = null;
-    v.takeHit({ damage: T.release.damage, hitstun: 30, blockstun: 0, knockback: T.release.knockback, launch: T.release.launch, knockdown: true, hitstop: T.release.hitstop }, this, false, this.x);
+    v.takeHit({ damage: T.release.damage, hitstun: 30, blockstun: 0, knockback: T.release.knockback, launch: T.release.launch, knockdown: true, hitstop: T.release.hitstop }, this, false, this.x, true);
     this.spawns.push({ kind: 'fx', move: this.move!, x: v.x, y: GROUND_Y + v.y - 60 * this.scale });
   }
 
@@ -306,9 +306,9 @@ export class Fighter {
   }
 
   // ---------- dano
-  takeHit(h: HitDef, attacker: Fighter, blocked: boolean, fromX: number) {
+  takeHit(h: HitDef, attacker: Fighter, blocked: boolean, fromX: number, magic = false) {
     const dir: 1 | -1 = fromX < this.x ? 1 : -1;  // empurrado pra longe de quem bateu
-    const power = attacker.def.stats.power;
+    const power = magic ? attacker.def.stats.magic ?? 1 : attacker.def.stats.power;
     const dmg = blocked ? h.damage * power * 0.25 : h.damage * power;
     this.life = Math.max(0, this.life - dmg);
     const kb = (blocked ? h.knockback * 0.5 : h.knockback) / this.def.stats.weight;

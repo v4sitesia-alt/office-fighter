@@ -60,7 +60,6 @@ const MUSIC: Record<Mode, 'intro' | 'select' | 'fight' | null> = {
 const cinematic = new Intro();
 let introClock = 0;
 audio.base = import.meta.env.BASE_URL;
-audio.preloadMusic();
 function setMode(m: Mode) { mode = m; document.body.dataset.mode = m; audio.music(MUSIC[m]); }
 
 // áudio só pode nascer depois de um gesto do usuário
@@ -82,7 +81,8 @@ function startFight() {
   const opp = campaign[fightNo];
   const level = DIFF_RAMP[['easy', 'normal', 'hard'].indexOf(difficulty)][Math.min(fightNo, 3)];
   const isLast = fightNo === campaign.length - 1;
-  const stage = opp.hue ? stageOf(roster[playerIdx]) : stageOf(roster[opp.idx]); // luta no cenário do oponente
+  const owner = opp.hue ? roster[playerIdx] : roster[opp.idx]; // luta no cenário (e com a música) do oponente
+  const stage = stageOf(owner);
   match = new Match(roster[playerIdx], roster[opp.idx], stage, { cpu: level, hueP2: opp.hue, label: isLast ? 'LUTA FINAL' : `LUTA ${fightNo + 1}` }, {
     message: (t, f, k) => hud.message(t, f, k),
     end: (winner, perfect) => {
@@ -99,12 +99,13 @@ function startFight() {
   paused = false;
   screens.hide();
   setMode('fight');
-  if (hasTrack(`stage-${stage.name}`)) audio.music(`stage-${stage.name}`); // música própria do cenário
+  if (hasTrack(`fighter-${owner.def.id}`)) audio.music(`fighter-${owner.def.id}`); // música do dono do cenário
 }
 
 function showVersus() {
   const opp = campaign[fightNo];
   setMode('versus');
+  audio.preload(`fighter-${(opp.hue ? roster[playerIdx] : roster[opp.idx]).def.id}`);
   screens.versus(roster[playerIdx], roster[opp.idx], fightNo === campaign.length - 1 ? 'LUTA FINAL' : `LUTA ${fightNo + 1} DE ${campaign.length}`, opp.hue, startFight);
 }
 
@@ -174,6 +175,7 @@ startLoop({
   const total = ROSTER.length * 5 + 6; let done = 0;
   const tick = () => { done++; screens.loading(done, total); };
   screens.loading(0, total);
+  await audio.loadTracks(); audio.preload('intro', 'select');
   const fighters = await Promise.all(ROSTER.map((id) => loadFighter(id, tick)));
   const names = [...new Set([DEFAULT_STAGE, 'intro', ...fighters.map((f) => f.def.stage ?? DEFAULT_STAGE)])];
   const loaded = await Promise.all(names.map((n) => loadStage(n, tick).catch(() => null)));

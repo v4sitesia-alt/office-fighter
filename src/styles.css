@@ -179,3 +179,19 @@ body[data-mode="fight"] .hud, body[data-mode="result"] .hud { display: block; }
 .meter.half { box-shadow: 0 2px 0 #000, 0 0 10px rgba(255,255,255,.6); }
 .meter.half span { color: var(--yellow); }
 .meter.full span { color: #fff; animation: blink .3s steps(1) infinite; }
+
+/* réguas de atributos na seleção */
+.sf2 { grid-template-rows: 372px 1fr; padding-top: 16px; }
+.sf2-portrait { height: 176px; }
+.sf2-name { font-size: 40px; }
+.sf2-tag { font-size: 16px; margin-top: 0; }
+.sf2-stats { width: 216px; display: flex; flex-direction: column; gap: 5px; margin-top: 4px; }
+.stat { display: flex; align-items: center; gap: 8px; }
+.stat span { width: 78px; font-size: 7px; color: #fff; text-shadow: 1px 1px 0 #000; text-align: right; letter-spacing: 1px; }
+.stat div { flex: 1; height: 9px; background: #0b1030; border: 2px solid #fff; box-shadow: 0 2px 0 #000; }
+.stat i { display: block; height: 100%; }
+.sf2-map { height: 270px; }
+
+/* mapa: só o rótulo do lutador selecionado aparece (o sul ficou lotado) */
+.sf2-map .lbl { display: none; }
+.sf2-map .dot.on + .lbl { display: block; }

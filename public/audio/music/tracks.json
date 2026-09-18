@@ -1,0 +1,46 @@
+{
+ "fighter-dias": {
+  "path": "audio/music/fighter-dias.m4a",
+  "vol": 0.401
+ },
+ "fighter-edgard": {
+  "path": "audio/music/fighter-edgard.m4a",
+  "vol": 0.349
+ },
+ "fighter-eneias": {
+  "path": "audio/music/fighter-eneias.m4a",
+  "vol": 0.581
+ },
+ "intro": {
+  "path": "audio/music/intro.m4a",
+  "vol": 0.55
+ },
+ "fighter-kevin": {
+  "path": "audio/music/fighter-kevin.m4a",
+  "vol": 0.844
+ },
+ "fighter-laura": {
+  "path": "audio/music/fighter-laura.m4a",
+  "vol": 0.709
+ },
+ "fighter-michael": {
+  "path": "audio/music/fighter-michael.m4a",
+  "vol": 0.85
+ },
+ "fighter-mundim": {
+  "path": "audio/music/fighter-mundim.m4a",
+  "vol": 0.469
+ },
+ "fighter-santana": {
+  "path": "audio/music/fighter-santana.m4a",
+  "vol": 0.768
+ },
+ "select": {
+  "path": "audio/music/select.m4a",
+  "vol": 0.429
+ },
+ "fighter-van": {
+  "path": "audio/music/fighter-van.m4a",
+  "vol": 0.79
+ }
+}

@@ -4,14 +4,10 @@
 import { SONGS, type Song } from '../data/songs';
 
 /** Músicas de arquivo (public/audio/music/*.mp3), tocadas em loop por <audio>. */
-// vol nivelado pelo RMS medido de cada arquivo, pra todas soarem no mesmo volume
-const FILE_TRACKS: Record<string, { path: string; vol: number }> = {
-  intro: { path: 'audio/music/intro.mp3', vol: 0.55 },
-  select: { path: 'audio/music/select.mp3', vol: 0.43 },
-  'stage-alley': { path: 'audio/music/alley.mp3', vol: 0.35 },
-};
+// public/audio/music/tracks.json (gerado por tools/music.py): caminho + volume nivelado pelo RMS de cada arquivo
+let FILE_TRACKS: Record<string, { path: string; vol: number }> = {};
 export const hasTrack = (name: string) => name in FILE_TRACKS;
-export type SongName = keyof typeof SONGS | keyof typeof FILE_TRACKS;
+export type SongName = keyof typeof SONGS | string;
 
 export type SfxName =
   | 'hit' | 'hitBig' | 'block' | 'swing' | 'jump' | 'land'
@@ -181,15 +177,18 @@ class AudioEngine {
     if (name === this.songName) return;
     this.songName = name;
     const file = name && FILE_TRACKS[name];
-    this.song = name && !file ? SONGS[name as keyof typeof SONGS] : null;
+    this.song = name && !file ? SONGS[name as keyof typeof SONGS] ?? null : null;
     this.step = 0;
     clearInterval(this.timer);
     if (file) this.playFile(name!); else this.stopFile();
     if (!this.ctx) return;
     if (this.song) this.startSequencer();
   }
-  /** Baixa as músicas de arquivo antes, pra entrarem no instante do clique. */
-  preloadMusic() { for (const name of Object.keys(FILE_TRACKS)) this.fileFor(name); }
+  async loadTracks() {
+    try { FILE_TRACKS = await fetch(`${this.base}audio/music/tracks.json`).then((r) => r.json()); } catch { FILE_TRACKS = {}; }
+  }
+  /** Baixa uma música antes da hora, pra ela entrar no instante do clique. */
+  preload(...names: string[]) { for (const n of names) if (hasTrack(n)) this.fileFor(n); }
   private fileFor(name: string) {
     let el = this.files.get(name);
     if (!el) {

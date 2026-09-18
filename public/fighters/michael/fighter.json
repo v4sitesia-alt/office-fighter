@@ -7,12 +7,19 @@
   "primary": "#ff3b4e",
   "secondary": "#ffffff"
  },
- "stage": "office",
+ "origin": {
+  "region": "RIO DE JANEIRO",
+  "city": "Rio de Janeiro",
+  "lon": -43.2,
+  "lat": -22.9
+ },
+ "stage": "michael",
  "scale": 1.0,
  "stats": {
-  "speed": 1.15,
-  "power": 1.05,
-  "weight": 0.95
+  "speed": 1.2,
+  "power": 1.15,
+  "weight": 0.95,
+  "magic": 0.8
  },
  "hurtbox": {
   "x": -40,
@@ -373,34 +380,47 @@
   "special": {
    "phases": {
     "startup": [
-     0
+     13
     ],
     "active": [
-     15
+     11
     ],
     "recovery": [
-     15,
+     11,
      0
     ]
    },
-   "startup": 8,
-   "active": 8,
-   "recovery": 16,
+   "startup": 11,
+   "active": 4,
+   "recovery": 17,
    "damage": 13,
-   "hitstun": 24,
+   "hitstun": 22,
    "blockstun": 14,
    "hitbox": {
-    "x": -95,
-    "y": -215,
-    "w": 190,
-    "h": 215
+    "x": 0,
+    "y": 0,
+    "w": 0,
+    "h": 0
    },
-   "knockback": 14,
-   "knockdown": true,
-   "launch": -7,
+   "knockback": 11,
    "meterCost": 50,
-   "hitstop": 9,
-   "name": "FÚRIA"
+   "hitstop": 7,
+   "name": "JAB FANTASMA",
+   "projectile": {
+    "x": 95,
+    "y": -120,
+    "speed": 11,
+    "lifetime": 100,
+    "style": "ball",
+    "color": "#ff3b4e",
+    "size": 30,
+    "hitbox": {
+     "x": -32,
+     "y": -34,
+     "w": 64,
+     "h": 68
+    }
+   }
   },
   "super": {
    "phases": {

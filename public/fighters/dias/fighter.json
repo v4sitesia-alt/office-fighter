@@ -7,12 +7,19 @@
   "primary": "#35d46a",
   "secondary": "#ffd23f"
  },
- "stage": "office",
+ "origin": {
+  "region": "SANTA CATARINA",
+  "city": "Florianópolis",
+  "lon": -48.55,
+  "lat": -27.6
+ },
+ "stage": "dias",
  "scale": 1.08,
  "stats": {
-  "speed": 0.95,
+  "speed": 0.9,
   "power": 1.1,
-  "weight": 1.2
+  "weight": 1.2,
+  "magic": 1.15
  },
  "hurtbox": {
   "x": -40,
@@ -373,34 +380,47 @@
   "special": {
    "phases": {
     "startup": [
-     0
+     13
     ],
     "active": [
-     15
+     10
     ],
     "recovery": [
-     15,
+     10,
      0
     ]
    },
-   "startup": 8,
-   "active": 8,
-   "recovery": 16,
+   "startup": 11,
+   "active": 4,
+   "recovery": 17,
    "damage": 13,
-   "hitstun": 24,
+   "hitstun": 22,
    "blockstun": 14,
    "hitbox": {
-    "x": -95,
-    "y": -215,
-    "w": 190,
-    "h": 215
+    "x": 0,
+    "y": 0,
+    "w": 0,
+    "h": 0
    },
-   "knockback": 14,
-   "knockdown": true,
-   "launch": -7,
+   "knockback": 11,
    "meterCost": 50,
-   "hitstop": 9,
-   "name": "CHUVA DE DINHEIRO"
+   "hitstop": 7,
+   "name": "MOEDA DA SORTE",
+   "projectile": {
+    "x": 95,
+    "y": -120,
+    "speed": 9,
+    "lifetime": 100,
+    "style": "coin",
+    "color": "#ffd23f",
+    "size": 30,
+    "hitbox": {
+     "x": -32,
+     "y": -34,
+     "w": 64,
+     "h": 68
+    }
+   }
   },
   "super": {
    "phases": {

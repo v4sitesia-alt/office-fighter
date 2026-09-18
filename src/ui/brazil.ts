@@ -34,9 +34,14 @@ export function brazilMapSvg(roster: FighterAssets[]): string {
   const pts = OUTLINE.map(([lon, lat]) => project(lon, lat).join(',')).join(' ');
   const dim = DIM.filter((d) => !roster.some((f) => f.def.origin && Math.abs(f.def.origin.lon - d.lon) < 0.6 && Math.abs(f.def.origin.lat - d.lat) < 0.6))
     .map((d) => { const [x, y] = project(d.lon, d.lat); return `<circle class="dot dim" cx="${x}" cy="${y}" r="5"/>`; }).join('');
+  const seen = new Map<string, number>();
   const marks = roster.map((f, i) => {
     const o = f.def.origin; if (!o) return '';
-    const [x, y] = project(o.lon, o.lat);
+    const [px, py] = project(o.lon, o.lat);
+    const key = `${Math.round(px)},${Math.round(py)}`, n = seen.get(key) ?? 0; seen.set(key, n + 1);
+    // mesma cidade: o 1º fica no lugar e leva o rótulo, os demais abrem em leque sem rótulo
+    const x = px + (n ? Math.cos(n * 2.1) * 13 : 0), y = py + (n ? Math.sin(n * 2.1) * 13 : 0);
+    if (n) return `<g class="mark" data-i="${i}"><circle class="dot" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="6"/><text class="lbl" x="${(px - 11).toFixed(1)}" y="${(py + 4).toFixed(1)}" text-anchor="end">${o.city.toUpperCase()}</text></g>`;
     const pos = o.label ?? (x > SW * 0.62 ? 'left' : 'right'); // perto da borda direita, rótulo à esquerda
     const lx = pos === 'left' ? x - 11 : pos === 'right' ? x + 11 : x;
     const ly = pos === 'above' ? y - 11 : pos === 'below' ? y + 16 : y + 4;

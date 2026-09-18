@@ -87,9 +87,9 @@ export class Screens {
       + Array.from({ length: Math.max(0, 10 - roster.length) }, () => '<div class="sf2-slot locked">?</div>').join('');
     this.set('select', `
       <div class="sf2">
-        <div class="sf2-side left"><div class="sf2-portrait p1"></div><div class="sf2-name p1"></div><div class="sf2-tag">1P</div><div class="sf2-region p1"></div></div>
+        <div class="sf2-side left"><div class="sf2-portrait p1"></div><div class="sf2-name p1"></div><div class="sf2-tag">1P</div><div class="sf2-region p1"></div><div class="sf2-stats p1"></div></div>
         <div class="sf2-center"><div class="sf2-map">${brazilMapSvg(roster)}</div><div class="sf2-title">PLAYER SELECT</div></div>
-        <div class="sf2-side right"><div class="sf2-portrait cpu"></div><div class="sf2-name cpu"></div><div class="sf2-tag cpu">CPU</div><div class="sf2-region cpu"></div></div>
+        <div class="sf2-side right"><div class="sf2-portrait cpu"></div><div class="sf2-name cpu"></div><div class="sf2-tag cpu">CPU</div><div class="sf2-region cpu"></div><div class="sf2-stats cpu"></div></div>
         <div class="sf2-grid">${slots}</div>
         <div class="pix tiny sf2-hint">A D ESCOLHER · G / ENTER CONFIRMAR · V VOLTAR</div>
       </div>`);
@@ -98,7 +98,13 @@ export class Screens {
     const fill = (side: 'p1' | 'cpu', f: FighterAssets) => {
       q(`.sf2-portrait.${side}`).innerHTML = img(f);
       q(`.sf2-name.${side}`).textContent = f.def.name;
-      q(`.sf2-region.${side}`).textContent = f.def.origin?.region ?? f.def.role;
+      q(`.sf2-region.${side}`).textContent = `${f.def.role} · ${f.def.origin?.city ?? '?'}`.toUpperCase();
+      const st = f.def.stats;
+      const bar = (label: string, v: number) => {
+        const pct = Math.round(Math.max(0, Math.min(1, (v - 0.7) / 0.65)) * 100); // 0,70 = vazio · 1,35 = cheio
+        return `<div class="stat"><span>${label}</span><div><i style="width:${pct}%;background:${f.def.colors.primary}"></i></div></div>`;
+      };
+      q(`.sf2-stats.${side}`).innerHTML = bar('FORÇA', st.power) + bar('AGILIDADE', st.speed) + bar('PODER', st.magic ?? 1);
     };
     this.onMove = (i) => {
       const cpu = roster.length > 1 ? (i === 0 ? 1 : 0) : i; // primeiro oponente da campanha (ordem da lista)

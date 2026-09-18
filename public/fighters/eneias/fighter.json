@@ -7,12 +7,19 @@
   "primary": "#ff8a1f",
   "secondary": "#ffd23f"
  },
- "stage": "office",
+ "origin": {
+  "region": "RIO DE JANEIRO",
+  "city": "Rio de Janeiro",
+  "lon": -43.2,
+  "lat": -22.9
+ },
+ "stage": "eneias",
  "scale": 1.12,
  "stats": {
-  "speed": 0.85,
-  "power": 1.2,
-  "weight": 1.35
+  "speed": 0.8,
+  "power": 1.3,
+  "weight": 1.35,
+  "magic": 1.0
  },
  "hurtbox": {
   "x": -48,
@@ -373,35 +380,47 @@
   "special": {
    "phases": {
     "startup": [
-     15
+     13
     ],
     "active": [
-     16
+     14
     ],
     "recovery": [
-     16,
+     14,
      0
     ]
    },
-   "startup": 8,
-   "active": 10,
-   "recovery": 16,
-   "dash": 7,
+   "startup": 11,
+   "active": 4,
+   "recovery": 17,
    "damage": 13,
-   "hitstun": 24,
+   "hitstun": 22,
    "blockstun": 14,
    "hitbox": {
-    "x": 10,
-    "y": -180,
-    "w": 100,
-    "h": 170
+    "x": 0,
+    "y": 0,
+    "w": 0,
+    "h": 0
    },
-   "knockback": 14,
-   "knockdown": true,
-   "launch": -6,
+   "knockback": 11,
    "meterCost": 50,
-   "hitstop": 9,
-   "name": "OMBRADA"
+   "hitstop": 7,
+   "name": "ONDA DE CHOQUE",
+   "projectile": {
+    "x": 95,
+    "y": -45,
+    "speed": 8,
+    "lifetime": 100,
+    "style": "wave",
+    "color": "#ff8a1f",
+    "size": 40,
+    "hitbox": {
+     "x": -32,
+     "y": -34,
+     "w": 64,
+     "h": 68
+    }
+   }
   },
   "super": {
    "phases": {

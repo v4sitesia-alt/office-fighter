@@ -1,18 +1,25 @@
 {
  "id": "van",
- "name": "VAN",
+ "name": "VANESSA",
  "role": "A Mãe",
  "tagline": "Conciliou a agenda. E o nocaute.",
  "colors": {
   "primary": "#ff4fa0",
   "secondary": "#7dff5a"
  },
+ "origin": {
+  "region": "PERNAMBUCO",
+  "city": "Recife",
+  "lon": -34.88,
+  "lat": -8.05
+ },
  "stage": "office",
  "scale": 0.98,
  "stats": {
   "speed": 1.15,
-  "power": 0.9,
-  "weight": 0.9
+  "power": 0.85,
+  "weight": 0.9,
+  "magic": 1.2
  },
  "hurtbox": {
   "x": -38,
@@ -373,34 +380,47 @@
   "special": {
    "phases": {
     "startup": [
-     0
-    ],
-    "active": [
      15
     ],
+    "active": [
+     11
+    ],
     "recovery": [
-     15,
+     11,
      0
     ]
    },
-   "startup": 8,
-   "active": 8,
-   "recovery": 16,
+   "startup": 11,
+   "active": 4,
+   "recovery": 17,
    "damage": 13,
-   "hitstun": 24,
+   "hitstun": 22,
    "blockstun": 14,
    "hitbox": {
-    "x": -95,
-    "y": -215,
-    "w": 190,
-    "h": 215
+    "x": 0,
+    "y": 0,
+    "w": 0,
+    "h": 0
    },
-   "knockback": 14,
-   "knockdown": true,
-   "launch": -7,
+   "knockback": 11,
    "meterCost": 50,
-   "hitstop": 9,
-   "name": "ABRAÇO DE MÃE"
+   "hitstop": 7,
+   "name": "CORAÇÃO DE MÃE",
+   "projectile": {
+    "x": 95,
+    "y": -120,
+    "speed": 9,
+    "lifetime": 100,
+    "style": "heart",
+    "color": "#ff4fa0",
+    "size": 34,
+    "hitbox": {
+     "x": -32,
+     "y": -34,
+     "w": 64,
+     "h": 68
+    }
+   }
   },
   "super": {
    "phases": {

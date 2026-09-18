@@ -45,7 +45,7 @@ export function resolveHits(fighters: [Fighter, Fighter], projectiles: Projectil
       const px = (Math.max(hb.x, hurt.x) + Math.min(hb.x + hb.w, hurt.x + hurt.w)) / 2;
       const py = (Math.max(hb.y, hurt.y) + Math.min(hb.y + hb.h, hurt.y + hurt.h)) / 2;
       pending.push(() => {
-        def.takeHit(m, atk, blocked, atk.x);
+        def.takeHit(m, atk, blocked, atk.x, !!m.meterCost);
         atk.meter = Math.min(100, atk.meter + (m.meterGain ?? m.damage) * (blocked ? 0.7 : 1.5));
         if (!blocked) { atk.comboHits++; def.lastHitBy = atk.moveName; }
         fx.hit(px, py, blocked ? '#9ec5ff' : atk.def.colors.primary, !blocked && m.damage >= 12);
@@ -63,7 +63,7 @@ export function resolveHits(fighters: [Fighter, Fighter], projectiles: Projectil
       const blocked = isBlocked(def);
       const owner = p.owner;
       pending.push(() => {
-        def.takeHit(p.move, owner, blocked, owner.x);
+        def.takeHit(p.move, owner, blocked, owner.x, true);
         fx.hit(p.x + p.vx * 2, p.y, blocked ? '#9ec5ff' : owner.def.colors.primary, !blocked);
         audio.sfx(blocked ? 'block' : 'hitBig');
       });
@@ -82,7 +82,7 @@ export function resolveHits(fighters: [Fighter, Fighter], projectiles: Projectil
       const blocked = isBlocked(def, z.def.low, z.def.overhead);
       const owner = z.owner;
       pending.push(() => {
-        def.takeHit({ damage: h.damage, hitstun: z.def.hitstun, blockstun: z.def.blockstun, knockback: z.def.knockback, knockdown: h.knockdown, launch: h.launch }, owner, blocked, z.x - owner.facing);
+        def.takeHit({ damage: h.damage, hitstun: z.def.hitstun, blockstun: z.def.blockstun, knockback: z.def.knockback, knockdown: h.knockdown, launch: h.launch }, owner, blocked, z.x - owner.facing, true);
         fx.hit(def.x, hurt.y + hurt.h * 0.45, blocked ? '#9ec5ff' : owner.def.colors.primary, !blocked);
         audio.sfx(blocked ? 'block' : 'hitBig');
       });
