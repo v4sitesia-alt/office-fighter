@@ -430,36 +430,23 @@
     ]
    },
    "startup": 18,
-   "active": 6,
-   "recovery": 18,
+   "active": 10,
+   "recovery": 22,
    "damage": 26,
    "hitstun": 30,
    "blockstun": 18,
    "hitbox": {
-    "x": 0,
-    "y": 0,
-    "w": 0,
-    "h": 0
+    "x": 60,
+    "y": -200,
+    "w": 310,
+    "h": 200
    },
    "knockback": 18,
    "knockdown": true,
    "launch": -8,
    "meterCost": 100,
-   "hitstop": 10,
-   "name": "PLANO SEQUÊNCIA",
-   "projectile": {
-    "x": 130,
-    "y": -110,
-    "speed": 12,
-    "lifetime": 90,
-    "sprite": "lente.png",
-    "hitbox": {
-     "x": -55,
-     "y": -55,
-     "w": 110,
-     "h": 110
-    }
-   }
+   "hitstop": 12,
+   "name": "PLANO SEQUÊNCIA"
   }
  },
  "bio": "Quer resgatar o olhar cinematográfico que as IAs apagaram.",

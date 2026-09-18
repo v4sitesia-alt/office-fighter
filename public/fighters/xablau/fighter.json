@@ -163,30 +163,29 @@
   "heavy": {
    "phases": {
     "startup": [
-     13
+     10
     ],
     "active": [
-     14
+     13
     ],
     "recovery": [
-     14,
+     13,
      0
     ]
    },
-   "startup": 10,
-   "active": 4,
-   "recovery": 16,
+   "startup": 12,
+   "active": 5,
+   "recovery": 18,
    "damage": 14,
    "hitstun": 24,
    "blockstun": 14,
    "hitbox": {
-    "x": 10,
-    "y": -230,
-    "w": 95,
-    "h": 190
+    "x": 60,
+    "y": -120,
+    "w": 285,
+    "h": 80
    },
    "knockback": 12,
-   "launch": -5,
    "hitstop": 9
   },
   "airPunch": {
@@ -436,9 +435,9 @@
    "hitstun": 30,
    "blockstun": 18,
    "hitbox": {
-    "x": 40,
-    "y": -150,
-    "w": 300,
+    "x": 60,
+    "y": -130,
+    "w": 370,
     "h": 110
    },
    "knockback": 18,

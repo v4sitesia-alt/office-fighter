@@ -28,8 +28,10 @@ Debug (só teclado): **F1** hitboxes/hurtboxes/estado · **F2** câmera lenta ·
 
 Cada lutador vive em `public/fighters/<id>/`:
 
-- `sheet.png` + `frames.json` — gerados por `tools/sprites.py` a partir do board 5×7 em `Personagens/Mais-movimentos/`
-  (`npm run sprites` regenera os dois). O script acha cada sprite pelo alpha, então a grade não precisa ser exata.
+- `sheet.png` + `frames.json` — atlas gerado por `tools/sprites.py` a partir do board de poses (`npm run sprites` regera todos;
+  a lista de boards e opções fica em `tools/sprites-all.sh`). Cada pose é isolada pixel a pixel e copiada pra um atlas novo com folga,
+  então nenhum frame carrega pedaço da pose vizinha. Pose que ocupa duas células do board (braço ou língua esticados) é declarada com
+  `--wide linha,coluna` e sai inteira; a célula seguinte vira frame vazio. Sempre confira o contact sheet (`--debug`).
 - `fighter.json` — nome, cores, escala, stats, animações (índices dos 20 frames) e frame data dos golpes.
   Balanceamento é aqui, nunca no código. Hitboxes em unidades do sprite, origem nos pés, X pra frente, Y negativo pra cima.
 - `portrait.png` — thumb da seleção.
