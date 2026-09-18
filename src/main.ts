@@ -64,7 +64,7 @@ let fightNo = 0;
 const DIFF_RAMP: Difficulty[][] = [['easy', 'easy', 'normal', 'normal'], ['normal', 'normal', 'hard', 'hard'], ['hard', 'hard', 'hard', 'hard']];
 
 const MUSIC: Record<Mode, 'intro' | 'select' | 'fight' | null> = {
-  loading: null, boot: null, intro: 'intro', lobby: 'select', netfight: 'fight', title: 'intro', difficulty: 'select', select: 'select', versus: 'select', fight: 'fight', result: null, ending: null,
+  loading: null, boot: null, intro: 'intro', lobby: 'select', netfight: 'fight', title: 'intro', difficulty: 'intro', select: 'select', versus: 'select', fight: 'fight', result: null, ending: null,
 };
 const cinematic = new Intro();
 let introClock = 0;
@@ -123,9 +123,8 @@ function showVersus() {
 
 function goTitle() {
   match = null;
-  const fromIntro = mode === 'intro';
   setMode('title');
-  if (!fromIntro || audio.musicTime() < INTRO_END - 1) audio.seekMusic(INTRO_END); // título sempre no trecho dos 20 s
+  if (audio.musicTime() < INTRO_END - 1) audio.seekMusic(INTRO_END); // título no trecho dos 19 s; se a música da intro já vinha tocando (voltou do menu), segue sem pular
   const menu = () => { setMode('difficulty'); screens.mainMenu(() => { online = false; showSelect(); }, () => { online = true; showSelect(); }, goTitle); };
   screens.title(menu, roster.length);
 }
