@@ -103,6 +103,8 @@ def main():
     ap.add_argument('--cols', type=int, default=5); ap.add_argument('--rows', type=int, default=7)
     ap.add_argument('--wide', action='append', default=[]); ap.add_argument('--fx', default=None); ap.add_argument('--fx-erase', action='store_true')
     ap.add_argument('--export', action='append', default=[]); ap.add_argument('--debug', default=None)
+    ap.add_argument('--alpha', type=int, default=ALPHA_T, help='alpha mínimo pra separar as poses (suba se o board tiver brilho suave ligando as poses)')
+    ap.add_argument('--grow', type=int, default=EDGE_GROW, help='quantos px de borda/brilho semitransparente devolver à pose mais próxima')
     args = ap.parse_args()
     os.makedirs(args.outdir, exist_ok=True)
     arr = np.array(Image.open(args.src).convert('RGBA'))
@@ -119,13 +121,24 @@ def main():
     wides = []
     for w in args.wide:
         v = [int(t) for t in w.split(',')]; wides.append((v[0], v[1], v[2] if len(v) > 2 else 2))
+    alpha = arr[:, :, 3]; solid = alpha > args.alpha
+    # a grade do board nem sempre é uniforme: acha cada divisória na faixa mais vazia perto da linha teórica
+    def find_cuts(profile, n, cell):
+        sm = np.convolve(profile.astype(np.float64), np.ones(7) / 7, mode='same'); out = []
+        for k in range(1, n):
+            g = k * cell; a, b = int(g - 0.38 * cell), int(g + 0.38 * cell); seg = sm[a:b]
+            low = np.nonzero(seg <= seg.min() + 0.02 * sm.max())[0]
+            out.append(a + int(low[np.argmin(np.abs(low + a - g))]))
+        return np.array(out)
+    core = alpha > 200
+    ycuts, xcuts = find_cuts(core.sum(axis=1), rows, ch), find_cuts(core.sum(axis=0), cols, cw)
+    xedges = [0, *xcuts.tolist(), W]
     def cell_of(x, y):
-        r, c = min(rows - 1, int(y // ch)), min(cols - 1, int(x // cw))
+        r, c = int(np.searchsorted(ycuts, y, side='right')), int(np.searchsorted(xcuts, x, side='right'))
         for wr, wc, wn in wides:
             if r == wr and wc <= c < wc + wn: return (r, wc)
         return (r, c)
 
-    alpha = arr[:, :, 3]; solid = alpha > ALPHA_T
     lab, st = label_runs(solid)
     comps = [{'id': i, 'area': st['area'][i], 'box': [int(st['x0'][i]), int(st['y0'][i]), int(st['x1'][i]), int(st['y1'][i])],
               'cell': cell_of(st['sumx'][i] / st['area'][i], st['sumy'][i] / st['area'][i])} for i in range(1, st['n'] + 1)]
@@ -232,7 +245,7 @@ def main():
     # ---------- 4. mapa de dono por pixel + bordas semitransparentes
     lut = np.zeros(next_id + 1, np.int16)
     for c in comps: lut[c['id']] = c['frame'] + 1
-    own = grow(lut[lab], alpha > EDGE_T, EDGE_GROW)
+    own = grow(lut[lab], alpha > EDGE_T, args.grow)
 
     # ---------- atlas
     total = rows * cols; crops = [None] * total; frames = []
@@ -244,7 +257,7 @@ def main():
         x0, x1, y0, y1 = int(xs.min()), int(xs.max()) + 1, int(ys.min()), int(ys.max()) + 1
         crop = arr[y0:y1, x0:x1].copy(); crop[own[y0:y1, x0:x1] != f + 1] = 0
         sol = crop[:, :, 3] > ALPHA_T
-        limit = [(wc + 1) * cw - x0 for wr, wc, wn in wides if (wr, wc) == (r, c)]   # pose larga: eixo medido só no corpo
+        limit = [xedges[wc + 1] - x0 for wr, wc, wn in wides if (wr, wc) == (r, c)]   # pose larga: eixo medido só no corpo
         if limit: sol = sol & (np.arange(x1 - x0)[None, :] < limit[0])
         sy_, sx_ = np.nonzero(sol)
         if len(sx_) == 0: sy_, sx_ = np.nonzero(crop[:, :, 3] > 0)
@@ -273,8 +286,8 @@ def main():
         tint = pal[own].astype(np.float32); base = arr[:, :, :3].astype(np.float32)
         vis = np.where((own > 0)[:, :, None], base * 0.55 + tint * 0.45, 20).astype(np.uint8)
         dbg = Image.fromarray(vis); d = ImageDraw.Draw(dbg)
-        for r in range(1, rows): d.line([(0, r * ch), (W, r * ch)], fill=(90, 90, 120))
-        for c in range(1, cols): d.line([(c * cw, 0), (c * cw, H)], fill=(90, 90, 120))
+        for yc in ycuts: d.line([(0, int(yc)), (W, int(yc))], fill=(255, 255, 0))
+        for xc in xcuts: d.line([(int(xc), 0), (int(xc), H)], fill=(255, 255, 0))
         for fr in frames:
             if not fr.get('empty'): d.text((fr['src'][0] + 2, fr['src'][1] + 2), f"#{fr['i']}", fill=(255, 255, 0))
         dbg.save(args.debug)

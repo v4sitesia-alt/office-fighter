@@ -8,7 +8,7 @@
   "secondary": "#1a1a1a"
  },
  "stage": "mundim",
- "scale": 1.1,
+ "scale": 0.98,
  "stats": {
   "power": 1.2,
   "speed": 1.05,
@@ -17,15 +17,15 @@
  },
  "hurtbox": {
   "x": -42,
-  "y": -222,
+  "y": -244,
   "w": 84,
-  "h": 222
+  "h": 244
  },
  "crouchHurtbox": {
   "x": -46,
-  "y": -150,
+  "y": -165,
   "w": 92,
-  "h": 150
+  "h": 165
  },
  "pushbox": {
   "x": -32,
@@ -34,18 +34,17 @@
  "anims": {
   "idle": {
    "frames": [
-    0,
-    1
+    0
    ],
    "fps": 3,
    "loop": true
   },
   "walk": {
    "frames": [
+    1,
     2,
     3,
-    4,
-    3
+    4
    ],
    "fps": 9,
    "loop": true
@@ -96,7 +95,7 @@
   },
   "win": {
    "frames": [
-    29,
+    34,
     15
    ],
    "fps": 2,
@@ -153,9 +152,9 @@
    "blockstun": 10,
    "hitbox": {
     "x": 40,
-    "y": -215,
-    "w": 115,
-    "h": 90
+    "y": -235,
+    "w": 125,
+    "h": 100
    },
    "knockback": 6,
    "hitstop": 6
@@ -181,9 +180,9 @@
    "blockstun": 14,
    "hitbox": {
     "x": 40,
-    "y": -190,
-    "w": 125,
-    "h": 140
+    "y": -215,
+    "w": 150,
+    "h": 150
    },
    "knockback": 12,
    "hitstop": 9
@@ -283,7 +282,7 @@
   "special": {
    "phases": {
     "startup": [
-     1
+     8
     ],
     "active": [
      13
@@ -311,7 +310,7 @@
    "name": "PULSO CARMESIM",
    "projectile": {
     "x": 95,
-    "y": -120,
+    "y": -150,
     "speed": 9,
     "lifetime": 100,
     "style": "ball",
@@ -328,14 +327,14 @@
   "super": {
    "phases": {
     "startup": [
-     25,
-     26
+     30,
+     31
     ],
     "active": [
-     27
+     32
     ],
     "recovery": [
-     29
+     34
     ]
    },
    "startup": 18,
@@ -357,18 +356,109 @@
    "hitstop": 10,
    "name": "BRINDE DA DIRETORIA",
    "projectile": {
-    "x": 170,
-    "y": -100,
+    "x": 190,
+    "y": -115,
     "speed": 12,
     "lifetime": 90,
     "sprite": "garrafas.png",
     "hitbox": {
-     "x": -95,
-     "y": -85,
-     "w": 190,
-     "h": 170
+     "x": -129,
+     "y": -107,
+     "w": 257,
+     "h": 214
     }
    }
+  },
+  "lowPunch": {
+   "kind": "low",
+   "phases": {
+    "startup": [
+     25
+    ],
+    "active": [
+     26
+    ],
+    "recovery": [
+     26
+    ]
+   },
+   "startup": 4,
+   "active": 3,
+   "recovery": 7,
+   "damage": 4,
+   "hitstun": 11,
+   "blockstun": 8,
+   "low": true,
+   "hitbox": {
+    "x": 35,
+    "y": -110,
+    "w": 95,
+    "h": 50
+   },
+   "knockback": 3,
+   "hitstop": 4
+  },
+  "lowKick": {
+   "kind": "low",
+   "phases": {
+    "startup": [
+     25
+    ],
+    "active": [
+     27
+    ],
+    "recovery": [
+     27
+    ]
+   },
+   "startup": 6,
+   "active": 6,
+   "recovery": 12,
+   "damage": 7,
+   "hitstun": 18,
+   "blockstun": 12,
+   "low": true,
+   "hitbox": {
+    "x": 20,
+    "y": -60,
+    "w": 150,
+    "h": 60
+   },
+   "knockback": 5,
+   "knockdown": true,
+   "launch": -5,
+   "hitstop": 6
+  },
+  "lowHeavy": {
+   "kind": "low",
+   "phases": {
+    "startup": [
+     25
+    ],
+    "active": [
+     28
+    ],
+    "recovery": [
+     29
+    ]
+   },
+   "startup": 8,
+   "active": 4,
+   "recovery": 14,
+   "damage": 10,
+   "hitstun": 20,
+   "blockstun": 14,
+   "low": true,
+   "hitbox": {
+    "x": 20,
+    "y": -70,
+    "w": 190,
+    "h": 70
+   },
+   "knockback": 8,
+   "hitstop": 7,
+   "knockdown": true,
+   "launch": -5
   }
  },
  "bio": "Dominou o mercado com as IAs. Agora elas não obedecem mais.",
