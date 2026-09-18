@@ -84,7 +84,7 @@ export class Screens {
   select(roster: FighterAssets[], onPick: (i: number) => void, onBack: () => void) {
     const img = (f: FighterAssets) => (f.portrait ? `<img src="${f.portrait.src}" alt="">` : '');
     const slots = roster.map((f, i) => `<div class="sf2-slot" data-item data-i="${i}">${img(f)}</div>`).join('')
-      + Array.from({ length: Math.max(0, 8 - roster.length) }, () => '<div class="sf2-slot locked">?</div>').join('');
+      + Array.from({ length: Math.max(0, 10 - roster.length) }, () => '<div class="sf2-slot locked">?</div>').join('');
     this.set('select', `
       <div class="sf2">
         <div class="sf2-side left"><div class="sf2-portrait p1"></div><div class="sf2-name p1"></div><div class="sf2-tag">1P</div><div class="sf2-region p1"></div></div>
