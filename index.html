@@ -10,28 +10,38 @@
 <body>
   <main class="cabinet">
     <header class="marquee">
-      <div class="brand"><span>V4 FIGHTERS</span><small>TROUBLE WORK · v0.3</small></div>
-      <div class="marquee-right"><a class="mute" href="manual.html" target="_blank" rel="noopener" style="text-decoration:none;font-size:10px;font-family:var(--pix)">MANUAL</a><button id="mute" class="mute" type="button" aria-label="som">🔊</button><div class="credit">CREDIT 01</div></div>
+      <div class="speaker" aria-hidden="true"></div>
+      <div class="brand"><span>V4 FIGHTERS</span><small>TROUBLE WORK</small></div>
+      <div class="marquee-right">
+        <button id="room-toggle" class="chip" type="button" hidden>SALA <b>0</b></button>
+        <a class="chip" href="manual.html" target="_blank" rel="noopener">MANUAL</a>
+        <button id="mute" class="chip mute" type="button" aria-label="som">🔊</button>
+      </div>
+      <div class="speaker" aria-hidden="true"></div>
     </header>
-    <div class="bezel">
-      <div id="screen-wrap"><div class="screen">
-        <canvas id="game"></canvas>
-        <div id="hud" class="hud"></div>
-        <div id="screens" class="screens"></div>
-      </div></div>
+    <div class="stage-row">
+      <div class="bezel">
+        <div id="screen-wrap"><div class="screen">
+          <canvas id="game"></canvas>
+          <div id="hud" class="hud"></div>
+          <div id="screens" class="screens"></div>
+        </div></div>
+      </div>
+      <aside id="room" class="room" aria-label="Sala online"></aside>
     </div>
-    <section id="panel" class="panel">
-      <div class="stick"><div class="knob"></div><span class="arrow l">◀</span><span class="arrow r">▶</span><span class="arrow u">▲</span><span class="arrow d">▼</span></div>
-      <div class="buttons">
+    <section id="panel" class="deck">
+      <div class="stick-zone"><div class="stick"><div class="shaft"></div><div class="knob"></div></div><span class="cap">MOVER</span></div>
+      <div class="pills">
+        <div class="pill" data-btn="start"><u></u>START</div>
+        <div class="coin" aria-hidden="true"><i></i>25¢</div>
+        <div class="pill" data-btn="pause"><u></u>PAUSE</div>
+      </div>
+      <div class="pad">
         <div class="btn red" data-btn="punch"><b>G</b><i>SOCO</i></div>
         <div class="btn yellow" data-btn="kick"><b>H</b><i>CHUTE</i></div>
         <div class="btn green" data-btn="heavy"><b>J</b><i>FORTE</i></div>
         <div class="btn blue" data-btn="block"><b>V</b><i>DEFESA</i></div>
         <div class="btn purple" data-btn="special"><b>B</b><i>ESPECIAL</i></div>
-      </div>
-      <div class="pills">
-        <div class="pill" data-btn="start">START</div>
-        <div class="pill" data-btn="pause">PAUSE</div>
       </div>
     </section>
   </main>

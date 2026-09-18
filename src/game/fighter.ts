@@ -424,6 +424,12 @@ export class Fighter {
     ctx.fillStyle = 'rgba(0,0,0,0.35)';
     ctx.beginPath(); ctx.ellipse(this.x, GROUND_Y + 4, 34 * this.def.scale, 7, 0, 0, Math.PI * 2); ctx.fill();
 
+    if (this.meter >= 50 && this.state !== 'ko') {
+      const full = this.meter >= 100, pulse = 0.6 + 0.4 * Math.sin(this.animTime * (full ? 0.35 : 0.2)), r = (full ? 86 : 64) * this.def.scale;
+      const g = ctx.createRadialGradient(this.x, GROUND_Y + 2, 4, this.x, GROUND_Y + 2, r);
+      g.addColorStop(0, full ? `rgba(255,212,0,${0.95 * pulse})` : `rgba(56,160,255,${0.8 * pulse})`); g.addColorStop(0.5, full ? `rgba(255,160,0,${0.45 * pulse})` : `rgba(40,110,255,${0.35 * pulse})`); g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.translate(0, (GROUND_Y + 2) * 0.72); ctx.scale(1, 0.28); ctx.fillStyle = g; ctx.fillRect(this.x - r, GROUND_Y + 2 - r, r * 2, r * 2); ctx.restore();
+    }
     ctx.save();
     ctx.translate(this.x, fy);
     ctx.scale(this.facing, 1);

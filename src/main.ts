@@ -29,15 +29,21 @@ bindCabinet(input, document.getElementById('panel')!);
 
 // ---------- escala da tela 960x540 pro espaço disponível
 function fit() {
-  const wrap = document.getElementById('screen-wrap')!;
-  const panel = document.getElementById('panel')!;
-  const overlay = matchMedia('(max-height: 520px) and (orientation: landscape)').matches;
-  const availW = overlay ? window.innerWidth - 24 : Math.min(window.innerWidth - 40, 1120);
-  const availH = overlay ? window.innerHeight - 16 : window.innerHeight - panel.offsetHeight - 120;
-  const s = Math.max(0.3, Math.min(availW / W, availH / H));
-  wrap.style.width = `${W * s}px`; wrap.style.height = `${H * s}px`;
+  const wrap = document.getElementById('screen-wrap')!, cab = document.querySelector<HTMLElement>('.cabinet')!;
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const phoneL = matchMedia('(max-height: 520px) and (orientation: landscape)').matches;
+  const phoneP = matchMedia('(max-width: 720px) and (orientation: portrait)').matches;
+  const docked = !phoneL && !phoneP && vw >= 1000 && document.body.classList.contains('online') && document.body.classList.contains('room-open');
+  document.body.classList.toggle('room-docked', docked);
+  let aw: number, ah: number;
+  if (phoneL) { aw = vw; ah = vh; }
+  else if (phoneP) { aw = vw - 22; ah = vh * 0.46; }
+  else { const chrome = cab.offsetHeight - wrap.offsetHeight; aw = Math.min(vw - 110 - (docked ? 302 : 0), 1240); ah = vh - chrome - 30; }
+  const s = Math.max(0.28, Math.min(aw / W, ah / H));
+  wrap.style.width = `${Math.floor(W * s)}px`; wrap.style.height = `${Math.floor(H * s)}px`;
   (wrap.firstElementChild as HTMLElement).style.transform = `scale(${s})`;
 }
+document.getElementById('room-toggle')!.addEventListener('click', () => { document.body.classList.toggle('room-open'); fit(); });
 window.addEventListener('resize', fit);
 fit();
 
@@ -101,7 +107,7 @@ function startFight() {
       }, goTitle);
     },
   });
-  hud.bind(match);
+  hud.localIndex = 0; hud.bind(match);
   paused = false;
   screens.hide();
   setMode('fight');
@@ -139,7 +145,7 @@ let netMenuOpen = false, netOver = false;
 
 function openLobby() {
   screens.hide();
-  lobby ??= new Lobby(document.getElementById('screens')!, roster, startNetMatch, () => { lobby?.close(); lobby = null; goTitle(); }, () => showSelect());
+  lobby ??= new Lobby(document.getElementById('screens')!, document.getElementById('room')!, roster, startNetMatch, () => { lobby?.close(); lobby = null; goTitle(); }, () => showSelect());
   setMode('lobby');
   lobby.open(roster[playerIdx].def.id);
 }
@@ -158,7 +164,7 @@ function startNetMatch(cfg: NetMatchCfg) {
       setTimeout(leaveNetMatch, 3500);
     },
   });
-  match = m; hud.bind(m);
+  match = m; hud.localIndex = cfg.local; hud.bind(m);
   m.fighters.forEach((f, i) => { (document.querySelectorAll('#hud .name')[i] as HTMLElement).textContent = `${cfg.names[i]} · ${f.def.name}`; });
   netRoom = joinRoom(`match-${cfg.matchId}`, null, { onMsg: (msg) => session?.onMsg(msg) });
   session = new NetSession(m, netRoom, cfg.local);

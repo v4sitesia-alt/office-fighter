@@ -20,7 +20,7 @@ export class Lobby {
   private unwatch: (() => void) | null = null; private refreshing = false;
   me: Peer;
 
-  constructor(private root: HTMLElement, private roster: FighterAssets[], private onMatch: (cfg: NetMatchCfg) => void, private onExit: () => void, private onChangeFighter: () => void) {
+  constructor(private root: HTMLElement, private side: HTMLElement, private roster: FighterAssets[], private onMatch: (cfg: NetMatchCfg) => void, private onExit: () => void, private onChangeFighter: () => void) {
     let id = sessionStorage.getItem('v4f-id');
     if (!id) { id = Math.random().toString(36).slice(2, 10); sessionStorage.setItem('v4f-id', id); }
     this.me = { id, name: localStorage.getItem('v4f-name') ?? '', fighter: roster[0].def.id, status: 'livre' };
@@ -37,7 +37,62 @@ export class Lobby {
     void this.refresh();
     this.paint();
   }
-  close() { this.room?.leave(); this.room = null; this.unwatch?.(); this.unwatch = null; }
+  close() {
+    this.room?.leave(); this.room = null; this.unwatch?.(); this.unwatch = null;
+    document.body.classList.remove('online'); document.getElementById('room-toggle')!.hidden = true; this.side.innerHTML = '';
+    window.dispatchEvent(new Event('resize'));
+  }
+
+  private liveMatches() {
+    const live = new Map<string, Peer>();
+    this.peers.forEach((p) => { if (p.status === 'lutando' && p.matchId && !live.has(p.matchId)) live.set(p.matchId, p); });
+    return live;
+  }
+  private challenge(to: string) {
+    if (this.waiting || this.me.status === 'lutando') return;
+    this.waiting = to;
+    this.room?.send({ t: 'challenge', to, from: this.me, matchId: `${this.me.id}-${Date.now().toString(36)}` }); this.paint();
+    setTimeout(() => { if (this.waiting === to) { this.waiting = null; this.paint(); } }, 15000);
+  }
+  private watch(matchId: string) {
+    const p = this.liveMatches().get(matchId); if (!p || this.me.status === 'lutando') return;
+    const [a, b] = (p.vs ?? ' x ').split(' x ');
+    const fOf = (n: string) => this.peers.find((x) => x.name === n)?.fighter ?? this.roster[0].def.id;
+    this.onMatch({ matchId, f: [fOf(a), fOf(b)], names: [a, b], local: -1 });
+  }
+
+  /** Painel "SALA" ao lado da tela: quem está online, o que cada um está fazendo, desafios e lutas pra assistir. Fica visível em qualquer tela. */
+  private paintSide() {
+    const tg = document.getElementById('room-toggle')!;
+    if (!this.room || !this.me.name) return;
+    if (!document.body.classList.contains('online')) {
+      document.body.classList.add('online'); tg.hidden = false;
+      if (window.innerWidth >= 1000) document.body.classList.add('room-open');   // no computador já abre ao lado da tela
+      window.dispatchEvent(new Event('resize'));
+    }
+    tg.querySelector('b')!.textContent = String(this.peers.length);
+    const F = (fid: string) => this.roster.find((r) => r.def.id === fid);
+    const img = (fid: string) => (F(fid)?.portrait ? `<img src="${F(fid)!.portrait!.src}" alt="">` : '');
+    const busy = this.me.status === 'lutando';
+    const label: Record<string, string> = { livre: 'LIVRE', procurando: 'QUER LUTAR', lutando: 'LUTANDO', assistindo: 'ASSISTINDO' };
+    const row = (p: Peer, me = false) => `<div class="rm-row ${me ? 'me' : ''}" style="--c:${F(p.fighter)?.def.colors.primary ?? '#3d4a63'}"><div class="rm-av">${img(p.fighter)}</div>
+      <div class="rm-name">${esc(p.name)}${me ? ' (VOCÊ)' : ''}<small>${esc(F(p.fighter)?.def.name ?? '')}${p.status === 'lutando' && p.vs ? ' · ' + esc(p.vs) : ''}</small></div>
+      ${!me && !busy && (p.status === 'livre' || p.status === 'procurando') ? `<button class="rm-btn" data-ch="${p.id}">${this.waiting === p.id ? '…' : 'DESAFIAR'}</button>`
+        : !me && !busy && p.status === 'lutando' && p.matchId ? `<button class="rm-btn ghost" data-watch="${p.matchId}">ASSISTIR</button>` : `<span class="rm-st ${p.status}">${label[p.status]}</span>`}</div>`;
+    const others = this.peers.filter((p) => p.id !== this.me.id);
+    const watchers = busy ? this.peers.filter((p) => p.status === 'assistindo' && p.matchId === this.me.matchId) : [];
+    this.side.innerHTML = `<div class="rm-head"><span>SALA ${this.peers.length}/${MAX_PEERS}</span><i class="${ONLINE ? '' : 'off'}">● ${ONLINE ? 'ONLINE' : 'LOCAL'}</i></div>
+      ${this.incoming ? `<div class="rm-alert">${esc(this.incoming.from.name)} TE DESAFIOU!<div><button class="rm-btn" data-acc>ACEITAR</button><button class="rm-btn ghost" data-dec>RECUSAR</button></div></div>` : ''}
+      ${row(this.me, true)}
+      <div class="rm-sec">NA SALA</div>${others.map((p) => row(p)).join('') || '<div class="rm-empty">SÓ VOCÊ POR ENQUANTO.<br>MANDE O LINK DE CONVITE.</div>'}
+      ${watchers.length ? `<div class="rm-sec">ASSISTINDO SUA LUTA</div><div class="rm-empty" style="border-style:solid">${watchers.map((p) => esc(p.name)).join(' · ')}</div>` : ''}`;
+    this.bind(this.side);
+  }
+  private bind(root: HTMLElement) {
+    const on = (sel: string, fn: (el: HTMLElement) => void) => root.querySelectorAll<HTMLElement>(sel).forEach((el) => { el.onclick = () => { audio.sfx('menuConfirm'); fn(el); }; });
+    on('[data-ch]', (el) => this.challenge(el.dataset.ch!));
+    on('[data-watch]', (el) => this.watch(el.dataset.watch!));
+  }
 
   /** Relê ranking e campeonato; mantém minha inscrição com o lutador atual e chama a próxima luta da fila. */
   private async refresh() {
@@ -121,6 +176,7 @@ export class Lobby {
   }
 
   private paint() {
+    this.paintSide();
     if (!this.root.classList.contains('lobby') || !this.me.name) return;
     const img = (fid: string) => { const f = this.roster.find((r) => r.def.id === fid); return f?.portrait ? `<img src="${f.portrait.src}" alt="">` : ''; };
     const others = this.peers.filter((p) => p.id !== this.me.id);
@@ -141,24 +197,11 @@ export class Lobby {
       <div class="lb-me"><div class="lb-av big">${img(this.me.fighter)}</div><div class="lb-name">${esc(this.me.name)}<small>${esc(this.roster.find((r) => r.def.id === this.me.fighter)?.def.name ?? '')}</small><div class="lb-btn sm ghost" data-swap>TROCAR LUTADOR</div></div>
         <div class="lb-cta"><div class="lb-btn big ${searching ? 'on' : ''}" data-quick>${searching ? 'PROCURANDO ADVERSÁRIO… (CANCELAR)' : '▶ JOGAR AGORA'}</div><small>${searching ? 'A luta começa sozinha quando outra pessoa apertar JOGAR AGORA.' : 'Acha um adversário sozinho. Ou desafie alguém da lista.'}</small></div>
         <div class="lb-cta"><div class="lb-btn big ghost" data-invite>🔗 CONVIDAR</div><small>Copia o link. Quem abrir cai direto aqui.</small></div></div>
-      <div class="lb-col"><h4>QUEM ESTÁ AQUI</h4>${rows}</div>
-      <div class="lb-col"><h4>LUTAS AO VIVO</h4>${lives}<h4>CAMPEONATO</h4>${this.tourHtml()}<h4>RANKING</h4>${rank}${this.feed.length ? `<h4>ÚLTIMAS</h4>${this.feed.map((f) => `<div class="pix tiny">${esc(f)}</div>`).join('')}` : ''}</div>
+      ${document.body.classList.contains('room-docked') ? `<div class="lb-col"><h4>CAMPEONATO</h4>${this.tourHtml()}<h4>LUTAS AO VIVO</h4>${lives}</div><div class="lb-col"><h4>RANKING</h4>${rank}` : `<div class="lb-col"><h4>QUEM ESTÁ AQUI</h4>${rows}</div>
+      <div class="lb-col"><h4>LUTAS AO VIVO</h4>${lives}<h4>CAMPEONATO</h4>${this.tourHtml()}<h4>RANKING</h4>${rank}`}${this.feed.length ? `<h4>ÚLTIMAS</h4>${this.feed.map((f) => `<div class="pix tiny">${esc(f)}</div>`).join('')}` : ''}</div>
       <div class="lb-foot"><div class="lb-btn ghost sm" data-back>SAIR DA ARENA</div></div>
       ${this.incoming ? `<div class="lb-modal"><div class="lb-av big">${img(this.incoming.from.fighter)}</div><div class="pix">${esc(this.incoming.from.name)} TE DESAFIOU!</div><div class="lb-btn" data-acc>ACEITAR</div><div class="lb-btn ghost" data-dec>RECUSAR</div></div>` : ''}</div>`;
     const on = (sel: string, fn: (el: HTMLElement) => void) => this.root.querySelectorAll<HTMLElement>(sel).forEach((el) => { el.onclick = () => { audio.sfx('menuConfirm'); fn(el); }; });
-    on('[data-ch]', (el) => {
-      if (this.waiting) return;
-      const to = el.dataset.ch!; this.waiting = to;
-      this.room?.send({ t: 'challenge', to, from: this.me, matchId: `${this.me.id}-${Date.now().toString(36)}` }); this.paint();
-      setTimeout(() => { if (this.waiting === to) { this.waiting = null; this.paint(); } }, 15000);
-    });
-    on('[data-watch]', (el) => {
-      const p = [...live.values()].find((x) => x.matchId === el.dataset.watch); if (!p) return;
-      const [a, b] = (p.vs ?? ' x ').split(' x ');
-      const fa = this.peers.find((x) => x.name === a)?.fighter ?? this.roster[0].def.id, fb = this.peers.find((x) => x.name === b)?.fighter ?? this.roster[0].def.id;
-      this.onMatch({ matchId: p.matchId!, f: [fa, fb], names: [a, b], local: -1 });
-    });
-    on('[data-acc]', () => this.accept(this.incoming!.from, this.incoming!.matchId));
     on('[data-quick]', () => { this.setStatus(this.me.status === 'procurando' ? 'livre' : 'procurando'); this.waiting = null; this.matchmake(); this.paint(); });
     on('[data-swap]', () => { this.setStatus('livre'); this.onChangeFighter(); });
     on('[data-invite]', (el) => {
@@ -167,6 +210,7 @@ export class Lobby {
     });
     on('[data-dec]', () => { this.room?.send({ t: 'decline', to: this.incoming!.from.id }); this.incoming = null; this.paint(); });
     on('[data-back]', () => this.onExit());
+    this.bind(this.root);
     this.bindTour(on);
   }
 
