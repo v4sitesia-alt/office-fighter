@@ -42,6 +42,7 @@ export interface ProjectileDef {
   scale?: number;              // escala extra da imagem
   count?: number;              // rajada: quantos projéteis
   every?: number;              // rajada: frames entre um e outro
+  sprite?: string;             // arquivo em public/fighters/<id>/ (padrão special_fx.png)
   hitbox: Box;                 // relativo ao centro do projétil (unidades do sprite)
 }
 
@@ -55,11 +56,20 @@ export interface ZoneDef {
   low?: boolean; overhead?: boolean;
 }
 
-export type MoveKind = 'ground' | 'air' | 'low' | 'portal' | 'dive';
+export type MoveKind = 'ground' | 'air' | 'low' | 'portal' | 'dive' | 'throw';
+
+/** Agarrão: avança, agarra (indefensável), segura, levanta e arremessa. */
+export interface ThrowDef {
+  speed: number;                                  // px/frame do avanço
+  dash: number; grab: number; hold: number; lift: number; throw: number; whiff: number;   // frames de cada fase
+  holdOffset: { x: number; y: number };           // posição da vítima enquanto segura (unidades do sprite)
+  liftOffset: { x: number; y: number };           // posição da vítima levantada
+  release: { damage: number; knockback: number; launch: number; hitstop?: number };
+}
 
 export interface MoveDef extends HitDef {
   kind?: MoveKind;
-  phases: { startup: number[]; active: number[]; recovery: number[]; impact?: number[] };
+  phases: { startup: number[]; active: number[]; recovery: number[]; impact?: number[]; hold?: number[]; lift?: number[]; throw?: number[] };
   startup: number; active: number; recovery: number;
   impact?: number;             // dive: frames parado no chão após o impacto
   landingLag?: number;         // air: frames travado ao pousar
@@ -70,6 +80,7 @@ export interface MoveDef extends HitDef {
   name?: string;
   projectile?: ProjectileDef;
   zone?: ZoneDef;
+  throw?: ThrowDef;
 }
 
 export type MoveName =
@@ -95,7 +106,7 @@ export interface FighterAssets {
   def: FighterDef;
   frames: FramesFile;
   sheet: HTMLImageElement;
-  fx?: HTMLImageElement;
+  fx: Record<string, HTMLImageElement>;   // sprites de projétil por arquivo
   portrait?: HTMLImageElement;
 }
 

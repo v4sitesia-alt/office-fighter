@@ -68,5 +68,9 @@ Cenários: uma imagem 16:9 por lutador em `public/stages/<nome>.png` (960×540, 
 Kevin ainda usa o `office` placeholder (gerado por `tools/stage.py`).
 
 Pra adicionar um lutador: rode o script no board novo, crie `fighter.json` (copie de um existente), coloque `portrait.png`, o cenário e o som do especial, e inclua o id em `src/data/roster.ts`.
-Lutadores: Edgard (Curitiba), Santana (Rio de Janeiro), Kevin (Colombo, o atirador mercenário: meia barra = 1 tiro, barra cheia = rajada de 3).
+Lutadores: Edgard (Curitiba), Santana (Rio de Janeiro), Kevin (Colombo, o atirador mercenário: meia barra = 1 tiro, barra cheia = rajada de 3)
+e Laura (a lutadora: meia barra = onda verde, barra cheia = agarrão indefensável que avança, segura, levanta e arremessa; só escapa pulando).
+
+Tipos de super (campo `kind` do golpe): `portal` (zona sob o alvo), `dive` (salto + explosão), `throw` (agarrão com fases dash/grab/hold/lift/throw)
+e projétil comum (com `count`/`every` para rajadas e `sprite` para escolher a imagem).
 A campanha é "todos os outros lutadores + luta espelho final".

@@ -262,3 +262,6 @@ a grade não precisa ser exata porque `tools/sprites.py` recorta cada sprite pel
 Supers da v2:
 - **Edgard — Portal dos Morcegos:** mão no chão (frames 1-2), portal abre sob o adversário (efeitos 1-2, zona com 2 acertos rápidos), recuperação.
 - **Santana — Soco Sísmico:** salta (frame 1) sobre o adversário, mergulha com o soco (frame 2), impacto no chão (efeito 1) e explosão em área (efeito 2), recuperação.
+
+Lutadores 3 e 4 (2026-09-17, mesmo board 5×7): **Kevin** (Colombo/PR, atirador mercenário, mais alto que o Santana; linha 7 = sacar, mirar, 3 disparos)
+e **Laura** (a lutadora; linha 7 = avanço, agarrar, segurar, levantar, arremessar — super indefensável).

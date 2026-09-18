@@ -1,4 +1,4 @@
 /** Ids dos lutadores (pasta public/fighters/<id>) na ordem da tela de seleção. */
-export const ROSTER = ['edgard', 'santana', 'kevin'];
+export const ROSTER = ['edgard', 'santana', 'kevin', 'laura'];
 /** Cenário usado quando o lutador não define o seu. */
 export const DEFAULT_STAGE = 'office';

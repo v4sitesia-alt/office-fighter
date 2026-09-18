@@ -1,4 +1,4 @@
-import type { Box, FighterAssets, FrameDef, HitDef, MoveDef, MoveName } from './types';
+import type { Box, FighterAssets, FrameDef, HitDef, MoveDef, MoveName, ThrowDef } from './types';
 import type { Button, Controller } from '../core/input';
 import { audio } from '../core/audio';
 import {
@@ -8,11 +8,12 @@ import {
 
 export type State =
   | 'idle' | 'walking' | 'jumping' | 'crouching' | 'blocking'
-  | 'attacking' | 'hitstun' | 'blockstun' | 'knockdown' | 'ko' | 'win';
+  | 'attacking' | 'hitstun' | 'blockstun' | 'knockdown' | 'grabbed' | 'ko' | 'win';
 
 export type Phase = 'startup' | 'active' | 'impact' | 'recovery';
 type AttackBtn = 'punch' | 'kick' | 'heavy' | 'special';
 type DiveSub = 'rise' | 'dive' | 'impact' | 'recover';
+type ThrowSub = 'dash' | 'grab' | 'hold' | 'lift' | 'throw' | 'whiff';
 
 const ATTACK_BUTTONS: AttackBtn[] = ['special', 'heavy', 'kick', 'punch']; // prioridade quando 2 apertados juntos
 const DIVE_VY = -15.5;
@@ -20,7 +21,7 @@ const DIVE_FALL = 13;
 const DIVE_FRAMES = 34;      // frames estimados até pousar (pra mirar o alvo)
 
 /** Coisas que o lutador pede pro match criar (projétil, zona). */
-export interface SpawnRequest { kind: 'projectile' | 'zone'; move: MoveDef; x: number }
+export interface SpawnRequest { kind: 'projectile' | 'zone' | 'fx'; move: MoveDef; x: number; y?: number }
 
 export class Fighter {
   x: number; y = 0;            // pés; y é deslocamento acima do chão (negativo = no ar)
@@ -37,7 +38,9 @@ export class Fighter {
   hasHit = false;
   air = false;                 // golpe aéreo em andamento
   lowAttack = false;           // golpe agachado (usa hurtbox baixa)
-  sub: DiveSub | null = null;  // sub-fase do mergulho
+  sub: DiveSub | ThrowSub | null = null;  // sub-fase do mergulho / agarrão
+  victim: Fighter | null = null;          // quem está sendo agarrado
+  grabbedBy: Fighter | null = null;
   airAttackUsed = false;
   lag = 0;                     // frames travado ao pousar de um golpe aéreo
   stun = 0;
@@ -65,6 +68,7 @@ export class Fighter {
     const m = this.move;
     if (!m) return null;
     if (m.kind === 'dive') return this.sub === 'rise' ? 'startup' : this.sub === 'dive' ? 'active' : this.sub === 'impact' ? 'impact' : 'recovery';
+    if (m.kind === 'throw') return this.sub === 'dash' ? 'startup' : this.sub === 'grab' ? 'active' : this.sub === 'whiff' ? 'recovery' : 'impact';
     const f = this.stateFrame;
     if (f < m.startup) return 'startup';
     if (f < m.startup + m.active) return 'active';
@@ -78,7 +82,8 @@ export class Fighter {
   setState(s: State) {
     if (this.state === s) return;
     this.state = s; this.stateFrame = 0;
-    if (s !== 'attacking') { this.move = null; this.moveName = null; this.hasHit = false; this.air = false; this.lowAttack = false; this.sub = null; }
+    if (s !== 'attacking') { this.move = null; this.moveName = null; this.hasHit = false; this.air = false; this.lowAttack = false; this.sub = null; this.victim = null; }
+    if (s !== 'grabbed') this.grabbedBy = null;
   }
 
   faceTowards(other: Fighter) {
@@ -123,6 +128,8 @@ export class Fighter {
           this.setState('idle');
         }
         break;
+      case 'grabbed':
+        break; // posição vem de quem agarrou
       case 'ko':
         if (this.knockdownAir) {
           this.x += this.vx; this.physicsAir();
@@ -169,6 +176,19 @@ export class Fighter {
       return;
     }
 
+    if (m.kind === 'throw') {
+      const T = m.throw!;
+      switch (this.sub) {
+        case 'dash': this.x += T.speed * this.facing; if (this.stateFrame >= T.dash) { this.sub = 'grab'; this.stateFrame = 0; } break;
+        case 'grab': this.x += T.speed * 0.4 * this.facing; if (this.stateFrame >= T.grab) { this.sub = 'whiff'; this.stateFrame = 0; } break;
+        case 'hold': this.placeVictim(T.holdOffset); if (this.stateFrame >= T.hold) { this.sub = 'lift'; this.stateFrame = 0; } break;
+        case 'lift': this.placeVictim(T.liftOffset); if (this.stateFrame >= T.lift) { this.sub = 'throw'; this.stateFrame = 0; this.release(T); } break;
+        case 'throw': if (this.stateFrame >= T.throw) this.setState('idle'); break;
+        default: if (this.stateFrame >= T.whiff) this.setState('idle');
+      }
+      return;
+    }
+
     if (this.air) {
       this.physicsAir();
       if (this.grounded) { this.lag = m.landingLag ?? 4; this.land(); return; }
@@ -184,6 +204,24 @@ export class Fighter {
       for (let k = 0; k < count; k++) if (this.stateFrame === m.startup + 1 + k * every) this.spawns.push({ kind: 'projectile', move: m, x: this.x });
     }
     if (this.stateFrame >= total) this.setState('idle');
+  }
+
+  /** Agarrou: a vítima fica presa até o arremesso. */
+  grab(v: Fighter) {
+    this.sub = 'hold'; this.stateFrame = 0; this.hasHit = true; this.victim = v;
+    v.setState('grabbed'); v.grabbedBy = this; v.vx = 0; v.vy = 0; v.y = 0;
+    audio.sfx('hit');
+  }
+  private placeVictim(off: { x: number; y: number }) {
+    const v = this.victim; if (!v) return;
+    v.x = Math.max(ARENA_MIN, Math.min(ARENA_MAX, this.x + this.facing * off.x * this.scale));
+    v.y = off.y * this.scale; v.facing = this.facing === 1 ? -1 : 1;
+  }
+  private release(T: ThrowDef) {
+    const v = this.victim; if (!v) return;
+    v.setState('idle'); v.grabbedBy = null; this.victim = null;
+    v.takeHit({ damage: T.release.damage, hitstun: 30, blockstun: 0, knockback: T.release.knockback, launch: T.release.launch, knockdown: true, hitstop: T.release.hitstop }, this, false, this.x);
+    this.spawns.push({ kind: 'fx', move: this.move!, x: v.x, y: GROUND_Y + v.y - 60 * this.scale });
   }
 
   private readBuffer(ctrl: Controller) {
@@ -252,6 +290,7 @@ export class Fighter {
     this.air = wasAir || m.kind === 'air';
     this.lowAttack = m.kind === 'low' || (crouched && !wasAir);
     if (!wasAir) this.vx = 0;
+    if (m.kind === 'throw') { this.sub = 'dash'; this.vx = 0; }
     if (m.kind === 'dive') {
       this.sub = 'rise';
       this.vy = DIVE_VY; this.y = -0.01;
@@ -301,7 +340,7 @@ export class Fighter {
     return { x: wx, y: GROUND_Y + this.y + b.y * s, w, h };
   }
   get hurtbox(): Box | null {
-    if (this.state === 'ko' || this.state === 'knockdown') return null;
+    if (this.state === 'ko' || this.state === 'knockdown' || this.state === 'grabbed') return null;
     return this.toWorld(this.crouched ? this.def.crouchHurtbox : this.def.hurtbox);
   }
   get hitbox(): Box | null {
@@ -336,7 +375,7 @@ export class Fighter {
       case 'crouching': return { frame: F[A.crouch.frames[0]], anchor: 'feet' };
       case 'blocking': case 'blockstun':
         return { frame: F[(this.crouchBlock ? A.crouchBlock : A.block).frames[0]], anchor: 'feet' };
-      case 'hitstun': return { frame: F[A.hit.frames[0]], anchor: 'feet' };
+      case 'hitstun': case 'grabbed': return { frame: F[A.hit.frames[0]], anchor: 'feet' };
       case 'knockdown': case 'ko': {
         if (this.knockdownAir) return { frame: F[A.fall.frames[0]], anchor: 'center' };
         if (this.state === 'knockdown' && this.stateFrame > 28) return { frame: F[A.getup.frames[0]], anchor: 'feet' };
@@ -346,6 +385,12 @@ export class Fighter {
       case 'attacking': {
         const m = this.move!; const ph = this.phase!;
         const anchor = m.anchor ?? (this.air ? 'center' : 'feet');
+        if (m.kind === 'throw') {
+          const P = m.phases;
+          const list = this.sub === 'dash' ? P.startup : this.sub === 'grab' ? P.active : this.sub === 'hold' ? (P.hold ?? P.active)
+            : this.sub === 'lift' ? (P.lift ?? P.active) : this.sub === 'throw' ? (P.throw ?? P.recovery) : P.recovery;
+          return { frame: F[list[0]], anchor: 'feet' };
+        }
         if (m.kind === 'dive') {
           if (ph === 'startup') return { frame: F[m.phases.startup[0]], anchor: 'center' };
           if (ph === 'active') return { frame: F[m.phases.active[0]], anchor: 'center' };

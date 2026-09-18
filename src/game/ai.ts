@@ -86,7 +86,8 @@ export class Ai {
     if (me.meter >= 100 && M.super) {
       const kind = M.super.kind ?? (M.super.projectile ? 'shot' : 'ground');
       if ((kind === 'portal' && this.rng.chance(p.specialChance * 0.6)) || (kind === 'dive' && dx < 430 && this.rng.chance(p.specialChance))
-        || (kind === 'shot' && dx > 220 && this.rng.chance(p.specialChance * 0.7))) {
+        || (kind === 'shot' && dx > 220 && this.rng.chance(p.specialChance * 0.7))
+        || (kind === 'throw' && dx < 200 && ot.grounded && this.rng.chance(p.specialChance))) {
         this.debug = 'super'; this.set(['special'], 2); return;
       }
     }

@@ -120,7 +120,7 @@ export class Match {
         this.phase = 'ko'; this.phaseFrame = 0;
         this.ev.message('TIME OVER', 90, 'big');
         audio.voice('ann-time', 'ann');
-        for (const f of this.fighters) if (f.state !== 'ko') f.setState('idle');
+        for (const f of this.fighters) if (f.state !== 'ko') { f.setState('idle'); f.y = 0; }
       }
       return;
     }
@@ -173,7 +173,8 @@ export class Match {
   private drainSpawns() {
     for (const f of this.fighters) {
       for (const sp of f.spawns) {
-        if (sp.kind === 'projectile') { this.projectiles.push(new Projectile(f, sp.move, f.assets.fx)); audio.sfx('projectile'); }
+        if (sp.kind === 'projectile') { this.projectiles.push(new Projectile(f, sp.move)); audio.sfx('projectile'); }
+        else if (sp.kind === 'fx') { this.fx.hit(sp.x, sp.y ?? GROUND_Y - 80, f.def.colors.primary, true); audio.sfx('hitBig'); continue; }
         else { this.zones.push(new Zone(f, sp.move, sp.x)); audio.sfx(sp.move.kind === 'dive' ? 'explosion' : 'portal'); }
         if (sp.move.name) this.ev.message(sp.move.name, 45, 'small');
       }
@@ -193,8 +194,10 @@ export class Match {
     ctx.save();
     ctx.translate(ox, oy);
     drawStage(ctx, this.stage, this.midX);
-    const f0 = this.fighters[0];
-    const order = f0.state === 'hitstun' || f0.state === 'knockdown' || (f0.state === 'attacking' && f0.sub === 'dive') ? [1, 0] : [0, 1];
+    const [f0, f1] = this.fighters;
+    const throwing = (f: Fighter) => f.state === 'attacking' && f.move?.kind === 'throw' && (f.sub === 'hold' || f.sub === 'lift' || f.sub === 'throw');
+    const order = throwing(f0) ? [1, 0] : throwing(f1) ? [0, 1]
+      : f0.state === 'hitstun' || f0.state === 'knockdown' || (f0.state === 'attacking' && f0.sub === 'dive') ? [1, 0] : [0, 1];
     for (const i of order) this.fighters[i].draw(ctx, debug);
     this.projectiles.forEach((p) => p.draw(ctx, debug));
     this.zones.forEach((z) => z.draw(ctx, debug));

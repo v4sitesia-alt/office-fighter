@@ -25,7 +25,10 @@ export async function loadFighter(id: string, onProgress?: () => void): Promise<
     loadJSON<FramesFile>(dir + 'frames.json').then((v) => (tick(), v)),
   ]);
   const sheet = await loadImage(dir + frames.sheet); tick();
-  const fx = await loadImage(dir + (frames.fx?.file ?? 'special_fx.png')).catch(() => undefined); tick();
+  const fxFiles = new Set<string>(['special_fx.png']);
+  for (const m of Object.values(def.moves)) if (m?.projectile?.sprite) fxFiles.add(m.projectile.sprite);
+  const fx: Record<string, HTMLImageElement> = {};
+  await Promise.all([...fxFiles].map((f) => loadImage(dir + f).then((img) => { fx[f] = img; }).catch(() => undefined))); tick();
   const portrait = await loadImage(dir + 'portrait.png').catch(() => undefined); tick();
   return { def, frames, sheet, fx, portrait };
 }

@@ -25,8 +25,18 @@ export function resolveHits(fighters: [Fighter, Fighter], projectiles: Projectil
   const pending: Array<() => void> = [];
   const other = (f: Fighter) => (f === fighters[0] ? fighters[1] : fighters[0]);
 
+  // agarrões: ignoram defesa; só pegam quem está no chão e de pé
   for (let i = 0; i < 2; i++) {
     const atk = fighters[i], def = fighters[1 - i];
+    if (atk.state !== 'attacking' || atk.move?.kind !== 'throw' || atk.sub !== 'grab' || atk.hasHit) continue;
+    const hb = atk.hitbox;
+    const grabbable = def.grounded && !['knockdown', 'ko', 'grabbed', 'jumping', 'win'].includes(def.state);
+    if (hb && grabbable && overlaps(hb, def.hurtbox ?? def.pushbox)) { atk.grab(def); hitstop = Math.max(hitstop, 6); }
+  }
+
+  for (let i = 0; i < 2; i++) {
+    const atk = fighters[i], def = fighters[1 - i];
+    if (atk.move?.kind === 'throw') continue;
     const hb = atk.hitbox, hurt = def.hurtbox;
     if (hb && hurt && overlaps(hb, hurt)) {
       const m = atk.move!;
@@ -85,7 +95,7 @@ export function resolveHits(fighters: [Fighter, Fighter], projectiles: Projectil
 
 /** Separa os pushboxes pra os lutadores não se atravessarem. */
 export function separate(a: Fighter, b: Fighter) {
-  if (a.state === 'ko' || b.state === 'ko') return;
+  if (a.state === 'ko' || b.state === 'ko' || a.state === 'grabbed' || b.state === 'grabbed') return;
   const pa = a.pushbox, pb = b.pushbox;
   if (!overlaps(pa, pb)) return;
   const left = pa.x < pb.x ? a : b, right = left === a ? b : a;

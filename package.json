@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "sprites": "python3 tools/sprites.py Personagens/Mais-movimentos/edgard-2.png public/fighters/edgard --rows 7 && python3 tools/sprites.py Personagens/Mais-movimentos/santana-2.png public/fighters/santana --rows 7 --fx 388,646,463,822 \u0026\u0026 python3 tools/sprites.py Personagens/Mais-movimentos/kevin.png public/fighters/kevin --rows 7 --fx 877,1190,905,1261"
+    "sprites": "python3 tools/sprites.py Personagens/Mais-movimentos/edgard-2.png public/fighters/edgard --rows 7 && python3 tools/sprites.py Personagens/Mais-movimentos/santana-2.png public/fighters/santana --rows 7 --fx 388,646,463,822 \u0026\u0026 python3 tools/sprites.py Personagens/Mais-movimentos/kevin.png public/fighters/kevin --rows 7 && python3 tools/sprites.py Personagens/Mais-movimentos/laura.png public/fighters/laura --rows 7 --fx 397,646,429,815"
   },
   "devDependencies": {
     "typescript": "^7.0.2",

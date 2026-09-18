@@ -5,8 +5,10 @@ import type { Fighter } from './fighter';
 export class Projectile {
   x: number; y: number; vx: number; life: number; dead = false; age = 0;
   hitbox: Box;
-  constructor(public owner: Fighter, public move: MoveDef, public img: HTMLImageElement | undefined) {
+  img: HTMLImageElement | undefined;
+  constructor(public owner: Fighter, public move: MoveDef) {
     const p = move.projectile!;
+    this.img = owner.assets.fx[p.sprite ?? 'special_fx.png'];
     const s = owner.scale;
     this.x = owner.x + owner.facing * p.x * s;
     this.y = GROUND_Y + owner.y + p.y * s;

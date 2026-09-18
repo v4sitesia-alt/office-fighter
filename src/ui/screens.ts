@@ -95,7 +95,7 @@ export class Screens {
       q(`.sf2-region.${side}`).textContent = f.def.origin?.region ?? f.def.role;
     };
     this.onMove = (i) => {
-      const cpu = roster.length > 1 ? (i + 1) % roster.length : i;
+      const cpu = roster.length > 1 ? (i === 0 ? 1 : 0) : i; // primeiro oponente da campanha (ordem da lista)
       fill('p1', roster[i]); fill('cpu', roster[cpu]);
       marks.forEach((m) => { const k = Number(m.dataset.i); m.querySelector('.dot')!.setAttribute('class', `dot${k === i ? ' on' : k === cpu ? ' cpu' : ''}`); });
       this.menuItems.forEach((el, k) => el.classList.toggle('cpu', k === cpu && k !== i));
