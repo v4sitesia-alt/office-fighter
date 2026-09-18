@@ -51,6 +51,13 @@ Board de cada lutador: 5 colunas × 7 linhas (35 poses), fundo transparente, tod
 Comandos: no chão A/S/D dão soco/chute/forte; segurando ↓ viram os rasteiros (só defende agachado);
 no ar viram os aéreos (só defende em pé). B com meia barra (50) = especial com projétil; B com barra cheia = super.
 
+## Arena online
+
+`src/net/`: saguão com presença, desafios 1×1, lutas ao vivo pra assistir e placar da sessão, sobre Supabase Realtime
+(broadcast + presença; ainda sem tabelas). A luta usa lockstep: só os botões de cada frame trafegam, com 10 frames de atraso
+de entrada, e espectadores simulam a mesma luta. Sem `VITE_SUPABASE_ANON_KEY` (veja `.env.example`) cai no modo local, que só
+liga abas do mesmo navegador. Autoteste do sincronismo no console: `__of().netSelfTest()` (tem que devolver `equal: true`).
+
 ## Áudio
 
 - Música e efeitos são sintetizados no navegador (Web Audio): `src/core/audio.ts` tem o sequenciador chiptune e os efeitos;

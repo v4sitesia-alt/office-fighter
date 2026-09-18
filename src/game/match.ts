@@ -1,6 +1,9 @@
 import type { StageAssets } from '../core/assets';
 import { audio } from '../core/audio';
-import type { Controller, Input } from '../core/input';
+import type { Controller } from '../core/input';
+
+/** Qualquer fonte de controles: teclado/toque (Input) ou botões vindos da rede. */
+export interface Ports { ports: Controller[] }
 import { Ai } from './ai';
 import { ARENA_MAX, ARENA_MIN, GROUND_Y, H, ROUND_SECONDS, W } from './consts';
 import { Fighter } from './fighter';
@@ -70,7 +73,7 @@ export class Match {
     this.phase = 'intro'; this.phaseFrame = 0; this.slowmo = 0; this.hitstop = 0; this.roundWinner = -1;
   }
 
-  update(input: Input, paused: boolean) {
+  update(input: Ports, paused: boolean) {
     if (paused) return;
     if (this.slowmo > 0 && ++this.slowAcc < this.slowmo) { this.fx.update(); return; }
     this.slowAcc = 0;

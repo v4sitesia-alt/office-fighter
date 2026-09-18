@@ -66,6 +66,20 @@ export class Screens {
     this.onConfirm = onStart;
   }
 
+  mainMenu(onArcade: () => void, onOnline: () => void, onBack: () => void) {
+    this.set('menu', `
+      <div class="center">
+        <div class="title-sm">MODO DE JOGO</div>
+        <div class="menu">
+          <div class="item" data-item><b>ARCADE</b><i>campanha contra a CPU</i></div>
+          <div class="item" data-item><b>ARENA ONLINE</b><i>desafie colegas · assista às lutas</i></div>
+        </div>
+        <div class="pix tiny">W S ESCOLHER · G / ENTER CONFIRMAR · V VOLTAR</div>
+      </div>`);
+    this.onConfirm = (i) => (i === 0 ? onArcade() : onOnline());
+    this.onBack = onBack;
+  }
+
   difficulty(onPick: (d: Difficulty) => void, onBack: () => void) {
     this.set('menu', `
       <div class="center">

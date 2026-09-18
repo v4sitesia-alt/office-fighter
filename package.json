@@ -7,10 +7,13 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "sprites": "python3 tools/sprites.py Personagens/Mais-movimentos/edgard-2.png public/fighters/edgard --rows 7 && python3 tools/sprites.py Personagens/Mais-movimentos/santana-2.png public/fighters/santana --rows 7 --fx 388,646,463,822 \u0026\u0026 python3 tools/sprites.py Personagens/Mais-movimentos/kevin.png public/fighters/kevin --rows 7 && python3 tools/sprites.py Personagens/Mais-movimentos/laura.png public/fighters/laura --rows 7 --fx 397,646,429,815"
+    "sprites": "python3 tools/sprites.py Personagens/Mais-movimentos/edgard-2.png public/fighters/edgard --rows 7 && python3 tools/sprites.py Personagens/Mais-movimentos/santana-2.png public/fighters/santana --rows 7 --fx 388,646,463,822 && python3 tools/sprites.py Personagens/Mais-movimentos/kevin.png public/fighters/kevin --rows 7 && python3 tools/sprites.py Personagens/Mais-movimentos/laura.png public/fighters/laura --rows 7 --fx 397,646,429,815"
   },
   "devDependencies": {
     "typescript": "^7.0.2",
     "vite": "^8.3.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.116.0"
   }
 }
