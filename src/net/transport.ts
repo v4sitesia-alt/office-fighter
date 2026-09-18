@@ -3,7 +3,7 @@
 // sem as chaves cai no BroadcastChannel, que só liga abas do mesmo navegador (serve pra testar).
 import { createClient, type RealtimeChannel, type SupabaseClient } from '@supabase/supabase-js';
 
-export interface Peer { id: string; name: string; fighter: string; status: 'livre' | 'lutando' | 'assistindo'; matchId?: string; vs?: string }
+export interface Peer { id: string; name: string; fighter: string; status: 'livre' | 'procurando' | 'lutando' | 'assistindo'; matchId?: string; vs?: string }
 export type Msg = { t: string; [k: string]: unknown };
 
 export interface Room {

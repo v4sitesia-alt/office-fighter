@@ -139,7 +139,7 @@ let netMenuOpen = false, netOver = false;
 
 function openLobby() {
   screens.hide();
-  lobby ??= new Lobby(document.getElementById('screens')!, roster, startNetMatch, () => { lobby?.close(); lobby = null; goTitle(); });
+  lobby ??= new Lobby(document.getElementById('screens')!, roster, startNetMatch, () => { lobby?.close(); lobby = null; goTitle(); }, () => showSelect());
   setMode('lobby');
   lobby.open(roster[playerIdx].def.id);
 }
@@ -293,5 +293,6 @@ startLoop({
   await cinematic.load(import.meta.env.BASE_URL).catch(() => undefined);
   // o navegador só libera som depois de um gesto: a abertura começa no primeiro toque/tecla
   setMode('boot');
-  screens.boot(() => { screens.hide(); introClock = 0; setMode('intro'); });
+  const invited = new URLSearchParams(location.search).has('arena');
+  screens.boot(() => { screens.hide(); if (invited) { online = true; showSelect(); } else { introClock = 0; setMode('intro'); } }, invited);
 })().catch((err) => { console.error(err); screens.loading(0, 1); document.getElementById('screens')!.innerHTML += `<div class="err">${String(err)}</div>`; });

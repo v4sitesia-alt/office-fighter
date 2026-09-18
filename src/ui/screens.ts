@@ -48,8 +48,8 @@ export class Screens {
     this.set('loading', `<div class="center"><div class="pix">CARREGANDO</div><div class="bar"><div style="width:${(progress / Math.max(1, total)) * 100}%"></div></div></div>`);
   }
 
-  boot(onStart: () => void) {
-    this.set('boot', `<div class="center"><div class="pix press">INSERT COIN</div><div class="pix tiny">TOQUE OU APERTE QUALQUER BOTÃO</div></div>`);
+  boot(onStart: () => void, invited = false) {
+    this.set('boot', `<div class="center">${invited ? '<div class="title-sm">VOCÊ FOI CONVIDADO</div><div class="pix small">ESCOLHA SEU LUTADOR E ENTRE NA ARENA</div>' : ''}<div class="pix press">${invited ? 'ENTRAR' : 'INSERT COIN'}</div><div class="pix tiny">TOQUE OU APERTE QUALQUER BOTÃO</div></div>`);
     this.onConfirm = onStart;
     this.root.onclick = () => { this.root.onclick = null; onStart(); };
   }
@@ -72,7 +72,7 @@ export class Screens {
         <div class="title-sm">MODO DE JOGO</div>
         <div class="menu">
           <div class="item" data-item><b>ARCADE</b><i>campanha contra a CPU</i></div>
-          <div class="item" data-item><b>ARENA ONLINE</b><i>desafie colegas · assista às lutas</i></div>
+          <div class="item" data-item><b>ARENA ONLINE</b><i>jogue contra outra pessoa · campeonato · assista às lutas</i></div>
         </div>
         <div class="pix tiny">W S ESCOLHER · G / ENTER CONFIRMAR · V VOLTAR</div>
       </div>`);

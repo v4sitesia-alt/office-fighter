@@ -251,3 +251,12 @@ body[data-mode="fight"] .hud, body[data-mode="result"] .hud, body[data-mode="net
 .sf2-grid { flex-wrap: wrap; max-width: 470px; margin: 0 auto; gap: 4px; padding: 4px; }
 .sf2-slot { width: 62px; height: 62px; border-width: 2px; }
 .sf2-hint { display: none; }
+
+/* arena: cartão do jogador com as ações principais */
+.lb { grid-template-rows: auto auto 1fr auto; padding-top: 14px; }
+.lb-head .title-sm { font-size: 30px; }
+.lb-me { grid-column: 1 / -1; display: flex; align-items: center; gap: 14px; background: rgba(255,255,255,.07); border: 2px solid var(--yellow); padding: 10px 14px; }
+.lb-me .lb-av.big { width: 70px; height: 70px; } .lb-me .lb-name { flex: 0 0 150px; font-size: 12px; } .lb-me .lb-name .lb-btn { margin-top: 8px; display: inline-block; }
+.lb-cta { flex: 1; text-align: center; } .lb-cta small { display: block; font-size: 6px; line-height: 1.7; color: #b9c6e4; margin-top: 8px; }
+.lb-btn.big { font-size: 12px; padding: 14px 10px; } .lb-btn.big.on { background: #ff5468; color: #fff; box-shadow: 0 4px 0 #8a1626; animation: pulse .8s ease-in-out infinite; }
+.lb-empty { border: 2px dashed #4a5a8a; padding: 18px; text-align: center; } .lb-empty .pix.small { color: var(--yellow); margin-bottom: 8px; }

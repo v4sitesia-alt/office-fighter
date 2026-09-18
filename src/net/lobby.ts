@@ -20,7 +20,7 @@ export class Lobby {
   private unwatch: (() => void) | null = null; private refreshing = false;
   me: Peer;
 
-  constructor(private root: HTMLElement, private roster: FighterAssets[], private onMatch: (cfg: NetMatchCfg) => void, private onExit: () => void) {
+  constructor(private root: HTMLElement, private roster: FighterAssets[], private onMatch: (cfg: NetMatchCfg) => void, private onExit: () => void, private onChangeFighter: () => void) {
     let id = sessionStorage.getItem('v4f-id');
     if (!id) { id = Math.random().toString(36).slice(2, 10); sessionStorage.setItem('v4f-id', id); }
     this.me = { id, name: localStorage.getItem('v4f-name') ?? '', fighter: roster[0].def.id, status: 'livre' };
@@ -30,7 +30,7 @@ export class Lobby {
     this.me.fighter = fighterId; this.me.status = 'livre'; this.me.matchId = undefined; this.me.vs = undefined;
     this.root.className = 'screens show lobby';
     if (!this.me.name) { this.askName(); return; }
-    if (!this.room) this.room = joinRoom('lobby', this.me, { onMsg: (m) => this.onMsg(m), onPeers: (p) => { this.peers = p; this.paint(); } });
+    if (!this.room) this.room = joinRoom('lobby', this.me, { onMsg: (m) => this.onMsg(m), onPeers: (p) => { this.peers = p; this.matchmake(); this.paint(); } });
     else this.room.setPresence(this.me);
     void store.upsertPlayer(this.me.id, this.me.name, this.me.fighter);
     this.unwatch ??= store.watch(() => void this.refresh());
@@ -81,10 +81,26 @@ export class Lobby {
     this.paint();
   }
 
+  /** JOGAR AGORA: quando duas pessoas estão procurando, a de menor id desafia e a outra aceita sozinha. */
+  private matchmake() {
+    if (this.me.status !== 'procurando' || this.waiting) return;
+    const other = this.peers.filter((p) => p.id !== this.me.id && p.status === 'procurando').sort((a, b) => a.id.localeCompare(b.id))[0];
+    if (!other || this.me.id > other.id) return;
+    this.waiting = other.id;
+    this.room?.send({ t: 'challenge', auto: true, to: other.id, from: this.me, matchId: `${this.me.id}-${Date.now().toString(36)}` });
+    setTimeout(() => { if (this.waiting === other.id) { this.waiting = null; this.matchmake(); } }, 6000);
+  }
+  private accept(from: Peer, matchId: string) {
+    this.incoming = null;
+    this.room?.send({ t: 'accept', to: from.id, from: this.me, matchId });
+    this.onMatch({ matchId, f: [from.fighter, this.me.fighter], names: [from.name, this.me.name], ids: [from.id, this.me.id], local: 1 });
+  }
+
   private onMsg(m: Msg) {
     if (m.t === 'result') { this.addResult(m.winner as string, m.loser as string); return; }
     if (m.to !== this.me.id) return;
-    if (m.t === 'challenge' && this.me.status === 'livre' && !this.incoming) { this.incoming = { from: m.from as Peer, matchId: m.matchId as string }; audio.sfx('selectChar'); this.paint(); }
+    if (m.t === 'challenge' && m.auto && this.me.status === 'procurando') { this.accept(m.from as Peer, m.matchId as string); return; }
+    if (m.t === 'challenge' && (this.me.status === 'livre' || this.me.status === 'procurando') && !this.incoming) { this.incoming = { from: m.from as Peer, matchId: m.matchId as string }; audio.sfx('selectChar'); this.paint(); }
     else if (m.t === 'challenge') this.room?.send({ t: 'decline', to: (m.from as Peer).id });
     else if (m.t === 'decline' && this.waiting) { this.waiting = null; this.feed.unshift('Desafio recusado'); this.paint(); }
     else if (m.t === 'accept' && this.waiting) {
@@ -110,19 +126,24 @@ export class Lobby {
     const others = this.peers.filter((p) => p.id !== this.me.id);
     const full = this.peers.length > MAX_PEERS && this.peers.slice(MAX_PEERS).some((p) => p.id === this.me.id);
     if (full) { this.root.innerHTML = `<div class="center"><div class="title-sm">ARENA LOTADA</div><div class="pix small">JÁ TEM ${MAX_PEERS} PESSOAS CONECTADAS. TENTE DAQUI A POUCO.</div><div class="lb-btn ghost" data-back>VOLTAR</div></div>`; this.root.querySelector<HTMLElement>('[data-back]')!.onclick = () => this.onExit(); return; }
-    const rows = others.map((p) => `<div class="lb-row"><div class="lb-av">${img(p.fighter)}</div><div class="lb-name">${esc(p.name)}<small>${p.status === 'livre' ? 'LIVRE' : p.status === 'lutando' ? `LUTANDO · ${esc(p.vs ?? '')}` : 'ASSISTINDO'}</small></div>
-      ${p.status === 'livre' ? `<div class="lb-btn sm" data-ch="${p.id}">${this.waiting === p.id ? 'AGUARDANDO…' : 'DESAFIAR'}</div>` : ''}</div>`).join('') || '<div class="pix tiny">NINGUÉM MAIS ONLINE. MANDE O LINK PRA GALERA.</div>';
+    const rows = others.map((p) => `<div class="lb-row"><div class="lb-av">${img(p.fighter)}</div><div class="lb-name">${esc(p.name)}<small>${p.status === 'livre' ? 'LIVRE' : p.status === 'procurando' ? 'PROCURANDO LUTA' : p.status === 'lutando' ? `LUTANDO · ${esc(p.vs ?? '')}` : 'ASSISTINDO'}</small></div>
+      ${p.status === 'livre' || p.status === 'procurando' ? `<div class="lb-btn sm" data-ch="${p.id}">${this.waiting === p.id ? 'AGUARDANDO…' : 'DESAFIAR'}</div>` : ''}</div>`).join('') || '<div class="lb-empty"><div class="pix small">VOCÊ É O PRIMEIRO AQUI</div><div class="pix tiny">CLIQUE EM CONVIDAR E MANDE O LINK PRO PESSOAL.<br>ASSIM QUE ALGUÉM ENTRAR, APARECE NESTA LISTA.</div></div>';
     const live = new Map<string, Peer>(); this.peers.forEach((p) => { if (p.status === 'lutando' && p.matchId && !live.has(p.matchId)) live.set(p.matchId, p); });
     const lives = [...live.values()].map((p) => `<div class="lb-row"><div class="lb-name">${esc(p.vs ?? '')}<small>AO VIVO</small></div><div class="lb-btn sm" data-watch="${p.matchId}">ASSISTIR</div></div>`).join('') || '<div class="pix tiny">NENHUMA LUTA AGORA</div>';
     const rankDb = this.rank.map((r, i) => `<div class="lb-rank"><b>${i + 1}º</b><span>${esc(r.name)}</span><i>${r.points} PTS · ${r.wins}V ${r.losses}D</i></div>`).join('');
     const rankSess = [...this.score.entries()].sort((a, b) => b[1].w - a[1].w || a[1].l - b[1].l).slice(0, 6)
       .map(([n, s], i) => `<div class="lb-rank"><b>${i + 1}º</b><span>${esc(n)}</span><i>${s.w}V ${s.l}D</i></div>`).join('');
     const rank = rankDb || rankSess || '<div class="pix tiny">SEM LUTAS AINDA</div>';
+    const searching = this.me.status === 'procurando';
+    const link = `${location.origin}${location.pathname}?arena`;
     this.root.innerHTML = `<div class="lb">
-      <div class="lb-head"><div class="title-sm">ARENA ONLINE</div><div class="pix tiny">${ONLINE ? 'CONECTADO' : 'MODO LOCAL (SÓ ABAS DESTE NAVEGADOR)'} · VOCÊ: ${esc(this.me.name)} · ${this.peers.length}/${MAX_PEERS} ONLINE</div></div>
-      <div class="lb-col"><h4>JOGADORES</h4>${rows}</div>
-      <div class="lb-col"><h4>LUTAS AO VIVO</h4>${lives}<h4>CAMPEONATO</h4>${this.tourHtml()}<h4>RANKING</h4>${rank}<h4>ÚLTIMAS</h4>${this.feed.map((f) => `<div class="pix tiny">${esc(f)}</div>`).join('')}</div>
-      <div class="lb-foot"><div class="lb-btn ghost" data-back>SAIR</div></div>
+      <div class="lb-head"><div class="title-sm">ARENA ONLINE</div><div class="pix tiny">${ONLINE ? 'CONECTADO' : 'MODO LOCAL (SÓ ABAS DESTE NAVEGADOR)'} · ${this.peers.length}/${MAX_PEERS} ONLINE</div></div>
+      <div class="lb-me"><div class="lb-av big">${img(this.me.fighter)}</div><div class="lb-name">${esc(this.me.name)}<small>${esc(this.roster.find((r) => r.def.id === this.me.fighter)?.def.name ?? '')}</small><div class="lb-btn sm ghost" data-swap>TROCAR LUTADOR</div></div>
+        <div class="lb-cta"><div class="lb-btn big ${searching ? 'on' : ''}" data-quick>${searching ? 'PROCURANDO ADVERSÁRIO… (CANCELAR)' : '▶ JOGAR AGORA'}</div><small>${searching ? 'A luta começa sozinha quando outra pessoa apertar JOGAR AGORA.' : 'Acha um adversário sozinho. Ou desafie alguém da lista.'}</small></div>
+        <div class="lb-cta"><div class="lb-btn big ghost" data-invite>🔗 CONVIDAR</div><small>Copia o link. Quem abrir cai direto aqui.</small></div></div>
+      <div class="lb-col"><h4>QUEM ESTÁ AQUI</h4>${rows}</div>
+      <div class="lb-col"><h4>LUTAS AO VIVO</h4>${lives}<h4>CAMPEONATO</h4>${this.tourHtml()}<h4>RANKING</h4>${rank}${this.feed.length ? `<h4>ÚLTIMAS</h4>${this.feed.map((f) => `<div class="pix tiny">${esc(f)}</div>`).join('')}` : ''}</div>
+      <div class="lb-foot"><div class="lb-btn ghost sm" data-back>SAIR DA ARENA</div></div>
       ${this.incoming ? `<div class="lb-modal"><div class="lb-av big">${img(this.incoming.from.fighter)}</div><div class="pix">${esc(this.incoming.from.name)} TE DESAFIOU!</div><div class="lb-btn" data-acc>ACEITAR</div><div class="lb-btn ghost" data-dec>RECUSAR</div></div>` : ''}</div>`;
     const on = (sel: string, fn: (el: HTMLElement) => void) => this.root.querySelectorAll<HTMLElement>(sel).forEach((el) => { el.onclick = () => { audio.sfx('menuConfirm'); fn(el); }; });
     on('[data-ch]', (el) => {
@@ -137,10 +158,12 @@ export class Lobby {
       const fa = this.peers.find((x) => x.name === a)?.fighter ?? this.roster[0].def.id, fb = this.peers.find((x) => x.name === b)?.fighter ?? this.roster[0].def.id;
       this.onMatch({ matchId: p.matchId!, f: [fa, fb], names: [a, b], local: -1 });
     });
-    on('[data-acc]', () => {
-      const inc = this.incoming!; this.incoming = null;
-      this.room?.send({ t: 'accept', to: inc.from.id, from: this.me, matchId: inc.matchId });
-      this.onMatch({ matchId: inc.matchId, f: [inc.from.fighter, this.me.fighter], names: [inc.from.name, this.me.name], ids: [inc.from.id, this.me.id], local: 1 });
+    on('[data-acc]', () => this.accept(this.incoming!.from, this.incoming!.matchId));
+    on('[data-quick]', () => { this.setStatus(this.me.status === 'procurando' ? 'livre' : 'procurando'); this.waiting = null; this.matchmake(); this.paint(); });
+    on('[data-swap]', () => { this.setStatus('livre'); this.onChangeFighter(); });
+    on('[data-invite]', (el) => {
+      const done = () => { el.textContent = '✔ LINK COPIADO'; setTimeout(() => this.paint(), 1800); };
+      if (navigator.clipboard) navigator.clipboard.writeText(link).then(done, () => window.prompt('Copie o link:', link)); else window.prompt('Copie o link:', link);
     });
     on('[data-dec]', () => { this.room?.send({ t: 'decline', to: this.incoming!.from.id }); this.incoming = null; this.paint(); });
     on('[data-back]', () => this.onExit());
