@@ -218,18 +218,28 @@ body[data-mode="fight"] .hud, body[data-mode="result"] .hud, body[data-mode="net
 
 /* ---------- tela VS frente a frente */
 .vs-stage { position: absolute; inset: 0; background-size: cover; background-position: center; overflow: hidden; }
-.vs-label { position: absolute; top: 16px; left: 0; right: 0; text-align: center; color: var(--yellow); }
-.vs-side { position: absolute; bottom: 0; width: 46%; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 14px; }
-.vs-side.l { left: 0; animation: slideL .45s ease-out; } .vs-side.r { right: 0; animation: slideR .45s ease-out; }
-.vs-face { height: 330px; display: flex; align-items: flex-end; } .vs-face img { height: 330px; image-rendering: pixelated; }
-.vs-face img.thumbfall { height: 250px; margin-bottom: 30px; }
-.vs-side.r .vs-face img { transform: scaleX(-1); }
-.vs-plate { display: flex; align-items: center; gap: 10px; background: rgba(5,8,25,.85); border: 3px solid #fff; padding: 6px 14px 6px 6px; margin-top: -26px; z-index: 2; text-align: left; box-shadow: 0 4px 0 #000; }
-.vs-av { width: 52px; height: 52px; overflow: hidden; flex: none; } .vs-av img { width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; }
-.vs-plate .crole { margin-top: 5px; }
-.vs-bio { font-size: 7px; line-height: 1.7; color: #dfe7f3; text-shadow: 1px 1px 0 #000; max-width: 360px; margin-top: 8px; min-height: 26px; text-align: center; }
-.vs-logo { position: absolute; left: 50%; top: 40%; width: 230px; transform: translate(-50%, -50%); animation: vsPop .5s cubic-bezier(.2,1.6,.4,1) .3s both; image-rendering: pixelated; z-index: 3; }
-.vs-hint { position: absolute; bottom: 4px; left: 0; right: 0; text-align: center; }
+.vs-stage::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 45%, transparent 30%, rgba(3,4,14,.7) 100%); }
+.vs-side { position: absolute; top: 0; bottom: 0; width: 50%; }
+.vs-side.l { left: 0; animation: slideL .5s cubic-bezier(.2,.9,.3,1); } .vs-side.r { right: 0; animation: slideR .5s cubic-bezier(.2,.9,.3,1); }
+/* luz colorida do lutador por trás da ilustração */
+.vs-glow { position: absolute; inset: -10% -20%; background: radial-gradient(ellipse at 45% 55%, var(--c) 0%, transparent 58%); opacity: .42; mix-blend-mode: screen; }
+.vs-side.r .vs-glow { background: radial-gradient(ellipse at 55% 55%, var(--c) 0%, transparent 58%); }
+/* ilustração grande, sangrando pra fora da tela e sumindo no chão (esconde o corte reto da arte) */
+.vs-face { position: absolute; bottom: -34px; height: 560px; max-width: none; left: 44%; transform: translateX(-50%);
+  filter: hue-rotate(var(--hue, 0deg)) drop-shadow(0 0 2px #000) drop-shadow(0 0 22px color-mix(in srgb, var(--c) 70%, transparent));
+  -webkit-mask-image: linear-gradient(#000 72%, transparent 97%); mask-image: linear-gradient(#000 72%, transparent 97%); }
+.vs-side.r .vs-face { left: 56%; transform: translateX(-50%) scaleX(-1); }
+.vs-face.thumbfall { height: 300px; bottom: 150px; -webkit-mask-image: none; mask-image: none; }
+.vs-floor { position: absolute; left: 0; right: 0; bottom: 0; height: 190px; background: linear-gradient(transparent, rgba(3,4,14,.92) 62%); pointer-events: none; }
+.vs-plate { position: absolute; bottom: 30px; width: 380px; z-index: 3; }
+.vs-side.l .vs-plate { left: 26px; text-align: left; border-left: 6px solid var(--c); padding-left: 12px; }
+.vs-side.r .vs-plate { right: 26px; text-align: right; border-right: 6px solid var(--c); padding-right: 12px; }
+.vs-name { font-family: var(--logo); font-style: italic; font-size: 54px; line-height: .95; letter-spacing: 2px; color: #fff; text-shadow: 3px 3px 0 var(--c), 6px 6px 0 #000; }
+.vs-role { font-size: 9px; color: var(--yellow); text-shadow: 2px 2px 0 #000; margin-top: 8px; letter-spacing: 1px; }
+.vs-bio { font-size: 7px; line-height: 1.8; color: #dfe7f3; text-shadow: 1px 1px 0 #000; margin-top: 7px; }
+.vs-label { position: absolute; top: 14px; left: 0; right: 0; text-align: center; color: var(--yellow); z-index: 4; }
+.vs-logo { position: absolute; left: 50%; top: 36%; width: 170px; transform: translate(-50%, -50%); animation: vsPop .5s cubic-bezier(.2,1.6,.4,1) .35s both; image-rendering: pixelated; z-index: 4; filter: drop-shadow(0 0 26px rgba(255,160,40,.7)); }
+.vs-hint { position: absolute; bottom: 6px; left: 0; right: 0; text-align: center; z-index: 4; animation: blink 1s steps(1) infinite; }
 @keyframes slideL { from { transform: translateX(-110%); } } @keyframes slideR { from { transform: translateX(110%); } }
 @keyframes vsPop { from { transform: translate(-50%, -50%) scale(3); opacity: 0; } }
 /* ---------- história */

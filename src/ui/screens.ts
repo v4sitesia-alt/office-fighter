@@ -145,13 +145,14 @@ export class Screens {
 
   versus(a: FighterAssets, b: FighterAssets, label: string, hueB: number, onGo: () => void) {
     const base = import.meta.env.BASE_URL;
-    const face = (f: FighterAssets, hue: number) => `<img src="${base}versus/${f.def.id}.png" onerror="this.onerror=null;this.src='${f.portrait?.src ?? ''}';this.classList.add('thumbfall')" style="filter:hue-rotate(${hue}deg) drop-shadow(0 10px 0 rgba(0,0,0,.5))" alt="">`;
-    const card = (f: FighterAssets, hue: number, side: string) => `<div class="vs-side ${side}"><div class="vs-face">${face(f, hue)}</div>
-      <div class="vs-plate"><div class="vs-av">${f.portrait ? `<img src="${f.portrait.src}" style="filter:hue-rotate(${hue}deg)" alt="">` : ''}</div><div><div class="cname">${f.def.name}${hue ? ' 2.0' : ''}</div><div class="crole">${f.def.role}</div></div></div>
-      <div class="vs-bio">${f.def.bio ?? ''}</div></div>`;
+    const card = (f: FighterAssets, hue: number, side: string) => `<div class="vs-side ${side}" style="--c:${f.def.colors.primary}">
+      <div class="vs-glow"></div>
+      <img class="vs-face" src="${base}versus/${f.def.id}.png" onerror="this.onerror=null;this.src='${f.portrait?.src ?? ''}';this.classList.add('thumbfall')" style="--hue:${hue}deg" alt="">
+      <div class="vs-plate"><div class="vs-name">${f.def.name}${hue ? ' 2.0' : ''}</div><div class="vs-role">${f.def.role}${f.def.origin ? ' · ' + f.def.origin.city : ''}</div><div class="vs-bio">${f.def.bio ?? ''}</div></div></div>`;
     this.set('versus', `<div class="vs-stage" style="background-image:url(${base}versus/base.jpg)">
-        <div class="pix small vs-label">${label}</div>
         ${card(a, 0, 'l')}${card(b, hueB, 'r')}
+        <div class="vs-floor"></div>
+        <div class="pix small vs-label">${label}</div>
         <img class="vs-logo" src="${base}versus/vs.png" alt="VS">
         <div class="pix tiny vs-hint">G / ENTER PARA LUTAR</div></div>`);
     this.onConfirm = onGo;
