@@ -148,7 +148,7 @@ export class Screens {
     const card = (f: FighterAssets, hue: number, side: string) => `<div class="vs-side ${side}" style="--c:${f.def.colors.primary}">
       <div class="vs-glow"></div>
       <img class="vs-face" src="${base}versus/${f.def.id}.png" onerror="this.onerror=null;this.src='${f.portrait?.src ?? ''}';this.classList.add('thumbfall')" style="--hue:${hue}deg" alt="">
-      <div class="vs-plate"><div class="vs-name">${f.def.name}${hue ? ' 2.0' : ''}</div><div class="vs-role">${f.def.role}${f.def.origin ? ' · ' + f.def.origin.city : ''}</div><div class="vs-bio">${f.def.bio ?? ''}</div></div></div>`;
+      <div class="vs-plate"><div class="vs-name">${f.def.name}${hue ? ' 2.0' : ''}</div><div class="vs-role">${f.def.role}${f.def.origin ? ' · ' + f.def.origin.city : ''}</div></div></div>`;
     this.set('versus', `<div class="vs-stage" style="background-image:url(${base}versus/base.jpg)">
         ${card(a, 0, 'l')}${card(b, hueB, 'r')}
         <div class="vs-floor"></div>
@@ -182,6 +182,20 @@ export class Screens {
     this.onConfirm = onDone;
   }
 
+  /** Menu da luta online: o jogo não para (o outro lado continua), só dá pra voltar ou sair. */
+  netMenu(spectator: boolean, onResume: () => void, onQuit: () => void) {
+    this.set('pause', `
+      <div class="center">
+        <div class="title-sm">${spectator ? 'ASSISTINDO' : 'LUTA ONLINE'}</div>
+        <div class="menu">
+          <div class="item" data-item><b>VOLTAR</b>${spectator ? '' : '<i>a luta não pausa: o adversário continua</i>'}</div>
+          <div class="item" data-item><b>${spectator ? 'SAIR' : 'DESISTIR E SAIR'}</b>${spectator ? '' : '<i>conta como derrota</i>'}</div>
+        </div>
+      </div>`);
+    this.onConfirm = (i) => (i === 0 ? onResume() : onQuit());
+    this.onBack = onResume;
+  }
+
   pause(onResume: () => void, onQuit: () => void) {
     this.set('pause', `
       <div class="center">
@@ -190,7 +204,7 @@ export class Screens {
           <div class="item" data-item><b>CONTINUAR</b></div>
           <div class="item" data-item><b>SAIR DA LUTA</b></div>
         </div>
-        <div class="pix tiny">F1 HITBOXES · F2 CÂMERA LENTA · F3 TREINO</div>
+        <div class="pix tiny">START OU PAUSE ABREM ESTE MENU · F1 HITBOXES · F2 CÂMERA LENTA · F3 TREINO</div>
       </div>`);
     this.onConfirm = (i) => (i === 0 ? onResume() : onQuit());
     this.onBack = onResume;

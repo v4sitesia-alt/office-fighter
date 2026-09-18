@@ -121,7 +121,7 @@ function goTitle() {
   setMode('title');
   if (!fromIntro || audio.musicTime() < INTRO_END - 1) audio.seekMusic(INTRO_END); // título sempre no trecho dos 20 s
   const menu = () => { setMode('difficulty'); screens.mainMenu(() => { online = false; showSelect(); }, () => { online = true; showSelect(); }, goTitle); };
-  screens.title(() => { if (storySeen) { menu(); return; } storySeen = true; setMode('difficulty'); screens.story(STORY, menu); }, roster.length);
+  screens.title(menu, roster.length);
 }
 
 function showSelect() {
@@ -129,19 +129,13 @@ function showSelect() {
   screens.select(roster, (i) => { playerIdx = i; if (online) openLobby(); else { buildCampaign(); showVersus(); } }, goTitle);
 }
 
-let storySeen = false;
-const STORY = [
-  { title: '199X · CURITIBA', text: '<b>MUNDIM</b> dominou o mercado inteiro com as suas <i>IAs</i>. Do 52º andar, ele e o subchefe <b>DIAS</b>, o homem das contas, automatizaram tudo: as campanhas, as fábricas, as cidades.' },
-  { title: 'FORA DE CONTROLE', text: 'Mas as IAs pararam de obedecer. Da linha de montagem saiu <b>SANTANA</b>, o androide perfeito. Dos dados errados nasceu <i>XABLAU</i>, um monstro que virou capanga dos chefes. E as máquinas começaram a tomar as comunidades.' },
-  { title: 'A RESISTÊNCIA', text: '<b>VANESSA</b> luta pra sobreviver com a filha no mundo corporativo. <b>ENEIAS</b> só queria a gelada e o petisco do boteco. <b>LAURA</b> defende Recife, e os tubarões. <b>ANDRÉ</b>, o gaudério, protege a cultura gaúcha. <b>MICHAEL</b> treina pra vingar o morro. <b>LANDIM</b> quer de volta o olhar do cinema.' },
-  { title: 'TROUBLE WORK', text: '<b>EDGARD</b>, o bruxo rebelde, tem a magia e não escolheu lado. <b>KEVIN</b> atira pra quem pagar. Todos os caminhos sobem pelo mesmo elevador. No último andar, alguém vai ter que desligar as máquinas. <i>Ou o chefe.</i>' },
-];
-
 // ---------- arena online
 let online = false;
 let lobby: Lobby | null = null;
 let session: NetSession | null = null;
 let netRoom: Room | null = null;
+let netCfg: NetMatchCfg | null = null;
+let netMenuOpen = false, netOver = false;
 
 function openLobby() {
   screens.hide();
@@ -154,10 +148,11 @@ function startNetMatch(cfg: NetMatchCfg) {
   const fa = roster.find((r) => r.def.id === cfg.f[0]) ?? roster[0], fb = roster.find((r) => r.def.id === cfg.f[1]) ?? roster[0];
   const vs = `${cfg.names[0]} x ${cfg.names[1]}`;
   let over = false;
+  netCfg = cfg; netMenuOpen = false; netOver = false;
   const m = new Match(fa, fb, stageOf(fb), { cpu: null }, {
     message: (t, f, k) => hud.message(t, f, k),
     end: (winner) => {
-      if (over) return; over = true;
+      if (over || netOver) return; over = true; netOver = true;
       if (cfg.local === 0 && winner >= 0) lobby?.report(cfg, winner as 0 | 1);
       hud.message(winner >= 0 ? `${cfg.names[winner as 0 | 1]} VENCEU` : 'EMPATE', 200, 'small');
       setTimeout(leaveNetMatch, 3500);
@@ -224,21 +219,36 @@ startLoop({
     input.step();
     const p = input.ports[0];
     if (mode === 'fight' && match) {
-      if (p.pressed('pause')) {
+      if (p.pressed('pause') || (!paused && p.pressed('start'))) {
         paused = !paused;
         if (paused) screens.pause(() => { paused = false; screens.hide(); }, () => { paused = false; goTitle(); });
         else screens.hide();
-      }
-      if (paused) screens.update(input);
+      } else if (paused) screens.update(input);   // no frame em que o menu abre, o mesmo botão não pode já confirmar/fechar
+      if (!match || mode !== 'fight') return;               // saiu pela pausa
       match.update(input, paused);
       hud.update(match);
       return;
     }
     if (mode === 'netfight' && session && match) {
-      session.tick(maskOf(p));
+      session.tick(netMenuOpen ? 0 : maskOf(p));
       hud.update(match);
       if (session.lost) { hud.message('CONEXÃO PERDIDA', 120, 'small'); leaveNetMatch(); }
-      else if (p.pressed('pause') && session.local < 0) leaveNetMatch();   // espectador sai com PAUSE
+      else if (session.quitBy !== null && !netOver) {           // o outro desistiu: quem ficou leva a vitória e registra
+        netOver = true; netMenuOpen = false; screens.hide();
+        const w = (1 - session.quitBy) as 0 | 1;
+        if (session.local === w && netCfg) lobby?.report(netCfg, w);
+        hud.message(`${netCfg?.names[session.quitBy] ?? ''} DESISTIU`, 200, 'small');
+        setTimeout(leaveNetMatch, 2500);
+      } else if (netMenuOpen) screens.update(input);
+      else if ((p.pressed('pause') || p.pressed('start')) && !netOver) {
+        netMenuOpen = true;
+        const s = session;
+        screens.netMenu(s.local < 0, () => { netMenuOpen = false; screens.hide(); }, () => {
+          netMenuOpen = false; screens.hide();
+          if (s.local >= 0) { netRoom?.send({ t: 'quit', p: s.local }); netOver = true; }
+          leaveNetMatch();
+        });
+      }
       return;
     }
     if (mode === 'lobby') return;

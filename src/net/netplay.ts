@@ -29,6 +29,7 @@ export class NetSession {
   private ticks = 0; private lastHeard = Date.now();
   private started = false; private synced: boolean;
   stalled = false; lost = false;
+  quitBy: 0 | 1 | null = null;   // alguém desistiu
 
   /** local = 0/1 pra quem joga, -1 pra espectador */
   constructor(public match: Match, public room: Room, public local: 0 | 1 | -1) {
@@ -40,6 +41,7 @@ export class NetSession {
   onMsg(m: Msg) {
     this.lastHeard = Date.now();
     if (m.t === 'hello') { this.started = true; return; }
+    if (m.t === 'quit') { this.quitBy = m.p as 0 | 1; return; }
     if (m.t === 'in') {
       const p = m.p as 0 | 1, f0 = m.f as number, b = m.b as number[];
       b.forEach((mask, i) => { if (!this.inputs[p].has(f0 + i)) this.inputs[p].set(f0 + i, mask); });

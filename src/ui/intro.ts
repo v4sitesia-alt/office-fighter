@@ -23,6 +23,7 @@ export class Intro {
     const fade = (at: number, len: number) => Math.max(0, 1 - Math.abs(t - at) / len);
     const f = Math.max(fade(T_LOGO, 0.5), fade(T_CITY, 0.6), t > INTRO_END - 0.35 ? (t - (INTRO_END - 0.35)) / 0.35 : 0);
     if (f > 0) { ctx.fillStyle = t > INTRO_END - 0.35 ? `rgba(255,255,255,${f})` : `rgba(0,0,0,${f})`; ctx.fillRect(0, 0, W, H); }
+    if (t >= T_LOGO) this.crawl(ctx, t);
     this.scanlines(ctx);
   }
 
@@ -83,6 +84,25 @@ export class Intro {
     const cx = W / 2 + (signX * dw - W / 2) * e;
     ctx.imageSmoothingEnabled = false;
     ctx.drawImage(this.tower, W / 2 - cx, H / 2 - cy, dw, dh);
+  }
+
+  /** Texto correndo de baixo pra cima sobre a cidade e a torre (some antes do título). */
+  private crawl(ctx: CanvasRenderingContext2D, t: number) {
+    const lines = ['199X.', '', 'O PODER DAS IAs DOMINOU', 'AS EMPRESAS, AS FÁBRICAS,', 'AS CIDADES.', '', 'NINGUÉM MAIS AS CONTROLA.', '', 'E DO ÚLTIMO ANDAR', 'ELAS PRODUZIRAM', 'ALGO PERIGOSO...'];
+    const gap = 30, top = H * 0.3, span = H - top + lines.length * gap;
+    const k = (t - T_LOGO) / (INTRO_END - 1.2 - T_LOGO);           // termina 1,2 s antes do título
+    const g = ctx.createLinearGradient(0, top - 40, 0, H);
+    g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(0.35, 'rgba(0,0,10,0.62)'); g.addColorStop(1, 'rgba(0,0,10,0.8)');
+    ctx.fillStyle = g; ctx.fillRect(0, top - 40, W, H - top + 40);
+    ctx.font = "15px 'Press Start 2P', monospace"; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    lines.forEach((ln, i) => {
+      const y = H + 20 - k * span + i * gap;
+      if (y < top || y > H + 10 || !ln) return;
+      ctx.globalAlpha = Math.min(1, (y - top) / 70, (H + 10 - y) / 40);
+      ctx.fillStyle = '#000'; ctx.fillText(ln, W / 2 + 2, y + 2);
+      ctx.fillStyle = i === lines.length - 1 ? '#ff5468' : i === 0 ? '#ffd23f' : '#fff'; ctx.fillText(ln, W / 2, y);
+    });
+    ctx.globalAlpha = 1;
   }
 
   private scanlines(ctx: CanvasRenderingContext2D) {
