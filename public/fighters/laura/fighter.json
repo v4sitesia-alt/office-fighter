@@ -7,6 +7,12 @@
   "primary": "#3ddc84",
   "secondary": "#f5f5e6"
  },
+ "origin": {
+  "region": "PERNAMBUCO",
+  "city": "Recife",
+  "lon": -34.88,
+  "lat": -8.05
+ },
  "stage": "office",
  "scale": 0.98,
  "stats": {

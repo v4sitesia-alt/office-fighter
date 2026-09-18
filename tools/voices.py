@@ -141,8 +141,8 @@ def main():
         print(f'{cid:20s} {len(y) / SR:5.2f}s  {voice}: "{text}"')
     # sons de especial enviados pelo usuário
     import glob, shutil
-    for src in sorted(glob.glob('Personagens/Mais-movimentos/especial-*.*')):
-        fid = os.path.basename(src).split('.')[0].replace('especial-', '')
+    for src in sorted(glob.glob('Personagens/Mais-movimentos/especial-*.*') + glob.glob('Personagens/Mais-movimentos/*-especial.*')):
+        fid = os.path.basename(src).split('.')[0].replace('especial-', '').replace('-especial', '')
         ext = os.path.splitext(src)[1].lower()
         dst = f'{fid}-special{ext}'
         shutil.copy(src, os.path.join(OUT, dst)); ids.append(dst); print(f'{dst:20s} <- {src}')
