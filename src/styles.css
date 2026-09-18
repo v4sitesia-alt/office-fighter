@@ -213,3 +213,5 @@ body[data-mode="fight"] .hud, body[data-mode="result"] .hud, body[data-mode="net
 .lb-foot { grid-column: 1 / -1; display: flex; justify-content: center; }
 .lb-input { font-family: var(--pix); font-size: 16px; padding: 12px; width: 300px; text-align: center; background: #0b1030; color: #fff; border: 3px solid #fff; text-transform: uppercase; outline: none; }
 .lb-modal { position: absolute; inset: 0; background: rgba(0,0,0,.8); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; }
+
+.lb-row.t { padding: 4px 8px; } .lb-row.t.live { border-color: var(--yellow); box-shadow: 0 0 12px rgba(255,210,63,.5); } .lb-row.t .win { color: #9fe8a8; }

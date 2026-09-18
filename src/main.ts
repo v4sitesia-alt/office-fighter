@@ -146,7 +146,7 @@ function startNetMatch(cfg: NetMatchCfg) {
     message: (t, f, k) => hud.message(t, f, k),
     end: (winner) => {
       if (over) return; over = true;
-      if (cfg.local === 0 && winner >= 0) lobby?.report(cfg.names[winner as 0 | 1], cfg.names[1 - (winner as 0 | 1)]);
+      if (cfg.local === 0 && winner >= 0) lobby?.report(cfg, winner as 0 | 1);
       hud.message(winner >= 0 ? `${cfg.names[winner as 0 | 1]} VENCEU` : 'EMPATE', 200, 'small');
       setTimeout(leaveNetMatch, 3500);
     },

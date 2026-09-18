@@ -17,7 +17,7 @@ const URL_ = (import.meta.env.VITE_SUPABASE_URL as string | undefined) ?? 'https
 const KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
 export const ONLINE = !!(URL_ && KEY);
 let client: SupabaseClient | null = null;
-const supa = () => (client ??= createClient(URL_!, KEY!, { realtime: { params: { eventsPerSecond: 40 } } }));
+export const supa = () => (client ??= createClient(URL_!, KEY!, { realtime: { params: { eventsPerSecond: 20 } } }));
 
 export function joinRoom(name: string, me: Peer | null, h: RoomHandlers): Room {
   return ONLINE ? supabaseRoom(name, me, h) : localRoom(name, me, h);
