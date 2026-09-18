@@ -1,7 +1,11 @@
 // Áudio: música chiptune por sequenciador, efeitos sintetizados e vozes pré-renderizadas
 // (public/audio/voice, geradas por tools/voices.py). Tudo pendurado num AudioContext que só
 // nasce depois do primeiro gesto do usuário (política de autoplay).
-import { SONGS, type Song, type SongName } from '../data/songs';
+import { SONGS, type Song } from '../data/songs';
+
+/** Músicas de arquivo (public/audio/music/*.mp3), tocadas em loop por <audio>. */
+const FILE_TRACKS: Record<string, string> = { menu: 'audio/music/menu.mp3' };
+export type SongName = keyof typeof SONGS | keyof typeof FILE_TRACKS;
 
 export type SfxName =
   | 'hit' | 'hitBig' | 'block' | 'swing' | 'jump' | 'land'
@@ -29,6 +33,8 @@ class AudioEngine {
   private song: Song | null = null;
   songName: SongName | null = null;
   private step = 0; private nextStepTime = 0; private timer = 0;
+  private fileEl: HTMLAudioElement | null = null;
+  base = '/';
   muted = false;
 
   constructor() {
@@ -39,6 +45,7 @@ class AudioEngine {
 
   /** Chame no primeiro keydown/pointerdown. Idempotente. */
   unlock() {
+    if (this.fileEl && this.fileEl.paused) this.fileEl.play().catch(() => undefined);
     if (this.ctx) { if (this.ctx.state === 'suspended') void this.ctx.resume(); return; }
     const ctx = new AudioContext();
     this.ctx = ctx;
@@ -63,6 +70,7 @@ class AudioEngine {
     this.muted = !this.muted;
     try { localStorage.setItem('of-muted', this.muted ? '1' : '0'); } catch { /* sem storage */ }
     if (this.ctx) this.master.gain.setTargetAtTime(this.muted ? 0 : 1, this.ctx.currentTime, 0.02);
+    if (this.fileEl) this.fileEl.muted = this.muted;
     return this.muted;
   }
 
@@ -165,12 +173,23 @@ class AudioEngine {
   music(name: SongName | null) {
     if (name === this.songName) return;
     this.songName = name;
-    this.song = name ? SONGS[name] : null;
+    const file = name && FILE_TRACKS[name];
+    this.song = name && !file ? SONGS[name as keyof typeof SONGS] : null;
     this.step = 0;
-    if (!this.ctx) return;
     clearInterval(this.timer);
+    if (file) this.playFile(file); else this.stopFile();
+    if (!this.ctx) return;
     if (this.song) this.startSequencer();
   }
+  private playFile(path: string) {
+    const url = this.base + path;
+    if (this.fileEl && this.fileEl.dataset.src === url) return;
+    this.stopFile();
+    const el = new Audio(url); el.loop = true; el.volume = 0.55; el.muted = this.muted; el.dataset.src = url;
+    this.fileEl = el;
+    el.play().catch(() => { /* toca no próximo gesto (unlock) */ });
+  }
+  private stopFile() { if (this.fileEl) { this.fileEl.pause(); this.fileEl = null; } }
   private startSequencer() {
     this.nextStepTime = this.ctx!.currentTime + 0.05;
     clearInterval(this.timer);

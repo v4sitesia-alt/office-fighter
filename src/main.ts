@@ -53,9 +53,10 @@ let fightNo = 0;
 
 const DIFF_RAMP: Difficulty[][] = [['easy', 'easy', 'normal', 'normal'], ['normal', 'normal', 'hard', 'hard'], ['hard', 'hard', 'hard', 'hard']];
 
-const MUSIC: Record<Mode, 'title' | 'select' | 'fight' | null> = {
-  loading: null, title: 'title', difficulty: 'select', select: 'select', versus: 'select', fight: 'fight', result: null, ending: null,
+const MUSIC: Record<Mode, 'menu' | 'fight' | null> = {
+  loading: null, title: 'menu', difficulty: 'menu', select: 'menu', versus: 'menu', fight: 'fight', result: null, ending: null,
 };
+audio.base = import.meta.env.BASE_URL;
 function setMode(m: Mode) { mode = m; document.body.dataset.mode = m; audio.music(MUSIC[m]); }
 
 // áudio só pode nascer depois de um gesto do usuário
@@ -105,7 +106,7 @@ function showVersus() {
 function goTitle() {
   match = null;
   setMode('title');
-  screens.title(() => { setMode('difficulty'); screens.difficulty((d) => { difficulty = d; showSelect(); }, goTitle); }, roster.length);
+  screens.title(() => showSelect(), roster.length); // dificuldade fixa em 'normal' (sobe por luta)
 }
 
 function showSelect() {
