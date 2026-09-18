@@ -247,6 +247,8 @@ startLoop({
     if (mode === 'fight' || mode === 'result' || mode === 'netfight') { match?.render(ctx, debug); return; }
     const intro = stages.get('intro');
     if (mode === 'title' && intro) { ctx.drawImage(intro.img, 0, 0, W, H); ctx.fillStyle = 'rgba(6,10,30,0.35)'; ctx.fillRect(0, 0, W, H); return; }
+    const lift = stages.get('elevator');
+    if (lift && mode !== 'loading') { ctx.drawImage(lift.img, 0, 0, W, H); ctx.fillStyle = 'rgba(6,4,12,0.45)'; ctx.fillRect(0, 0, W, H); return; } // telas antes da luta: hall do elevador
     if (demo) demo.render(ctx, false);
     if (mode !== 'loading') { ctx.fillStyle = 'rgba(6,10,30,0.72)'; ctx.fillRect(0, 0, W, H); }
   },
@@ -259,7 +261,7 @@ startLoop({
   screens.loading(0, total);
   await audio.loadTracks(); audio.preload('intro', 'select');
   const fighters = await Promise.all(ROSTER.map((id) => loadFighter(id, tick)));
-  const names = [...new Set([DEFAULT_STAGE, 'intro', ...fighters.map((f) => f.def.stage ?? DEFAULT_STAGE)])];
+  const names = [...new Set([DEFAULT_STAGE, 'intro', 'elevator', ...fighters.map((f) => f.def.stage ?? DEFAULT_STAGE)])];
   const loaded = await Promise.all(names.map((n) => loadStage(n, tick).catch(() => null)));
   loaded.forEach((st, i) => { if (st) stages.set(names[i], st); });
   void audio.preloadVoices(import.meta.env.BASE_URL);

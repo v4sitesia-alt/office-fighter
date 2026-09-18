@@ -151,6 +151,12 @@ def main():
         ext = os.path.splitext(src)[1].lower()
         dst = f'{fid}-special{ext}'
         shutil.copy(src, os.path.join(OUT, dst)); ids.append(dst); print(f'{dst:20s} <- {src}')
+    SONS = {'barrigada.wav': 'dias', 'dede-especial.mp3': 'dede', 'enais-especial.mp3': 'eneias', 'eneias-especial.mp3': 'eneias', 'michael-punch.mp3': 'michael', 'van-especial.mp3': 'van'}
+    for fn, fid in SONS.items():
+        src = os.path.join('Personagens/sons', fn)
+        if not os.path.exists(src): continue
+        dst = f'{fid}-special{os.path.splitext(fn)[1].lower()}'
+        shutil.copy(src, os.path.join(OUT, dst)); ids.append(dst); print(f'{dst:20s} <- {src}')
     files = [i if '.' in i else i + '.wav' for i in ids]
     with open(os.path.join(OUT, 'manifest.json'), 'w') as f:
         json.dump({'files': files}, f, indent=1)

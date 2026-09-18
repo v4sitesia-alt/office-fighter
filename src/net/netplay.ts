@@ -5,8 +5,8 @@ import { BUTTONS, type Button, type Controller } from '../core/input';
 import type { Match } from '../game/match';
 import type { Msg, Room } from './transport';
 
-export const DELAY = 12;           // frames entre apertar e o golpe sair (~200 ms)
-const SEND_EVERY = 4, REDUNDANCY = 14, TIMEOUT_MS = 12000;
+export const DELAY = 10;           // frames entre apertar e o golpe sair (~166 ms)
+const SEND_EVERY = 3, REDUNDANCY = 14, TIMEOUT_MS = 12000;
 const NET_BUTTONS: Button[] = BUTTONS.filter((b) => b !== 'start' && b !== 'pause');
 
 export function maskOf(c: Controller): number {

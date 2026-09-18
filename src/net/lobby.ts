@@ -6,6 +6,8 @@ import * as store from './store';
 
 export interface NetMatchCfg { matchId: string; f: [string, string]; names: [string, string]; ids?: [string, string]; local: 0 | 1 | -1; tourney?: { t: store.Tournament; m: store.TMatch } }
 
+export const MAX_PEERS = 15;   // teto da rede: 9 jogadores + plateia, dentro da cota gratuita do Supabase
+
 export class Lobby {
   private room: Room | null = null;
   private peers: Peer[] = [];
@@ -105,6 +107,8 @@ export class Lobby {
     if (!this.root.classList.contains('lobby') || !this.me.name) return;
     const img = (fid: string) => { const f = this.roster.find((r) => r.def.id === fid); return f?.portrait ? `<img src="${f.portrait.src}" alt="">` : ''; };
     const others = this.peers.filter((p) => p.id !== this.me.id);
+    const full = this.peers.length > MAX_PEERS && this.peers.slice(MAX_PEERS).some((p) => p.id === this.me.id);
+    if (full) { this.root.innerHTML = `<div class="center"><div class="title-sm">ARENA LOTADA</div><div class="pix small">JÁ TEM ${MAX_PEERS} PESSOAS CONECTADAS. TENTE DAQUI A POUCO.</div><div class="lb-btn ghost" data-back>VOLTAR</div></div>`; this.root.querySelector<HTMLElement>('[data-back]')!.onclick = () => this.onExit(); return; }
     const rows = others.map((p) => `<div class="lb-row"><div class="lb-av">${img(p.fighter)}</div><div class="lb-name">${esc(p.name)}<small>${p.status === 'livre' ? 'LIVRE' : p.status === 'lutando' ? `LUTANDO · ${esc(p.vs ?? '')}` : 'ASSISTINDO'}</small></div>
       ${p.status === 'livre' ? `<div class="lb-btn sm" data-ch="${p.id}">${this.waiting === p.id ? 'AGUARDANDO…' : 'DESAFIAR'}</div>` : ''}</div>`).join('') || '<div class="pix tiny">NINGUÉM MAIS ONLINE. MANDE O LINK PRA GALERA.</div>';
     const live = new Map<string, Peer>(); this.peers.forEach((p) => { if (p.status === 'lutando' && p.matchId && !live.has(p.matchId)) live.set(p.matchId, p); });
@@ -114,7 +118,7 @@ export class Lobby {
       .map(([n, s], i) => `<div class="lb-rank"><b>${i + 1}º</b><span>${esc(n)}</span><i>${s.w}V ${s.l}D</i></div>`).join('');
     const rank = rankDb || rankSess || '<div class="pix tiny">SEM LUTAS AINDA</div>';
     this.root.innerHTML = `<div class="lb">
-      <div class="lb-head"><div class="title-sm">ARENA ONLINE</div><div class="pix tiny">${ONLINE ? 'CONECTADO' : 'MODO LOCAL (SÓ ABAS DESTE NAVEGADOR)'} · VOCÊ: ${esc(this.me.name)} · ${this.peers.length} ONLINE</div></div>
+      <div class="lb-head"><div class="title-sm">ARENA ONLINE</div><div class="pix tiny">${ONLINE ? 'CONECTADO' : 'MODO LOCAL (SÓ ABAS DESTE NAVEGADOR)'} · VOCÊ: ${esc(this.me.name)} · ${this.peers.length}/${MAX_PEERS} ONLINE</div></div>
       <div class="lb-col"><h4>JOGADORES</h4>${rows}</div>
       <div class="lb-col"><h4>LUTAS AO VIVO</h4>${lives}<h4>CAMPEONATO</h4>${this.tourHtml()}<h4>RANKING</h4>${rank}<h4>ÚLTIMAS</h4>${this.feed.map((f) => `<div class="pix tiny">${esc(f)}</div>`).join('')}</div>
       <div class="lb-foot"><div class="lb-btn ghost" data-back>SAIR</div></div>
