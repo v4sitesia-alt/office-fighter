@@ -1,8 +1,8 @@
 {
  "id": "santana",
  "name": "SANTANA",
- "role": "O Tráfego",
- "tagline": "Escalou a campanha. E a porrada.",
+ "role": "O Tech",
+ "tagline": "Deploy na sexta. Porrada no sábado.",
  "colors": {
   "primary": "#21e6ff",
   "secondary": "#4d7cff"
@@ -222,7 +222,7 @@
    "knockback": 14,
    "meterCost": 50,
    "hitstop": 8,
-   "name": "IMPULSIONAMENTO",
+   "name": "OVERCLOCK",
    "projectile": {
     "x": 135,
     "y": -120,
