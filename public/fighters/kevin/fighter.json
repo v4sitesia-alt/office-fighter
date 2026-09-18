@@ -3,17 +3,18 @@
  "name": "KEVIN",
  "role": "O Mercenário",
  "tagline": "Atira primeiro. Fatura depois.",
- "bio": "Atirador de Colombala. Topa qualquer serviço, desde que tenha nota fiscal. O Dias ainda deve três.",
+ "bio": "Atirador de Colombo, vizinho da torre. Topa qualquer serviço, desde que tenha nota fiscal. O Dias ainda deve três.",
  "side": "neutro",
  "colors": {
   "primary": "#3d8bff",
   "secondary": "#ffb300"
  },
  "origin": {
-  "region": "VALE QUATRO",
-  "city": "Colombala",
-  "x": 0.347,
-  "y": 0.393
+  "region": "PARANÁ",
+  "city": "Colombo",
+  "lon": -49.22,
+  "lat": -25.29,
+  "label": "above"
  },
  "stage": "colombo",
  "scale": 1.2,

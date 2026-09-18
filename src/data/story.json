@@ -1,6 +1,4 @@
 {
- "state": "VALE QUATRO",
- "capital": "mundim",
  "factions": {
   "vilao": [
    "A DIRETORIA",
@@ -17,12 +15,12 @@
  },
  "acts": [
   [
-   "199X · VALE QUATRO",
-   "No estado do Vale Quatro, a <b>Mundim Corp</b> automatizou tudo com as suas IAs. Do 52º andar da torre de Quatrópolis manda o culto e sábio <b>Mundim</b>. O subchefe <b>Dias</b> cuida do caixa, das vendas e das taxas. De todas as taxas."
+   "199X · MUNDIM CORP",
+   "Do 52º andar de uma torre em Curitiba, a <b>Mundim Corp</b> automatizou o país com as suas IAs. Quem manda é o culto e sábio <b>Mundim</b>. O subchefe <b>Dias</b> cuida do caixa, das vendas e das taxas. De todas as taxas."
   ],
   [
    "O TORNEIO",
-   "A torre anunciou o torneio <b>Trouble Work</b>, com prêmio milionário. Nas letras miúdas: cada golpe dado na arena treina as máquinas. Da fábrica de Robotânia já saiu <b>Santana</b>, reprogramado. Do Datacentro escapou <i>Xablau</i>, treinado com os dados errados. E no subsolo espera <b>Leo</b>, o chefe dos droids."
+   "A torre anunciou o torneio <b>Trouble Work</b>, com prêmio milionário. Nas letras miúdas: cada golpe dado na arena treina as máquinas. Da fábrica já saiu <b>Santana</b>, reprogramado. Sozinhas, as IAs fizeram a própria experiência, e deu errado: <i>Xablau</i>. No subsolo espera <b>Leo</b>, o chefe dos droids."
   ],
   [
    "GENTE COMUM",
@@ -34,7 +32,7 @@
   ]
  ],
  "crawl": [
-  "199X. ESTADO DO VALE QUATRO.",
+  "199X.",
   "",
   "AS IAs DA MUNDIM CORP",
   "DOMINARAM AS EMPRESAS,",
@@ -44,7 +42,7 @@
   "UM TORNEIO MILIONÁRIO.",
   "",
   "CADA GOLPE TREINA AS MÁQUINAS.",
-  "E ELAS JÁ PRODUZIRAM",
+  "E ELAS JÁ CRIARAM SOZINHAS",
   "ALGO PERIGOSO..."
  ],
  "mirror": [
@@ -79,7 +77,7 @@
     "Depois eu desfaço o feitiço. Talvez.",
     "Santana, aguenta aí. Falta pouco."
    ],
-   "ending": "Edgard desfez a programação no grito e no feitiço. Santana acordou pedindo desculpa e um café. A dupla voltou pra Vila Morcego. O bug ficou pra trás."
+   "ending": "Edgard desfez a programação no grito e no feitiço. Santana acordou pedindo desculpa e um café. A dupla voltou pra Curitiba. O bug ficou pra trás."
   },
   "santana": {
    "open": [
@@ -124,7 +122,7 @@
     "Respira. Vai doer menos.",
     "Pelos tubarões!"
    ],
-   "ending": "O datacenter foi embargado e o recife de Arrecife virou reserva. Laura lançou o livro 'Finalizei uma Corporação'. Os tubarões não leram, mas aprovaram."
+   "ending": "O datacenter foi embargado e os recifes de Recife viraram reserva. Laura lançou o livro 'Finalizei uma Corporação'. Os tubarões não leram, mas aprovaram."
   },
   "dede": {
    "open": [
@@ -139,7 +137,7 @@
     "Segura o laço!",
     "Depois te convido pro churrasco. Se sobrar dente."
    ],
-   "ending": "André voltou pra Querência com o prêmio e sem sinal de wi-fi, do jeito que gosta. O fogo de chão segue aceso. A air fryer virou comedouro de galinha."
+   "ending": "André voltou pra querência com o prêmio e sem sinal de wi-fi, do jeito que gosta. O fogo de chão segue aceso. A air fryer virou comedouro de galinha."
   },
   "dias": {
    "open": [
@@ -214,7 +212,7 @@
     "Gravando!",
     "Ação!"
    ],
-   "ending": "O documentário 'Trouble Work' lotou as salas de Nova Cinelândia. Nenhum ator tinha seis dedos. A crítica chamou de 'humano'. Landim chamou de 'primeiro take'."
+   "ending": "O documentário 'Trouble Work' lotou as salas de São Paulo. Nenhum ator tinha seis dedos. A crítica chamou de 'humano'. Landim chamou de 'primeiro take'."
   },
   "xablau": {
    "open": [
@@ -309,7 +307,7 @@
    ],
    [
     "edgard",
-    "Então você é o monstro dos dados errados. Quem te treinou, coitado?"
+    "Então você é a experiência que as IAs fizeram sozinhas. Quem te treinou, coitado?"
    ],
    [
     "xablau",
@@ -759,7 +757,7 @@
   "mundim|xablau": [
    [
     "mundim",
-    "Xablau. Minha criação mais... inesperada. Sente."
+    "Xablau. A criação das minhas criações. Eu nem assinei esse projeto. Sente."
    ],
    [
     "xablau",
@@ -867,7 +865,7 @@
   "edgard|laura": [
    [
     "laura",
-    "O bruxo de Vila Morcego. Dizem que você não tem lado."
+    "O bruxo de Curitiba. Dizem que você não tem lado."
    ],
    [
     "edgard",

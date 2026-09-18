@@ -3,17 +3,17 @@
  "name": "DEDÊ",
  "role": "O Gaúcho",
  "tagline": "Laça o problema. E o adversário.",
- "bio": "André, gaudério de Querência do Sul. Uma IA quis trocar o fogo de chão por air fryer. Aí já é demais, tchê.",
+ "bio": "André, gaudério do Rio Grande do Sul. Uma IA quis trocar o fogo de chão por air fryer. Aí já é demais, tchê.",
  "side": "heroi",
  "colors": {
   "primary": "#d9a441",
   "secondary": "#8a4b1f"
  },
  "origin": {
-  "region": "VALE QUATRO",
-  "city": "Querência do Sul",
-  "x": 0.241,
-  "y": 0.773
+  "region": "RIO GRANDE DO SUL",
+  "city": "Porto Alegre",
+  "lon": -51.2,
+  "lat": -30.0
  },
  "stage": "dede",
  "scale": 1.0,

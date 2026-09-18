@@ -3,17 +3,17 @@
  "name": "DIAS",
  "role": "O Subchefe",
  "tagline": "Tempo é dinheiro. Porrada também.",
- "bio": "Subchefe e dono do caixa da Mundim Corp. Vende qualquer coisa pra qualquer um. Cobra taxa até de conversa.",
+ "bio": "Subchefe e dono do caixa da Mundim Corp, direto do cassino de Florianópolis. Vende qualquer coisa. Cobra taxa até de conversa.",
  "side": "vilao",
  "colors": {
   "primary": "#35d46a",
   "secondary": "#ffd23f"
  },
  "origin": {
-  "region": "VALE QUATRO",
-  "city": "Porto Cassino",
-  "x": 0.72,
-  "y": 0.533
+  "region": "SANTA CATARINA",
+  "city": "Florianópolis",
+  "lon": -48.55,
+  "lat": -27.6
  },
  "stage": "dias",
  "scale": 1.08,

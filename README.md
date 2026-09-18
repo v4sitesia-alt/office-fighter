@@ -55,9 +55,14 @@ no ar viram os aéreos (só defende em pé). B com meia barra (50) = especial co
 
 ## História e diálogos
 
-`src/data/story.json` é a bíblia narrativa: o estado fictício do Vale Quatro, as facções, os atos do enredo (usados no manual), o texto da abertura,
+`src/data/story.json` é a bíblia narrativa, em volta do torneio da Mundim Corp: as facções, os atos do enredo (usados no manual), o texto da abertura,
 as falas genéricas e o final de cada lutador, e os roteiros par a par (`pairs`, chave com os dois ids em ordem alfabética).
-Par sem roteiro próprio usa as falas genéricas; luta espelho usa `mirror`. A cidade de cada um fica em `origin` no `fighter.json` (x e y de 0 a 1 no mapa).
+Par sem roteiro próprio usa as falas genéricas; luta espelho usa `mirror`. A cidade real de cada um fica em `origin` no `fighter.json` (lon/lat no mapa do Brasil).
+
+## Celular como aplicativo
+
+`public/manifest.webmanifest` + `public/sw.js` + `src/core/mobile.ts`: instalável na tela de início (abre sem barra do navegador), tela cheia automática
+no primeiro toque no Android, botões INSTALAR APP e TELA CHEIA no letreiro, dica de instalação no iPhone, tela sempre acesa e sem rolagem elástica nem zoom.
 
 ## Manual
 

@@ -3,17 +3,17 @@
  "name": "XABLAU",
  "role": "O Capanga",
  "tagline": "Treinado com os dados errados.",
- "bio": "Nasceu no Datacentro, treinado com os dados errados. Capanga da diretoria. Não leu os termos de uso. Ninguém leu.",
+ "bio": "Experiência criada pelas próprias IAs da Mundim Corp, sem nenhum humano no projeto. Deu errado. Virou capanga da diretoria e ninguém sabe desligar.",
  "side": "vilao",
  "colors": {
   "primary": "#b5c22a",
   "secondary": "#a31d1d"
  },
  "origin": {
-  "region": "VALE QUATRO",
-  "city": "Datacentro",
-  "x": 0.576,
-  "y": 0.22
+  "region": "PARANÁ",
+  "city": "Curitiba",
+  "lon": -49.27,
+  "lat": -25.43
  },
  "stage": "xablau",
  "scale": 1.15,

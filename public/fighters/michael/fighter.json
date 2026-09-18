@@ -3,17 +3,17 @@
  "name": "MICHAEL",
  "role": "O Boxeador",
  "tagline": "Fecha negócio no primeiro round.",
- "bio": "Boxeador do Morro do Gancho. Quer o prêmio pra casar e abrir uma academia pra gurizada do morro.",
+ "bio": "Boxeador de uma comunidade do Rio. Quer o prêmio pra casar e abrir uma academia pra gurizada do morro.",
  "side": "heroi",
  "colors": {
   "primary": "#ff3b4e",
   "secondary": "#ffffff"
  },
  "origin": {
-  "region": "VALE QUATRO",
-  "city": "Morro do Gancho",
-  "x": 0.412,
-  "y": 0.833
+  "region": "RIO DE JANEIRO",
+  "city": "Rio de Janeiro",
+  "lon": -43.2,
+  "lat": -22.9
  },
  "stage": "michael",
  "scale": 1.0,

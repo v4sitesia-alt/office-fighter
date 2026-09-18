@@ -94,7 +94,7 @@ export type MoveName =
 export interface FighterDef {
   id: string; name: string; role: string; tagline?: string; bio?: string; side?: 'heroi' | 'neutro' | 'vilao';
   colors: { primary: string; secondary: string };
-  origin?: { region: string; city: string; x: number; y: number };   // posição no mapa do Vale Quatro (0 a 1)
+  origin?: { region: string; city: string; lon: number; lat: number; label?: 'left' | 'right' | 'above' | 'below' };
   stage?: string;               // public/stages/<stage>.png (cenário do lutador)
   scale: number;
   stats: { speed: number; power: number; weight: number; magic?: number };   // força = power, agilidade = speed, poder = magic

@@ -3,17 +3,17 @@
  "name": "SANTANA",
  "role": "O Tech",
  "tagline": "Deploy na sexta. Porrada no sábado.",
- "bio": "Era o Tech, parceiro do Edgard. Capturado e reprogramado na fábrica de Robotânia. Às vezes a memória trava.",
+ "bio": "Carioca, era o Tech e parceiro do Edgard. Capturado e reprogramado na fábrica da Mundim Corp. Às vezes a memória trava.",
  "side": "vilao",
  "colors": {
   "primary": "#21e6ff",
   "secondary": "#4d7cff"
  },
  "origin": {
-  "region": "VALE QUATRO",
-  "city": "Robotânia",
-  "x": 0.641,
-  "y": 0.36
+  "region": "RIO DE JANEIRO",
+  "city": "Rio de Janeiro",
+  "lon": -43.2,
+  "lat": -22.9
  },
  "stage": "factory",
  "scale": 1.1,

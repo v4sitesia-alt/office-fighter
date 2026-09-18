@@ -2,7 +2,7 @@
 import type { Input } from '../core/input';
 import type { Difficulty, FighterAssets } from '../game/types';
 import { audio } from '../core/audio';
-import { stateMapSvg } from './map';
+import { brazilMapSvg } from './brazil';
 import { endingOf, type Line } from '../data/dialogue';
 
 export class Screens {
@@ -105,7 +105,7 @@ export class Screens {
     this.set('select', `
       <div class="sf2">
         <div class="sf2-side left"><div class="sf2-portrait p1"></div><div class="sf2-name p1"></div><div class="sf2-tag">1P</div><div class="sf2-region p1"></div><div class="sf2-stats p1"></div></div>
-        <div class="sf2-center"><div class="sf2-map">${stateMapSvg(roster)}</div><div class="sf2-title">PLAYER SELECT</div></div>
+        <div class="sf2-center"><div class="sf2-map">${brazilMapSvg(roster)}</div><div class="sf2-title">PLAYER SELECT</div></div>
         <div class="sf2-side right"><div class="sf2-portrait cpu"></div><div class="sf2-name cpu"></div><div class="sf2-tag cpu">CPU</div><div class="sf2-region cpu"></div><div class="sf2-stats cpu"></div></div>
         <div class="sf2-grid">${slots}</div>
         <div class="pix tiny sf2-hint">A D ESCOLHER · G / ENTER CONFIRMAR · V VOLTAR</div>

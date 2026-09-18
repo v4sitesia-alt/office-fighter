@@ -3,17 +3,17 @@
  "name": "MUNDIM",
  "role": "O Chefão",
  "tagline": "A IA trabalha. Eu lucro.",
- "bio": "Empresário culto e sábio de Quatrópolis. Do 52º andar, quer dominar todas as IAs. Já tem outro experimento pronto: Leo, o chefe dos droids.",
+ "bio": "Empresário culto e sábio de Curitiba. Do 52º andar da Mundim Corp, quer dominar todas as IAs. Já tem outro experimento pronto: Leo, o chefe dos droids.",
  "side": "vilao",
  "colors": {
   "primary": "#c4122f",
   "secondary": "#1a1a1a"
  },
  "origin": {
-  "region": "VALE QUATRO",
-  "city": "Quatrópolis",
-  "x": 0.515,
-  "y": 0.467
+  "region": "PARANÁ",
+  "city": "Curitiba",
+  "lon": -49.27,
+  "lat": -25.43
  },
  "stage": "mundim",
  "scale": 0.98,

@@ -3,17 +3,17 @@
  "name": "ENEIAS",
  "role": "O Peso-Pesado",
  "tagline": "Entrega o resultado. E a barrigada.",
- "bio": "Pai de família de São Petisco. Só queria sossego, uma gelada e um torresmo. A Mundim Corp quer transformar o Bar do Zé em coworking.",
+ "bio": "Pai de família do Rio. Só queria sossego, uma gelada e um torresmo. A Mundim Corp quer transformar o Bar do Zé em coworking.",
  "side": "heroi",
  "colors": {
   "primary": "#ff8a1f",
   "secondary": "#ffd23f"
  },
  "origin": {
-  "region": "VALE QUATRO",
-  "city": "São Petisco",
-  "x": 0.553,
-  "y": 0.74
+  "region": "RIO DE JANEIRO",
+  "city": "Rio de Janeiro",
+  "lon": -43.2,
+  "lat": -22.9
  },
  "stage": "eneias",
  "scale": 1.12,

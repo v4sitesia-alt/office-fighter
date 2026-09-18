@@ -2,17 +2,28 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="theme-color" content="#05070b" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="V4 Fighters" />
+  <link rel="apple-touch-icon" href="icons/icon-180.png" />
+  <link rel="icon" href="icons/icon-192.png" />
   <title>V4 Fighters – Trouble Work</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Press+Start+2P&display=swap" rel="stylesheet" />
 </head>
 <body>
+  <div class="rotate-tip">↻ DEITE O CELULAR PRA TELA MAIOR</div>
   <main class="cabinet">
     <header class="marquee">
       <div class="speaker" aria-hidden="true"></div>
       <div class="brand"><span>V4 FIGHTERS</span><small>TROUBLE WORK</small></div>
       <div class="marquee-right">
+        <button id="install" class="chip" type="button" hidden>INSTALAR APP</button>
+        <button id="fs" class="chip" type="button" hidden>TELA CHEIA</button>
         <button id="room-toggle" class="chip" type="button" hidden>SALA <b>0</b></button>
         <a class="chip" href="manual.html" target="_blank" rel="noopener">MANUAL</a>
         <button id="mute" class="chip mute" type="button" aria-label="som">🔊</button>

@@ -5,6 +5,7 @@ import { Input } from './core/input';
 import { startLoop } from './core/loop';
 import { DEFAULT_STAGE, ROSTER } from './data/roster';
 import { scriptFor } from './data/dialogue';
+import { setupMobile } from './core/mobile';
 import { H, W } from './game/consts';
 import { Match } from './game/match';
 import type { Difficulty, FighterAssets } from './game/types';
@@ -70,7 +71,8 @@ const MUSIC: Record<Mode, 'intro' | 'select' | 'fight' | null> = {
 const cinematic = new Intro();
 let introClock = 0;
 audio.base = import.meta.env.BASE_URL;
-function setMode(m: Mode) { mode = m; document.body.dataset.mode = m; audio.music(MUSIC[m]); }
+setupMobile();
+function setMode(m: Mode) { mode = m; document.body.dataset.mode = m; document.body.classList.toggle('in-fight', m === 'fight' || m === 'netfight'); audio.music(MUSIC[m]); }
 
 // áudio só pode nascer depois de um gesto do usuário
 const unlock = () => audio.unlock();
