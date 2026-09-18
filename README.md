@@ -51,6 +51,10 @@ Board de cada lutador: 5 colunas × 7 linhas (35 poses), fundo transparente, tod
 Comandos: no chão A/S/D dão soco/chute/forte; segurando ↓ viram os rasteiros (só defende agachado);
 no ar viram os aéreos (só defende em pé). B com meia barra (50) = especial com projétil; B com barra cheia = super.
 
+## Manual
+
+`public/manual.html` (link MANUAL no gabinete) é gerado por `npm run manual` a partir dos `fighter.json`. Rode de novo ao mudar lutadores, atributos ou golpes.
+
 ## Arena online
 
 `src/net/`: saguão com presença, desafios 1×1, lutas ao vivo pra assistir e placar da sessão, sobre Supabase Realtime

@@ -1,0 +1,218 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>V4 Fighters – Trouble Work · Manual</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Anton&family=Press+Start+2P&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0d1c;--panel:#131a33;--line:#2a3763;--y:#ffd23f;--txt:#dfe6f5;--mut:#93a3c7}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.65 Inter,system-ui,sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px 80px}
+header.cover{min-height:78vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:linear-gradient(rgba(6,8,22,.55),var(--bg)),url(stages/intro.png) center/cover;padding:60px 20px}
+.pix{font-family:'Press Start 2P',monospace;font-size:11px;letter-spacing:2px;color:#cfe0ff}
+h1{font-family:Anton,Impact,sans-serif;font-style:italic;font-weight:400;line-height:.9;margin:18px 0;font-size:clamp(64px,13vw,150px);background:linear-gradient(#fff3a0,#ffd23f 45%,#ff8a00);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(5px 6px 0 #6b1c00)}
+h1 small{display:block;font-size:.42em;color:#fff;-webkit-text-fill-color:#fff;letter-spacing:6px}
+.cta{display:inline-block;margin-top:26px;padding:14px 26px;background:var(--y);color:#222;font-family:'Press Start 2P';font-size:12px;text-decoration:none;box-shadow:0 5px 0 #a86b00}
+nav{position:sticky;top:0;z-index:5;background:rgba(10,13,28,.94);border-bottom:2px solid var(--line);display:flex;gap:18px;justify-content:center;flex-wrap:wrap;padding:12px}
+nav a{color:var(--mut);text-decoration:none;font-family:'Press Start 2P';font-size:9px}nav a:hover{color:var(--y)}
+h2{font-family:Anton,Impact,sans-serif;font-weight:400;font-size:44px;letter-spacing:2px;color:var(--y);margin:70px 0 10px;text-shadow:3px 3px 0 #000}
+h2.side{font-size:34px;margin-top:50px;border-left:8px solid var(--y);padding-left:14px}
+.lead{color:var(--mut);margin-top:0}
+.story{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+.story div,.box{background:var(--panel);border:2px solid var(--line);padding:18px}
+.story h4,.box h4{margin:0 0 8px;font-family:'Press Start 2P';font-size:10px;color:var(--y);line-height:1.6}
+.story p,.box p{margin:0;font-size:15px} .story b{color:#fff} .story i{color:#ff6b81;font-style:normal}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left}th{font-family:'Press Start 2P';font-size:8px;color:var(--y)}td a{color:#fff}
+kbd{display:inline-block;min-width:26px;text-align:center;padding:2px 7px;border:2px solid #fff;border-bottom-width:4px;border-radius:5px;font:600 13px Inter;margin:0 2px;background:#1b2447}
+.fighter{display:grid;grid-template-columns:300px 1fr;gap:22px;background:var(--panel);border:2px solid var(--line);border-left:8px solid var(--c);margin:18px 0;padding:18px;scroll-margin-top:60px}
+.art{display:flex;align-items:flex-end;justify-content:center;background:radial-gradient(circle at 50% 60%,color-mix(in srgb,var(--c) 35%,transparent),transparent 70%)}.art img{max-width:100%;max-height:340px}
+.head{display:flex;gap:12px;align-items:center}.av{width:64px;height:64px;object-fit:cover}
+h3{margin:0;font-family:Anton,Impact,sans-serif;font-weight:400;font-style:italic;font-size:40px;line-height:1;color:var(--c);text-shadow:2px 2px 0 #000}
+.role{margin:4px 0 0;font-family:'Press Start 2P';font-size:9px;color:var(--mut)}.tag{margin:12px 0 4px;color:#fff;font-style:italic}.bio{margin:0 0 12px;color:var(--mut)}
+.stat{display:grid;grid-template-columns:96px 1fr 40px;gap:10px;align-items:center;margin:5px 0}.stat span{font-family:'Press Start 2P';font-size:8px}.stat div{height:10px;background:#070a18;border:2px solid #fff}.stat i{display:block;height:100%}.stat b{font-size:12px;color:var(--mut);font-weight:400}
+.moves{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}.moves>div{background:#0c1128;border:1px solid var(--line);padding:12px}
+.moves h4{margin:0 0 6px;font-family:'Press Start 2P';font-size:8px;color:var(--mut)}.moves b{color:var(--c);font-family:Anton;font-weight:400;font-size:20px;letter-spacing:1px}.moves p{margin:4px 0 0;font-size:14px}
+.stage{position:relative;margin-top:12px;height:90px;overflow:hidden;border:1px solid var(--line)}.stage img{width:100%;height:100%;object-fit:cover}.stage span{position:absolute;left:8px;bottom:6px;font-family:'Press Start 2P';font-size:8px;text-shadow:2px 2px 0 #000}
+footer{text-align:center;color:var(--mut);font-size:13px;margin-top:70px}
+@media(max-width:760px){.fighter{grid-template-columns:1fr}.moves{grid-template-columns:1fr}.art img{max-height:240px}h2{font-size:34px}}
+@media print{nav,.cta{display:none}body{background:#fff;color:#111}.fighter,.box,.story div{break-inside:avoid}}
+</style></head><body>
+<header class="cover"><div class="pix">MANUAL DO JOGADOR · 199X</div><h1>V4 FIGHTERS<small>TROUBLE WORK</small></h1>
+<p class="pix">12 LUTADORES · CAMPANHA · ARENA ONLINE · CAMPEONATO</p><a class="cta" href="./">JOGAR AGORA</a></header>
+<nav><a href="#enredo">ENREDO</a><a href="#controles">CONTROLES</a><a href="#sistema">SISTEMA</a><a href="#lutadores">LUTADORES</a><a href="#tabela">ATRIBUTOS</a><a href="#modos">MODOS</a></nav>
+<div class="wrap">
+<h2 id="enredo">O ENREDO</h2><p class="lead">O deadline é hoje. O nocaute também.</p>
+<div class="story">
+<div><h4>199X · CURITIBA</h4><p><b>Mundim</b> dominou o mercado inteiro com as suas <i>IAs</i>. Do 52º andar, ele e o subchefe <b>Dias</b>, o homem das contas, automatizaram tudo: as campanhas, as fábricas, as cidades.</p></div>
+<div><h4>FORA DE CONTROLE</h4><p>As IAs pararam de obedecer. Da linha de montagem saiu <b>Santana</b>, o androide perfeito. Dos dados errados nasceu <i>Xablau</i>, um monstro que virou capanga dos chefes. E as máquinas começaram a tomar as comunidades.</p></div>
+<div><h4>A RESISTÊNCIA</h4><p><b>Vanessa</b> luta pra sobreviver com a filha no mundo corporativo. <b>Eneias</b> só queria a gelada e o petisco. <b>Laura</b> defende Recife, e os tubarões. <b>André (Dedê)</b> protege a cultura gaúcha. <b>Michael</b> treina pra vingar o morro. <b>Landim</b> quer de volta o olhar do cinema.</p></div>
+<div><h4>TROUBLE WORK</h4><p><b>Edgard</b>, o bruxo rebelde, tem a magia e não escolheu lado. <b>Kevin</b> atira pra quem pagar. Todos os caminhos sobem pelo mesmo elevador. No último andar, alguém vai ter que desligar as máquinas. <i>Ou o chefe.</i></p></div></div>
+
+<h2 id="controles">CONTROLES</h2>
+<div class="grid2"><div class="box"><h4>MOVIMENTO</h4><p><kbd>A</kbd><kbd>D</kbd> andar · <kbd>W</kbd> pular (de novo no ar = pulo duplo) · <kbd>S</kbd> agachar. As setas também funcionam.</p></div>
+<div class="box"><h4>GOLPES</h4><p><kbd>G</kbd> soco · <kbd>H</kbd> chute · <kbd>J</kbd> golpe forte · <kbd>V</kbd> defesa · <kbd>B</kbd> especial</p></div>
+<div class="box"><h4>VARIAÇÕES</h4><p>Segurando <kbd>S</kbd>, os três golpes viram rasteiros. No ar, viram aéreos. Um golpe aéreo por pulo.</p></div>
+<div class="box"><h4>MENUS E CELULAR</h4><p><kbd>Enter</kbd> ou <kbd>G</kbd> confirma · <kbd>V</kbd> volta · <kbd>Esc</kbd> pausa. No celular, o joystick e os botões do gabinete funcionam no toque.</p></div></div>
+
+<h2 id="sistema">SISTEMA DE LUTA</h2>
+<div class="grid2">
+<div class="box"><h4>BARRA DE ESPECIAL EM 2 NÍVEIS</h4><p>Enche soltando golpes (pouco), acertando (bastante) e apanhando. Na metade, <kbd>B</kbd> solta a <b>MAGIA</b>. Cheia, <kbd>B</kbd> solta o <b>SUPER</b> exclusivo do lutador. A barra não zera entre rounds.</p></div>
+<div class="box"><h4>DEFESA ALTA E BAIXA</h4><p>Defesa em pé não segura golpe rasteiro. Defesa agachada não segura golpe aéreo. Golpe defendido causa 25% do dano. Agarrão ignora defesa.</p></div>
+<div class="box"><h4>ATRIBUTOS</h4><p><b>Força</b> multiplica golpes comuns. <b>Poder</b> multiplica tudo que gasta barra. <b>Agilidade</b> é a velocidade de andar. <b>Peso</b> reduz o quanto você é empurrado.</p></div>
+<div class="box"><h4>ROUNDS</h4><p>Melhor de 3, 60 segundos por round. No tempo esgotado vence quem tiver mais vida. Vencer sem levar dano no round final rende PERFECT.</p></div></div>
+
+<h2 id="lutadores">OS LUTADORES</h2><h2 class="side">A DIRETORIA</h2><p class="lead">Quem criou as IAs, quem lucra com elas e o que elas criaram.</p><article class="fighter" style="--c:#21e6ff" id="santana">
+  <div class="art"><img src="versus/santana.png" alt="SANTANA" loading="lazy"></div>
+  <div class="info">
+    <div class="head"><img class="av" src="fighters/santana/portrait.png" alt=""><div><h3>SANTANA</h3><p class="role">O Tráfego · Rio de Janeiro</p></div></div>
+    <p class="tag">“Escalou a campanha. E a porrada.”</p>
+    <p class="bio">Androide de fábrica. Produto da linha de Mundim.</p>
+    <div class="stats"><div class="stat"><span>FORÇA</span><div><i style="width:77%;background:#21e6ff"></i></div><b>1.20</b></div><div class="stat"><span>AGILIDADE</span><div><i style="width:31%;background:#21e6ff"></i></div><b>0.90</b></div><div class="stat"><span>PODER</span><div><i style="width:46%;background:#21e6ff"></i></div><b>1.00</b></div><div class="stat"><span>PESO</span><div><i style="width:69%;background:#21e6ff"></i></div><b>1.15</b></div></div>
+    <div class="moves">
+      <div><h4>MAGIA · meia barra</h4><b>IMPULSIONAMENTO</b><p>Lança projétil próprio do lutador. Dano 15.</p></div>
+      <div><h4>SUPER · barra cheia</h4><b>SOCO SÍSMICO</b><p>Salta sobre o adversário, desce com o punho e a explosão atinge uma área larga ao redor do impacto. Dano 26.</p></div>
+    </div>
+    <div class="stage"><img src="stages/factory.png" alt="" loading="lazy"><span>CENÁRIO</span></div>
+  </div></article><article class="fighter" style="--c:#35d46a" id="dias">
+  <div class="art"><img src="versus/dias.png" alt="DIAS" loading="lazy"></div>
+  <div class="info">
+    <div class="head"><img class="av" src="fighters/dias/portrait.png" alt=""><div><h3>DIAS</h3><p class="role">O Subchefe · Florianópolis</p></div></div>
+    <p class="tag">“Tempo é dinheiro. Porrada também.”</p>
+    <p class="bio">Subchefe. Cuida das contas e do dinheiro de Mundim.</p>
+    <div class="stats"><div class="stat"><span>FORÇA</span><div><i style="width:62%;background:#35d46a"></i></div><b>1.10</b></div><div class="stat"><span>AGILIDADE</span><div><i style="width:31%;background:#35d46a"></i></div><b>0.90</b></div><div class="stat"><span>PODER</span><div><i style="width:69%;background:#35d46a"></i></div><b>1.15</b></div><div class="stat"><span>PESO</span><div><i style="width:77%;background:#35d46a"></i></div><b>1.20</b></div></div>
+    <div class="moves">
+      <div><h4>MAGIA · meia barra</h4><b>MOEDA DA SORTE</b><p>Lança moeda giratória. Dano 15.</p></div>
+      <div><h4>SUPER · barra cheia</h4><b>BARRIGADA DE CAIXA</b><p>Barrigada em corrida que atravessa meia tela e lança o adversário longe. Dano 30.</p></div>
+    </div>
+    <div class="stage"><img src="stages/dias.png" alt="" loading="lazy"><span>CENÁRIO</span></div>
+  </div></article><article class="fighter" style="--c:#b5c22a" id="xablau">
+  <div class="art"><img src="versus/xablau.png" alt="XABLAU" loading="lazy"></div>
+  <div class="info">
+    <div class="head"><img class="av" src="fighters/xablau/portrait.png" alt=""><div><h3>XABLAU</h3><p class="role">O Capanga · Origem desconhecida</p></div></div>
+    <p class="tag">“Treinado com os dados errados.”</p>
+    <p class="bio">Monstro que as IAs criaram. Capanga dos chefes.</p>
+    <div class="stats"><div class="stat"><span>FORÇA</span><div><i style="width:92%;background:#b5c22a"></i></div><b>1.30</b></div><div class="stat"><span>AGILIDADE</span><div><i style="width:23%;background:#b5c22a"></i></div><b>0.85</b></div><div class="stat"><span>PODER</span><div><i style="width:54%;background:#b5c22a"></i></div><b>1.05</b></div><div class="stat"><span>PESO</span><div><i style="width:100%;background:#b5c22a"></i></div><b>1.40</b></div></div>
+    <div class="moves">
+      <div><h4>MAGIA · meia barra</h4><b>GOSMA ÁCIDA</b><p>Lança nuvem. Dano 14.</p></div>
+      <div><h4>SUPER · barra cheia</h4><b>LÍNGUA DE FOGO</b><p>Língua com punho que alcança quase a tela inteira. Dano 28.</p></div>
+    </div>
+    <div class="stage"><img src="stages/xablau.png" alt="" loading="lazy"><span>CENÁRIO</span></div>
+  </div></article><article class="fighter" style="--c:#c4122f" id="mundim">
+  <div class="art"><img src="versus/mundim.png" alt="MUNDIM" loading="lazy"></div>
+  <div class="info">
+    <div class="head"><img class="av" src="fighters/mundim/portrait.png" alt=""><div><h3>MUNDIM</h3><p class="role">O Chefão · Origem desconhecida</p></div></div>
+    <p class="tag">“A IA trabalha. Eu lucro.”</p>
+    <p class="bio">Dominou o mercado com as IAs. Agora elas não obedecem mais.</p>
+    <div class="stats"><div class="stat"><span>FORÇA</span><div><i style="width:77%;background:#c4122f"></i></div><b>1.20</b></div><div class="stat"><span>AGILIDADE</span><div><i style="width:54%;background:#c4122f"></i></div><b>1.05</b></div><div class="stat"><span>PODER</span><div><i style="width:92%;background:#c4122f"></i></div><b>1.30</b></div><div class="stat"><span>PESO</span><div><i style="width:62%;background:#c4122f"></i></div><b>1.10</b></div></div>
+    <div class="moves">
+      <div><h4>MAGIA · meia barra</h4><b>PULSO CARMESIM</b><p>Lança bola de energia. Dano 17.</p></div>
+      <div><h4>SUPER · barra cheia</h4><b>BRINDE DA DIRETORIA</b><p>Abre o paletó e arremessa as garrafas da diretoria. Dano 36.</p></div>
+    </div>
+    <div class="stage"><img src="stages/mundim.png" alt="" loading="lazy"><span>CENÁRIO</span></div>
+  </div></article><h2 class="side">A RESISTÊNCIA</h2><p class="lead">Gente comum defendendo a casa, a cultura e o boteco.</p><article class="fighter" style="--c:#3ddc84" id="laura">
+  <div class="art"><img src="versus/laura.png" alt="LAURA" loading="lazy"></div>
+  <div class="info">
+    <div class="head"><img class="av" src="fighters/laura/portrait.png" alt=""><div><h3>LAURA</h3><p class="role">A Lutadora · Recife</p></div></div>
+    <p class="tag">“Faixa-preta em resolver problema.”</p>
+    <p class="bio">Não vai deixar as IAs destruírem Recife. Nem os tubarões.</p>
+    <div class="stats"><div class="stat"><span>FORÇA</span><div><i style="width:31%;background:#3ddc84"></i></div><b>0.90</b></div><div class="stat"><span>AGILIDADE</span><div><i style="width:92%;background:#3ddc84"></i></div><b>1.30</b></div><div class="stat"><span>PODER</span><div><i style="width:38%;background:#3ddc84"></i></div><b>0.95</b></div><div class="stat"><span>PESO</span><div><i style="width:23%;background:#3ddc84"></i></div><b>0.85</b></div></div>
+    <div class="moves">
+      <div><h4>MAGIA · meia barra</h4><b>ONDA VERDE</b><p>Lança projétil próprio do lutador. Dano 11.</p></div>
+      <div><h4>SUPER · barra cheia</h4><b>ARREMESSO FAIXA-PRETA</b><p>Arranca, agarra, levanta e arremessa. Ignora a defesa: só escapa quem estiver no ar. Dano 25.</p></div>
+    </div>
+    <div class="stage"><img src="stages/recife.png" alt="" loading="lazy"><span>CENÁRIO</span></div>
+  </div></article><article class="fighter" style="--c:#d9a441" id="dede">
+  <div class="art"><img src="versus/dede.png" alt="DEDÊ" loading="lazy"></div>
+  <div class="info">
+    <div class="head"><img class="av" src="fighters/dede/portrait.png" alt=""><div><h3>DEDÊ</h3><p class="role">O Gaúcho · Porto Alegre</p></div></div>
+    <p class="tag">“Laça o problema. E o adversário.”</p>
+    <p class="bio">André, gaudério correto. Protege a cultura gaúcha das IAs.</p>
+    <div class="stats"><div class="stat"><span>FORÇA</span><div><i style="width:46%;background:#d9a441"></i></div><b>1.00</b></div><div class="stat"><span>AGILIDADE</span><div><i style="width:54%;background:#d9a441"></i></div><b>1.05</b></div><div class="stat"><span>PODER</span><div><i style="width:62%;background:#d9a441"></i></div><b>1.10</b></div><div class="stat"><span>PESO</span><div><i style="width:46%;background:#d9a441"></i></div><b>1.00</b></div></div>
+    <div class="moves">
+      <div><h4>MAGIA · meia barra</h4><b>CHICOTADA</b><p>Lança risco cortante. Dano 14.</p></div>
+      <div><h4>SUPER · barra cheia</h4><b>BOLEADEIRAS</b><p>Gira as boleadeiras e arremessa. Projétil largo que derruba. Dano 26.</p></div>
+    </div>
+    <div class="stage"><img src="stages/dede.png" alt="" loading="lazy"><span>CENÁRIO</span></div>
+  </div></article><article class="fighter" style="--c:#ff3b4e" id="michael">
+  <div class="art"><img src="versus/michael.png" alt="MICHAEL" loading="lazy"></div>
+  <div class="info">
+    <div class="head"><img class="av" src="fighters/michael/portrait.png" alt=""><div><h3>MICHAEL</h3><p class="role">O Boxeador · Rio de Janeiro</p></div></div>
+    <p class="tag">“Fecha negócio no primeiro round.”</p>
+    <p class="bio">Treina pra vingar a comunidade tomada pelas IAs.</p>
+    <div class="stats"><div class="stat"><span>FORÇA</span><div><i style="width:69%;background:#ff3b4e"></i></div><b>1.15</b></div><div class="stat"><span>AGILIDADE</span><div><i style="width:77%;background:#ff3b4e"></i></div><b>1.20</b></div><div class="stat"><span>PODER</span><div><i style="width:15%;background:#ff3b4e"></i></div><b>0.80</b></div><div class="stat"><span>PESO</span><div><i style="width:38%;background:#ff3b4e"></i></div><b>0.95</b></div></div>
+    <div class="moves">
+      <div><h4>MAGIA · meia barra</h4><b>JAB FANTASMA</b><p>Lança bola de energia. Dano 10.</p></div>
+      <div><h4>SUPER · barra cheia</h4><b>DIRETO FINAL</b><p>Direto em avanço que termina em gancho. O super mais rápido de sair. Dano 21.</p></div>
+    </div>
+    <div class="stage"><img src="stages/michael.png" alt="" loading="lazy"><span>CENÁRIO</span></div>
+  </div></article><article class="fighter" style="--c:#ff8a1f" id="eneias">
+  <div class="art"><img src="versus/eneias.png" alt="ENEIAS" loading="lazy"></div>
+  <div class="info">
+    <div class="head"><img class="av" src="fighters/eneias/portrait.png" alt=""><div><h3>ENEIAS</h3><p class="role">O Peso-Pesado · Rio de Janeiro</p></div></div>
+    <p class="tag">“Entrega o resultado. E a barrigada.”</p>
+    <p class="bio">Só queria uma gelada e um petisco. As IAs chegaram no bairro.</p>
+    <div class="stats"><div class="stat"><span>FORÇA</span><div><i style="width:92%;background:#ff8a1f"></i></div><b>1.30</b></div><div class="stat"><span>AGILIDADE</span><div><i style="width:15%;background:#ff8a1f"></i></div><b>0.80</b></div><div class="stat"><span>PODER</span><div><i style="width:46%;background:#ff8a1f"></i></div><b>1.00</b></div><div class="stat"><span>PESO</span><div><i style="width:100%;background:#ff8a1f"></i></div><b>1.35</b></div></div>
+    <div class="moves">
+      <div><h4>MAGIA · meia barra</h4><b>ONDA DE CHOQUE</b><p>Lança onda rasteira. Dano 13.</p></div>
+      <div><h4>SUPER · barra cheia</h4><b>PEIXINHO SÍSMICO</b><p>Corre, mergulha de barriga e explode no chão. O maior dano bruto do jogo. Dano 28.</p></div>
+    </div>
+    <div class="stage"><img src="stages/eneias.png" alt="" loading="lazy"><span>CENÁRIO</span></div>
+  </div></article><article class="fighter" style="--c:#ff4fa0" id="van">
+  <div class="art"><img src="versus/van.png" alt="VANESSA" loading="lazy"></div>
+  <div class="info">
+    <div class="head"><img class="av" src="fighters/van/portrait.png" alt=""><div><h3>VANESSA</h3><p class="role">A Mãe · Recife</p></div></div>
+    <p class="tag">“Conciliou a agenda. E o nocaute.”</p>
+    <p class="bio">Mãe que luta pra sobreviver com a filha no mundo corporativo.</p>
+    <div class="stats"><div class="stat"><span>FORÇA</span><div><i style="width:23%;background:#ff4fa0"></i></div><b>0.85</b></div><div class="stat"><span>AGILIDADE</span><div><i style="width:69%;background:#ff4fa0"></i></div><b>1.15</b></div><div class="stat"><span>PODER</span><div><i style="width:77%;background:#ff4fa0"></i></div><b>1.20</b></div><div class="stat"><span>PESO</span><div><i style="width:31%;background:#ff4fa0"></i></div><b>0.90</b></div></div>
+    <div class="moves">
+      <div><h4>MAGIA · meia barra</h4><b>CORAÇÃO DE MÃE</b><p>Lança coração. Dano 16.</p></div>
+      <div><h4>SUPER · barra cheia</h4><b>FRALDA TÓXICA</b><p>Aponta o bebê e solta a nuvem tóxica. Área grande à frente, derruba. Dano 31.</p></div>
+    </div>
+    <div class="stage"><img src="stages/van.png" alt="" loading="lazy"><span>CENÁRIO</span></div>
+  </div></article><article class="fighter" style="--c:#ffd21f" id="landim">
+  <div class="art"><img src="versus/landim.png" alt="LANDIM" loading="lazy"></div>
+  <div class="info">
+    <div class="head"><img class="av" src="fighters/landim/portrait.png" alt=""><div><h3>LANDIM</h3><p class="role">A Cineasta · Origem desconhecida</p></div></div>
+    <p class="tag">“Luz, câmera, porrada.”</p>
+    <p class="bio">Quer resgatar o olhar cinematográfico que as IAs apagaram.</p>
+    <div class="stats"><div class="stat"><span>FORÇA</span><div><i style="width:31%;background:#ffd21f"></i></div><b>0.90</b></div><div class="stat"><span>AGILIDADE</span><div><i style="width:69%;background:#ffd21f"></i></div><b>1.15</b></div><div class="stat"><span>PODER</span><div><i style="width:77%;background:#ffd21f"></i></div><b>1.20</b></div><div class="stat"><span>PESO</span><div><i style="width:31%;background:#ffd21f"></i></div><b>0.90</b></div></div>
+    <div class="moves">
+      <div><h4>MAGIA · meia barra</h4><b>FLASH</b><p>Lança bola de energia. Dano 16.</p></div>
+      <div><h4>SUPER · barra cheia</h4><b>PLANO SEQUÊNCIA</b><p>Feixe da câmera que dispara a lente como projétil. Dano 31.</p></div>
+    </div>
+    <div class="stage"><img src="stages/office.png" alt="" loading="lazy"><span>CENÁRIO</span></div>
+  </div></article><h2 class="side">OS NEUTROS</h2><p class="lead">Poder de sobra e nenhum lado escolhido. Ainda.</p><article class="fighter" style="--c:#c43cff" id="edgard">
+  <div class="art"><img src="versus/edgard.png" alt="EDGARD" loading="lazy"></div>
+  <div class="info">
+    <div class="head"><img class="av" src="fighters/edgard/portrait.png" alt=""><div><h3>EDGARD</h3><p class="role">O Designer · Curitiba</p></div></div>
+    <p class="tag">“Alinhou. Centralizou. Nocauteou.”</p>
+    <p class="bio">Bruxo rebelde. Tem a magia e não está do lado de ninguém.</p>
+    <div class="stats"><div class="stat"><span>FORÇA</span><div><i style="width:31%;background:#c43cff"></i></div><b>0.90</b></div><div class="stat"><span>AGILIDADE</span><div><i style="width:69%;background:#c43cff"></i></div><b>1.15</b></div><div class="stat"><span>PODER</span><div><i style="width:85%;background:#c43cff"></i></div><b>1.25</b></div><div class="stat"><span>PESO</span><div><i style="width:46%;background:#c43cff"></i></div><b>1.00</b></div></div>
+    <div class="moves">
+      <div><h4>MAGIA · meia barra</h4><b>GRID SAGRADO</b><p>Lança projétil próprio do lutador. Dano 18.</p></div>
+      <div><h4>SUPER · barra cheia</h4><b>PORTAL DOS MORCEGOS</b><p>Bate a mão no chão e abre um portal de morcegos sob o adversário, onde quer que ele esteja. Dois acertos; o segundo derruba. Dano 28.</p></div>
+    </div>
+    <div class="stage"><img src="stages/alley.png" alt="" loading="lazy"><span>CENÁRIO</span></div>
+  </div></article><article class="fighter" style="--c:#3d8bff" id="kevin">
+  <div class="art"><img src="versus/kevin.png" alt="KEVIN" loading="lazy"></div>
+  <div class="info">
+    <div class="head"><img class="av" src="fighters/kevin/portrait.png" alt=""><div><h3>KEVIN</h3><p class="role">O Mercenário · Colombo</p></div></div>
+    <p class="tag">“Atira primeiro. Fatura depois.”</p>
+    <p class="bio">Mercenário. Atira pra quem pagar, até escolher um lado.</p>
+    <div class="stats"><div class="stat"><span>FORÇA</span><div><i style="width:38%;background:#3d8bff"></i></div><b>0.95</b></div><div class="stat"><span>AGILIDADE</span><div><i style="width:46%;background:#3d8bff"></i></div><b>1.00</b></div><div class="stat"><span>PODER</span><div><i style="width:92%;background:#3d8bff"></i></div><b>1.30</b></div><div class="stat"><span>PESO</span><div><i style="width:54%;background:#3d8bff"></i></div><b>1.05</b></div></div>
+    <div class="moves">
+      <div><h4>MAGIA · meia barra</h4><b>TIRO CERTEIRO</b><p>Lança projétil próprio do lutador. Dano 12.</p></div>
+      <div><h4>SUPER · barra cheia</h4><b>RAJADA TRIPLA</b><p>Saca a pistola e dispara três tiros rápidos em sequência, de qualquer distância. Dano 31.</p></div>
+    </div>
+    <div class="stage"><img src="stages/colombo.png" alt="" loading="lazy"><span>CENÁRIO</span></div>
+  </div></article>
+
+<h2 id="tabela">TABELA DE ATRIBUTOS</h2><p class="lead">1,00 é a média. A régua do jogo vai de 0,70 a 1,35.</p>
+<div class="box" style="overflow:auto"><table><tr><th>LUTADOR</th><th>FORÇA</th><th>AGILIDADE</th><th>PODER</th><th>PESO</th><th>PAPEL</th></tr><tr><td><a href='#edgard'>EDGARD</a></td><td>0.90</td><td>1.15</td><td>1.25</td><td>1.00</td><td>O Designer</td></tr><tr><td><a href='#santana'>SANTANA</a></td><td>1.20</td><td>0.90</td><td>1.00</td><td>1.15</td><td>O Tráfego</td></tr><tr><td><a href='#kevin'>KEVIN</a></td><td>0.95</td><td>1.00</td><td>1.30</td><td>1.05</td><td>O Mercenário</td></tr><tr><td><a href='#laura'>LAURA</a></td><td>0.90</td><td>1.30</td><td>0.95</td><td>0.85</td><td>A Lutadora</td></tr><tr><td><a href='#dede'>DEDÊ</a></td><td>1.00</td><td>1.05</td><td>1.10</td><td>1.00</td><td>O Gaúcho</td></tr><tr><td><a href='#dias'>DIAS</a></td><td>1.10</td><td>0.90</td><td>1.15</td><td>1.20</td><td>O Subchefe</td></tr><tr><td><a href='#michael'>MICHAEL</a></td><td>1.15</td><td>1.20</td><td>0.80</td><td>0.95</td><td>O Boxeador</td></tr><tr><td><a href='#eneias'>ENEIAS</a></td><td>1.30</td><td>0.80</td><td>1.00</td><td>1.35</td><td>O Peso-Pesado</td></tr><tr><td><a href='#van'>VANESSA</a></td><td>0.85</td><td>1.15</td><td>1.20</td><td>0.90</td><td>A Mãe</td></tr><tr><td><a href='#landim'>LANDIM</a></td><td>0.90</td><td>1.15</td><td>1.20</td><td>0.90</td><td>A Cineasta</td></tr><tr><td><a href='#xablau'>XABLAU</a></td><td>1.30</td><td>0.85</td><td>1.05</td><td>1.40</td><td>O Capanga</td></tr><tr><td><a href='#mundim'>MUNDIM</a></td><td>1.20</td><td>1.05</td><td>1.30</td><td>1.10</td><td>O Chefão</td></tr></table></div>
+
+<h2 id="modos">MODOS DE JOGO</h2>
+<div class="grid2">
+<div class="box"><h4>ARCADE</h4><p>Sete lutas: quatro rivais do elenco, depois <b>Xablau</b> (o capanga), <b>Dias</b> (o subchefe) e <b>Mundim</b> (o chefão). Cada luta acontece no cenário e com a música do adversário. A CPU fica mais esperta a cada luta.</p></div>
+<div class="box"><h4>ARENA ONLINE</h4><p>Entre com um apelido, veja quem está online e desafie. Até 15 pessoas conectadas. Qualquer um pode assistir às lutas ao vivo, inclusive entrando no meio. Vitória vale 3 pontos no ranking, derrota vale 1.</p></div>
+<div class="box"><h4>CAMPEONATO</h4><p>Alguém cria e vira organizador. Cada pessoa se inscreve com um lutador, e <b>cada lutador só pode ter um dono</b>. O sorteio monta a chave eliminatória. Uma luta por vez: quando chegar a sua, aparece “É SUA VEZ”. O resto assiste.</p></div>
+<div class="box"><h4>DICAS PRO EVENTO</h4><p>O organizador precisa manter o saguão aberto, porque é ele quem chama a próxima luta. Se alguém sumir, ele pode dar W.O. Projete a tela de um espectador no telão.</p></div></div>
+<footer>V4 Fighters – Trouble Work · manual gerado a partir dos dados do jogo · <a href="./" style="color:var(--y)">jogar</a></footer>
+</div></body></html>
