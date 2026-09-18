@@ -18,8 +18,8 @@ export class Hud {
         <div class="side p2"><div class="bars"><div class="name"></div><div class="life"><div class="ghost"></div><div class="fill"></div></div><div class="rounds"><i></i><i></i></div></div><div class="portrait"></div></div>
       </div>
       <div class="hud-bottom">
-        <div class="meter p1"><div class="fill"></div><span>ESPECIAL</span></div>
-        <div class="meter p2"><div class="fill"></div><span>ESPECIAL</span></div>
+        <div class="meter p1"><div class="fill"></div><em></em><span>ESPECIAL</span></div>
+        <div class="meter p2"><div class="fill"></div><em></em><span>ESPECIAL</span></div>
       </div>
       <div class="hud-msg"></div>`;
     const q = (s: string) => root.querySelectorAll<HTMLElement>(s);
@@ -55,7 +55,10 @@ export class Hud {
       this.ghost[i] += (f.life - this.ghost[i]) * 0.08;
       this.lifeGhost[i].style.width = `${Math.max(f.life, this.ghost[i])}%`;
       this.meter[i].style.width = `${f.meter}%`;
-      this.meter[i].parentElement!.classList.toggle('full', f.meter >= 100);
+      const bar = this.meter[i].parentElement!;
+      bar.classList.toggle('full', f.meter >= 100);
+      bar.classList.toggle('half', f.meter >= 50 && f.meter < 100);
+      bar.querySelector('span')!.textContent = f.meter >= 100 ? 'SUPER!' : f.meter >= 50 ? 'MAGIA' : 'ESPECIAL';
       Array.from(this.rounds[i].children).forEach((dot, k) => dot.classList.toggle('won', k < m.wins[i]));
     });
     this.timer.textContent = m.training ? '∞' : String(m.seconds).padStart(2, '0');

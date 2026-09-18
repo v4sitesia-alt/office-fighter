@@ -5,8 +5,8 @@
 import { loadImage } from '../core/assets';
 import { H, W } from '../game/consts';
 
-export const INTRO_END = 20;
-const T_LOGO = 5.5, T_CITY = 12.5;
+export const INTRO_END = 19;
+const T_LOGO = 5.5, T_CITY = 9.5;
 
 export class Intro {
   private logo!: HTMLImageElement; private city!: HTMLImageElement; private tower!: HTMLImageElement;
@@ -66,7 +66,7 @@ export class Intro {
   }
 
   private cityPan(ctx: CanvasRenderingContext2D, k: number) {
-    const s = 1.45, dw = W * s, dh = H * s;
+    const s = 1.15, dw = W * s, dh = H * s;   // quase a imagem inteira: cidade vista de longe
     const x = -(dw - W) * k, y = -(dh - H) * 0.55;
     ctx.imageSmoothingEnabled = false;
     ctx.drawImage(this.city, x, y, dw, dh);

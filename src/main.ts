@@ -1,6 +1,6 @@
 import './styles.css';
 import { loadFighter, loadStage, type StageAssets } from './core/assets';
-import { audio } from './core/audio';
+import { audio, hasTrack } from './core/audio';
 import { Input } from './core/input';
 import { startLoop } from './core/loop';
 import { DEFAULT_STAGE, ROSTER } from './data/roster';
@@ -60,6 +60,7 @@ const MUSIC: Record<Mode, 'intro' | 'select' | 'fight' | null> = {
 const cinematic = new Intro();
 let introClock = 0;
 audio.base = import.meta.env.BASE_URL;
+audio.preloadMusic();
 function setMode(m: Mode) { mode = m; document.body.dataset.mode = m; audio.music(MUSIC[m]); }
 
 // áudio só pode nascer depois de um gesto do usuário
@@ -98,6 +99,7 @@ function startFight() {
   paused = false;
   screens.hide();
   setMode('fight');
+  if (hasTrack(`stage-${stage.name}`)) audio.music(`stage-${stage.name}`); // música própria do cenário
 }
 
 function showVersus() {

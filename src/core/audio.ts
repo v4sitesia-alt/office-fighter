@@ -4,7 +4,13 @@
 import { SONGS, type Song } from '../data/songs';
 
 /** Músicas de arquivo (public/audio/music/*.mp3), tocadas em loop por <audio>. */
-const FILE_TRACKS: Record<string, string> = { intro: 'audio/music/intro.mp3', select: 'audio/music/select.mp3' };
+// vol nivelado pelo RMS medido de cada arquivo, pra todas soarem no mesmo volume
+const FILE_TRACKS: Record<string, { path: string; vol: number }> = {
+  intro: { path: 'audio/music/intro.mp3', vol: 0.55 },
+  select: { path: 'audio/music/select.mp3', vol: 0.43 },
+  'stage-alley': { path: 'audio/music/alley.mp3', vol: 0.35 },
+};
+export const hasTrack = (name: string) => name in FILE_TRACKS;
 export type SongName = keyof typeof SONGS | keyof typeof FILE_TRACKS;
 
 export type SfxName =
@@ -34,6 +40,7 @@ class AudioEngine {
   songName: SongName | null = null;
   private step = 0; private nextStepTime = 0; private timer = 0;
   private fileEl: HTMLAudioElement | null = null;
+  private files = new Map<string, HTMLAudioElement>();
   base = '/';
   muted = false;
 
@@ -177,15 +184,26 @@ class AudioEngine {
     this.song = name && !file ? SONGS[name as keyof typeof SONGS] : null;
     this.step = 0;
     clearInterval(this.timer);
-    if (file) this.playFile(file); else this.stopFile();
+    if (file) this.playFile(name!); else this.stopFile();
     if (!this.ctx) return;
     if (this.song) this.startSequencer();
   }
-  private playFile(path: string) {
-    const url = this.base + path;
-    if (this.fileEl && this.fileEl.dataset.src === url) return;
+  /** Baixa as músicas de arquivo antes, pra entrarem no instante do clique. */
+  preloadMusic() { for (const name of Object.keys(FILE_TRACKS)) this.fileFor(name); }
+  private fileFor(name: string) {
+    let el = this.files.get(name);
+    if (!el) {
+      const t = FILE_TRACKS[name];
+      el = new Audio(this.base + t.path); el.loop = true; el.preload = 'auto'; el.volume = t.vol; el.load();
+      this.files.set(name, el);
+    }
+    return el;
+  }
+  private playFile(name: string) {
+    const el = this.fileFor(name);
+    if (this.fileEl === el) return;
     this.stopFile();
-    const el = new Audio(url); el.loop = true; el.volume = 0.55; el.muted = this.muted; el.dataset.src = url;
+    el.muted = this.muted; el.currentTime = 0;
     this.fileEl = el;
     el.play().catch(() => { /* toca no próximo gesto (unlock) */ });
   }

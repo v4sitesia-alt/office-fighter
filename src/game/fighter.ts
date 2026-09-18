@@ -301,7 +301,7 @@ export class Fighter {
     }
     // som do golpe: especial/super tocam o áudio enviado pro lutador; o resto só o whoosh
     if (name === 'super' || name === 'special') audio.voice(`${this.def.id}-special`, this.voiceChannel);
-    else audio.sfx('swing');
+    else { audio.sfx('swing'); this.meter = Math.min(100, this.meter + 3); } // golpe no vazio já enche um pouco
     return true;
   }
 
@@ -314,7 +314,7 @@ export class Fighter {
     const kb = (blocked ? h.knockback * 0.5 : h.knockback) / this.def.stats.weight;
     this.vx = kb * dir;
     if (!blocked) this.facing = dir === 1 ? -1 : 1;
-    this.meter = Math.min(100, this.meter + (blocked ? dmg * 0.4 : dmg * 0.7));
+    this.meter = Math.min(100, this.meter + (blocked ? dmg * 0.6 : dmg * 1.1));
     this.buffered = null;
     if (this.life <= 0) {
       this.setState('ko'); this.knockdownAir = true; this.vy = -8; this.vx = 4 * dir; this.y = Math.min(this.y, -0.01);

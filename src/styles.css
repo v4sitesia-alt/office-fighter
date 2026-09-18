@@ -173,3 +173,9 @@ body[data-mode="fight"] .hud, body[data-mode="result"] .hud { display: block; }
 .sf2-slot.cpu { border-color: #4ab3ff; }
 .sf2-slot.cpu::before { content: 'CPU'; position: absolute; bottom: 2px; right: 4px; font-family: var(--pix); font-size: 8px; color: #4ab3ff; text-shadow: 2px 2px 0 #000; }
 .sf2-hint { grid-column: 1 / -1; text-align: center; align-self: end; }
+
+/* barra de especial em dois níveis: metade = magia, cheia = super */
+.meter em { position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; background: #fff; opacity: .9; }
+.meter.half { box-shadow: 0 2px 0 #000, 0 0 10px rgba(255,255,255,.6); }
+.meter.half span { color: var(--yellow); }
+.meter.full span { color: #fff; animation: blink .3s steps(1) infinite; }
