@@ -50,7 +50,8 @@ export class Lobby {
         [this.tEntries, this.tMatches] = await Promise.all([store.entries(this.tour.id), store.matches(this.tour.id)]);
         const mine = this.tEntries.find((e) => e.player_id === this.me.id);
         const myLive = this.tMatches.some((m) => (m.p1 === this.me.id || m.p2 === this.me.id) && m.status === 'lutando');
-        if (mine && mine.fighter !== this.me.fighter && !myLive) await store.joinTournament(this.tour.id, this.me.id, this.me.name, this.me.fighter); // trocou de lutador
+        const taken = this.tEntries.some((e) => e.player_id !== this.me.id && e.fighter === this.me.fighter);
+        if (mine && mine.fighter !== this.me.fighter && !myLive && !taken) await store.joinTournament(this.tour.id, this.me.id, this.me.name, this.me.fighter); // trocou de lutador
         // uma luta por vez: o organizador chama a próxima quando não há nenhuma em andamento
         if (this.tour.status === 'andamento' && this.tour.owner === this.me.id && !this.tMatches.some((m) => m.status === 'chamando' || m.status === 'lutando')) {
           const next = this.tMatches.find((m) => m.status === 'pendente' && m.p1 && m.p2);
@@ -152,10 +153,12 @@ export class Lobby {
     const t = this.tour;
     if (!t || t.status === 'fim') return `${t?.champion ? `<div class="pix tiny">ÚLTIMO CAMPEÃO: ${esc(t.champion)}</div>` : ''}<div class="lb-btn sm" data-tnew>CRIAR CAMPEONATO</div>`;
     const inIt = this.tEntries.some((e) => e.player_id === this.me.id), owner = t.owner === this.me.id;
+    const takenBy = this.tEntries.find((e) => e.player_id !== this.me.id && e.fighter === this.me.fighter);
     if (t.status === 'inscricoes') {
       return `<div class="pix tiny">${esc(t.name)} · INSCRIÇÕES ABERTAS · ${this.tEntries.length} INSCRITOS</div>
-        <div class="pix tiny">${this.tEntries.map((e) => esc(e.name)).join(' · ')}</div>
-        <div class="lb-row"><div class="lb-btn sm" data-tjoin>${inIt ? 'SAIR DA CHAVE' : 'ENTRAR COM ESTE LUTADOR'}</div>${owner && this.tEntries.length >= 2 ? '<div class="lb-btn sm" data-tstart>SORTEAR E INICIAR</div>' : ''}</div>`;
+        <div class="pix tiny">${this.tEntries.map((e) => `${esc(e.name)} (${esc(e.fighter.toUpperCase())})`).join(' · ')}</div>
+        ${!inIt && takenBy ? `<div class="pix tiny" style="color:#ff8a8a">${esc(takenBy.name)} JÁ ESCOLHEU ESTE LUTADOR. VOLTE E ESCOLHA OUTRO.</div>` : ''}
+        <div class="lb-row">${!inIt && takenBy ? '' : `<div class="lb-btn sm" data-tjoin>${inIt ? 'SAIR DA CHAVE' : 'ENTRAR COM ESTE LUTADOR'}</div>`}${owner && this.tEntries.length >= 2 ? '<div class="lb-btn sm" data-tstart>SORTEAR E INICIAR</div>' : ''}</div>`;
     }
     const rounds = Math.max(...this.tMatches.map((m) => m.round)) + 1;
     const label = (r: number) => (r === rounds - 1 ? 'FINAL' : r === rounds - 2 ? 'SEMI' : `FASE ${r + 1}`);

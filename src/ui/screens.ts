@@ -131,18 +131,29 @@ export class Screens {
     this.onBack = onBack;
   }
 
+  /** História em páginas; qualquer botão avança. */
+  story(pages: { title: string; text: string }[], onDone: () => void) {
+    let i = 0;
+    const show = () => {
+      this.set('story', `<div class="center"><div class="st-title">${pages[i].title}</div><div class="st-text">${pages[i].text}</div><div class="pix tiny">${i + 1}/${pages.length} · G / ENTER CONTINUA · V PULA</div></div>`);
+      this.onConfirm = () => { if (++i >= pages.length) onDone(); else show(); };
+      this.onBack = onDone;
+      this.root.onclick = () => this.onConfirm?.(0);
+    };
+    show();
+  }
+
   versus(a: FighterAssets, b: FighterAssets, label: string, hueB: number, onGo: () => void) {
-    const img = (f: FighterAssets, hue: number) => f.portrait ? `<img src="${f.portrait.src}" style="filter:hue-rotate(${hue}deg)" alt="">` : '';
-    this.set('versus', `
-      <div class="center vs">
-        <div class="pix small">${label}</div>
-        <div class="vsrow">
-          <div class="vscard"><div class="thumb">${img(a, 0)}</div><div class="cname">${a.def.name}</div><div class="crole">${a.def.role}</div></div>
-          <div class="vsx">VS</div>
-          <div class="vscard"><div class="thumb">${img(b, hueB)}</div><div class="cname">${b.def.name}${hueB ? ' 2.0' : ''}</div><div class="crole">${hueB ? 'Versão Corporativa' : b.def.role}</div></div>
-        </div>
-        <div class="pix tiny">G / ENTER PARA LUTAR</div>
-      </div>`);
+    const base = import.meta.env.BASE_URL;
+    const face = (f: FighterAssets, hue: number) => `<img src="${base}versus/${f.def.id}.png" onerror="this.onerror=null;this.src='${f.portrait?.src ?? ''}';this.classList.add('thumbfall')" style="filter:hue-rotate(${hue}deg) drop-shadow(0 10px 0 rgba(0,0,0,.5))" alt="">`;
+    const card = (f: FighterAssets, hue: number, side: string) => `<div class="vs-side ${side}"><div class="vs-face">${face(f, hue)}</div>
+      <div class="vs-plate"><div class="vs-av">${f.portrait ? `<img src="${f.portrait.src}" style="filter:hue-rotate(${hue}deg)" alt="">` : ''}</div><div><div class="cname">${f.def.name}${hue ? ' 2.0' : ''}</div><div class="crole">${f.def.role}</div></div></div>
+      <div class="vs-bio">${f.def.bio ?? ''}</div></div>`;
+    this.set('versus', `<div class="vs-stage" style="background-image:url(${base}versus/base.jpg)">
+        <div class="pix small vs-label">${label}</div>
+        ${card(a, 0, 'l')}${card(b, hueB, 'r')}
+        <img class="vs-logo" src="${base}versus/vs.png" alt="VS">
+        <div class="pix tiny vs-hint">G / ENTER PARA LUTAR</div></div>`);
     this.onConfirm = onGo;
   }
 

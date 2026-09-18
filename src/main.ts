@@ -75,8 +75,11 @@ muteBtn.addEventListener('click', () => { audio.unlock(); audio.toggleMute(); pa
 paintMute();
 
 function buildCampaign() {
-  const others = roster.map((_, i) => i).filter((i) => i !== playerIdx);
-  campaign = [...others.map((idx) => ({ idx, hue: 0 })), { idx: playerIdx, hue: 150 }];
+  // 4 rivais do elenco (a partir da posição do jogador), depois o capanga, o subchefe e o chefão
+  const bosses = ['xablau', 'dias', 'mundim'].map((id) => roster.findIndex((f) => f.def.id === id)).filter((i) => i >= 0);
+  const pool = roster.map((_, i) => i).filter((i) => i !== playerIdx && !bosses.includes(i));
+  const rivals = pool.map((_, k) => pool[(k + playerIdx) % pool.length]).slice(0, 4);
+  campaign = [...rivals, ...bosses].map((idx) => (idx === playerIdx ? { idx, hue: 150 } : { idx, hue: 0 }));  // se você é um dos chefes, enfrenta o seu clone
   fightNo = 0;
 }
 
@@ -117,13 +120,22 @@ function goTitle() {
   const fromIntro = mode === 'intro';
   setMode('title');
   if (!fromIntro || audio.musicTime() < INTRO_END - 1) audio.seekMusic(INTRO_END); // título sempre no trecho dos 20 s
-  screens.title(() => { setMode('difficulty'); screens.mainMenu(() => { online = false; showSelect(); }, () => { online = true; showSelect(); }, goTitle); }, roster.length);
+  const menu = () => { setMode('difficulty'); screens.mainMenu(() => { online = false; showSelect(); }, () => { online = true; showSelect(); }, goTitle); };
+  screens.title(() => { if (storySeen) { menu(); return; } storySeen = true; setMode('difficulty'); screens.story(STORY, menu); }, roster.length);
 }
 
 function showSelect() {
   setMode('select');
   screens.select(roster, (i) => { playerIdx = i; if (online) openLobby(); else { buildCampaign(); showVersus(); } }, goTitle);
 }
+
+let storySeen = false;
+const STORY = [
+  { title: '199X · CURITIBA', text: '<b>MUNDIM</b> dominou o mercado inteiro com as suas <i>IAs</i>. Do 52º andar, ele e o subchefe <b>DIAS</b>, o homem das contas, automatizaram tudo: as campanhas, as fábricas, as cidades.' },
+  { title: 'FORA DE CONTROLE', text: 'Mas as IAs pararam de obedecer. Da linha de montagem saiu <b>SANTANA</b>, o androide perfeito. Dos dados errados nasceu <i>XABLAU</i>, um monstro que virou capanga dos chefes. E as máquinas começaram a tomar as comunidades.' },
+  { title: 'A RESISTÊNCIA', text: '<b>VANESSA</b> luta pra sobreviver com a filha no mundo corporativo. <b>ENEIAS</b> só queria a gelada e o petisco do boteco. <b>LAURA</b> defende Recife, e os tubarões. <b>ANDRÉ</b>, o gaudério, protege a cultura gaúcha. <b>MICHAEL</b> treina pra vingar o morro. <b>LANDIM</b> quer de volta o olhar do cinema.' },
+  { title: 'TROUBLE WORK', text: '<b>EDGARD</b>, o bruxo rebelde, tem a magia e não escolheu lado. <b>KEVIN</b> atira pra quem pagar. Todos os caminhos sobem pelo mesmo elevador. No último andar, alguém vai ter que desligar as máquinas. <i>Ou o chefe.</i>' },
+];
 
 // ---------- arena online
 let online = false;

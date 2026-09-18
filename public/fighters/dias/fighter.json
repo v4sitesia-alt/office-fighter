@@ -1,7 +1,7 @@
 {
  "id": "dias",
  "name": "DIAS",
- "role": "O Financeiro",
+ "role": "O Subchefe",
  "tagline": "Tempo é dinheiro. Porrada também.",
  "colors": {
   "primary": "#35d46a",
@@ -456,5 +456,7 @@
    "hitstop": 12,
    "name": "BARRIGADA DE CAIXA"
   }
- }
+ },
+ "bio": "Subchefe. Cuida das contas e do dinheiro de Mundim.",
+ "side": "vilao"
 }

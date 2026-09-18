@@ -18,6 +18,9 @@
   "ann-michael.wav",
   "ann-eneias.wav",
   "ann-van.wav",
+  "ann-mundim.wav",
+  "ann-landim.wav",
+  "ann-xablau.wav",
   "edgard-special.mp3",
   "kevin-special.wav",
   "santana-special.wav",
@@ -26,6 +29,12 @@
   "dede-special.mp3",
   "eneias-special.mp3",
   "michael-special.mp3",
-  "van-special.mp3"
+  "van-special.mp3",
+  "landim-special.wav",
+  "mundim-special.wav",
+  "xablau-special.wav",
+  "edgard-magic.wav",
+  "dias-magic.mp3",
+  "xablau-magic.wav"
  ]
 }

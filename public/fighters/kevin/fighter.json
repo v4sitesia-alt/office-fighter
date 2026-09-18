@@ -472,5 +472,7 @@
    "launch": -8,
    "hitstop": 8
   }
- }
+ },
+ "bio": "Mercenário. Atira pra quem pagar, até escolher um lado.",
+ "side": "neutro"
 }

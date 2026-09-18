@@ -36,7 +36,10 @@ CLIPS = [
     ('ann-dias',    'Daniel', 'Dee-as!', 160, 0.86),
     ('ann-michael', 'Daniel', 'Michael!', 160, 0.86),
     ('ann-eneias',  'Daniel', 'Eh-nay-as!', 160, 0.86),
-    ('ann-van',     'Daniel', 'Van!', 160, 0.86),
+    ('ann-van',     'Daniel', 'Vanessa!', 160, 0.86),
+    ('ann-mundim',  'Daniel', 'Moondeem!', 160, 0.84),
+    ('ann-landim',  'Daniel', 'Landeem!', 160, 0.86),
+    ('ann-xablau',  'Daniel', 'Shablau!', 160, 0.84),
 ]
 
 
@@ -151,11 +154,13 @@ def main():
         ext = os.path.splitext(src)[1].lower()
         dst = f'{fid}-special{ext}'
         shutil.copy(src, os.path.join(OUT, dst)); ids.append(dst); print(f'{dst:20s} <- {src}')
-    SONS = {'barrigada.wav': 'dias', 'dede-especial.mp3': 'dede', 'enais-especial.mp3': 'eneias', 'eneias-especial.mp3': 'eneias', 'michael-punch.mp3': 'michael', 'van-especial.mp3': 'van'}
-    for fn, fid in SONS.items():
+    SONS = {'barrigada.wav': 'dias-special', 'dede-especial.mp3': 'dede-special', 'enais-especial.mp3': 'eneias-special', 'michael-punch.mp3': 'michael-special',
+            'van-especial.mp3': 'van-special', 'landim-especial.wav': 'landim-special', 'mundin-especial.wav': 'mundim-special', 'xablau-especial.wav': 'xablau-special',
+            'edgard-magia-leve.wav': 'edgard-magic', 'magia-leve-dias.mp3': 'dias-magic', 'xablau-magia-leve.wav': 'xablau-magic'}
+    for fn, target in SONS.items():
         src = os.path.join('Personagens/sons', fn)
         if not os.path.exists(src): continue
-        dst = f'{fid}-special{os.path.splitext(fn)[1].lower()}'
+        dst = target + os.path.splitext(fn)[1].lower()
         shutil.copy(src, os.path.join(OUT, dst)); ids.append(dst); print(f'{dst:20s} <- {src}')
     files = [i if '.' in i else i + '.wav' for i in ids]
     with open(os.path.join(OUT, 'manifest.json'), 'w') as f:

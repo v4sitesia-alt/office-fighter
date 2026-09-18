@@ -215,3 +215,29 @@ body[data-mode="fight"] .hud, body[data-mode="result"] .hud, body[data-mode="net
 .lb-modal { position: absolute; inset: 0; background: rgba(0,0,0,.8); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; }
 
 .lb-row.t { padding: 4px 8px; } .lb-row.t.live { border-color: var(--yellow); box-shadow: 0 0 12px rgba(255,210,63,.5); } .lb-row.t .win { color: #9fe8a8; }
+
+/* ---------- tela VS frente a frente */
+.vs-stage { position: absolute; inset: 0; background-size: cover; background-position: center; overflow: hidden; }
+.vs-label { position: absolute; top: 16px; left: 0; right: 0; text-align: center; color: var(--yellow); }
+.vs-side { position: absolute; bottom: 0; width: 46%; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 14px; }
+.vs-side.l { left: 0; animation: slideL .45s ease-out; } .vs-side.r { right: 0; animation: slideR .45s ease-out; }
+.vs-face { height: 330px; display: flex; align-items: flex-end; } .vs-face img { height: 330px; image-rendering: pixelated; }
+.vs-face img.thumbfall { height: 250px; margin-bottom: 30px; }
+.vs-side.r .vs-face img { transform: scaleX(-1); }
+.vs-plate { display: flex; align-items: center; gap: 10px; background: rgba(5,8,25,.85); border: 3px solid #fff; padding: 6px 14px 6px 6px; margin-top: -26px; z-index: 2; text-align: left; box-shadow: 0 4px 0 #000; }
+.vs-av { width: 52px; height: 52px; overflow: hidden; flex: none; } .vs-av img { width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; }
+.vs-plate .crole { margin-top: 5px; }
+.vs-bio { font-size: 7px; line-height: 1.7; color: #dfe7f3; text-shadow: 1px 1px 0 #000; max-width: 360px; margin-top: 8px; min-height: 26px; text-align: center; }
+.vs-logo { position: absolute; left: 50%; top: 40%; width: 230px; transform: translate(-50%, -50%); animation: vsPop .5s cubic-bezier(.2,1.6,.4,1) .3s both; image-rendering: pixelated; z-index: 3; }
+.vs-hint { position: absolute; bottom: 4px; left: 0; right: 0; text-align: center; }
+@keyframes slideL { from { transform: translateX(-110%); } } @keyframes slideR { from { transform: translateX(110%); } }
+@keyframes vsPop { from { transform: translate(-50%, -50%) scale(3); opacity: 0; } }
+/* ---------- história */
+.screens.story { background: rgba(4,4,12,.78); }
+.st-title { font-family: var(--logo); font-size: 44px; color: var(--yellow); -webkit-text-stroke: 2px #7a2a00; text-shadow: 4px 4px 0 #000; letter-spacing: 3px; }
+.st-text { font-size: 11px; line-height: 2.1; max-width: 760px; color: #fff; text-shadow: 2px 2px 0 #000; }
+.st-text b { color: var(--yellow); font-weight: normal; } .st-text i { color: #ff6b81; font-style: normal; }
+/* seleção com 12+ lutadores: duas fileiras */
+.sf2-grid { flex-wrap: wrap; max-width: 470px; margin: 0 auto; gap: 4px; padding: 4px; }
+.sf2-slot { width: 62px; height: 62px; border-width: 2px; }
+.sf2-hint { display: none; }

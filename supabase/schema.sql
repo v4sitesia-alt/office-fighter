@@ -45,3 +45,6 @@ do $$ declare t text; begin
 
 -- mudanças em tempo real pro saguão
 alter publication supabase_realtime add table tournaments, tournament_entries, matches, players;
+
+-- cada lutador só pode ser usado por um inscrito no campeonato
+create unique index if not exists um_lutador_por_campeonato on tournament_entries (tournament_id, fighter);

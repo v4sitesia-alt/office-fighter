@@ -92,7 +92,7 @@ export type MoveName =
   | 'lowPunch' | 'lowKick' | 'lowHeavy';
 
 export interface FighterDef {
-  id: string; name: string; role: string; tagline?: string;
+  id: string; name: string; role: string; tagline?: string; bio?: string; side?: 'heroi' | 'neutro' | 'vilao';
   colors: { primary: string; secondary: string };
   origin?: { region: string; city: string; lon: number; lat: number; label?: 'left' | 'right' | 'above' | 'below' };
   stage?: string;               // public/stages/<stage>.png (cenário do lutador)

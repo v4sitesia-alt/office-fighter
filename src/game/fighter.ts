@@ -42,6 +42,7 @@ export class Fighter {
   victim: Fighter | null = null;          // quem está sendo agarrado
   grabbedBy: Fighter | null = null;
   airAttackUsed = false;
+  doubleJumped = false;
   lag = 0;                     // frames travado ao pousar de um golpe aéreo
   stun = 0;
   knockdownAir = false;
@@ -107,6 +108,11 @@ export class Fighter {
       case 'jumping':
         this.physicsAir();
         if (this.grounded) { this.land(); break; }
+        if (ctrl.pressed('up') && !this.doubleJumped) {   // pulo duplo: um impulso extra no ar, com direção nova
+          const l = ctrl.held('left'), r = ctrl.held('right');
+          this.doubleJumped = true; this.vy = JUMP_VY * 0.85; if (l !== r) this.vx = JUMP_VX * (r ? 1 : -1);
+          audio.sfx('jump');
+        }
         if (this.buffered && !this.airAttackUsed) {
           const name = this.airMove(this.buffered.btn);
           if (name && this.startMove(name, other)) { this.buffered = null; this.airAttackUsed = true; }
@@ -149,7 +155,7 @@ export class Fighter {
   }
 
   private land() {
-    this.y = 0; this.vy = 0; this.vx = 0; this.airAttackUsed = false;
+    this.y = 0; this.vy = 0; this.vx = 0; this.airAttackUsed = false; this.doubleJumped = false;
     this.setState('idle');
     audio.sfx('land');
   }
@@ -270,7 +276,7 @@ export class Fighter {
     if (ctrl.held('up')) {
       this.vy = JUMP_VY;
       this.vx = ctrl.held(fwd) ? JUMP_VX * this.facing : ctrl.held(back) ? -JUMP_VX * this.facing : 0;
-      this.y = -0.01; this.airAttackUsed = false;
+      this.y = -0.01; this.airAttackUsed = false; this.doubleJumped = false;
       this.setState('jumping'); audio.sfx('jump'); return;
     }
     const sp = this.def.stats.speed;
@@ -300,7 +306,8 @@ export class Fighter {
       this.facing = dx >= 0 ? 1 : -1;
     }
     // som do golpe: especial/super tocam o áudio enviado pro lutador; o resto só o whoosh
-    if (name === 'super' || name === 'special') audio.voice(`${this.def.id}-special`, this.voiceChannel);
+    if (name === 'special' && audio.hasVoice(`${this.def.id}-magic`)) audio.voice(`${this.def.id}-magic`, this.voiceChannel);   // magia leve tem som próprio quando existe
+    else if (name === 'super' || name === 'special') audio.voice(`${this.def.id}-special`, this.voiceChannel);
     else { audio.sfx('swing'); this.meter = Math.min(100, this.meter + 3); } // golpe no vazio já enche um pouco
     return true;
   }
