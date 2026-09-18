@@ -146,6 +146,8 @@ startLoop({
   render() {
     ctx.clearRect(0, 0, W, H);
     if (mode === 'fight' || mode === 'result') { match?.render(ctx, debug); return; }
+    const intro = stages.get('intro');
+    if (mode === 'title' && intro) { ctx.drawImage(intro.img, 0, 0, W, H); ctx.fillStyle = 'rgba(6,10,30,0.35)'; ctx.fillRect(0, 0, W, H); return; }
     if (demo) demo.render(ctx, false);
     if (mode !== 'loading') { ctx.fillStyle = 'rgba(6,10,30,0.72)'; ctx.fillRect(0, 0, W, H); }
   },
@@ -157,7 +159,7 @@ startLoop({
   const tick = () => { done++; screens.loading(done, total); };
   screens.loading(0, total);
   const fighters = await Promise.all(ROSTER.map((id) => loadFighter(id, tick)));
-  const names = [...new Set([DEFAULT_STAGE, ...fighters.map((f) => f.def.stage ?? DEFAULT_STAGE)])];
+  const names = [...new Set([DEFAULT_STAGE, 'intro', ...fighters.map((f) => f.def.stage ?? DEFAULT_STAGE)])];
   const loaded = await Promise.all(names.map((n) => loadStage(n, tick).catch(() => null)));
   loaded.forEach((st, i) => { if (st) stages.set(names[i], st); });
   void audio.preloadVoices(import.meta.env.BASE_URL);
