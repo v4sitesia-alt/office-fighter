@@ -41,6 +41,7 @@ export function resolveHits(fighters: [Fighter, Fighter], projectiles: Projectil
     if (hb && hurt && overlaps(hb, hurt)) {
       const m = atk.move!;
       atk.hasHit = true;
+      if (m.beam) atk.beamStop = atk.facing === 1 ? hurt.x + hurt.w * 0.35 : hurt.x + hurt.w * 0.65;   // entra um pouco no corpo do alvo
       const blocked = isBlocked(def, m.low, m.overhead);
       const px = (Math.max(hb.x, hurt.x) + Math.min(hb.x + hb.w, hurt.x + hurt.w)) / 2;
       const py = (Math.max(hb.y, hurt.y) + Math.min(hb.y + hb.h, hurt.y + hurt.h)) / 2;
@@ -52,7 +53,10 @@ export function resolveHits(fighters: [Fighter, Fighter], projectiles: Projectil
         audio.sfx(blocked ? 'block' : m.damage >= 11 ? 'hitBig' : m.damage > 6 ? 'hitMed' : 'hit');   // soco fraco · chute médio · golpe forte
         if (!blocked) {
           fx.blood(px, py, atk.facing, m.damage >= 11 ? 16 : m.damage > 6 ? 9 : 5);
-          if (!audio.channelBusy(atk.voiceChannel) && Math.random() < 0.5) audio.voiceRandom(`${atk.def.id}-laugh`, atk.voiceChannel);
+          if (!audio.channelBusy(atk.voiceChannel)) {
+            if (m.damage > 6 && audio.hasVoice(`${atk.def.id}-hit`)) audio.voice(`${atk.def.id}-hit`, atk.voiceChannel, 0.9);   // som do lutador: do chute médio pra cima
+            else if (Math.random() < 0.5) audio.voiceRandom(`${atk.def.id}-laugh`, atk.voiceChannel);
+          }
         }
       });
       hitstop = Math.max(hitstop, blocked ? 3 : (m.hitstop ?? 5));
@@ -71,6 +75,7 @@ export function resolveHits(fighters: [Fighter, Fighter], projectiles: Projectil
         fx.hit(p.x + p.vx * 2, p.y, blocked ? '#9ec5ff' : owner.def.colors.primary, !blocked);
         if (!blocked) fx.blood(p.x, p.y, Math.sign(p.vx), 10);
         audio.sfx(blocked ? 'block' : 'hitBig');
+        const hv = p.move.projectile?.hitVoice; if (hv) audio.voice(hv, 'fx');
       });
       hitstop = Math.max(hitstop, blocked ? 4 : (p.move.hitstop ?? 8));
     }

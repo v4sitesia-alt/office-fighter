@@ -15,10 +15,15 @@ carrega pedaço da pose vizinha, mesmo quando os desenhos se encostam ou um efei
   --fx          retângulo do board copiado como special_fx.png (projétil). O desenho continua no frame (nada é cortado);
                 com --fx-erase ele é apagado do frame.
   --export      salva o frame i (já isolado) como PNG avulso no outdir, pra usar como sprite de projétil.
+  --crop        "nome.png:x0,y0,x1,y1[:erase][:rot=-12]" salva um pedaço do board (já sem fundo) como PNG avulso: míssil,
+                drone, raio. Com :erase o pedaço some do board, pra não entrar em nenhum frame; :rot=graus endireita um
+                projétil desenhado inclinado (anti-horário positivo). Pode repetir.
+  Board principal com FUNDO BRANCO (sem transparência) também vale: o recorte é o do tools/whiteboard.py, com as mesmas
+  opções --white-* (se houver --extra, elas valem pro extra e o principal usa só o padrão).
   --extra       segundo board do mesmo lutador (golpe longo + vitória: 2 linhas de 5 poses), anexado ao MESMO atlas
                 como linhas 8 e 9 (frames 35..44). Se vier com fundo branco, o recorte é do tools/whiteboard.py
                 (--white-fx matiz do efeito; --white-keep/--white-drop/--white-fx-keep/--white-fx-drop corrigem
-                bolsões, em px do board original; --white-core devolve o miolo branco de um estouro; --white-erase apaga uma sobra solta). --extra-scale iguala o tamanho do desenho ao do board principal
+                bolsões, em px do board original; --white-core devolve o miolo branco de um estouro; --white-erase apaga uma sobra solta: "x0,y0,x1,y1" ou "x,y" = o desenho ligado ao ponto). --extra-scale iguala o tamanho do desenho ao do board principal
                 (meça pela cabeça: os boards não vêm na mesma escala). As poses do extra nunca são partidas
                 (efeito largo é uma pose só) e o eixo/pés são medidos no CORPO, não no efeito.
 
@@ -292,18 +297,33 @@ def debug_images(path, arr, own, xcuts, ycuts, frames, crops, cols, rows):
     sheet.save(path.replace('.png', '-contact.png'))
 
 
-def load_extra(path, scale, args):
-    """Board extra -> RGBA já sem fundo e na escala do board principal, mais a máscara de efeito."""
-    from whiteboard import unwhite, fx_mask, parse_geom
+def apply_erases(rgba, args):
+    """--white-erase: sobra solta da geração da arte (tracinho, respingo sem dono) ou desenho que não vira frame."""
+    for e in args.white_erase:
+        v = [int(t) for t in e.split(',')]
+        if len(v) == 4: rgba[v[1]:v[3], v[0]:v[2]] = 0
+        else:                                                    # "x,y": some o desenho inteiro que contém o ponto (8 vizinhos)
+            lab, st = label_runs(rgba[:, :, 3] > ALPHA_T); k = int(lab[v[1], v[0]])
+            if k:
+                rgba[lab == k] = 0; print(f"   apagado o desenho em {v[0]},{v[1]}: caixa {int(st['x0'][k])},{int(st['y0'][k])}-{int(st['x1'][k])},{int(st['y1'][k])}")
+            else: print(f'   aviso: --white-erase {v[0]},{v[1]} não cai em desenho nenhum', file=sys.stderr)
+
+
+def load_board(path, scale, args, tuned=True, erase=True):
+    """Board -> RGBA já sem fundo (se veio com fundo branco) e na escala pedida, mais a máscara de efeito.
+    tuned=False: ignora as correções --white-* (elas são do outro board)."""
+    from whiteboard import unwhite, fx_mask, parse_geom, parse_hue
     im = Image.open(path)
     rgba = np.array(im.convert('RGBA'))
-    hues = [tuple(float(t) for t in r.split('-')) for r in args.white_fx]
+    hues = [parse_hue(r) for r in args.white_fx] if tuned else []
     if (rgba[:, :, 3] < 40).mean() < 0.02:                       # sem transparência: fundo branco
-        g = lambda L: [parse_geom(t) for t in L]; rep = []
-        rgba, _ = unwhite(np.array(im.convert('RGB')), hues, g(args.white_keep), g(args.white_drop), rep, 0, g(args.white_fx_keep), g(args.white_fx_drop), g(args.white_core))
+        g = lambda L: [parse_geom(t) for t in L] if tuned else []; rep = []
+        rgba, check = unwhite(np.array(im.convert('RGB')), hues, g(args.white_keep), g(args.white_drop), rep, 0, g(args.white_fx_keep), g(args.white_fx_drop), g(args.white_core))
         print('\n'.join(rep))
-    for e in args.white_erase:                                   # sobra solta da geração da arte (tracinho, respingo sem dono)
-        ex0, ey0, ex1, ey1 = (int(t) for t in e.split(',')); rgba[ey0:ey1, ex0:ex1] = 0
+        if args.debug:
+            from whiteboard import check_image
+            check_image(np.array(im.convert('RGB')), check).save(args.debug.replace('.png', '-branco.png'))
+    if tuned and erase: apply_erases(rgba, args)
     if abs(scale - 1) > 1e-6:                                     # alpha pré-multiplicado, senão a borda escurece/clareia
         size = (round(rgba.shape[1] * scale), round(rgba.shape[0] * scale))
         rgba = np.array(Image.fromarray(rgba).convert('RGBa').resize(size, Image.LANCZOS).convert('RGBA'))
@@ -315,17 +335,28 @@ def main():
     ap.add_argument('src'); ap.add_argument('outdir')
     ap.add_argument('--cols', type=int, default=5); ap.add_argument('--rows', type=int, default=7)
     ap.add_argument('--wide', action='append', default=[]); ap.add_argument('--fx', default=None); ap.add_argument('--fx-erase', action='store_true')
-    ap.add_argument('--export', action='append', default=[]); ap.add_argument('--debug', default=None)
+    ap.add_argument('--export', action='append', default=[]); ap.add_argument('--debug', default=None); ap.add_argument('--crop', action='append', default=[])
     ap.add_argument('--alpha', type=int, default=ALPHA_T, help='alpha mínimo pra separar as poses (suba se o board tiver brilho suave ligando as poses)')
     ap.add_argument('--grow', type=int, default=EDGE_GROW, help='quantos px de borda/brilho semitransparente devolver à pose mais próxima')
+    ap.add_argument('--axis-ignore-smoke', action='store_true', help='mede o eixo e os pés no corpo, ignorando fumaça/poeira clara')
     ap.add_argument('--extra', default=None, help='board extra (golpe longo + vitória), anexado como linhas 8 e 9')
     ap.add_argument('--extra-rows', type=int, default=2); ap.add_argument('--extra-scale', type=float, default=1.0); ap.add_argument('--extra-grow', type=int, default=6)
     for k in ('fx', 'keep', 'drop', 'fx-keep', 'fx-drop', 'core', 'erase'): ap.add_argument(f'--white-{k}', action='append', default=[])
     args = ap.parse_args()
     os.makedirs(args.outdir, exist_ok=True)
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-    arr = np.array(Image.open(args.src).convert('RGBA'))
+    arr, _ = load_board(args.src, 1.0, args, tuned=not args.extra, erase=False)      # no principal os --crop vêm antes de apagar
     cols, rows = args.cols, args.rows
+    for c in args.crop:                                          # pedaço avulso (projétil) tirado do board
+        name, geom, *opt = c.split(':'); cx0, cy0, cx1, cy1 = (int(v) for v in geom.split(','))
+        reg = arr[cy0:cy1, cx0:cx1]; ys, xs = np.nonzero(reg[:, :, 3] > ALPHA_T)
+        piece = Image.fromarray(reg[ys.min():ys.max() + 1, xs.min():xs.max() + 1].copy())
+        rot = [float(o[4:]) for o in opt if o.startswith('rot=')]
+        if rot:                                                  # projétil desenhado inclinado: endireita (anti-horário positivo)
+            piece = piece.convert('RGBa').rotate(rot[0], resample=Image.BICUBIC, expand=True).convert('RGBA'); piece = piece.crop(piece.getchannel('A').point(lambda v: 255 if v > ALPHA_T else 0).getbbox())
+        piece.save(os.path.join(args.outdir, name))
+        if 'erase' in opt: arr[cy0:cy1, cx0:cx1] = 0
+    if not args.extra: apply_erases(arr, args)
     meta = {'sheet': 'sheet.png', 'cols': cols, 'rows': rows, 'source': os.path.basename(args.src)}
 
     if args.fx:
@@ -338,11 +369,15 @@ def main():
     wides = []
     for w in args.wide:
         v = [int(t) for t in w.split(',')]; wides.append((v[0], v[1], v[2] if len(v) > 2 else 2))
-    frames, crops, own, xcuts, ycuts = extract(arr, cols, rows, wides, args.alpha, args.grow)
+    mfx = None
+    if args.axis_ignore_smoke:                                   # poeira/fumaça clara não entra na medida do eixo (o tanque levanta poeira só de um lado)
+        from whiteboard import hsv
+        _, sat, _ = hsv(arr[:, :, :3]); mfx = (arr[:, :, :3].astype(np.float32).mean(axis=2) >= 165) & (sat < 0.22)
+    frames, crops, own, xcuts, ycuts = extract(arr, cols, rows, wides, args.alpha, args.grow, fxm=mfx)
     if args.debug: debug_images(args.debug, arr, own, xcuts, ycuts, frames, crops, cols, rows)
 
     if args.extra:
-        earr, fxm = load_extra(args.extra, args.extra_scale, args)
+        earr, fxm = load_board(args.extra, args.extra_scale, args)
         ef, ec, eown, excuts, eycuts = extract(earr, cols, args.extra_rows, [], ALPHA_T, args.extra_grow, split_touching=False, fxm=fxm)
         lost = int(((earr[:, :, 3] > ALPHA_T) & (eown == 0)).sum())
         if lost: print(f'   atenção: {lost} px sólidos do board extra ficaram sem pose', file=sys.stderr)

@@ -18,9 +18,9 @@
  "stage": "xablau",
  "scale": 1.15,
  "stats": {
-  "power": 1.3,
-  "speed": 0.85,
-  "magic": 1.05,
+  "power": 1.22,
+  "speed": 0.75,
+  "magic": 1.0,
   "weight": 1.4
  },
  "hurtbox": {
@@ -125,10 +125,10 @@
      0
     ]
    },
-   "startup": 3,
+   "startup": 5,
    "active": 3,
-   "recovery": 6,
-   "damage": 5,
+   "recovery": 8,
+   "damage": 6.8,
    "hitstun": 12,
    "blockstun": 8,
    "hitbox": {
@@ -153,10 +153,10 @@
      0
     ]
    },
-   "startup": 6,
-   "active": 3,
-   "recovery": 9,
-   "damage": 8,
+   "startup": 8,
+   "active": 4,
+   "recovery": 12,
+   "damage": 11.2,
    "hitstun": 15,
    "blockstun": 10,
    "hitbox": {
@@ -181,10 +181,10 @@
      0
     ]
    },
-   "startup": 12,
+   "startup": 13,
    "active": 5,
-   "recovery": 18,
-   "damage": 14,
+   "recovery": 20,
+   "damage": 18.0,
    "hitstun": 24,
    "blockstun": 14,
    "hitbox": {
@@ -209,10 +209,10 @@
      20
     ]
    },
-   "startup": 4,
+   "startup": 5,
    "active": 8,
-   "recovery": 4,
-   "damage": 6,
+   "recovery": 5,
+   "damage": 7.9,
    "hitstun": 14,
    "blockstun": 10,
    "overhead": true,
@@ -239,10 +239,10 @@
      22
     ]
    },
-   "startup": 5,
+   "startup": 6,
    "active": 10,
-   "recovery": 4,
-   "damage": 9,
+   "recovery": 5,
+   "damage": 11.2,
    "hitstun": 16,
    "blockstun": 12,
    "overhead": true,
@@ -269,10 +269,10 @@
      24
     ]
    },
-   "startup": 7,
+   "startup": 8,
    "active": 8,
-   "recovery": 6,
-   "damage": 12,
+   "recovery": 8,
+   "damage": 15.8,
    "hitstun": 22,
    "blockstun": 14,
    "overhead": true,
@@ -301,10 +301,10 @@
      25
     ]
    },
-   "startup": 4,
+   "startup": 5,
    "active": 3,
-   "recovery": 7,
-   "damage": 4,
+   "recovery": 9,
+   "damage": 5.6,
    "hitstun": 11,
    "blockstun": 8,
    "low": true,
@@ -331,10 +331,10 @@
      28
     ]
    },
-   "startup": 6,
+   "startup": 8,
    "active": 6,
-   "recovery": 12,
-   "damage": 7,
+   "recovery": 14,
+   "damage": 10.1,
    "hitstun": 18,
    "blockstun": 12,
    "low": true,
@@ -362,10 +362,10 @@
      26
     ]
    },
-   "startup": 8,
+   "startup": 11,
    "active": 4,
-   "recovery": 14,
-   "damage": 10,
+   "recovery": 18,
+   "damage": 14.6,
    "hitstun": 20,
    "blockstun": 14,
    "low": true,
@@ -439,7 +439,7 @@
    "startup": 16,
    "active": 10,
    "recovery": 22,
-   "damage": 27,
+   "damage": 28,
    "hitstun": 30,
    "blockstun": 18,
    "hitbox": {

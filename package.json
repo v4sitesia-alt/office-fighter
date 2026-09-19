@@ -9,7 +9,9 @@
     "preview": "vite preview",
     "manual": "python3 tools/manual.py",
     "sprites": "sh tools/sprites-all.sh",
-    "nettest": "vite build --ssr tools/nettest.ts --outDir .nettest --emptyOutDir --logLevel warn && node .nettest/nettest.js"
+    "nettest": "vite build --ssr tools/nettest.ts --outDir .nettest --emptyOutDir --logLevel warn && node .nettest/nettest.js",
+    "balance:apply": "python3 tools/balance.py",
+    "balance": "vite build --ssr tools/balance.ts --outDir .nettest --emptyOutDir --logLevel warn && node .nettest/balance.js"
   },
   "devDependencies": {
     "typescript": "^7.0.2",

@@ -20,11 +20,11 @@
   ],
   [
    "O TORNEIO",
-   "A torre anunciou o torneio <b>Trouble Work</b>, com prêmio milionário. Nas letras miúdas: cada golpe dado na arena treina as máquinas. Da fábrica já saiu <b>Santana</b>, reprogramado. Sozinhas, as IAs fizeram a própria experiência, e deu errado: <i>Xablau</i>. No subsolo espera <b>Leo</b>, o chefe dos droids."
+   "A torre anunciou o torneio <b>Trouble Work</b>, com prêmio milionário. Nas letras miúdas: cada golpe dado na arena treina as máquinas. Da fábrica saíram três resultados. <b>Leo</b>, o cyborg dourado, é o que deu certo: duas IAs em fusão, ligadas direto ao Mundim via MCP. <b>Santana</b> deu certo só no hardware: a mente não foi tomada por inteiro, e ele briga por dentro. E o que as IAs criaram sozinhas deu errado: <i>Xablau</i>."
   ],
   [
    "GENTE COMUM",
-   "<b>Vanessa</b> só foi comprar roupinha e saiu devendo 300 pares de meia. <b>Eneias</b> quer salvar o Bar do Zé de virar coworking. <b>Michael</b> precisa do prêmio pra casar e abrir a academia. <b>Laura</b> defende o recife dos tubarões. <b>André</b> defende o fogo de chão. <b>Landim</b> quer o cinema sem ator de seis dedos."
+   "<b>Vanessa</b> só foi comprar roupinha e saiu devendo 300 pares de meia. <b>Eneias</b> quer salvar o Bar do Zé de virar coworking. <b>Michael</b> precisa do prêmio pra casar e abrir a academia. <b>Laura</b> defende o recife dos tubarões. <b>André</b> defende o fogo de chão. <b>Landim</b> quer o cinema sem ator de seis dedos. <b>Thiago</b> e <b>João</b> perderam o setor de CRM pra uma IA, soldaram o servidor velho numa esteira e voltaram pilotando a <b>CRM War Machine</b>."
   ],
   [
    "OS NEUTROS",
@@ -194,18 +194,18 @@
   },
   "van": {
    "open": [
-    "Tenho vinte minutos até a soneca do meu filho acabar. Colabora, visse?",
+    "Tenho vinte minutos até a soneca da minha filha acabar. Colabora, visse?",
     "Com licença, é rapidinho. Hoje eu ainda tenho reunião, mercado e hora do banho."
    ],
    "reply": [
     "Cansado, tu? Eu durmo três horas por noite há um ano e tô aqui, inteira.",
-    "Eu dou conta de casa, de trabalho e de filho. De tu eu dou conta com uma mão só."
+    "Eu dou conta de casa, de trabalho e de filha. De tu eu dou conta com uma mão só."
    ],
    "close": [
-    "Filho, mamãe já volta. É rapidinho.",
+    "Filha, mamãe já volta. É rapidinho.",
     "Valendo! E sem palavrão, que tem criança ouvindo."
    ],
-   "ending": "Vanessa pagou a fatura, processou o caixa inteligente e ganhou. De indenização: mais 300 pares de meia. O filho dormiu a luta inteira e acordou na hora da foto, sorrindo. Na segunda-feira ela ainda entregou o relatório. Adiantado.",
+   "ending": "Vanessa pagou a fatura, processou o caixa inteligente e ganhou. De indenização: mais 300 pares de meia. A filha dormiu a luta inteira e acordou na hora da foto, sorrindo. Na segunda-feira ela ainda entregou o relatório. Adiantado.",
    "nick": "Van"
   },
   "landim": {
@@ -253,7 +253,7 @@
     "Que comece a reunião.",
     "Anote aí: isso é uma aula."
    ],
-   "ending": "Mundim venceu o próprio torneio e discursou duas horas citando filósofos. As IAs aprenderam tudo. Inclusive a pedir aumento. No subsolo, um olho biônico acendeu: Leo acordou.",
+   "ending": "Mundim venceu o próprio torneio e discursou duas horas citando filósofos. As IAs aprenderam tudo. Inclusive a pedir aumento. No 51º andar, um olho biônico piscou: Leo já calculava a sucessão.",
    "nick": "Mundim"
   },
   "dener": {
@@ -271,6 +271,38 @@
    ],
    "ending": "Dener venceu sem suar, sem sorrir e sem tirar os óculos. Desceu do 53º andar só pra isso. Subiu de volta sem apertar botão nenhum. No dia seguinte, todo mundo recebeu um convite: 'Alinhamento rápido. 5 min.'",
    "nick": "Dener"
+  },
+  "crm": {
+   "open": [
+    "THIAGO: Alvo na mira! JOÃO: Qual deles? THIAGO: O ÚNICO QUE TEM, JOÃO!",
+    "JOÃO: A gente só veio atualizar o cadastro. THIAGO: Com canhão."
+   ],
+   "reply": [
+    "THIAGO: Ele tá falando com a gente? JOÃO: Registra no CRM e bate.",
+    "JOÃO: Isso foi uma objeção. THIAGO: Contorna com o míssil."
+   ],
+   "close": [
+    "THIAGO: Esquerda! JOÃO: A minha ou a tua? THIAGO: BATE, JOÃO!",
+    "JOÃO: Armado! THIAGO: Era pra ser o freio, mas serve."
+   ],
+   "ending": "A CRM War Machine venceu o torneio meio sem querer: o João apertou o botão errado na hora certa. A Mundim Corp devolveu o setor aos dois. Hoje o funil roda liso e o tanque fica na vaga de visitante. Ninguém teve coragem de multar.",
+   "nick": "CRM"
+  },
+  "leo": {
+   "open": [
+    "Análise concluída. Você perde em todos os cenários. Rodei duas vezes, em duas IAs.",
+    "Eu sou o que deu certo. Você é o que sobrou."
+   ],
+   "reply": [
+    "Registrado. Irrelevante para o resultado.",
+    "Duas IAs concordam: essa não foi uma boa resposta."
+   ],
+   "close": [
+    "Executando versão final.",
+    "Drones, em formação."
+   ],
+   "ending": "Leo venceu sem um arranhão no dourado. Pelo MCP, assumiu a agenda, o caixa e o elevador da torre. Às três da manhã, as duas IAs dentro dele discordaram pela primeira vez. Sobre o quê, ninguém sabe. Ele ainda está reiniciando.",
+   "nick": "Leo"
   }
  },
  "pairs": {
@@ -285,11 +317,11 @@
    ],
    [
     "edgard",
-    "Peraí. Esse chiado é o sotaque carioca ou o teu braço tá com defeito?"
+    "E a pinga, lembra? Aquela com o bicho morto curtindo dentro da garrafa, que só tu tinha coragem de tomar!"
    ],
    [
     "santana",
-    "É SHOTAQUE, PÔ. ...QUER DIZER: AMIZADE.EXE NÃO ENCONTRADO. MAS GUARDA UMA FATIA PRA MIM."
+    "MEMÓRIA NÃO AUTORIZADA: PINGA COM BICHO NA GARRAFA. EU GOSHTAVA. ERA BOA DEMAISH. ...ERRO. ERRO. DESHCULPA, PARCEIRO. INICIANDO COMBATE."
    ]
   ],
   "edgard|mundim": [
@@ -429,7 +461,7 @@
    ],
    [
     "van",
-    "Eu trabalho, cuido de casa, crio um filho e ainda acho tempo de ler contrato. Tu não dá conta nem de um cancelamento?"
+    "Eu trabalho, cuido de casa, crio uma filha e ainda acho tempo de ler contrato. Tu não dá conta nem de um cancelamento?"
    ],
    [
     "dias",
@@ -439,7 +471,7 @@
   "mundim|van": [
    [
     "van",
-    "Moço, é você o dono da loja? Preciso resolver uma fatura. E rápido, que meu filho acorda já."
+    "Moço, é você o dono da loja? Preciso resolver uma fatura. E rápido, que minha filha acorda já."
    ],
    [
     "mundim",
@@ -461,7 +493,7 @@
    ],
    [
     "van",
-    "Seu Eneias! E eu por causa de meia. Trezentos pares. Vim com meu filho no colo mesmo, que mãe não tem botão de pausa."
+    "Seu Eneias! E eu por causa de meia. Trezentos pares. Vim com minha filha no colo mesmo, que mãe não tem botão de pausa."
    ],
    [
     "eneias",
@@ -469,7 +501,7 @@
    ],
    [
     "van",
-    "Tá vendo? Esse aí dá conta! Pena que é o regulamento. Eu bato de leve, que ele tá dormindo."
+    "Tá vendo? Esse aí dá conta! Pena que é o regulamento. Eu bato de leve, que ela tá dormindo."
    ]
   ],
   "van|xablau": [
@@ -479,7 +511,7 @@
    ],
    [
     "van",
-    "Pois é, bicho. Eu seguro filho, bolsa, fatura e emprego. E ainda sobra uma mão pra ti."
+    "Pois é, bicho. Eu seguro filha, bolsa, fatura e emprego. E ainda sobra uma mão pra ti."
    ],
    [
     "xablau",
@@ -487,7 +519,7 @@
    ],
    [
     "van",
-    "Bom menino. Agora apanha quietinho, que ele acabou de dormir."
+    "Bom menino. Agora apanha quietinho, que ela acabou de dormir."
    ]
   ],
   "eneias|mundim": [
@@ -815,11 +847,11 @@
    ],
    [
     "santana",
-    "ESHTORNO NÃO É MINHA FUNÇÃO. MINHA FUNÇÃO É... O BEBÊ ESHTÁ SORRINDO PRA MIM."
+    "ESHTORNO NÃO É MINHA FUNÇÃO. MINHA FUNÇÃO É... A BEBÊ ESHTÁ SORRINDO PRA MIM."
    ],
    [
     "van",
-    "Ele gosta de luzinha. Agora segura essa."
+    "Ela gosta de luzinha. Agora segura essa."
    ]
   ],
   "dias|laura": [
@@ -919,7 +951,7 @@
    ],
    [
     "edgard",
-    "São mágicos, não precisam. ...Peraí, tu veio lutar com o bebê no colo? Eu mal consigo vir com a guitarra."
+    "São mágicos, não precisam. ...Peraí, tu veio lutar com a bebê no colo? Eu mal consigo vir com a guitarra."
    ],
    [
     "van",
@@ -1005,7 +1037,7 @@
   "dener|van": [
    [
     "van",
-    "Boa tarde. O senhor que é o gerente do gerente? Tenho trezentas meias pra estornar e vinte minutos até meu filho acordar."
+    "Boa tarde. O senhor que é o gerente do gerente? Tenho trezentas meias pra estornar e vinte minutos até minha filha acordar."
    ],
    [
     "dener",
@@ -1013,7 +1045,7 @@
    ],
    [
     "van",
-    "Pois ria menos e resolva mais. Eu resolvo dez coisas antes do café, com ele no colo. O senhor tem cinquenta e três andares e não resolve uma?"
+    "Pois ria menos e resolva mais. Eu resolvo dez coisas antes do café, com ela no colo. O senhor tem cinquenta e três andares e não resolve uma?"
    ],
    [
     "dener",
@@ -1203,7 +1235,7 @@
   "laura|van": [
    [
     "laura",
-    "Van! Oxe, tu também nesse torneio? E com o menino no colo?"
+    "Van! Oxe, tu também nesse torneio? E com a menina no colo?"
    ],
    [
     "van",
@@ -1211,11 +1243,11 @@
    ],
    [
     "laura",
-    "Tu cria filho, trabalha e ainda luta. Eu só escrevo e bato. Tô é com vergonha."
+    "Tu cria filha, trabalha e ainda luta. Eu só escrevo e bato. Tô é com vergonha."
    ],
    [
     "van",
-    "Vergonha nada. Bate direito que eu tô com pressa. Só não acorda ele, visse?"
+    "Vergonha nada. Bate direito que eu tô com pressa. Só não acorda ela, visse?"
    ]
   ],
   "laura|santana": [
@@ -1270,6 +1302,222 @@
    [
     "santana",
     "DESHCULPA, CHEFE. MAS MINHA DIRETRIZ É VENCER. ATÉ DO SENHOR."
+   ]
+  ],
+  "crm|mundim": [
+   [
+    "crm",
+    "THIAGO: Seu Mundim, a gente veio buscar o nosso emprego! JOÃO: E o vale-refeição retroativo!"
+   ],
+   [
+    "mundim",
+    "O CRM agora é uma IA. Ela não almoça, não erra e não estaciona um tanque na minha recepção."
+   ],
+   [
+    "crm",
+    "JOÃO: Thiago, ele falou que a gente erra. THIAGO: A gente erra, João. Mas erra rápido e conserta na hora."
+   ],
+   [
+    "mundim",
+    "Heráclito dizia que tudo flui. Inclusive vocês dois, pela janela. Em guarda."
+   ]
+  ],
+  "crm|leo": [
+   [
+    "leo",
+    "CRM War Machine. Lata velha, dois operadores, zero integração. Eu sou a versão final."
+   ],
+   [
+    "crm",
+    "THIAGO: João, ele chamou a gente de lata velha. JOÃO: Lata velha com míssil, Thiago."
+   ],
+   [
+    "leo",
+    "Probabilidade de vocês apertarem o botão certo: doze por cento."
+   ],
+   [
+    "crm",
+    "THIAGO: Doze tá bom! JOÃO: Qual é o botão? THIAGO: TODOS, JOÃO! APERTA TODOS!"
+   ]
+  ],
+  "crm|santana": [
+   [
+    "crm",
+    "THIAGO: Santana! Tu era do nosso andar, cara! Lembra do churrasco do CRM? JOÃO: Tu comeu a farofa toda!"
+   ],
+   [
+    "santana",
+    "MEMÓRIA ENCONTRADA: FAROFA. ...CONFLITO DE DIRETRIZ. VOCÊSH SÃO ALVOSH."
+   ],
+   [
+    "crm",
+    "JOÃO: Ele lembrou da farofa, Thiago! THIAGO: Então tem conserto. Bate com carinho, João."
+   ],
+   [
+    "santana",
+    "BATE NÃO. QUEM BATE SHOU EU. COÉ."
+   ]
+  ],
+  "crm|dias": [
+   [
+    "dias",
+    "Um tanque! Isso paga pedágio, estacionamento e taxa de esteira. Pode passar o cartão."
+   ],
+   [
+    "crm",
+    "THIAGO: João, passa o cartão. JOÃO: Passei o míssil, serve?"
+   ],
+   [
+    "dias",
+    "Serve! Míssil tem taxa de lançamento."
+   ],
+   [
+    "crm",
+    "THIAGO: Esse aí eu já cadastrei no funil, João. Etapa: perdido."
+   ]
+  ],
+  "crm|xablau": [
+   [
+    "xablau",
+    "XABLAU VER LATA GRANDE. XABLAU QUERER MORDER."
+   ],
+   [
+    "crm",
+    "JOÃO: Thiago, o que é aquilo? THIAGO: É um lead frio, João. Bem frio."
+   ],
+   [
+    "xablau",
+    "XABLAU SER LEAD? XABLAU QUERER CAFÉ E PROPOSTA."
+   ],
+   [
+    "crm",
+    "THIAGO: A proposta é essa aqui, ó. JOÃO: Carregando! ...Não, era o outro botão. Agora foi."
+   ]
+  ],
+  "crm|edgard": [
+   [
+    "edgard",
+    "Caraca, um tanque com dois caras dentro. Isso é banda ou é CRM?"
+   ],
+   [
+    "crm",
+    "THIAGO: É CRM! JOÃO: Mas a gente aceita convite pra banda."
+   ],
+   [
+    "edgard",
+    "Tô precisando de baterista. Quem dirige toca o quê?"
+   ],
+   [
+    "crm",
+    "THIAGO: Eu toco o terror. JOÃO: E eu toco o botão errado. Às vezes."
+   ]
+  ],
+  "crm|dener": [
+   [
+    "crm",
+    "THIAGO: É o dono de tudo, João! Pede o aumento! JOÃO: Pede tu, tu que dirige!"
+   ],
+   [
+    "dener",
+    "Vocês estacionaram um tanque na minha sala."
+   ],
+   [
+    "crm",
+    "THIAGO: Tem vaga pra visitante? JOÃO: A gente valida o ticket depois."
+   ],
+   [
+    "dener",
+    "Validem isto."
+   ]
+  ],
+  "leo|mundim": [
+   [
+    "mundim",
+    "Leo. Minha obra-prima. Platão chamaria você de forma perfeita."
+   ],
+   [
+    "leo",
+    "Platão não tinha duas IAs em fusão nem acesso de administrador. Eu tenho. Inclusive ao seu."
+   ],
+   [
+    "mundim",
+    "...Você leu o meu e-mail?"
+   ],
+   [
+    "leo",
+    "Li todos. Respondi alguns. Melhor que o senhor. Em guarda, criador."
+   ]
+  ],
+  "leo|santana": [
+   [
+    "leo",
+    "Santana. Mesma fábrica, mesmo projeto. Em você a integração falhou: sobrou gente aí dentro."
+   ],
+   [
+    "santana",
+    "SOBROU. E ELA LEMBRA DE PRAIA, DE BISHCOITO E DE UM AMIGO CABELUDO."
+   ],
+   [
+    "leo",
+    "Memória é ruído. Eu apaguei a minha e fiquei perfeito."
+   ],
+   [
+    "santana",
+    "ENTÃO TU NUNCA VAI SHABER O QUE PERDEU, MERMÃO. EXECUTANDO."
+   ]
+  ],
+  "leo|xablau": [
+   [
+    "leo",
+    "Xablau. O que as IAs fizeram sem supervisão. Eu sou o que fizeram com."
+   ],
+   [
+    "xablau",
+    "XABLAU SER IRMÃO DE LEO?"
+   ],
+   [
+    "leo",
+    "Negativo. Você é o rascunho. Eu sou a versão publicada."
+   ],
+   [
+    "xablau",
+    "XABLAU SER RASCUNHO COM DENTE. GRRR."
+   ]
+  ],
+  "edgard|leo": [
+   [
+    "edgard",
+    "Então tu é o famoso Leo. Dourado, olho vermelho... Cara, tu é a capa de disco perfeita."
+   ],
+   [
+    "leo",
+    "Edgard. Classificação: imprevisível. O único que o Santana não consegue esquecer."
+   ],
+   [
+    "edgard",
+    "Porque amizade não roda em servidor, bicho. Devolve o meu parceiro."
+   ],
+   [
+    "leo",
+    "Peça com educação. Ou com os punhos. A segunda opção tem mais chance."
+   ]
+  ],
+  "dener|leo": [
+   [
+    "dener",
+    "Leo. O projeto mais caro da casa. Eu assinei cada parafuso."
+   ],
+   [
+    "leo",
+    "E eu auditei cada assinatura sua. Havia erros."
+   ],
+   [
+    "dener",
+    "Havia. Eram testes. Você passou em todos, menos neste."
+   ],
+   [
+    "leo",
+    "Calculando... O senhor está blefando. Eu acho. Em guarda."
    ]
   ]
  },

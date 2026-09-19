@@ -13,8 +13,9 @@ EM VOLTA dele, e o que a regra errar se corrige à mão, por ponto ou retângulo
          FUNDO na massa do efeito (mediana a >= 14 px do fundo de fora) é o núcleo branco do orbe/feixe -> FICA;
          o resto é vão entre chamas -> SAI;
        - resto (corpo, roupa, cabelo, vapor): na beira da silhueta (a <= 5 px do fundo de fora), com 10 px ou
-         mais e anel escuro, é vão entre mechas de cabelo -> SAI; pequeno (< 120 px) no meio do desenho é
-         brilho, tachinha, dente, mecha prateada -> FICA; grande é vão entre braço e corpo -> SAI;
+         mais e anel escuro, é vão entre mechas de cabelo -> SAI; cercado de cinza/bege claro é o miolo de uma
+         nuvem de fumaça, vapor ou poeira -> FICA; pequeno (< 120 px) no meio do desenho é brilho, tachinha,
+         dente, mecha prateada -> FICA; grande é vão entre braço e corpo -> SAI;
      --keep / --drop "x,y" (o bolsão que contém o ponto) ou "x0,y0,x1,y1" (bolsões com o centro no retângulo)
      corrigem a regra; --fx-keep / --fx-drop "x0,y0,x1,y1" valem só pros bolsões de efeito (ex.: aura em volta
      do corpo, onde o branco é sempre vão). Ponto ganha de retângulo, e retângulo menor ganha do maior;
@@ -98,12 +99,20 @@ def hsv(rgb):
     return h, s, v
 
 
+def parse_hue(txt):
+    """'250-335' ou '31-48:v0.72' (brilho mínimo: separa o dourado do efeito da roupa marrom de mesmo matiz)."""
+    rng, *opt = txt.split(':'); a, b = (float(t) for t in rng.split('-'))
+    return (a, b, float(opt[0][1:])) if opt else (a, b)
+
+
 def fx_mask(rgb, ranges):
     """Pixels na cor do efeito (matiz dentro das faixas, com alguma saturação e brilho)."""
     if not ranges: return np.zeros(rgb.shape[:2], bool)
     h, s, v = hsv(rgb); m = np.zeros(h.shape, bool)
-    for a, b in ranges: m |= ((h >= a) & (h <= b)) if a <= b else ((h >= a) | (h <= b))
-    return m & (s >= 0.25) & (v >= 0.25)
+    for a, b, *vmin in ranges:
+        hue = ((h >= a) & (h <= b)) if a <= b else ((h >= a) | (h <= b))
+        m |= hue & (v >= (vmin[0] if vmin else 0.25))
+    return m & (s >= 0.25)
 
 
 def parse_geom(txt):
@@ -117,6 +126,7 @@ def unwhite(rgb, fx_hues=(), keep=(), drop=(), report=None, listing=0, fx_keep=(
     H, W, _ = rgb.shape
     mn = rgb.min(axis=2).astype(np.int32); lum = rgb.astype(np.float32).mean(axis=2)
     fxc = fx_mask(rgb, fx_hues)
+    _, sat, _ = hsv(rgb); pale = (lum >= 165) & (sat < 0.22)        # cinza/bege claro: fumaça, vapor, poeira
     white = mn >= WHITE_T
     lab, n = label4(white)
     touch = np.zeros(n + 1, bool)
@@ -127,7 +137,7 @@ def unwhite(rgb, fx_hues=(), keep=(), drop=(), report=None, listing=0, fx_keep=(
     soft = np.zeros((H, W), np.float32)                # alpha do branco devolvido nos miolos de estouro
     if cores:
         hh, ss, vv = hsv(rgb); wide = np.zeros((H, W), bool)
-        for a, b in fx_hues: wide |= ((hh >= a - 25) & (hh <= b + 25))
+        for a, b, *_ in fx_hues: wide |= ((hh >= a - 25) & (hh <= b + 25))
         glow = ~white & (vv >= 0.6) & wide               # raios do estouro, do azul cheio ao quase branco (sem o bastão escuro)
     for cx0, cy0, cx1, cy1 in cores:
         g = glow[cy0:cy1, cx0:cx1]; gy, gx = np.nonzero(g)
@@ -170,9 +180,11 @@ def unwhite(rgb, fx_hues=(), keep=(), drop=(), report=None, listing=0, fx_keep=(
         ring = dilate(comp, RING) & ~comp & ~white[y0:y1, x0:x1]
         fx = float(fxc[y0:y1, x0:x1][ring].mean()) if ring.any() else 0.0
         dark = float((lum[y0:y1, x0:x1][ring] < 90).mean()) if ring.any() else 0.0
+        smoke = float(pale[y0:y1, x0:x1][ring].mean()) if ring.any() else 0.0
         deep, edge = float(np.median(depth[py, px])), int(depth[py, px].min())
         if fx >= 0.5: act = 'keep' if (dark >= 0.35 and area < 80) or deep >= DEEP else 'drop'
         elif area >= EDGE_AREA and edge <= EDGE_NEAR and dark >= 0.5: act = 'drop'   # vão entre mechas na beira da silhueta
+        elif smoke >= 0.6: act = 'keep'                                              # miolo claro de fumaça/vapor/poeira
         else: act = 'keep' if area < BIG else 'drop'
         why = 'regra'
         cx, cy = float(px.mean()), float(py.mean())
@@ -224,7 +236,7 @@ def main():
     ap.add_argument('--debug', default=None); ap.add_argument('--list', type=int, default=0, help='lista os bolsões com pelo menos N px')
     a = ap.parse_args()
     rgb = np.array(Image.open(a.src).convert('RGB'))
-    hues = [tuple(float(t) for t in r.split('-')) for r in a.fx_hue]
+    hues = [parse_hue(r) for r in a.fx_hue]
     rep = []
     g = lambda L: [parse_geom(t) for t in L]
     rgba, check = unwhite(rgb, hues, g(a.keep), g(a.drop), rep, a.list, g(a.fx_keep), g(a.fx_drop), g(a.core))

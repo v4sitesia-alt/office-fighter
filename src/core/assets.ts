@@ -26,12 +26,21 @@ export async function loadFighter(id: string, onProgress?: () => void): Promise<
   ]);
   const sheet = await loadImage(dir + frames.sheet); tick();
   const fxFiles = new Set<string>(['special_fx.png']);
-  for (const m of Object.values(def.moves)) if (m?.projectile?.sprite) fxFiles.add(m.projectile.sprite);
+  for (const m of Object.values(def.moves)) {
+    if (m?.projectile?.sprite) fxFiles.add(m.projectile.sprite);
+    if (m?.beam) [m.beam.start, m.beam.mid, m.beam.end].forEach((f) => fxFiles.add(f));
+  }
   const fx: Record<string, HTMLImageElement> = {};
   await Promise.all([...fxFiles].map((f) => loadImage(dir + f).then((img) => { fx[f] = img; }).catch(() => undefined))); tick();
   const portrait = await loadImage(dir + 'portrait.png').catch(() => undefined); tick();
   const secretPortrait = def.secret ? await loadImage(dir + 'secret.png').catch(() => undefined) : undefined;
   return { def, frames, sheet, fx, portrait, secretPortrait };
+}
+
+/** Juiz (robô das bandeiras): atlas próprio em public/referee/. Se faltar, o jogo segue sem juiz. */
+export async function loadReferee() {
+  const dir = `${BASE}referee/`;
+  try { const frames = await loadJSON<FramesFile>(dir + 'frames.json'); return { frames, sheet: await loadImage(dir + frames.sheet) }; } catch { return null; }
 }
 
 export interface StageAssets { name: string; img: HTMLImageElement }

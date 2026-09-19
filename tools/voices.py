@@ -10,7 +10,7 @@ Locutor: Daniel (en-GB), grave + reverb + bitcrush (locutor de fliperama).
 Os lutadores não têm voz: só o som do especial, que vem de um arquivo enviado pelo usuário em
 Personagens/Mais-movimentos/especial-<id>.(mp3|wav) e é copiado como <id>-special.<ext>.
 """
-import os, subprocess, json, wave, tempfile
+import glob, os, shutil, subprocess, json, wave, tempfile
 import numpy as np
 
 OUT = 'public/audio/voice'
@@ -41,10 +41,13 @@ CLIPS = [
     ('ann-landim',  'Daniel', 'Landeem!', 160, 0.86),
     ('ann-xablau',  'Daniel', 'Shablau!', 160, 0.84),
     ('ann-dener',   'Daniel', 'Denner!', 150, 0.8),
-    ('dener-laugh-1', 'Eddy (Português (Brasil))', 'Ha ha ha ha ha ha ha!', 240, 1.12),
-    ('dener-laugh-2', 'Eddy (Português (Brasil))', 'Hi hi hi hi hi hi hi!', 260, 1.2),
-    ('dener-laugh-3', 'Eddy (Português (Brasil))', 'He he he. Ha ha ha ha ha ha!', 230, 1.08),
-    ('dener-laugh-4', 'Eddy (Português (Brasil))', 'Mua ha ha ha ha ha ha ha!', 220, 1.15),
+    ('ann-crm',     'Daniel', 'C R M. War machine!', 160, 0.84),
+    ('ann-leo',     'Daniel', 'Leh-oh!', 155, 0.84),
+    # risadas do Dener: tocam quando ele DERRUBA o adversário (gatilho <id>-down-N), não a cada golpe
+    ('dener-down-1', 'Eddy (Português (Brasil))', 'Ha ha ha ha ha ha ha!', 240, 1.12),
+    ('dener-down-2', 'Eddy (Português (Brasil))', 'Hi hi hi hi hi hi hi!', 260, 1.2),
+    ('dener-down-3', 'Eddy (Português (Brasil))', 'He he he. Ha ha ha ha ha ha!', 230, 1.08),
+    ('dener-down-4', 'Eddy (Português (Brasil))', 'Mua ha ha ha ha ha ha ha!', 220, 1.15),
     ('ann-secret',  'Daniel', 'Here comes a new challenger!', 165, 0.84),
 ]
 
@@ -142,6 +145,18 @@ def process(cid, x, pitch):
     return fade(normalize(x))
 
 
+def level(src, dst, peak=0.85):
+    """Copia um WAV do usuário nivelando o pico (os arquivos chegam com volumes bem diferentes). Mantém canais e taxa."""
+    with wave.open(src, 'rb') as w:
+        nch, sw, sr, n = w.getnchannels(), w.getsampwidth(), w.getframerate(), w.getnframes(); raw = w.readframes(n)
+    if sw != 2: shutil.copy(src, dst); return
+    x = np.frombuffer(raw, np.int16).astype(np.float32) / 32768
+    m = float(np.abs(x).max()) or 1.0
+    y = (np.clip(x * (peak / m), -1, 1) * 32767).astype(np.int16)
+    with wave.open(dst, 'wb') as o:
+        o.setnchannels(nch); o.setsampwidth(2); o.setframerate(sr); o.writeframes(y.tobytes())
+
+
 def write(path, x):
     pcm = (np.clip(x, -1, 1) * 32767).astype(np.int16)
     with wave.open(path, 'wb') as w:
@@ -157,35 +172,44 @@ def main():
         write(os.path.join(OUT, cid + '.wav'), y)
         ids.append(cid)
         print(f'{cid:20s} {len(y) / SR:5.2f}s  {voice}: "{text}"')
-    # grito do nocaute: "ohhhh" sintetizado (vozes com formantes de "ó", caindo de tom). Um masculino e um feminino.
-    def scream(name, f_lo, f_hi, formants, voices, seed):
-        rng = np.random.RandomState(seed); dur = 2.4; t = np.arange(int(SR * dur)) / SR; out = np.zeros_like(t)
-        for _ in range(voices):
-            f0 = rng.uniform(f_lo, f_hi) * (1.12 - 0.3 * (t / dur) ** 1.4); ph = 2 * np.pi * np.cumsum(f0) / SR + rng.uniform(0, 6)
-            vib = 1 + 0.012 * np.sin(2 * np.pi * rng.uniform(4.5, 6) * t)
-            for h in range(1, 16):
-                fh = h * f0.mean(); g = sum(a * np.exp(-((fh - c) / w) ** 2) for c, w, a in formants) + 0.05
-                out += g / h ** 0.5 * np.sin(h * ph * vib)
-        env = np.minimum(1, t / 0.08) * np.exp(-np.maximum(0, t - 1.0) * 1.7)
-        y = reverb(distort(normalize(out * env), 1.8), 0.75, tail=0.7)
-        write(os.path.join(OUT, name + '.wav'), fade(normalize(y), 25)); ids.append(name); print(f'{name:20s} {len(y) / SR:5.2f}s  (sintetizado)')
-    scream('ko-oh-m', 120, 165, [(520, 150, 1.0), (880, 190, 0.6)], 3, 4)
-    scream('ko-oh-f', 250, 320, [(640, 170, 1.0), (1080, 220, 0.65), (2800, 400, 0.12)], 3, 9)
     # sons de especial enviados pelo usuário
-    import glob, shutil
     for src in sorted(glob.glob('Personagens/Mais-movimentos/especial-*.*') + glob.glob('Personagens/Mais-movimentos/*-especial.*')):
         fid = os.path.basename(src).split('.')[0].replace('especial-', '').replace('-especial', '')
         ext = os.path.splitext(src)[1].lower()
         dst = f'{fid}-special{ext}'
         shutil.copy(src, os.path.join(OUT, dst)); ids.append(dst); print(f'{dst:20s} <- {src}')
-    SONS = {'barrigada.wav': 'dias-special', 'dede-especial.mp3': 'dede-special', 'enais-especial.mp3': 'eneias-special', 'michael-punch.mp3': 'michael-special',
-            'van-especial.mp3': 'van-special', 'landim-especial.wav': 'landim-special', 'mundin-especial.wav': 'mundim-special', 'xablau-especial.wav': 'xablau-special',
-            'edgard-magia-leve.wav': 'edgard-magic', 'magia-leve-dias.mp3': 'dias-magic', 'xablau-magia-leve.wav': 'xablau-magic'}
-    for fn, target in SONS.items():
+    # Sons enviados pelo usuário em Personagens/sons/. Um arquivo pode virar mais de um som do jogo.
+    #   <id>-special / <id>-magic   super / magia          <id>-hit    grito ou som do lutador quando o golpe (médio pra cima) acerta
+    #   <id>-<golpe>                som ao soltar o golpe  ko-<id>, ko-m, ko-f   grito de quem leva o golpe final
+    #   <id>-taunt / <id>-win       provocação no FIGHT! / risada ao vencer o round
+    #   <id>-down-N                 sorteado toda vez que o lutador DERRUBA o adversário (Mundim provoca ou ri, Dener ri)
+    #   sfx-<nome>                  troca o efeito sintetizado (hit, hitBig, jump, land, knockdown)
+    SONS = {'barrigada.wav': ['dias-special'], 'dede-especial.mp3': ['dede-special'], 'landim-especial.wav': ['landim-special'],
+            'mundin-especial.wav': ['mundim-special'], 'xablau-especial.wav': ['xablau-special'],
+            'edgard-magia-leve.wav': ['edgard-magic'], 'magia-leve-dias.mp3': ['dias-magic'], 'xablau-magia-leve.wav': ['xablau-magic'],
+            'eneias-especial.wav': ['eneias-special'], 'michael-especial.wav': ['michael-special'], 'van-especial.wav': ['van-special'],
+            'santana-especial.wav': ['santana-special'], 'laura-especial.wav': ['laura-special'], 'laura-especial2.wav': ['laura-magic'],
+            'raio-leo.wav': ['leo-magic'], 'missel-saida.wav': ['crm-special'], 'missel-explosao.wav': ['crm-boom'], 'garrafa-quebrando.wav': ['mundim-glass'],
+            'chicote-dede.wav': ['dede-magic', 'dede-long'],
+            'golpe-eneias.wav': ['eneias-hit'], 'golpe-santana.wav': ['santana-hit'], 'kevin-golpe.wav': ['kevin-hit'], 'landim-golpe.wav': ['landim-hit'],
+            'van-golpe.wav': ['van-hit'], 'yah-laura.wav': ['laura-hit'],
+            'grito-final-homem.wav': ['ko-m'], 'golpe-final-female.wav': ['ko-f'], 'enaias-dias-golpe-final-grito.wav': ['ko-eneias', 'ko-dias'],
+            'mundim-provocação.wav': ['mundim-taunt', 'mundim-down-1'], 'risada-mundim.wav': ['mundim-win', 'mundim-down-2'],
+            'golpe.wav': ['sfx-hit'], 'golpe-forte.wav': ['sfx-hitBig'], 'pulo.wav': ['sfx-jump'], 'pulo-chao.wav': ['sfx-land'],
+            'quando-leva-golpe-cai-chao.wav': ['sfx-knockdown']}
+    for fn, targets in SONS.items():
         src = os.path.join('Personagens/sons', fn)
         if not os.path.exists(src): continue
-        dst = target + os.path.splitext(fn)[1].lower()
-        shutil.copy(src, os.path.join(OUT, dst)); ids.append(dst); print(f'{dst:20s} <- {src}')
+        ext = os.path.splitext(fn)[1].lower()
+        for target in targets:
+            dst = target + ext
+            for e in ('.mp3', '.wav'):                                 # o mesmo som em outro formato é versão antiga
+                old = os.path.join(OUT, target + e)
+                if e != ext and os.path.exists(old): os.remove(old)
+            ids[:] = [i for i in ids if os.path.splitext(i)[0] != target]
+            if ext == '.wav': level(src, os.path.join(OUT, dst))
+            else: shutil.copy(src, os.path.join(OUT, dst))
+            ids.append(dst); print(f'{dst:20s} <- {src}')
     files = [i if '.' in i else i + '.wav' for i in ids]
     with open(os.path.join(OUT, 'manifest.json'), 'w') as f:
         json.dump({'files': files}, f, indent=1)

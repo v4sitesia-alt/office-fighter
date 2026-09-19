@@ -44,6 +44,7 @@ export interface ProjectileDef {
   count?: number;              // rajada: quantos projéteis
   every?: number;              // rajada: frames entre um e outro
   sprite?: string;             // arquivo em public/fighters/<id>/ (padrão special_fx.png)
+  hitVoice?: string;           // som gravado ao acertar ou bater na defesa (míssil explodindo, garrafa quebrando)
   style?: 'ball' | 'slash' | 'cloud' | 'bat' | 'coin' | 'heart' | 'wave';   // magia desenhada por código (sem sprite)
   color?: string; size?: number;
   hitbox: Box;                 // relativo ao centro do projétil (unidades do sprite)
@@ -57,6 +58,17 @@ export interface ZoneDef {
   hits: { at: number; damage: number; knockdown?: boolean; launch?: number }[];
   hitstun: number; blockstun: number; knockback: number; hitstop?: number;
   low?: boolean; overhead?: boolean;
+}
+
+/** Raio contínuo (olho biônico): sai do lutador, cresce até o alcance ou até bater no adversário e termina num estouro.
+ *  É montado com três peças (tools/pieces.py): início, trecho do meio que se repete e estouro final. */
+export interface BeamDef {
+  x: number; y: number;        // de onde sai (centro do raio), relativo aos pés (unidades do sprite)
+  reach: number;               // alcance máximo (unidades do sprite)
+  grow: number;                // quanto o raio cresce por frame (unidades do sprite)
+  thick: number;               // altura da caixa de acerto (unidades do sprite)
+  start: string; mid: string; end: string;   // peças em public/fighters/<id>/
+  overlap?: number;            // quanto o trecho do meio entra por baixo do início, onde o início vai sumindo (px da peça)
 }
 
 export type MoveKind = 'ground' | 'air' | 'low' | 'portal' | 'dive' | 'throw';
@@ -82,10 +94,13 @@ export interface MoveDef extends HitDef {
   anchor?: 'feet' | 'center';
   hitbox: Box;                 // relativo aos pés, x pra frente, y negativo pra cima (unidades do sprite)
   hitboxes?: Box[];            // uma por frame de `phases.active` (golpe longo: o alcance cresce junto com o desenho)
+  chain?: MoveName[];          // encadeamento: se este golpe encostou (acerto ou defesa), a recuperação pode ser cancelada num destes
+  chainMax?: number;           // quantos encadeamentos seguidos a sequência aceita (padrão 3)
   meterGain?: number;
   meterCost?: number;
   name?: string;
   projectile?: ProjectileDef;
+  beam?: BeamDef;
   zone?: ZoneDef;
   throw?: ThrowDef;
 }

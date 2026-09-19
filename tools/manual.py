@@ -14,14 +14,19 @@ SUPER = {
  'dias': 'Barrigada em corrida que atravessa meia tela e lança o adversário longe.',
  'michael': 'Direto em avanço que termina em gancho. O super mais rápido de sair.',
  'eneias': 'Corre, mergulha de barriga e explode no chão. O maior dano bruto do jogo.',
- 'van': 'Ergue o filho, os dois miram juntos e a rajada verde varre a área à frente. Derruba.',
+ 'van': 'Aponta a bebê e solta a nuvem tóxica. Área grande à frente, derruba.',
  'landim': 'Feixe da câmera que dispara a lente como projétil.',
  'xablau': 'Língua com punho que alcança quase a tela inteira.',
- 'mundim': 'Abre o paletó e arremessa as garrafas da diretoria.'}
+ 'mundim': 'Abre o paletó e arremessa as garrafas da diretoria.',
+ 'crm': 'O João trava a mira e dispara o míssil. Demora pra sair, atravessa a tela e derruba. Junto com o do Edgard, o especial que mais tira.',
+ 'leo': 'Chama os drones dourados e manda os três em fila contra o adversário.'}
+MAGIC = {   # magia que não é projétil comum
+ 'leo': 'Raio contínuo do olho biônico: cruza a tela na hora e para onde encostar.'}
 LONG = {
  'edgard': 'Junta as mãos e solta uma revoada de morcegos à frente. Demora pra sair, mas alcança o dobro do golpe forte.',
  'santana': 'O braço mecânico se estica em três estágios e acerta de longe, de punho fechado.',
  'kevin': 'Saca o cassetete e estoca de longe. A ponta estoura em choque azul.',
+ 'dede': 'Gira o laço e estala as boleadeiras lá na frente. O golpe longo que chega mais longe.',
  'laura': 'Empurra o ar e um tubarão de água avança mordendo. O maior alcance entre os golpes longos.'}
 MAGIC_KIND = {'ball': 'bola de energia', 'slash': 'risco cortante', 'cloud': 'nuvem', 'coin': 'moeda giratória', 'heart': 'coração', 'wave': 'onda rasteira', 'bat': 'morcego'}
 SIDES = [(k, STORY['factions'][k][0], STORY['factions'][k][1]) for k in ('vilao', 'heroi', 'neutro')]
@@ -46,7 +51,7 @@ def card(i):
     <p class="bio">{e(d.get('bio', ''))}</p>
     <div class="stats">{bar('FORÇA', st['power'], c)}{bar('AGILIDADE', st['speed'], c)}{bar('PODER', mg, c)}{bar('PESO', st['weight'], c)}</div>
     <div class="moves">
-      <div><h4>MAGIA · meia barra</h4><b>{e(sp.get('name', 'Magia'))}</b><p>Lança {kind}. Dano {sp['damage'] * mg:.0f}.</p></div>
+      <div><h4>MAGIA · meia barra</h4><b>{e(sp.get('name', 'Magia'))}</b><p>{MAGIC.get(i) or f'Lança {kind}.'} Dano {sp['damage'] * mg:.0f}.</p></div>
       <div><h4>SUPER · barra cheia</h4><b>{e(su.get('name', 'Super'))}</b><p>{SUPER.get(i, '')} Dano {sdmg * mg:.0f}.</p></div>{long_box}
     </div>
     <div class="stage"><img src="stages/{d.get('stage', 'office')}.png" alt="" loading="lazy"><span>CENÁRIO</span></div>

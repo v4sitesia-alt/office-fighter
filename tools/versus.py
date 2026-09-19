@@ -15,7 +15,7 @@ def dilate(m):
     return m | p[:-2, 1:-1] | p[2:, 1:-1] | p[1:-1, :-2] | p[1:-1, 2:]
 
 for src in sorted(glob.glob(f'{SRC}/*.png')):
-    name = os.path.basename(src)[:-4].rstrip('1')
+    name = os.path.basename(src)[:-4].rstrip('1').lower()      # CRM.png -> crm, leo1.png -> leo
     if name == 'tela-base':
         Image.open(src).convert('RGB').resize((960, 540), Image.LANCZOS).save(f'{OUT}/base.jpg', quality=88); continue
     im = Image.open(src).convert('RGBA'); a = np.array(im); dbg = a[:, :, :3].copy() if DEBUG else None

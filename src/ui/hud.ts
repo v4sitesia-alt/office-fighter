@@ -13,6 +13,7 @@ export class Hud {
   private timer: HTMLElement; private msg: HTMLElement; private msgFrames = 0;
   private ghost = [100, 100];
   private portraits: HTMLElement[];
+  private combos: HTMLElement[]; private comboShown = [0, 0]; private comboHold = [0, 0];
 
   constructor(root: HTMLElement) {
     this.el = root;
@@ -27,6 +28,7 @@ export class Hud {
           <div class="g1"><div class="fill"></div><span>MAGIA <b>OK</b></span></div>
           <div class="g2"><div class="fill"></div><span>SUPER</span></div></div>`).join('')}
       </div>
+      <div class="hud-combo p1"><b>2</b><span>HITS</span></div><div class="hud-combo p2"><b>2</b><span>HITS</span></div>
       <div class="hud-tally"></div>
       <div class="hud-msg"></div>`;
     const q = (s: string) => root.querySelectorAll<HTMLElement>(s);
@@ -36,6 +38,7 @@ export class Hud {
     this.names = Array.from(q('.name'));
     this.rounds = Array.from(q('.rounds'));
     this.portraits = Array.from(q('.portrait'));
+    this.combos = Array.from(q('.hud-combo'));
     this.timer = root.querySelector('.timer')!;
     this.msg = root.querySelector('.hud-msg')!;
   }
@@ -49,6 +52,7 @@ export class Hud {
     });
     this.ghost = [100, 100]; this.level = [0, 0]; this.shownScore = [m.score[0], m.score[1]];
     this.gauges.forEach((g, i) => g.classList.toggle('local', i === this.localIndex));
+    this.comboShown = [0, 0]; this.comboHold = [0, 0]; this.combos.forEach((c) => (c.className = c.className.replace(' show', '')));
     this.msg.textContent = '';
   }
 
@@ -76,6 +80,15 @@ export class Hud {
         this.level[i] = lv;
       }
       Array.from(this.rounds[i].children).forEach((dot, k) => dot.classList.toggle('won', k < m.wins[i]));
+      // contagem de hits: acertos seguidos que o OUTRO está levando sem voltar ao neutro. Aparece do 2º em diante, do lado de quem bate
+      const hits = m.fighters[1 - i].comboTaken, c = this.combos[i];
+      if (hits >= 2 && hits !== this.comboShown[i]) {
+        c.querySelector('b')!.textContent = String(hits);
+        c.classList.remove('pop'); void c.offsetWidth; c.classList.add('show', 'pop'); c.classList.toggle('big', hits >= 4);
+        this.comboHold[i] = 70;
+      }
+      this.comboShown[i] = hits;
+      if (this.comboHold[i] > 0 && --this.comboHold[i] === 0) c.classList.remove('show');
     });
     const sc = this.el.querySelectorAll<HTMLElement>('.score');
     m.score.forEach((v, i) => { this.shownScore[i] += Math.ceil((v - this.shownScore[i]) * 0.2); if (this.shownScore[i] > v) this.shownScore[i] = v; sc[i].textContent = String(this.shownScore[i]).padStart(6, '0'); });

@@ -14,12 +14,13 @@ interface Profile {
   retreatChance: number;
   punishBlock: boolean;  // ataca quando o oponente está em recovery
   mixup: number;         // chance de usar rasteira/aéreo contra a defesa errada
+  chain: number;         // chance de seguir o combo quando o golpe encadeável encosta
 }
 
 export const PROFILES: Record<Difficulty, Profile> = {
-  easy:   { reaction: 18, attackChance: 0.35, blockChance: 0.2, jumpChance: 0.06, specialChance: 0.3, retreatChance: 0.15, punishBlock: false, mixup: 0.2 },
-  normal: { reaction: 10, attackChance: 0.55, blockChance: 0.5, jumpChance: 0.1,  specialChance: 0.6, retreatChance: 0.12, punishBlock: true,  mixup: 0.5 },
-  hard:   { reaction: 5,  attackChance: 0.75, blockChance: 0.8, jumpChance: 0.14, specialChance: 0.9, retreatChance: 0.08, punishBlock: true,  mixup: 0.8 },
+  easy:   { reaction: 18, attackChance: 0.35, blockChance: 0.2, jumpChance: 0.06, specialChance: 0.3, retreatChance: 0.15, punishBlock: false, mixup: 0.2, chain: 0.3 },
+  normal: { reaction: 10, attackChance: 0.55, blockChance: 0.5, jumpChance: 0.1,  specialChance: 0.6, retreatChance: 0.12, punishBlock: true,  mixup: 0.5, chain: 0.65 },
+  hard:   { reaction: 5,  attackChance: 0.75, blockChance: 0.8, jumpChance: 0.14, specialChance: 0.9, retreatChance: 0.08, punishBlock: true,  mixup: 0.8, chain: 0.9 },
 };
 
 type Plan = { buttons: Button[]; frames: number };
@@ -30,6 +31,7 @@ export class Ai {
   private cooldown = 0;
   private superCd = 0;
   private rng: Rng;
+  private chainSeen: unknown = null;   // golpe encadeável que já decidiu (uma rolagem por golpe, não por frame)
   debug = '';
 
   constructor(public me: Fighter, public other: Fighter, public difficulty: Difficulty, seed?: number) {
@@ -47,6 +49,13 @@ export class Ai {
       if (--pl.frames <= 0) this.queue.shift();
       return;
     }
+    // combo de porrada: o golpe encostou e dá pra encadear -> decide na hora, sem esperar o tempo de reação
+    const mv = this.me.move;
+    if (this.me.state === 'attacking' && mv?.chain && this.me.hasHit && this.chainSeen !== mv) {
+      this.chainSeen = mv;
+      if (this.rng.chance(p.chain)) { this.debug = 'encadeia'; this.set([mv.chain[Math.floor(this.rng.next() * mv.chain.length)] as Button], 3); return; }
+    }
+    if (this.me.state !== 'attacking') this.chainSeen = null;
     if (this.cooldown-- > 0) return;
     this.cooldown = p.reaction;
 
@@ -54,7 +63,7 @@ export class Ai {
     const dx = Math.abs(ot.x - me.x);
     const fwd: Button = ot.x > me.x ? 'right' : 'left';
     const back: Button = fwd === 'right' ? 'left' : 'right';
-    const reach = 140 * me.def.scale;
+    const reach = this.reach();
     const incoming = projectiles.find((pr) => pr.owner === ot && Math.sign(pr.vx) === Math.sign(me.x - pr.x) && Math.abs(pr.x - me.x) < 260);
 
     // no ar: golpe aéreo quando estiver perto e descendo
@@ -64,17 +73,22 @@ export class Ai {
     }
     if (!me.actionable) return;
 
+    if (ot.state === 'attacking' && ot.move?.beam && ot.phase !== 'recovery' && Math.sign(me.x - ot.x) === ot.facing && this.rng.chance(p.blockChance)) {
+      this.debug = 'defende raio'; this.set(['block'], 14 + this.rng.range(0, 8)); return;
+    }
     if (incoming) {
       this.debug = 'projétil';
       this.set(this.rng.chance(0.5) ? ['up', fwd] : ['block'], 20); return;
     }
     // oponente pulando em cima: anti-aéreo
     if (ot.airborne && dx < 210 && this.rng.chance(p.blockChance)) {
-      this.debug = 'anti-aéreo';
-      this.set(['heavy'], 2); return;
+      // anti-aéreo com o golpe forte só pra quem tem forte rápido; máquina lenta apanharia no meio do preparo: defende em pé
+      if ((M.heavy?.startup ?? 10) <= 12) { this.debug = 'anti-aéreo'; this.set(['heavy'], 2); }
+      else { this.debug = 'defende o pulo'; this.set(['block'], 18); }
+      return;
     }
     // oponente em startup perto: defende (agachado se o golpe for baixo)
-    if (ot.state === 'attacking' && ot.phase !== 'recovery' && dx < reach + 80 && this.rng.chance(p.blockChance)) {
+    if (ot.state === 'attacking' && ot.phase !== 'recovery' && dx < Math.max(reach + 80, this.threat()) && this.rng.chance(p.blockChance)) {
       const low = !!ot.move?.low, over = !!ot.move?.overhead;
       this.debug = low ? 'defende baixo' : 'defende';
       this.set(low ? ['block', 'down'] : over ? ['block'] : (this.rng.chance(0.5) ? ['block', 'down'] : ['block']), 16 + this.rng.range(0, 10)); return;
@@ -114,7 +128,7 @@ export class Ai {
       this.debug = 'espera'; this.set([], 6); return;
     }
     // meia distância: golpe longo (frente + forte), pra quem tem. Só vale a pena com o alvo no chão e dentro do alcance
-    if (M.long && ot.grounded && dx < this.longReach() && this.rng.chance(p.attackChance * 0.5)) {
+    if (M.long && ot.grounded && dx < this.longReach() && this.rng.chance(p.attackChance * 0.35)) {
       this.debug = 'golpe longo'; this.set([fwd, 'heavy'], 2); return;
     }
     // longe
@@ -127,6 +141,19 @@ export class Ai {
     }
     this.debug = 'aproxima';
     this.set([fwd], 8 + this.rng.range(0, 8));
+  }
+
+  /** Alcance real dos golpes comuns (o mais comprido entre soco e chute), em px de tela, mais meia largura do alvo. */
+  private reach() {
+    const M = this.me.def.moves, far = Math.max(...[M.punch, M.kick].map((m) => (m ? m.hitbox.x + m.hitbox.w : 0)));
+    return far * this.me.scale + 18;
+  }
+
+  /** Até onde o golpe que o adversário está soltando AGORA alcança (px de tela, com folga): golpe longo também se defende. */
+  private threat() {
+    const m = this.other.move; if (!m) return 0;
+    const far = Math.max(...(m.hitboxes ?? [m.hitbox]).map((b) => b.x + b.w));
+    return far > 0 ? far * this.other.scale + 45 : 0;
   }
 
   /** Até onde o golpe longo alcança, em px de tela a partir dos meus pés (com folga: a caixa tem que entrar no alvo). */

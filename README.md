@@ -71,6 +71,31 @@ Frente + forte = **golpe longo** (`moves.long`, só pra quem tem): sai devagar, 
 Ele usa `hitboxes` (uma caixa por frame ativo, acompanhando o desenho). A vitória (`anims.win`) aceita `loopFrom`: toca a
 sequência uma vez e repete do índice dado (a Laura senta, medita e fica nos dois últimos quadros).
 
+Lutadores cujo board principal chega com **fundo branco** (CRM War Machine, Leo) usam o mesmo `sprites.py`: ele percebe a falta
+de transparência e recorta com o `whiteboard.py`. `--crop nome.png:x0,y0,x1,y1[:erase][:rot=graus]` tira um pedaço do board como
+projétil (míssil, drone), `--white-erase` apaga o que não vira frame (por retângulo ou pelo desenho ligado a um ponto) e
+`--axis-ignore-smoke` mede o eixo no corpo, ignorando a poeira (o tanque levanta poeira só de um lado).
+
+**Raio contínuo** (`moves.<golpe>.beam`, o olho biônico do Leo): sai do lutador, cresce até o alcance ou até encostar no
+adversário e termina num estouro. É montado com três peças que o `tools/pieces.py` tira da folha `extensao-raio-leo.png`:
+início (cortado onde o cone tem a altura do trecho do meio, sumindo aos poucos na emenda), trecho do meio que se repete
+(`:tile`, pontas 100% opacas) e estouro final. As pontas cortadas retas da arte precisam de `--wall`, senão o miolo branco
+do raio vai embora com o fundo.
+
+**Juiz**: `public/referee/` (robô das bandeiras, `juiz-sprite.png`, 4×5 poses). `src/game/referee.ts` só lê o estado da luta:
+anda pra ficar no meio dos dois, levanta as duas bandeiras no "FIGHT!" e a do lado de quem venceu no fim do round.
+
+## Balanceamento (ficha de RPG)
+
+`tools/balance.py` é a fonte da verdade: atributos (FORÇA, AGILIDADE, PODER, PESO), ritmo dos golpes comuns por perfil
+(rápido, normal, firme, lento, máquina), dano das magias, alcance corrigido e o combo encadeado do Dias. `npm run balance:apply`
+grava nos `fighter.json`. `npm run balance` roda um torneio de CPU contra CPU, todos contra todos (5 s), e mostra a taxa de
+vitória de cada um, os piores confrontos e, com `--dano`, de onde vem o dano. `python3 tools/balance.py --tune` é o calibrador:
+repete o torneio e corrige o dano dos golpes comuns de cada lutador (`tools/balance-tune.json`, de 0,75 a 1,30) até todos
+ficarem perto do alvo. As barras que o jogador vê não mudam; o ajuste compensa alcance e tamanho do sprite, que funcionam
+como atributo escondido. Regras do motor que entram na conta: o PESO amortece dano (1,5 leva ~13% menos), acertos seguidos
+num combo valem menos a partir do 3º (piso de 60%) e o HUD conta os hits.
+
 ## História e diálogos
 
 `src/data/story.json` é a bíblia narrativa, em volta do torneio da Mundim Corp: as facções, os atos do enredo (usados no manual), o texto da abertura,

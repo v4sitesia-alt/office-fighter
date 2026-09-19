@@ -130,7 +130,7 @@ export class Screens {
       q(`.sf2-region.${side}`).textContent = `${f.def.role} · ${f.def.origin?.city ?? '?'}`.toUpperCase();
       const st = f.def.stats;
       const bar = (label: string, v: number) => {
-        const pct = Math.round(Math.max(0, Math.min(1, (v - 0.7) / 0.65)) * 100); // 0,70 = vazio · 1,35 = cheio
+        const pct = Math.round(Math.max(0.05, Math.min(1, (v - 0.7) / 0.65)) * 100); // 0,70 = mínimo · 1,35 = cheio
         return `<div class="stat"><span>${label}</span><div><i style="width:${pct}%;background:${f.def.colors.primary}"></i></div></div>`;
       };
       q(`.sf2-stats.${side}`).innerHTML = bar('FORÇA', st.power) + bar('AGILIDADE', st.speed) + bar('PODER', st.magic ?? 1);

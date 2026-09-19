@@ -385,3 +385,11 @@ html, body { overscroll-behavior: none; touch-action: manipulation; -webkit-touc
 .net-status b { font-family: var(--logo); font-size: 40px; letter-spacing: 2px; color: var(--yellow); text-shadow: 3px 3px 0 #000; font-weight: normal; animation: pulse 1s ease-in-out infinite; }
 .net-status i { font-style: normal; font-size: 9px; color: #fff; text-shadow: 2px 2px 0 #000; letter-spacing: 1px; }
 .net-ping { position: absolute; top: 74px; left: 0; right: 0; text-align: center; font-size: 7px; color: rgba(255,255,255,.7); text-shadow: 1px 1px 0 #000; z-index: 7; pointer-events: none; }
+
+/* contagem de hits (combo): do lado de quem está batendo */
+.hud-combo { position: absolute; top: 132px; display: flex; align-items: baseline; gap: 8px; opacity: 0; transition: opacity .25s; font-family: var(--logo); font-style: italic; color: var(--yellow); -webkit-text-stroke: 2px #7a2a00; text-shadow: 4px 4px 0 #000; pointer-events: none; }
+.hud-combo.p1 { left: 46px; } .hud-combo.p2 { right: 46px; flex-direction: row-reverse; }
+.hud-combo b { font-size: 64px; line-height: 1; font-weight: normal; } .hud-combo span { font-size: 30px; letter-spacing: 2px; color: #fff; -webkit-text-stroke: 2px #1b2a6b; }
+.hud-combo.show { opacity: 1; } .hud-combo.big b { color: #ff5a2a; }
+.hud-combo.pop b { animation: comboPop .18s ease-out; }
+@keyframes comboPop { from { transform: scale(1.7); } to { transform: scale(1); } }

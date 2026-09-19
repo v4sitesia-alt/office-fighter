@@ -21,7 +21,7 @@ const DIVE_FALL = 13;
 const DIVE_FRAMES = 34;      // frames estimados até pousar (pra mirar o alvo)
 
 /** Coisas que o lutador pede pro match criar (projétil, zona). */
-export interface SpawnRequest { kind: 'projectile' | 'zone' | 'fx'; move: MoveDef; x: number; y?: number }
+export interface SpawnRequest { kind: 'projectile' | 'zone' | 'fx' | 'beam'; move: MoveDef; x: number; y?: number }
 
 export class Fighter {
   x: number; y = 0;            // pés; y é deslocamento acima do chão (negativo = no ar)
@@ -52,6 +52,9 @@ export class Fighter {
   spawns: SpawnRequest[] = [];
   lastHitBy: MoveName | null = null;
   comboHits = 0;
+  comboTaken = 0;              // acertos seguidos que estou levando sem voltar ao neutro (escala o dano do combo)
+  chainCount = 0;              // quantos golpes já encadeei nesta sequência
+  beamStop: number | null = null;   // raio: x (de tela) onde ele parou ao encostar no adversário
   private buffered: { btn: AttackBtn; frame: number } | null = null;
   private frameCounter = 0;
   private flashCanvas: HTMLCanvasElement | null = null;
@@ -105,6 +108,8 @@ export class Fighter {
     this.animTime++;
     if (this.def.meterRegen && this.state !== 'attacking' && this.state !== 'ko') this.meter = Math.min(100, this.meter + this.def.meterRegen);
     this.readBuffer(ctrl);
+    if (this.actionable || this.state === 'jumping') this.comboTaken = 0;
+    if (this.state !== 'attacking') this.chainCount = 0;
 
     switch (this.state) {
       case 'idle': case 'walking': case 'crouching': case 'blocking':
@@ -125,7 +130,7 @@ export class Fighter {
         }
         break;
       case 'attacking':
-        this.updateAttack(other);
+        this.updateAttack(other, ctrl);
         break;
       case 'hitstun': case 'blockstun':
         this.x += this.vx; this.vx *= 0.85;
@@ -135,7 +140,7 @@ export class Fighter {
       case 'knockdown':
         if (this.knockdownAir) {
           this.x += this.vx; this.physicsAir();
-          if (this.grounded) { this.y = 0; this.vy = 0; this.vx = 0; this.knockdownAir = false; this.stateFrame = 0; }
+          if (this.grounded) { this.y = 0; this.vy = 0; this.vx = 0; this.knockdownAir = false; this.stateFrame = 0; audio.sfx('knockdown'); }
         } else if (this.stateFrame > 40) {
           this.setState('idle');
         }
@@ -145,7 +150,7 @@ export class Fighter {
       case 'ko':
         if (this.knockdownAir) {
           this.x += this.vx; this.physicsAir();
-          if (this.grounded) { this.y = 0; this.vy = 0; this.vx = 0; this.knockdownAir = false; }
+          if (this.grounded) { this.y = 0; this.vy = 0; this.vx = 0; this.knockdownAir = false; audio.sfx('knockdown'); }
         }
         break;
       case 'win':
@@ -168,7 +173,7 @@ export class Fighter {
 
   get voiceChannel() { return this.playerIndex === 0 ? 'p1' as const : 'p2' as const; }
 
-  private updateAttack(other: Fighter) {
+  private updateAttack(other: Fighter, ctrl: Controller) {
     const m = this.move!;
     const total = m.startup + m.active + m.recovery;
 
@@ -222,9 +227,18 @@ export class Fighter {
     }
 
     // chão
+    // encadeamento (combo de porrada): o golpe encostou e já passou da fase ativa -> o próximo botão corta a recuperação
+    if (m.chain && this.hasHit && this.buffered && this.stateFrame >= m.startup + m.active && this.chainCount < (m.chainMax ?? 3)) {
+      const next = this.groundMove(this.buffered.btn, false, ctrl.held(this.facing === 1 ? 'right' : 'left'));
+      if (next && m.chain.includes(next)) {
+        const n = this.chainCount + 1;
+        if (this.startMove(next, other)) { this.chainCount = n; this.buffered = null; return; }
+      }
+    }
     this.vx *= 0.8; this.x += this.vx;
     if (m.dash && this.phase !== 'recovery') this.x += m.dash * this.facing;
     if (m.kind === 'portal' && this.stateFrame === m.startup) this.spawns.push({ kind: 'zone', move: m, x: other.x });
+    if (m.beam && this.stateFrame === m.startup) this.spawns.push({ kind: 'beam', move: m, x: this.x });   // som + nome do golpe
     if (m.projectile) {
       const count = m.projectile.count ?? 1, every = m.projectile.every ?? 0;
       for (let k = 0; k < count; k++) if (this.stateFrame === m.startup + 1 + k * every) this.spawns.push({ kind: 'projectile', move: m, x: this.x });
@@ -313,8 +327,8 @@ export class Fighter {
     if (m.meterCost) this.meter -= m.meterCost;
     const wasAir = this.state === 'jumping';
     const crouched = this.state === 'crouching' || (this.state === 'blocking' && this.crouchBlock);
-    this.setState('attacking');
-    this.move = m; this.moveName = name; this.hasHit = false;
+    this.setState('attacking'); this.stateFrame = 0;     // encadeado: já estava atacando, o relógio do golpe recomeça
+    this.move = m; this.moveName = name; this.hasHit = false; this.beamStop = null;
     this.air = wasAir || m.kind === 'air';
     this.lowAttack = m.kind === 'low' || (crouched && !wasAir);
     if (!wasAir) this.vx = 0;
@@ -329,7 +343,10 @@ export class Fighter {
     // som do golpe: especial/super tocam o áudio enviado pro lutador; o resto só o whoosh
     if (name === 'special' && audio.hasVoice(`${this.def.id}-magic`)) audio.voice(`${this.def.id}-magic`, this.voiceChannel);   // magia leve tem som próprio quando existe
     else if (name === 'super' || name === 'special') { if (audio.hasVoice(`${this.def.id}-special`)) audio.voice(`${this.def.id}-special`, this.voiceChannel); else audio.voiceRandom(`${this.def.id}-laugh`, this.voiceChannel); }
-    else { audio.sfx('swing'); this.meter = Math.min(100, this.meter + 3); } // golpe no vazio já enche um pouco
+    else {                                                                   // golpe no vazio já enche um pouco
+      if (audio.hasVoice(`${this.def.id}-${name}`)) audio.voice(`${this.def.id}-${name}`, this.voiceChannel); else audio.sfx('swing');
+      this.meter = Math.min(100, this.meter + 3);
+    }
     return true;
   }
 
@@ -337,7 +354,10 @@ export class Fighter {
   takeHit(h: HitDef, attacker: Fighter, blocked: boolean, fromX: number, magic = false) {
     const dir: 1 | -1 = fromX < this.x ? 1 : -1;  // empurrado pra longe de quem bateu
     const power = magic ? attacker.def.stats.magic ?? 1 : attacker.def.stats.power;
-    const dmg = blocked ? h.damage * power * 0.25 : h.damage * power;
+    const tough = 1 + 0.3 * (this.def.stats.weight - 1);                       // PESO também amortece: 1,5 leva ~13% menos, 0,85 leva ~5% mais
+    const combo = Math.max(0.6, 1 - 0.1 * Math.max(0, this.comboTaken - 1));   // 3º acerto seguido em diante vale menos (piso de 60%)
+    if (!blocked) this.comboTaken++;
+    const dmg = (blocked ? h.damage * power * 0.25 : h.damage * power * combo) / tough;
     this.life = Math.max(0, this.life - dmg);
     const kb = (blocked ? h.knockback * 0.5 : h.knockback) / this.def.stats.weight;
     this.vx = kb * dir;
@@ -353,6 +373,7 @@ export class Fighter {
     }
     this.flash = 6;
     if (h.knockdown || this.airborne) {
+      if (this.state !== 'knockdown') audio.voiceRandom(`${attacker.def.id}-down`, attacker.voiceChannel);   // derrubou: provocação/risada de quem bateu (só som)
       this.setState('knockdown'); this.knockdownAir = true; this.vy = h.launch ?? -7; this.y = Math.min(this.y, -0.01);
       this.vx = (kb * 0.4) * dir;
       return;
@@ -376,12 +397,19 @@ export class Fighter {
     const m = this.move;
     if (this.state !== 'attacking' || !m || this.phase !== 'active' || this.hasHit) return null;
     let hb = m.hitbox;
-    if (m.hitboxes?.length) {                            // mesma conta do desenho: a caixa acompanha o frame ativo na tela
+    if (m.beam) { const len = this.beamLength(); hb = { x: m.beam.x, y: m.beam.y - m.beam.thick / 2, w: len, h: m.beam.thick }; }
+    else if (m.hitboxes?.length) {                            // mesma conta do desenho: a caixa acompanha o frame ativo na tela
       const t = (this.stateFrame - m.startup) / Math.max(1, m.active);
       hb = m.hitboxes[Math.min(m.hitboxes.length - 1, Math.floor(t * m.hitboxes.length))];
     }
     if (hb.w === 0) return null;
     return this.toWorld(hb);
+  }
+  /** Comprimento atual do raio, em unidades do sprite (0 fora da fase ativa). */
+  beamLength() {
+    const m = this.move;
+    if (!m?.beam || this.state !== 'attacking' || this.phase !== 'active') return 0;
+    return Math.min(m.beam.reach, (this.stateFrame - m.startup + 1) * m.beam.grow);
   }
   get pushbox(): Box {
     const s = this.scale;
@@ -463,9 +491,34 @@ export class Fighter {
     if (this.hue) ctx.filter = `hue-rotate(${this.hue}deg)`;
     const src: [HTMLImageElement | HTMLCanvasElement, number, number] = this.flash > 0 ? [this.flashed(frame), 0, 0] : [this.assets.sheet, frame.sx, frame.sy];
     ctx.drawImage(src[0], src[1], src[2], frame.sw, frame.sh, -ax * s, -frame.ay * s, dw, dh);
+    this.drawBeam(ctx, s);
     ctx.restore();
 
     if (debug) this.drawDebug(ctx, frame);
+  }
+
+  /** Raio contínuo, no espaço local do lutador (x pra frente). Meio por baixo, início por cima (ele some na emenda), estouro no fim. */
+  private drawBeam(ctx: CanvasRenderingContext2D, s: number) {
+    const b = this.move?.beam; let len = this.beamLength() * s;
+    if (!b || len <= 0) return;
+    const F = this.assets.fx, st = F[b.start], mid = F[b.mid], end = F[b.end];
+    if (!st || !mid || !end) return;
+    const x0 = b.x * s, cy = b.y * s;
+    if (this.beamStop !== null) len = Math.min(len, Math.max(8, Math.abs(this.beamStop - this.x) - x0));
+    const xEnd = x0 + len, flick = Math.floor(this.animTime / 3) % 2 === 1;
+    let x = x0 + Math.max(0, st.width - (b.overlap ?? 12)) * s;
+    ctx.save();
+    if (flick) { ctx.translate(0, cy * 2); ctx.scale(1, -1); }                 // faíscas de cima e de baixo trocam de lugar: o raio "vibra"
+    while (x < xEnd) {
+      const w = Math.min(mid.width * s, xEnd - x);
+      ctx.drawImage(mid, 0, 0, w / s, mid.height, x, cy - mid.height * s / 2, w, mid.height * s);
+      x += mid.width * s;
+    }
+    const sw = Math.min(st.width * s, len);
+    ctx.drawImage(st, 0, 0, sw / s, st.height, x0, cy - st.height * s / 2, sw, st.height * s);
+    ctx.restore();
+    const k = s * (flick ? 1.08 : 0.94);
+    ctx.drawImage(end, xEnd - end.width * k / 2, cy - end.height * k / 2, end.width * k, end.height * k);
   }
 
   private flashed(frame: FrameDef) {

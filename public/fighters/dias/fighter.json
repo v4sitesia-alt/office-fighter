@@ -18,10 +18,10 @@
  "stage": "dias",
  "scale": 1.08,
  "stats": {
-  "speed": 0.9,
-  "power": 1.1,
-  "weight": 1.2,
-  "magic": 1.15
+  "speed": 1.3,
+  "power": 0.88,
+  "weight": 1.05,
+  "magic": 0.95
  },
  "hurtbox": {
   "x": -40,
@@ -125,10 +125,10 @@
      0
     ]
    },
-   "startup": 3,
+   "startup": 2,
    "active": 3,
-   "recovery": 6,
-   "damage": 5,
+   "recovery": 5,
+   "damage": 4.8,
    "hitstun": 12,
    "blockstun": 8,
    "hitbox": {
@@ -138,7 +138,12 @@
     "h": 45
    },
    "knockback": 4,
-   "hitstop": 5
+   "hitstop": 5,
+   "chain": [
+    "punch",
+    "kick"
+   ],
+   "chainMax": 3
   },
   "kick": {
    "phases": {
@@ -153,10 +158,10 @@
      0
     ]
    },
-   "startup": 6,
+   "startup": 5,
    "active": 3,
-   "recovery": 9,
-   "damage": 8,
+   "recovery": 7,
+   "damage": 8.4,
    "hitstun": 15,
    "blockstun": 10,
    "hitbox": {
@@ -166,7 +171,11 @@
     "h": 70
    },
    "knockback": 6,
-   "hitstop": 6
+   "hitstop": 6,
+   "chain": [
+    "heavy"
+   ],
+   "chainMax": 3
   },
   "heavy": {
    "phases": {
@@ -181,16 +190,16 @@
      0
     ]
    },
-   "startup": 10,
+   "startup": 8,
    "active": 4,
-   "recovery": 16,
-   "damage": 14,
+   "recovery": 13,
+   "damage": 13.2,
    "hitstun": 24,
    "blockstun": 14,
    "hitbox": {
-    "x": 10,
+    "x": 25,
     "y": -230,
-    "w": 95,
+    "w": 100,
     "h": 190
    },
    "knockback": 12,
@@ -210,10 +219,10 @@
      20
     ]
    },
-   "startup": 4,
+   "startup": 3,
    "active": 8,
-   "recovery": 4,
-   "damage": 6,
+   "recovery": 3,
+   "damage": 6.0,
    "hitstun": 14,
    "blockstun": 10,
    "overhead": true,
@@ -240,10 +249,10 @@
      22
     ]
    },
-   "startup": 5,
+   "startup": 4,
    "active": 10,
-   "recovery": 4,
-   "damage": 9,
+   "recovery": 3,
+   "damage": 9.6,
    "hitstun": 16,
    "blockstun": 12,
    "overhead": true,
@@ -270,10 +279,10 @@
      24
     ]
    },
-   "startup": 7,
+   "startup": 6,
    "active": 8,
-   "recovery": 6,
-   "damage": 12,
+   "recovery": 5,
+   "damage": 13.2,
    "hitstun": 22,
    "blockstun": 14,
    "overhead": true,
@@ -302,10 +311,10 @@
      25
     ]
    },
-   "startup": 4,
+   "startup": 3,
    "active": 3,
-   "recovery": 7,
-   "damage": 4,
+   "recovery": 6,
+   "damage": 3.6,
    "hitstun": 11,
    "blockstun": 8,
    "low": true,
@@ -316,7 +325,12 @@
     "h": 50
    },
    "knockback": 3,
-   "hitstop": 4
+   "hitstop": 4,
+   "chain": [
+    "punch",
+    "kick"
+   ],
+   "chainMax": 3
   },
   "lowKick": {
    "kind": "low",
@@ -332,10 +346,10 @@
      28
     ]
    },
-   "startup": 6,
+   "startup": 5,
    "active": 6,
-   "recovery": 12,
-   "damage": 7,
+   "recovery": 10,
+   "damage": 7.2,
    "hitstun": 18,
    "blockstun": 12,
    "low": true,
@@ -363,10 +377,10 @@
      26
     ]
    },
-   "startup": 8,
+   "startup": 7,
    "active": 4,
-   "recovery": 14,
-   "damage": 10,
+   "recovery": 12,
+   "damage": 10.8,
    "hitstun": 20,
    "blockstun": 14,
    "low": true,
@@ -395,7 +409,7 @@
    "startup": 11,
    "active": 4,
    "recovery": 17,
-   "damage": 13,
+   "damage": 12,
    "hitstun": 22,
    "blockstun": 14,
    "hitbox": {
@@ -442,7 +456,7 @@
    "active": 14,
    "recovery": 18,
    "dash": 9,
-   "damage": 26,
+   "damage": 25,
    "hitstun": 30,
    "blockstun": 18,
    "hitbox": {

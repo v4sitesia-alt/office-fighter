@@ -18,9 +18,9 @@
  "stage": "eneias",
  "scale": 1.12,
  "stats": {
-  "speed": 0.8,
-  "power": 1.3,
-  "weight": 1.35,
+  "speed": 0.85,
+  "power": 1.18,
+  "weight": 1.3,
   "magic": 1.0
  },
  "hurtbox": {
@@ -125,10 +125,10 @@
      0
     ]
    },
-   "startup": 3,
+   "startup": 4,
    "active": 3,
-   "recovery": 6,
-   "damage": 5,
+   "recovery": 7,
+   "damage": 5.8,
    "hitstun": 12,
    "blockstun": 8,
    "hitbox": {
@@ -153,10 +153,10 @@
      0
     ]
    },
-   "startup": 6,
+   "startup": 7,
    "active": 3,
-   "recovery": 9,
-   "damage": 8,
+   "recovery": 10,
+   "damage": 8.8,
    "hitstun": 15,
    "blockstun": 10,
    "hitbox": {
@@ -181,10 +181,10 @@
      0
     ]
    },
-   "startup": 10,
+   "startup": 11,
    "active": 4,
-   "recovery": 16,
-   "damage": 14,
+   "recovery": 18,
+   "damage": 15.6,
    "hitstun": 24,
    "blockstun": 14,
    "hitbox": {
@@ -213,7 +213,7 @@
    "startup": 4,
    "active": 8,
    "recovery": 4,
-   "damage": 6,
+   "damage": 6.8,
    "hitstun": 14,
    "blockstun": 10,
    "overhead": true,
@@ -243,7 +243,7 @@
    "startup": 5,
    "active": 10,
    "recovery": 4,
-   "damage": 9,
+   "damage": 9.8,
    "hitstun": 16,
    "blockstun": 12,
    "overhead": true,
@@ -273,7 +273,7 @@
    "startup": 7,
    "active": 8,
    "recovery": 6,
-   "damage": 12,
+   "damage": 12.7,
    "hitstun": 22,
    "blockstun": 14,
    "overhead": true,
@@ -304,8 +304,8 @@
    },
    "startup": 4,
    "active": 3,
-   "recovery": 7,
-   "damage": 4,
+   "recovery": 8,
+   "damage": 4.9,
    "hitstun": 11,
    "blockstun": 8,
    "low": true,
@@ -332,10 +332,10 @@
      28
     ]
    },
-   "startup": 6,
+   "startup": 7,
    "active": 6,
-   "recovery": 12,
-   "damage": 7,
+   "recovery": 13,
+   "damage": 7.8,
    "hitstun": 18,
    "blockstun": 12,
    "low": true,
@@ -363,10 +363,10 @@
      26
     ]
    },
-   "startup": 8,
+   "startup": 10,
    "active": 4,
-   "recovery": 14,
-   "damage": 10,
+   "recovery": 17,
+   "damage": 12.7,
    "hitstun": 20,
    "blockstun": 14,
    "low": true,

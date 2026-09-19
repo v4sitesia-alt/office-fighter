@@ -10,6 +10,7 @@ import { Fighter } from './fighter';
 import { Fx } from './fx';
 import { resolveHits, separate } from './hit';
 import { Projectile } from './projectile';
+import { Referee } from './referee';
 import { drawStage } from './stage';
 import type { Difficulty, FighterAssets } from './types';
 import { Zone } from './zone';
@@ -37,6 +38,7 @@ export class Match {
   ai: Ai | null = null;
   projectiles: Projectile[] = [];
   zones: Zone[] = [];
+  referee = new Referee();
   fx = new Fx();
   hitstop = 0;
   phase: MatchPhase = 'intro';
@@ -86,11 +88,12 @@ export class Match {
     if (this.slowmo > 0 && ++this.slowAcc < this.slowmo) { this.fx.update(); return; }
     this.slowAcc = 0;
     this.phaseFrame++;
+    this.referee.update(this);
     const [p1, p2] = this.fighters;
 
     if (this.phase === 'intro') {
       if (this.phaseFrame === 1) { this.ev.message(`ROUND ${this.round}`, 70, 'big'); audio.voice(`ann-round-${Math.min(3, this.round)}`, 'ann'); }
-      if (this.phaseFrame === 75) { this.ev.message('FIGHT!', 45, 'big'); audio.voice('ann-fight', 'ann'); this.fighters.forEach((f) => audio.voiceRandom(`${f.def.id}-laugh`, f.voiceChannel)); }
+      if (this.phaseFrame === 75) { this.ev.message('FIGHT!', 45, 'big'); audio.voice('ann-fight', 'ann'); this.fighters.forEach((f) => (audio.hasVoice(`${f.def.id}-taunt`) ? audio.voice(`${f.def.id}-taunt`, f.voiceChannel) : audio.voiceRandom(`${f.def.id}-laugh`, f.voiceChannel))); }
       if (this.phaseFrame >= 100) { this.phase = 'fight'; this.phaseFrame = 0; }
       this.idleUpdate();
       return;
@@ -125,7 +128,8 @@ export class Match {
       if (dead >= 0) {
         this.roundWinner = dead === 0 ? 1 : 0;
         this.phase = 'ko'; this.phaseFrame = 0; this.slowmo = 4; this.koLanded = false;   // último golpe em câmera lenta
-        const ko = this.fighters[dead]; audio.voice(ko.def.gender === 'f' ? 'ko-oh-f' : 'ko-oh-m', ko.voiceChannel);   // o grito é de quem caiu
+        const ko = this.fighters[dead], own = `ko-${ko.def.id}`;                          // o grito é de quem levou o golpe final
+        audio.voice(audio.hasVoice(own) ? own : ko.def.gender === 'f' ? 'ko-f' : 'ko-m', ko.voiceChannel);
       } else if (this.timer <= 0) {
         this.roundWinner = p1.life === p2.life ? -1 : p1.life > p2.life ? 0 : 1;
         this.phase = 'ko'; this.phaseFrame = 0;
@@ -160,7 +164,7 @@ export class Match {
           if (w.life >= 100) items.push(['PERFECT', 5000]);
           const total = items.reduce((s, [, v]) => s + v, 0);
           this.score[rw] += total; this.tally = { who: rw, items, total };
-          audio.voiceRandom(`${w.def.id}-laugh`, w.voiceChannel);
+          if (audio.hasVoice(`${w.def.id}-win`)) audio.voice(`${w.def.id}-win`, w.voiceChannel); else audio.voiceRandom(`${w.def.id}-down`, w.voiceChannel);
         } else {
           this.wins[0]++; this.wins[1]++; // empate: os dois levam o round
         }
@@ -194,6 +198,7 @@ export class Match {
     for (const f of this.fighters) {
       for (const sp of f.spawns) {
         if (sp.kind === 'projectile') { this.projectiles.push(new Projectile(f, sp.move)); audio.sfx('projectile'); }
+        else if (sp.kind === 'beam') audio.sfx('projectile');
         else if (sp.kind === 'fx') { this.fx.hit(sp.x, sp.y ?? GROUND_Y - 80, f.def.colors.primary, true); audio.sfx('hitBig'); continue; }
         else { this.zones.push(new Zone(f, sp.move, sp.x)); audio.sfx(sp.move.kind === 'dive' ? 'explosion' : 'portal'); }
         if (sp.move.name) this.ev.message(sp.move.name, 45, 'small');
@@ -214,6 +219,7 @@ export class Match {
     ctx.save();
     ctx.translate(ox, oy);
     drawStage(ctx, this.stage, this.midX);
+    this.referee.draw(ctx);                       // atrás dos lutadores
     const [f0, f1] = this.fighters;
     const throwing = (f: Fighter) => f.state === 'attacking' && f.move?.kind === 'throw' && (f.sub === 'hold' || f.sub === 'lift' || f.sub === 'throw');
     const order = throwing(f0) ? [1, 0] : throwing(f1) ? [0, 1]

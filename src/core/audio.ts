@@ -10,11 +10,11 @@ export const hasTrack = (name: string) => name in FILE_TRACKS;
 export type SongName = keyof typeof SONGS | string;
 
 export type SfxName =
-  | 'hit' | 'hitMed' | 'hitBig' | 'block' | 'swing' | 'jump' | 'land'
+  | 'hit' | 'hitMed' | 'hitBig' | 'block' | 'swing' | 'jump' | 'land' | 'knockdown'
   | 'menuMove' | 'menuConfirm' | 'menuBack' | 'selectChar'
   | 'projectile' | 'portal' | 'explosion' | 'ko' | 'tick' | 'win' | 'lose' | 'meter1' | 'meter2' | 'talkA' | 'talkB';
 
-export type VoiceChannel = 'ann' | 'p1' | 'p2' | 'crowd';
+export type VoiceChannel = 'ann' | 'p1' | 'p2' | 'crowd' | 'fx';
 
 const NOTE_INDEX: Record<string, number> = { c: 0, d: 2, e: 4, f: 5, g: 7, a: 9, b: 11 };
 function noteFreq(tok: string): number {
@@ -139,8 +139,23 @@ class AudioEngine {
     node.connect(g).connect(dest); s.start(t0); s.stop(t0 + dur + 0.02);
   }
 
+  /** Toca uma amostra solta no barramento de efeitos (várias ao mesmo tempo, sem canal). */
+  private sample(id: string, gain = 1, rate = 1) {
+    const buf = this.buffers.get(id);
+    if (!this.ctx || !buf) return false;
+    const src = this.ctx.createBufferSource(); src.buffer = buf; src.playbackRate.value = rate;
+    const g = this.ctx.createGain(); g.gain.value = gain;
+    src.connect(g).connect(this.sfxBus); src.start();
+    return true;
+  }
+
   sfx(name: SfxName) {
     if (!this.ctx) return;
+    // som gravado (public/audio/voice/sfx-<nome>) ganha do sintetizado. O soco fraco e o chute médio dividem a mesma
+    // amostra: o fraco mais agudo e baixo, o médio mais grave e cheio, pra manter os três níveis de porrada.
+    if (name === 'hit' && this.sample('sfx-hit', 0.7, 1.14)) return;
+    if (name === 'hitMed' && (this.sample('sfx-hitMed', 0.95) || this.sample('sfx-hit', 0.95, 0.92))) return;
+    if (name !== 'hit' && name !== 'hitMed' && this.sample(`sfx-${name}`, 0.95)) return;
     const t = this.ctx.currentTime, B = this.sfxBus;
     switch (name) {
       // porrada estilo SF2: estalo seco na frente (clique agudo de 8 ms) + corpo que cresce com a força do golpe
@@ -166,6 +181,7 @@ class AudioEngine {
       case 'swing': this.noise(t, 0.12, 0.18, B, { type: 'bandpass', f0: 2200, f1: 500, q: 1.5 }); break;
       case 'jump': this.osc('pulse', 260, 620, t, 0.16, 0.18, B); break;
       case 'land': this.noise(t, 0.06, 0.25, B, { type: 'lowpass', f0: 600 }); break;
+      case 'knockdown': this.noise(t, 0.16, 0.4, B, { type: 'lowpass', f0: 500, f1: 120 }); this.osc('sine', 80, 40, t, 0.18, 0.4, B); break;
       case 'menuMove': this.osc('pulse', 880, 880, t, 0.05, 0.2, B); break;
       case 'menuConfirm': this.osc('pulse', 660, 660, t, 0.06, 0.22, B); this.osc('pulse', 990, 990, t + 0.07, 0.1, 0.22, B); break;
       case 'menuBack': this.osc('pulse', 660, 330, t, 0.12, 0.2, B); break;

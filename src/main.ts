@@ -1,5 +1,6 @@
 import './styles.css';
-import { loadFighter, loadStage, type StageAssets } from './core/assets';
+import { loadFighter, loadReferee, loadStage, type StageAssets } from './core/assets';
+import { Referee } from './game/referee';
 import { audio, hasTrack } from './core/audio';
 import { Input } from './core/input';
 import { startLoop } from './core/loop';
@@ -375,6 +376,7 @@ const loop = startLoop({
   const fighters = await Promise.all(ids.map((id) => loadFighter(id, tick)));
   const names = [...new Set([DEFAULT_STAGE, 'intro', 'elevator', ...fighters.map((f) => f.def.stage ?? DEFAULT_STAGE)])];
   const loaded = await Promise.all(names.map((n) => loadStage(n, tick).catch(() => null)));
+  Referee.assets = await loadReferee();
   loaded.forEach((st, i) => { if (st) stages.set(names[i], st); });
   void audio.preloadVoices(import.meta.env.BASE_URL);
   roster = fighters;
