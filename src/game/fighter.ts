@@ -83,6 +83,10 @@ export class Fighter {
   setState(s: State) {
     if (this.state === s) return;
     this.state = s; this.stateFrame = 0;
+    if (s !== 'attacking' && this.victim) {            // interrompido no meio do agarrão: solta a vítima
+      const v = this.victim; this.victim = null;
+      if (v.state === 'grabbed') { v.grabbedBy = null; v.vy = 0; v.setState(v.y < 0 ? 'jumping' : 'idle'); }
+    }
     if (s !== 'attacking') { this.move = null; this.moveName = null; this.hasHit = false; this.air = false; this.lowAttack = false; this.sub = null; this.victim = null; }
     if (s !== 'grabbed') this.grabbedBy = null;
   }
@@ -98,6 +102,7 @@ export class Fighter {
     if (frozen) return;
     this.stateFrame++;
     this.animTime++;
+    if (this.def.meterRegen && this.state !== 'attacking' && this.state !== 'ko') this.meter = Math.min(100, this.meter + this.def.meterRegen);
     this.readBuffer(ctrl);
 
     switch (this.state) {
@@ -110,7 +115,7 @@ export class Fighter {
         if (this.grounded) { this.land(); break; }
         if (ctrl.pressed('up') && !this.doubleJumped) {   // pulo duplo: um impulso extra no ar, com direção nova
           const l = ctrl.held('left'), r = ctrl.held('right');
-          this.doubleJumped = true; this.vy = JUMP_VY * 0.85; if (l !== r) this.vx = JUMP_VX * (r ? 1 : -1);
+          this.doubleJumped = true; this.vy = JUMP_VY * 0.85 * (this.def.stats.jump ?? 1); if (l !== r) this.vx = JUMP_VX * (r ? 1 : -1);
           audio.sfx('jump');
         }
         if (this.buffered && !this.airAttackUsed) {
@@ -188,8 +193,21 @@ export class Fighter {
         case 'dash': this.x += T.speed * this.facing; if (this.stateFrame >= T.dash) { this.sub = 'grab'; this.stateFrame = 0; } break;
         case 'grab': this.x += T.speed * 0.4 * this.facing; if (this.stateFrame >= T.grab) { this.sub = 'whiff'; this.stateFrame = 0; } break;
         case 'hold': this.placeVictim(T.holdOffset); if (this.stateFrame >= T.hold) { this.sub = 'lift'; this.stateFrame = 0; } break;
-        case 'lift': this.placeVictim(T.liftOffset); if (this.stateFrame >= T.lift) { this.sub = 'throw'; this.stateFrame = 0; this.release(T); } break;
-        case 'throw': if (this.stateFrame >= T.throw) this.setState('idle'); break;
+        case 'lift': {
+          if (T.air) this.y = -T.air * this.scale * Math.sin(Math.min(1, this.stateFrame / T.lift) * Math.PI / 2);   // sobe junto: combo aéreo
+          this.placeVictim(T.liftOffset);
+          const v = this.victim;
+          if (v && T.ticks && this.stateFrame % Math.max(1, Math.floor(T.lift / T.ticks)) === 0) {
+            v.life = Math.max(1, v.life - (T.tickDamage ?? 2) * (this.def.stats.magic ?? 1)); v.flash = 4;
+            this.spawns.push({ kind: 'fx', move: m, x: v.x, y: GROUND_Y + v.y - 70 * this.scale });
+          }
+          if (this.stateFrame >= T.lift) { this.sub = 'throw'; this.stateFrame = 0; this.vy = 0; this.release(T); }
+          break;
+        }
+        case 'throw':
+          if (this.y < 0) { this.vy += GRAVITY; this.y = Math.min(0, this.y + this.vy); }
+          if (this.stateFrame >= T.throw && this.y >= 0) { this.y = 0; this.vy = 0; this.setState('idle'); }
+          break;
         default: if (this.stateFrame >= T.whiff) this.setState('idle');
       }
       return;
@@ -222,7 +240,7 @@ export class Fighter {
   private placeVictim(off: { x: number; y: number }) {
     const v = this.victim; if (!v) return;
     v.x = Math.max(ARENA_MIN, Math.min(ARENA_MAX, this.x + this.facing * off.x * this.scale));
-    v.y = off.y * this.scale; v.facing = this.facing === 1 ? -1 : 1;
+    v.y = this.y + off.y * this.scale; v.facing = this.facing === 1 ? -1 : 1;
   }
   private release(T: ThrowDef) {
     const v = this.victim; if (!v) return;
@@ -242,6 +260,7 @@ export class Fighter {
   private groundMove(btn: AttackBtn, crouched: boolean): MoveName | null {
     const M = this.def.moves;
     if (btn === 'special') {
+      if (crouched && M.special && this.meter >= (M.special.meterCost ?? 50)) return 'special';   // ↓ + B: magia, mesmo com a barra cheia
       if (M.super && this.meter >= (M.super.meterCost ?? 100)) return 'super';
       if (M.special && this.meter >= (M.special.meterCost ?? 50)) return 'special';
       return null;
@@ -274,7 +293,7 @@ export class Fighter {
     }
     if (down) { this.setState('crouching'); this.vx = 0; return; }
     if (ctrl.held('up')) {
-      this.vy = JUMP_VY;
+      this.vy = JUMP_VY * (this.def.stats.jump ?? 1);
       this.vx = ctrl.held(fwd) ? JUMP_VX * this.facing : ctrl.held(back) ? -JUMP_VX * this.facing : 0;
       this.y = -0.01; this.airAttackUsed = false; this.doubleJumped = false;
       this.setState('jumping'); audio.sfx('jump'); return;

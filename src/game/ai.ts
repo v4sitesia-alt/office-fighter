@@ -28,6 +28,7 @@ export class Ai {
   ctrl = new VirtualController();
   private queue: Plan[] = [];
   private cooldown = 0;
+  private superCd = 0;
   private rng: Rng;
   debug = '';
 
@@ -37,6 +38,7 @@ export class Ai {
 
   update(projectiles: Projectile[], enabled = true) {
     this.ctrl.begin();
+    if (this.superCd > 0) this.superCd--;
     if (!enabled) return;
     const p = PROFILES[this.difficulty];
     if (this.queue.length) {
@@ -83,13 +85,13 @@ export class Ai {
       this.set([this.rng.chance(0.5) ? 'heavy' : 'kick'], 2); return;
     }
     // super com barra cheia
-    if (me.meter >= 100 && M.super) {
+    if (me.meter >= 100 && M.super && this.superCd <= 0) {
       const kind = M.super.kind ?? (M.super.projectile ? 'shot' : 'ground');
       if ((kind === 'portal' && this.rng.chance(p.specialChance * 0.6)) || (kind === 'dive' && dx < 430 && this.rng.chance(p.specialChance))
         || (kind === 'shot' && dx > 220 && this.rng.chance(p.specialChance * 0.7))
         || (kind === 'ground' && dx < 260 && this.rng.chance(p.specialChance))
         || (kind === 'throw' && dx < 200 && ot.grounded && this.rng.chance(p.specialChance))) {
-        this.debug = 'super'; this.set(['special'], 2); return;
+        this.debug = 'super'; this.superCd = 260; this.set(['special'], 2); return;
       }
     }
     if (dx < reach) {

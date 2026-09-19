@@ -93,7 +93,7 @@ footer{{text-align:center;color:var(--mut);font-size:13px;margin-top:70px}}
 <h2 id="controles">CONTROLES</h2>
 <div class="grid2"><div class="box"><h4>MOVIMENTO</h4><p><kbd>A</kbd><kbd>D</kbd> andar · <kbd>W</kbd> pular (de novo no ar = pulo duplo) · <kbd>S</kbd> agachar. As setas também funcionam.</p></div>
 <div class="box"><h4>GOLPES</h4><p><kbd>G</kbd> soco · <kbd>H</kbd> chute · <kbd>J</kbd> golpe forte · <kbd>V</kbd> defesa · <kbd>B</kbd> especial</p></div>
-<div class="box"><h4>VARIAÇÕES</h4><p>Segurando <kbd>S</kbd>, os três golpes viram rasteiros. No ar, viram aéreos. Um golpe aéreo por pulo.</p></div>
+<div class="box"><h4>VARIAÇÕES</h4><p>Segurando <kbd>S</kbd>, os três golpes viram rasteiros, e <kbd>S</kbd>+<kbd>B</kbd> solta a magia mesmo com a barra cheia. No ar, viram aéreos. Um golpe aéreo por pulo.</p></div>
 <div class="box"><h4>MENUS E CELULAR</h4><p><kbd>Enter</kbd> ou <kbd>G</kbd> confirma · <kbd>V</kbd> volta · <kbd>Esc</kbd> pausa. No celular, o joystick e os botões do gabinete funcionam no toque.</p></div></div>
 
 <h2 id="sistema">SISTEMA DE LUTA</h2>
@@ -113,6 +113,7 @@ footer{{text-align:center;color:var(--mut);font-size:13px;margin-top:70px}}
 <div class="box"><h4>ARCADE</h4><p>Sete lutas: quatro rivais do elenco, depois <b>Xablau</b> (o capanga), <b>Dias</b> (o subchefe) e <b>Mundim</b> (o chefão). Antes de cada luta os dois conversam em tela dividida (36 encontros têm diálogo próprio). Cada luta acontece no cenário e com a música do adversário. A CPU fica mais esperta a cada luta.</p></div>
 <div class="box"><h4>ARENA ONLINE</h4><p><b>1.</b> Abra o link de convite (ou START, Arena Online). <b>2.</b> Escolha o lutador e digite um apelido. <b>3.</b> Aperte <b>JOGAR AGORA</b>: quando outra pessoa apertar também, a luta começa sozinha. Dá pra desafiar alguém da lista, assistir às lutas ao vivo e trocar de lutador sem sair. Até 15 pessoas. Vitória vale 3 pontos no ranking, derrota vale 1.</p></div>
 <div class="box"><h4>CAMPEONATO</h4><p>Alguém cria e vira organizador. Cada pessoa se inscreve com um lutador, e <b>cada lutador só pode ter um dono</b>. O sorteio monta a chave eliminatória. Uma luta por vez: quando chegar a sua, aparece “É SUA VEZ”. O resto assiste.</p></div>
+<div class="box" style="border-color:#7a0f22"><h4 style="color:#ff5468">???</h4><p>Dizem que existe um 53º andar, que não aparece no painel do elevador. Quem zerar o arcade sem perder nenhuma luta sobe até lá. E dizem também que, na tela de seleção, um código clássico dos anos 90 acende o quadro escuro.</p></div>
 <div class="box"><h4>DICAS PRO EVENTO</h4><p>O organizador precisa manter o saguão aberto, porque é ele quem chama a próxima luta. Se alguém sumir, ele pode dar W.O. Projete a tela de um espectador no telão.</p></div></div>
 <footer>V4 Fighters – Trouble Work · manual gerado a partir dos dados do jogo · <a href="./" style="color:var(--y)">jogar</a></footer>
 </div></body></html>'''

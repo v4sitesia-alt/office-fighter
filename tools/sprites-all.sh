@@ -14,4 +14,5 @@ run eneias  $M/thumb-eneias.png          # os nomes vieram trocados: thumb-eneia
 run van     $M/van.png
 run landim  $M/landim.png --wide 6,2     # feixe + lente são uma pose só
 run xablau  $M/xablau.png --wide 2,3 --wide 6,2
+run dener   $M/dener.png --alpha 150 --grow 22
 run mundim  $M/mundim.png --alpha 130 --grow 40 --export 33:garrafas.png   # board com brilho suave ligando as poses

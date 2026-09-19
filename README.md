@@ -64,6 +64,12 @@ Par sem roteiro próprio usa as falas genéricas; luta espelho usa `mirror`. A c
 `public/manifest.webmanifest` + `public/sw.js` + `src/core/mobile.ts`: instalável na tela de início (abre sem barra do navegador), tela cheia automática
 no primeiro toque no Android, botões INSTALAR APP e TELA CHEIA no letreiro, dica de instalação no iPhone, tela sempre acesa e sem rolagem elástica nem zoom.
 
+## Lutador secreto
+
+Dener (`SECRET` em `src/data/roster.ts`) é carregado sempre, mas só aparece como slot escuro na seleção. Destrava de dois jeitos: digitando
+↑ ↑ ↓ ↓ ← → ← → B J na tela de seleção, ou vencendo a luta secreta do 53º andar (aparece pra quem zera o arcade sem perder nenhuma luta).
+O desbloqueio fica salvo no navegador (`v4f-unlocked`). Ele usa `meterRegen` (barra que se recarrega sozinha) e um agarrão com `air`/`ticks` (combo aéreo).
+
 ## Manual
 
 `public/manual.html` (link MANUAL no gabinete) é gerado por `npm run manual` a partir dos `fighter.json`. Rode de novo ao mudar lutadores, atributos ou golpes.

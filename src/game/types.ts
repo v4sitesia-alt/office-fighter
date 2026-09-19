@@ -67,6 +67,8 @@ export interface ThrowDef {
   holdOffset: { x: number; y: number };           // posição da vítima enquanto segura (unidades do sprite)
   liftOffset: { x: number; y: number };           // posição da vítima levantada
   release: { damage: number; knockback: number; launch: number; hitstop?: number };
+  air?: number;                                   // sobe com a vítima durante o 'lift' (unidades do sprite)
+  ticks?: number; tickDamage?: number;            // combo: acertos durante o 'lift'
 }
 
 export interface MoveDef extends HitDef {
@@ -92,12 +94,13 @@ export type MoveName =
   | 'lowPunch' | 'lowKick' | 'lowHeavy';
 
 export interface FighterDef {
-  id: string; name: string; role: string; tagline?: string; bio?: string; side?: 'heroi' | 'neutro' | 'vilao';
+  id: string; name: string; role: string; tagline?: string; bio?: string; side?: 'heroi' | 'neutro' | 'vilao'; secret?: boolean;
+  meterRegen?: number;          // barra de especial que se recarrega sozinha (por frame)
   colors: { primary: string; secondary: string };
   origin?: { region: string; city: string; lon: number; lat: number; label?: 'left' | 'right' | 'above' | 'below' };
   stage?: string;               // public/stages/<stage>.png (cenário do lutador)
   scale: number;
-  stats: { speed: number; power: number; weight: number; magic?: number };   // força = power, agilidade = speed, poder = magic
+  stats: { speed: number; power: number; weight: number; magic?: number; jump?: number };   // força = power, agilidade = speed, poder = magic
   hurtbox: Box; crouchHurtbox: Box;
   pushbox: { x: number; w: number };
   anims: Record<string, AnimDef>;

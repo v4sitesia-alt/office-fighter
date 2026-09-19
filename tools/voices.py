@@ -40,6 +40,8 @@ CLIPS = [
     ('ann-mundim',  'Daniel', 'Moondeem!', 160, 0.84),
     ('ann-landim',  'Daniel', 'Landeem!', 160, 0.86),
     ('ann-xablau',  'Daniel', 'Shablau!', 160, 0.84),
+    ('ann-dener',   'Daniel', 'Denner!', 150, 0.8),
+    ('ann-secret',  'Daniel', 'Here comes a new challenger!', 165, 0.84),
 ]
 
 

@@ -243,6 +243,21 @@
     "Anote aí: isso é uma aula."
    ],
    "ending": "Mundim venceu o próprio torneio e discursou duas horas citando filósofos. As IAs aprenderam tudo. Inclusive a pedir aumento. No subsolo, um olho biônico acendeu: Leo acordou."
+  },
+  "dener": {
+   "open": [
+    "Reunião de cinco minutos. Você tem quatro.",
+    "Eu não marco horário. Eu sou o horário."
+   ],
+   "reply": [
+    "Anotado. Irrelevante, mas anotado.",
+    "Interessante. Próxima pauta."
+   ],
+   "close": [
+    "Encerrando a reunião.",
+    "Sem perguntas? Ótimo."
+   ],
+   "ending": "Dener venceu sem suar, sem sorrir e sem tirar os óculos. Desceu do 53º andar só pra isso. Subiu de volta sem apertar botão nenhum. No dia seguinte, todo mundo recebeu um convite: 'Alinhamento rápido. 5 min.'"
   }
  },
  "pairs": {
@@ -896,6 +911,150 @@
    [
     "edgard",
     "...Sim, senhora. Podemos lutar agora?"
+   ]
+  ],
+  "dener|mundim": [
+   [
+    "mundim",
+    "Dener?! O senhor... desceu? O senhor nunca desce."
+   ],
+   [
+    "dener",
+    "Mundim. Vi os números do torneio. Vi o monstro que as suas IAs fizeram. Vi tudo."
+   ],
+   [
+    "mundim",
+    "Posso explicar. Marco Aurélio dizia que..."
+   ],
+   [
+    "dener",
+    "Marco Aurélio não tinha meta trimestral. Você tem. Em guarda."
+   ]
+  ],
+  "dener|edgard": [
+   [
+    "edgard",
+    "Existe um 53º andar? O elevador só vai até o 52."
+   ],
+   [
+    "dener",
+    "O elevador é pra quem precisa de elevador."
+   ],
+   [
+    "edgard",
+    "Então é você que manda em quem manda. Solta o Santana."
+   ],
+   [
+    "dener",
+    "Ganhe e eu assino a liberação. Perca e você vira estagiário. Do Xablau."
+   ]
+  ],
+  "dener|dias": [
+   [
+    "dias",
+    "Seu Dener! Que honra! Tenho um plano platinum pra diretoria, com uma taxinha simbólica..."
+   ],
+   [
+    "dener",
+    "Dias. Você me cobrou taxa de elevador no mês passado."
+   ],
+   [
+    "dias",
+    "...Foi o sistema. O sistema sou eu, mas foi o sistema."
+   ],
+   [
+    "dener",
+    "Considere esta luta o seu estorno."
+   ]
+  ],
+  "dener|xablau": [
+   [
+    "xablau",
+    "XABLAU VER HOMEM PEQUENO. XABLAU NÃO TER MEDO DE HOMEM PEQUENO."
+   ],
+   [
+    "dener",
+    "Você é a linha 47 da planilha de custos. Sem nome. Só um valor em vermelho."
+   ],
+   [
+    "xablau",
+    "...XABLAU COM MEDO DE HOMEM PEQUENO."
+   ],
+   [
+    "dener",
+    "Bom. Já é um começo."
+   ]
+  ],
+  "dener|van": [
+   [
+    "van",
+    "Moço, você é o gerente do gerente? Eu preciso estornar trezentas meias."
+   ],
+   [
+    "dener",
+    "Eu li o seu caso. Três vezes. É o único relatório que me fez rir este ano."
+   ],
+   [
+    "van",
+    "Então resolve, ué!"
+   ],
+   [
+    "dener",
+    "Resolvo. Depois. Política da empresa: primeiro a luta, depois o estorno."
+   ]
+  ],
+  "dener|eneias": [
+   [
+    "eneias",
+    "O senhor é o dono de tudo? Então libera o Bar do Zé, faz favor."
+   ],
+   [
+    "dener",
+    "Eu nunca fui a um bar."
+   ],
+   [
+    "eneias",
+    "Nunca?! Meu Deus. Isso explica muita coisa, viu."
+   ],
+   [
+    "dener",
+    "Me vença e eu provo esse tal de torresmo."
+   ]
+  ],
+  "dener|kevin": [
+   [
+    "kevin",
+    "Então é o senhor que assina os cheques. Tenho três notas em aberto."
+   ],
+   [
+    "dener",
+    "Eu sei. Eu mandei atrasar. Queria ver até que andar você subia pra cobrar."
+   ],
+   [
+    "kevin",
+    "Cinquenta e três. Com juros."
+   ],
+   [
+    "dener",
+    "Gostei. Depois disso, me procure. Tenho um serviço."
+   ]
+  ],
+  "dede|dener": [
+   [
+    "dede",
+    "Buenas. Tu que é o patrão do patrão? Baixinho, hein."
+   ],
+   [
+    "dener",
+    "Altura é custo. Eu cortei."
+   ],
+   [
+    "dede",
+    "Bah. E esse óculos brilhando, é pilha ou é feitiço?"
+   ],
+   [
+    "dener",
+    "É confidencial."
    ]
   ]
  }

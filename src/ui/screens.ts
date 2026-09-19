@@ -1,5 +1,5 @@
 // Telas DOM sobre o canvas: título, dificuldade, seleção, versus, resultado, fim, pausa, loading.
-import type { Input } from '../core/input';
+import type { Button, Input } from '../core/input';
 import type { Difficulty, FighterAssets } from '../game/types';
 import { audio } from '../core/audio';
 import { brazilMapSvg } from './brazil';
@@ -13,7 +13,8 @@ export class Screens {
   private onBack: (() => void) | null = null;
   private onMove: ((i: number) => void) | null = null;
   private blink = 0;
-  private onTick: (() => void) | null = null;
+  private onTick: ((input: Input) => void) | null = null;
+  private gridCols = 0;
 
   constructor(root: HTMLElement) { this.root = root; }
 
@@ -24,7 +25,7 @@ export class Screens {
     this.root.innerHTML = html;
     this.menuItems = Array.from(this.root.querySelectorAll<HTMLElement>('[data-item]'));
     this.menuIndex = 0;
-    this.onMove = null; this.onTick = null; this.root.onclick = null;
+    this.onMove = null; this.onTick = null; this.root.onclick = null; this.gridCols = 0;
     this.menuItems.forEach((el, i) => { el.onclick = () => { this.menuIndex = i; this.paintMenu(); this.onConfirm?.(i); }; });
     this.paintMenu();
   }
@@ -33,13 +34,18 @@ export class Screens {
   /** Navegação de menus por input (chamado a cada passo fixo). */
   update(input: Input) {
     this.blink++;
-    this.onTick?.();
+    this.onTick?.(input);
     const p = input.ports[0];
     if (this.menuItems.length) {
       const horizontal = this.root.classList.contains('select');
       const prev = horizontal ? 'left' : 'up', next = horizontal ? 'right' : 'down';
       if (p.pressed(prev)) { this.menuIndex = (this.menuIndex + this.menuItems.length - 1) % this.menuItems.length; audio.sfx('menuMove'); this.paintMenu(); }
       if (p.pressed(next)) { this.menuIndex = (this.menuIndex + 1) % this.menuItems.length; audio.sfx('menuMove'); this.paintMenu(); }
+      if (this.gridCols) {                                 // grade: ↑ ↓ pulam uma fileira
+        const n = this.menuItems.length, c = this.gridCols, i = this.menuIndex;
+        const to = p.pressed('up') ? i - c : p.pressed('down') ? (i + c < n ? i + c : Math.floor(i / c) < Math.floor((n - 1) / c) ? n - 1 : -1) : -1;
+        if (to >= 0 && to !== i) { this.menuIndex = to; audio.sfx('menuMove'); this.paintMenu(); }
+      }
       if (p.pressed('start') || p.pressed('punch')) { audio.sfx('menuConfirm'); this.onConfirm?.(this.menuIndex); }
     } else if (input.anyPressed) {
       audio.sfx('menuConfirm'); this.onConfirm?.(0);
@@ -98,20 +104,25 @@ export class Screens {
     this.onBack = onBack;
   }
 
-  select(roster: FighterAssets[], onPick: (i: number) => void, onBack: () => void) {
+  /** Seleção. `secret` = lutadores ocultos: slot escuro até o código ser digitado aqui mesmo (↑ ↑ ↓ ↓ ← → ← → B J). */
+  select(roster: FighterAssets[], secret: { isLocked(id: string): boolean; unlock(id: string): void }, onPick: (i: number) => void, onBack: () => void, focus = 0) {
     const img = (f: FighterAssets) => (f.portrait ? `<img src="${f.portrait.src}" alt="">` : '');
-    const slots = roster.map((f, i) => `<div class="sf2-slot" data-item data-i="${i}">${img(f)}</div>`).join('')
-      + Array.from({ length: Math.max(0, 10 - roster.length) }, () => '<div class="sf2-slot locked">?</div>').join('');
+    const locked = (f: FighterAssets) => !!f.def.secret && secret.isLocked(f.def.id);
+    const slots = roster.map((f, i) => locked(f)
+      ? `<div class="sf2-slot secret hidden" style="--c:${f.def.colors.primary}">${img(f)}<b>?</b></div>`
+      : `<div class="sf2-slot${f.def.secret ? ' secret' : ''}" data-item data-i="${i}" style="--c:${f.def.colors.primary}">${img(f)}<span>${f.def.name}</span></div>`).join('')
+      + Array.from({ length: Math.max(0, 15 - roster.length) }, () => '<div class="sf2-slot locked">?</div>').join('');
     this.set('select', `
       <div class="sf2">
         <div class="sf2-side left"><div class="sf2-portrait p1"></div><div class="sf2-name p1"></div><div class="sf2-tag">1P</div><div class="sf2-region p1"></div><div class="sf2-stats p1"></div></div>
-        <div class="sf2-center"><div class="sf2-map">${brazilMapSvg(roster)}</div><div class="sf2-title">PLAYER SELECT</div></div>
+        <div class="sf2-center"><div class="sf2-map">${brazilMapSvg(roster.filter((f) => !locked(f)))}</div><div class="sf2-title">PLAYER SELECT</div><div class="sf2-grid">${slots}</div></div>
         <div class="sf2-side right"><div class="sf2-portrait cpu"></div><div class="sf2-name cpu"></div><div class="sf2-tag cpu">CPU</div><div class="sf2-region cpu"></div><div class="sf2-stats cpu"></div></div>
-        <div class="sf2-grid">${slots}</div>
-        <div class="pix tiny sf2-hint">A D ESCOLHER · G / ENTER CONFIRMAR · V VOLTAR</div>
       </div>`);
+    this.gridCols = 5;
     const q = (sel: string) => this.root.querySelector<HTMLElement>(sel)!;
+    const open = roster.filter((f) => !locked(f));
     const marks = Array.from(this.root.querySelectorAll<SVGGElement>('.mark'));
+    const idxOf = (menu: number) => Number(this.menuItems[menu].dataset.i);
     const fill = (side: 'p1' | 'cpu', f: FighterAssets) => {
       q(`.sf2-portrait.${side}`).innerHTML = img(f);
       q(`.sf2-name.${side}`).textContent = f.def.name;
@@ -123,27 +134,31 @@ export class Screens {
       };
       q(`.sf2-stats.${side}`).innerHTML = bar('FORÇA', st.power) + bar('AGILIDADE', st.speed) + bar('PODER', st.magic ?? 1);
     };
-    this.onMove = (i) => {
-      const cpu = roster.length > 1 ? (i === 0 ? 1 : 0) : i; // primeiro oponente da campanha (ordem da lista)
+    this.onMove = (m) => {
+      const i = idxOf(m), cpu = i === 0 ? 1 : 0; // primeiro oponente da campanha (ordem da lista)
       fill('p1', roster[i]); fill('cpu', roster[cpu]);
-      marks.forEach((m) => { const k = Number(m.dataset.i); m.querySelector('.dot')!.setAttribute('class', `dot${k === i ? ' on' : k === cpu ? ' cpu' : ''}`); });
-      this.menuItems.forEach((el, k) => el.classList.toggle('cpu', k === cpu && k !== i));
+      marks.forEach((mk) => { const f = open[Number(mk.dataset.i)]; const k = roster.indexOf(f); mk.querySelector('.dot')!.setAttribute('class', `dot${k === i ? ' on' : k === cpu ? ' cpu' : ''}`); });
+      this.menuItems.forEach((el) => el.classList.toggle('cpu', Number(el.dataset.i) === cpu && cpu !== i));
     };
-    this.onMove(0);
-    this.onConfirm = (i) => { audio.sfx('selectChar'); audio.voice(`ann-${roster[i].def.id}`, 'ann'); onPick(i); };
+    this.menuIndex = Math.max(0, this.menuItems.findIndex((el) => Number(el.dataset.i) === focus)); this.paintMenu();
+    this.onConfirm = (m) => { const i = idxOf(m); audio.sfx('selectChar'); audio.voice(`ann-${roster[i].def.id}`, 'ann'); onPick(i); };
     this.onBack = onBack;
-  }
-
-  /** História em páginas; qualquer botão avança. */
-  story(pages: { title: string; text: string }[], onDone: () => void) {
-    let i = 0;
-    const show = () => {
-      this.set('story', `<div class="center"><div class="st-title">${pages[i].title}</div><div class="st-text">${pages[i].text}</div><div class="pix tiny">${i + 1}/${pages.length} · G / ENTER CONTINUA · V PULA</div></div>`);
-      this.onConfirm = () => { if (++i >= pages.length) onDone(); else show(); };
-      this.onBack = onDone;
-      this.root.onclick = () => this.onConfirm?.(0);
+    // código secreto: os botões H, J e B não fazem nada nos menus, então dá pra digitar sem sair da tela
+    const CODE: Button[] = ['up', 'up', 'down', 'down', 'left', 'right', 'left', 'right', 'special', 'heavy'];
+    const WATCH: Button[] = ['up', 'down', 'left', 'right', 'punch', 'kick', 'heavy', 'block', 'special'];
+    const typed: Button[] = [];
+    const target = roster.find(locked);
+    if (target) this.onTick = (input) => {
+      for (const b of WATCH) if (input.ports[0].pressed(b)) typed.push(b);
+      if (typed.length > CODE.length) typed.splice(0, typed.length - CODE.length);
+      if (typed.length === CODE.length && CODE.every((b, k) => typed[k] === b)) {
+        secret.unlock(target.def.id);
+        audio.sfx('explosion'); audio.sfx('meter2'); audio.voice('ann-secret', 'ann');
+        this.select(roster, secret, onPick, onBack, roster.indexOf(target));
+        this.root.querySelector('.sf2-slot.secret')?.classList.add('reveal');
+        this.root.querySelector('.sf2')?.classList.add('flash');
+      }
     };
-    show();
   }
 
   /** Enfrentamento: os dois frente a frente e, em seguida, a conversa em tela dividida na diagonal (quem fala ganha a tela). */
@@ -199,12 +214,12 @@ export class Screens {
     this.onConfirm = (i) => (i === 0 ? onNext() : onQuit());
   }
 
-  ending(winner: FighterAssets, onDone: () => void) {
+  ending(winner: FighterAssets, onDone: () => void, note = '') {
     this.set('ending', `
       <div class="center">
         <div class="thumb big">${winner.portrait ? `<img src="${winner.portrait.src}" alt="">` : ''}</div>
         <div class="title-big win">CAMPEÃO</div>
-        <div class="end-text">${endingOf(winner.def.id)}</div>
+        <div class="end-text">${endingOf(winner.def.id)}</div>${note ? `<div class="pix small" style="color:#ff5468">${note}</div>` : ''}
         <div class="pix tiny">G / ENTER PARA VOLTAR</div>
       </div>`);
     this.onConfirm = onDone;

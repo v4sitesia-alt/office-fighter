@@ -330,3 +330,30 @@ html, body { overscroll-behavior: none; touch-action: manipulation; -webkit-touc
 .app-tip b { color: var(--yellow); } .app-tip button { font-family: var(--pix); font-size: 8px; padding: 8px 10px; border: 0; background: var(--yellow); color: #222; flex: none; }
 .rotate-tip { display: none; }
 @media (max-width: 720px) and (orientation: portrait) { body.in-fight .rotate-tip { display: block; position: fixed; top: 6px; left: 50%; transform: translateX(-50%); z-index: 30; font-family: var(--pix); font-size: 7px; color: #cfe0ff; background: rgba(10,14,30,.85); padding: 6px 10px; border-radius: 20px; white-space: nowrap; } }
+
+/* =========== seleção: quadros grandes em grade 5 x 3, mapa menor em cima, slot secreto escuro =========== */
+.sf2 { grid-template-columns: 214px 1fr 214px; grid-template-rows: 1fr; padding: 12px 20px 10px; gap: 0 8px; }
+.sf2-side { justify-content: center; } .sf2-portrait { width: 206px; height: 196px; } .sf2-name { font-size: 36px; } .sf2-stats { width: 200px; }
+.sf2-center { justify-content: flex-start; gap: 2px; }
+.sf2-map { width: 215px; height: 188px; } .sf2-title { font-size: 22px; margin: 0 0 4px; }
+.sf2-grid { display: grid; grid-template-columns: repeat(5, 84px); gap: 6px; max-width: none; padding: 0; margin: 0; justify-content: center; }
+.sf2-slot { width: 84px; height: 84px; border: 3px solid #5b6db0; background: #0b1030; filter: brightness(.82) saturate(.9); transition: transform .08s, filter .08s; }
+.sf2-slot span { position: absolute; left: 0; right: 0; bottom: 0; padding: 3px 0 2px; font-family: var(--pix); font-size: 6px; text-align: center; color: #fff; background: rgba(4,6,20,.78); letter-spacing: 1px; }
+.sf2-slot:hover { filter: none; }
+.sf2-slot.sel { filter: none; transform: scale(1.16); z-index: 3; border-color: var(--yellow); box-shadow: 0 0 0 2px #000, 0 0 22px var(--yellow), 0 0 0 5px color-mix(in srgb, var(--c) 70%, transparent); }
+.sf2-slot.sel span { background: var(--yellow); color: #222; }
+.sf2-slot.locked { font-size: 50px; color: #3a4470; background: #12172e; border-color: #2a3358; filter: none; }
+/* secreto: silhueta em preto e bordô, só os óculos acesos */
+.sf2-slot.secret { border-color: #7a0f22; background: radial-gradient(circle at 50% 40%, #4a0814, #050103 72%); }
+.sf2-slot.secret.hidden { filter: none; cursor: default; animation: secretPulse 2.4s ease-in-out infinite; }
+.sf2-slot.secret.hidden img { filter: brightness(0) drop-shadow(0 0 6px #c4122f); opacity: .9; }
+.sf2-slot.secret.hidden::after { content: ''; position: absolute; left: 36%; top: 30%; width: 28%; height: 8%; border-radius: 40%; background: #fff; box-shadow: 0 0 10px 3px #ff2a4a; opacity: .0; animation: glasses 2.4s ease-in-out infinite; }
+.sf2-slot.secret.hidden b { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--logo); font-size: 46px; color: #c4122f; text-shadow: 0 0 12px #ff2a4a, 2px 2px 0 #000; }
+.sf2-slot.secret.reveal { animation: reveal 1s ease-out; }
+.sf2.flash::after { content: ''; position: absolute; inset: 0; background: #ff2a4a; pointer-events: none; animation: flashOut .7s ease-out forwards; }
+@keyframes secretPulse { 50% { box-shadow: 0 0 18px #c4122f; border-color: #c4122f; } }
+@keyframes glasses { 0%, 78%, 100% { opacity: 0; } 84%, 92% { opacity: .95; } }
+@keyframes reveal { 0% { transform: scale(2.4) rotate(-8deg); filter: brightness(6); } 100% { transform: scale(1.16); filter: none; } }
+@keyframes flashOut { from { opacity: .85; } to { opacity: 0; } }
+.sf2 { grid-template-columns: 200px 1fr 200px; } .sf2-portrait { width: 196px; height: 186px; } .sf2-stats { width: 190px; } .sf2-name { font-size: 34px; }
+.sf2-map { width: 190px; height: 166px; } .sf2-grid { grid-template-columns: repeat(5, 94px); } .sf2-slot { width: 94px; height: 94px; } .sf2-slot span { font-size: 7px; }

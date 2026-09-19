@@ -3,7 +3,7 @@ import { loadFighter, loadStage, type StageAssets } from './core/assets';
 import { audio, hasTrack } from './core/audio';
 import { Input } from './core/input';
 import { startLoop } from './core/loop';
-import { DEFAULT_STAGE, ROSTER } from './data/roster';
+import { DEFAULT_STAGE, ROSTER, SECRET } from './data/roster';
 import { scriptFor } from './data/dialogue';
 import { setupMobile } from './core/mobile';
 import { H, W } from './game/consts';
@@ -83,10 +83,19 @@ const paintMute = () => { muteBtn.textContent = audio.muted ? '🔇' : '🔊'; m
 muteBtn.addEventListener('click', () => { audio.unlock(); audio.toggleMute(); paintMute(); });
 paintMute();
 
+// ---------- lutador secreto: destrava com o código na seleção ou vencendo a luta secreta do arcade
+const unlockedIds = new Set<string>((() => { try { return JSON.parse(localStorage.getItem('v4f-unlocked') ?? '[]') as string[]; } catch { return []; } })());
+const secret = {
+  isLocked: (id: string) => !unlockedIds.has(id),
+  unlock: (id: string) => { unlockedIds.add(id); try { localStorage.setItem('v4f-unlocked', JSON.stringify([...unlockedIds])); } catch { /* sem storage */ } },
+};
+let continues = 0, secretFight = false;
+
 function buildCampaign() {
+  continues = 0; secretFight = false;
   // 4 rivais do elenco (a partir da posição do jogador), depois o capanga, o subchefe e o chefão
   const bosses = ['xablau', 'dias', 'mundim'].map((id) => roster.findIndex((f) => f.def.id === id)).filter((i) => i >= 0);
-  const pool = roster.map((_, i) => i).filter((i) => i !== playerIdx && !bosses.includes(i));
+  const pool = roster.map((_, i) => i).filter((i) => i !== playerIdx && !bosses.includes(i) && !roster[i].def.secret);
   const rivals = pool.map((_, k) => pool[(k + playerIdx) % pool.length]).slice(0, 4);
   campaign = [...rivals, ...bosses].map((idx) => (idx === playerIdx ? { idx, hue: 150 } : { idx, hue: 0 }));  // se você é um dos chefes, enfrenta o seu clone
   fightNo = 0;
@@ -94,19 +103,29 @@ function buildCampaign() {
 
 function startFight() {
   const opp = campaign[fightNo];
-  const level = DIFF_RAMP[['easy', 'normal', 'hard'].indexOf(difficulty)][Math.min(fightNo, 3)];
+  const level = secretFight ? 'hard' : DIFF_RAMP[['easy', 'normal', 'hard'].indexOf(difficulty)][Math.min(fightNo, 3)];
   const isLast = fightNo === campaign.length - 1;
   const owner = opp.hue ? roster[playerIdx] : roster[opp.idx]; // luta no cenário (e com a música) do oponente
   const stage = stageOf(owner);
-  match = new Match(roster[playerIdx], roster[opp.idx], stage, { cpu: level, hueP2: opp.hue, label: isLast ? 'LUTA FINAL' : `LUTA ${fightNo + 1}` }, {
+  match = new Match(roster[playerIdx], roster[opp.idx], stage, { cpu: level, hueP2: opp.hue, label: secretFight ? '53º ANDAR' : isLast ? 'LUTA FINAL' : `LUTA ${fightNo + 1}` }, {
     message: (t, f, k) => hud.message(t, f, k),
     end: (winner, perfect) => {
       setMode('result');
       const won = winner === 0;
       audio.sfx(won ? 'win' : 'lose'); audio.voice(won ? 'ann-you-win' : 'ann-you-lose', 'ann');
       screens.result(won, perfect, isLast, () => {
-        if (won) { fightNo++; if (fightNo >= campaign.length) { setMode('ending'); screens.ending(roster[playerIdx], goTitle); } else showVersus(); }
-        else showVersus();
+        if (!won) { continues++; showVersus(); return; }
+        fightNo++;
+        if (fightNo < campaign.length) { showVersus(); return; }
+        // zerou sem perder nenhuma luta: o elevador sobe mais um andar
+        const boss = roster.findIndex((f) => f.def.secret);
+        if (!secretFight && continues === 0 && boss >= 0 && boss !== playerIdx) {
+          secretFight = true; campaign.push({ idx: boss, hue: 0 });
+          audio.voice('ann-secret', 'ann'); showVersus(); return;
+        }
+        let note = '';
+        if (secretFight && secret.isLocked(roster[boss].def.id)) { secret.unlock(roster[boss].def.id); note = `${roster[boss].def.name} DESBLOQUEADO`; }
+        setMode('ending'); screens.ending(roster[playerIdx], goTitle, note);
       }, goTitle);
     },
   });
@@ -121,7 +140,7 @@ function showVersus() {
   const opp = campaign[fightNo];
   setMode('versus');
   audio.preload(`fighter-${(opp.hue ? roster[playerIdx] : roster[opp.idx]).def.id}`);
-  screens.versus(roster[playerIdx], roster[opp.idx], fightNo === campaign.length - 1 ? 'LUTA FINAL' : `LUTA ${fightNo + 1} DE ${campaign.length}`, opp.hue, scriptFor(roster[playerIdx].def.id, roster[opp.idx].def.id, !!opp.hue), startFight);
+  screens.versus(roster[playerIdx], roster[opp.idx], secretFight ? 'LUTA SECRETA · 53º ANDAR' : fightNo === campaign.length - 1 ? 'LUTA FINAL' : `LUTA ${fightNo + 1} DE ${campaign.length}`, opp.hue, scriptFor(roster[playerIdx].def.id, roster[opp.idx].def.id, !!opp.hue), startFight);
 }
 
 function goTitle() {
@@ -129,12 +148,12 @@ function goTitle() {
   setMode('title');
   if (audio.musicTime() < INTRO_END - 1) audio.seekMusic(INTRO_END); // título no trecho dos 19 s; se a música da intro já vinha tocando (voltou do menu), segue sem pular
   const menu = () => { setMode('difficulty'); screens.mainMenu(() => { online = false; showSelect(); }, () => { online = true; showSelect(); }, goTitle); };
-  screens.title(menu, roster.length);
+  screens.title(menu, ROSTER.length);
 }
 
 function showSelect() {
   setMode('select');
-  screens.select(roster, (i) => { playerIdx = i; if (online) openLobby(); else { buildCampaign(); showVersus(); } }, goTitle);
+  screens.select(roster, secret, (i) => { playerIdx = i; if (online) openLobby(); else { buildCampaign(); showVersus(); } }, goTitle);
 }
 
 // ---------- arena online
@@ -286,11 +305,12 @@ startLoop({
 
 // ---------- boot
 (async () => {
-  const total = ROSTER.length * 5 + 6; let done = 0;
+  const ids = [...ROSTER, ...SECRET];
+  const total = ids.length * 5 + 6; let done = 0;
   const tick = () => { done++; screens.loading(done, total); };
   screens.loading(0, total);
   await audio.loadTracks(); audio.preload('intro', 'select');
-  const fighters = await Promise.all(ROSTER.map((id) => loadFighter(id, tick)));
+  const fighters = await Promise.all(ids.map((id) => loadFighter(id, tick)));
   const names = [...new Set([DEFAULT_STAGE, 'intro', 'elevator', ...fighters.map((f) => f.def.stage ?? DEFAULT_STAGE)])];
   const loaded = await Promise.all(names.map((n) => loadStage(n, tick).catch(() => null)));
   loaded.forEach((st, i) => { if (st) stages.set(names[i], st); });
