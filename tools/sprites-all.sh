@@ -29,7 +29,14 @@ run dede    $M/dede.png --export 33:bolas.png \
   --white-drop 25,120,95,215 --white-drop 350,150,440,235 --white-drop 1730,125,1812,232 --white-drop 1758,258 \
   --white-drop 1181,176 --white-drop 1169,189 --white-drop 1654,209 --white-drop 1641,241 --white-drop 123,624 --white-drop 482,639   # frestas dentro do laço enrolado · entre as duas cordas · entre o punho e o cinto
 run dias    $M/dias.png
-run michael $M/michael.png
+# Michael: roupa e efeito são do MESMO vermelho, então a cor não separa os dois. Nas poses sem chama em volta do corpo (0 e 4
+# do golpe e a linha da vitória inteira) todo branco cercado de vermelho é roupa (cós, punho da luva, listra): --white-fx-keep.
+# Nas poses com aura/riscos/touro o branco entre as chamas sai, e o cós do calção fica por ponto. Escala: a cabeça pede 0,84 e a
+# altura 0,78 (o board novo é menos cabeçudo): 0,81.
+run michael $M/michael.png \
+  --extra $M/michael-golpelongo-vitoria.png --extra-scale 0.81 --white-fx 345-12:v0.6:s0.08 \
+  --white-fx-keep 0,150,215,560 --white-fx-keep 1015,150,1254,560 --white-fx-keep 0,640,1254,1100 \
+  --white-keep 758,418 --white-keep 623,888 --white-keep 871,894 --white-keep 94,412 --white-keep 1113,408 --white-keep 111,887 --white-keep 1129,896 --white-keep 683,1004
 run eneias  $M/thumb-eneias.png          # os nomes vieram trocados: thumb-eneias.png é o board
 run van     $M/van.png
 run landim  $M/landim.png --wide 6,2     # feixe + lente são uma pose só

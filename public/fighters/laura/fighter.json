@@ -160,7 +160,7 @@
    "startup": 5,
    "active": 3,
    "recovery": 7,
-   "damage": 7.2,
+   "damage": 7.3,
    "hitstun": 15,
    "blockstun": 10,
    "hitbox": {

@@ -27,6 +27,7 @@ LONG = {
  'santana': 'O braço mecânico se estica em três estágios e acerta de longe, de punho fechado.',
  'kevin': 'Saca o cassetete e estoca de longe. A ponta estoura em choque azul.',
  'dede': 'Gira o laço e estala as boleadeiras lá na frente. O golpe longo que chega mais longe.',
+ 'michael': 'Carrega a aura vermelha e solta um direto que vira um touro em investida.',
  'laura': 'Empurra o ar e um tubarão de água avança mordendo. O maior alcance entre os golpes longos.'}
 MAGIC_KIND = {'ball': 'bola de energia', 'slash': 'risco cortante', 'cloud': 'nuvem', 'coin': 'moeda giratória', 'heart': 'coração', 'wave': 'onda rasteira', 'bat': 'morcego'}
 SIDES = [(k, STORY['factions'][k][0], STORY['factions'][k][1]) for k in ('vilao', 'heroi', 'neutro')]

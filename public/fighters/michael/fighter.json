@@ -104,11 +104,16 @@
   },
   "win": {
    "frames": [
-    15,
-    0
+    40,
+    41,
+    42,
+    43,
+    44,
+    42
    ],
-   "fps": 2,
-   "loop": true
+   "fps": 5,
+   "loop": true,
+   "anchor": "center"
   }
  },
  "moves": {
@@ -128,7 +133,7 @@
    "startup": 3,
    "active": 3,
    "recovery": 6,
-   "damage": 6.0,
+   "damage": 5.7,
    "hitstun": 12,
    "blockstun": 8,
    "hitbox": {
@@ -156,7 +161,7 @@
    "startup": 6,
    "active": 3,
    "recovery": 9,
-   "damage": 9.6,
+   "damage": 9.0,
    "hitstun": 15,
    "blockstun": 10,
    "hitbox": {
@@ -184,7 +189,7 @@
    "startup": 10,
    "active": 4,
    "recovery": 16,
-   "damage": 16.8,
+   "damage": 15.8,
    "hitstun": 24,
    "blockstun": 14,
    "hitbox": {
@@ -195,6 +200,50 @@
    },
    "knockback": 12,
    "launch": -5,
+   "hitstop": 9
+  },
+  "long": {
+   "name": "INVESTIDA DO TOURO",
+   "phases": {
+    "startup": [
+     35,
+     36
+    ],
+    "active": [
+     37,
+     38
+    ],
+    "recovery": [
+     39
+    ]
+   },
+   "startup": 15,
+   "active": 8,
+   "recovery": 20,
+   "damage": 12.4,
+   "hitstun": 22,
+   "blockstun": 16,
+   "hitbox": {
+    "x": 55,
+    "y": -165,
+    "w": 88,
+    "h": 70
+   },
+   "hitboxes": [
+    {
+     "x": 55,
+     "y": -165,
+     "w": 88,
+     "h": 70
+    },
+    {
+     "x": 50,
+     "y": -225,
+     "w": 133,
+     "h": 175
+    }
+   ],
+   "knockback": 16,
    "hitstop": 9
   },
   "airPunch": {
@@ -213,7 +262,7 @@
    "startup": 4,
    "active": 8,
    "recovery": 4,
-   "damage": 7.2,
+   "damage": 6.8,
    "hitstun": 14,
    "blockstun": 10,
    "overhead": true,
@@ -243,7 +292,7 @@
    "startup": 5,
    "active": 10,
    "recovery": 4,
-   "damage": 10.8,
+   "damage": 10.2,
    "hitstun": 16,
    "blockstun": 12,
    "overhead": true,
@@ -273,7 +322,7 @@
    "startup": 7,
    "active": 8,
    "recovery": 6,
-   "damage": 14.4,
+   "damage": 13.6,
    "hitstun": 22,
    "blockstun": 14,
    "overhead": true,
@@ -305,7 +354,7 @@
    "startup": 4,
    "active": 3,
    "recovery": 7,
-   "damage": 4.8,
+   "damage": 4.5,
    "hitstun": 11,
    "blockstun": 8,
    "low": true,
@@ -335,7 +384,7 @@
    "startup": 6,
    "active": 6,
    "recovery": 12,
-   "damage": 8.4,
+   "damage": 7.9,
    "hitstun": 18,
    "blockstun": 12,
    "low": true,
@@ -366,7 +415,7 @@
    "startup": 8,
    "active": 4,
    "recovery": 14,
-   "damage": 12.0,
+   "damage": 11.3,
    "hitstun": 20,
    "blockstun": 14,
    "low": true,
