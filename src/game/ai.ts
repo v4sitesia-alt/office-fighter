@@ -160,7 +160,7 @@ export class Ai {
   private longReach() {
     const m = this.me.def.moves.long!;
     const far = Math.max(...(m.hitboxes ?? [m.hitbox]).map((b) => b.x + b.w));
-    return far * this.me.scale + 15;
+    return far * this.me.scale + (m.dash ?? 0) * m.startup + 15;      // golpe com avanço (direto, barrigada) alcança mais longe
   }
 
   private set(buttons: Button[], frames: number) {

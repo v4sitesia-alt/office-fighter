@@ -104,11 +104,17 @@
   },
   "win": {
    "frames": [
-    15,
-    0
+    40,
+    41,
+    42,
+    43,
+    42,
+    43,
+    44
    ],
-   "fps": 2,
-   "loop": true
+   "fps": 4,
+   "loopFrom": 2,
+   "anchor": "center"
   }
  },
  "moves": {
@@ -204,6 +210,51 @@
    },
    "knockback": 12,
    "launch": -5,
+   "hitstop": 9
+  },
+  "long": {
+   "name": "BARRIGADA DE CAIXA",
+   "phases": {
+    "startup": [
+     30,
+     31
+    ],
+    "active": [
+     32,
+     33
+    ],
+    "recovery": [
+     34
+    ]
+   },
+   "startup": 14,
+   "active": 8,
+   "recovery": 20,
+   "dash": 5,
+   "damage": 10.8,
+   "hitstun": 22,
+   "blockstun": 16,
+   "hitbox": {
+    "x": 30,
+    "y": -160,
+    "w": 105,
+    "h": 130
+   },
+   "hitboxes": [
+    {
+     "x": 30,
+     "y": -160,
+     "w": 105,
+     "h": 130
+    },
+    {
+     "x": 30,
+     "y": -160,
+     "w": 90,
+     "h": 130
+    }
+   ],
+   "knockback": 16,
    "hitstop": 9
   },
   "airPunch": {
@@ -441,36 +492,57 @@
   "super": {
    "phases": {
     "startup": [
-     30,
-     31
+     35
     ],
     "active": [
-     32,
-     33
+     36,
+     36,
+     37
     ],
     "recovery": [
-     34
+     38,
+     39
     ]
    },
    "startup": 10,
-   "active": 14,
-   "recovery": 18,
+   "active": 18,
+   "recovery": 22,
    "dash": 9,
    "damage": 25,
    "hitstun": 30,
    "blockstun": 18,
    "hitbox": {
-    "x": 20,
-    "y": -190,
+    "x": -20,
+    "y": -185,
     "w": 120,
-    "h": 190
+    "h": 185
    },
+   "hitboxes": [
+    {
+     "x": -20,
+     "y": -185,
+     "w": 115,
+     "h": 185
+    },
+    {
+     "x": -20,
+     "y": -185,
+     "w": 115,
+     "h": 185
+    },
+    {
+     "x": -115,
+     "y": -235,
+     "w": 220,
+     "h": 235
+    }
+   ],
    "knockback": 20,
    "knockdown": true,
    "launch": -10,
    "meterCost": 100,
    "hitstop": 12,
-   "name": "BARRIGADA DE CAIXA"
+   "name": "JUROS COMPOSTOS"
   }
  }
 }

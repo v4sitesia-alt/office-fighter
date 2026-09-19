@@ -133,7 +133,7 @@
    "startup": 3,
    "active": 3,
    "recovery": 6,
-   "damage": 5.7,
+   "damage": 6.0,
    "hitstun": 12,
    "blockstun": 8,
    "hitbox": {
@@ -161,7 +161,7 @@
    "startup": 6,
    "active": 3,
    "recovery": 9,
-   "damage": 9.0,
+   "damage": 9.6,
    "hitstun": 15,
    "blockstun": 10,
    "hitbox": {
@@ -189,7 +189,7 @@
    "startup": 10,
    "active": 4,
    "recovery": 16,
-   "damage": 15.8,
+   "damage": 16.8,
    "hitstun": 24,
    "blockstun": 14,
    "hitbox": {
@@ -203,44 +203,45 @@
    "hitstop": 9
   },
   "long": {
-   "name": "INVESTIDA DO TOURO",
+   "name": "DIRETO FINAL",
    "phases": {
     "startup": [
-     35,
-     36
+     30
     ],
     "active": [
-     37,
-     38
+     31,
+     32
     ],
     "recovery": [
-     39
+     33,
+     34
     ]
    },
    "startup": 15,
    "active": 8,
-   "recovery": 20,
-   "damage": 12.4,
+   "recovery": 22,
+   "dash": 4,
+   "damage": 13.2,
    "hitstun": 22,
    "blockstun": 16,
    "hitbox": {
-    "x": 55,
-    "y": -165,
-    "w": 88,
-    "h": 70
+    "x": 45,
+    "y": -170,
+    "w": 90,
+    "h": 60
    },
    "hitboxes": [
     {
-     "x": 55,
-     "y": -165,
-     "w": 88,
-     "h": 70
+     "x": 45,
+     "y": -170,
+     "w": 90,
+     "h": 60
     },
     {
-     "x": 50,
-     "y": -225,
-     "w": 133,
-     "h": 175
+     "x": 45,
+     "y": -175,
+     "w": 80,
+     "h": 65
     }
    ],
    "knockback": 16,
@@ -262,7 +263,7 @@
    "startup": 4,
    "active": 8,
    "recovery": 4,
-   "damage": 6.8,
+   "damage": 7.2,
    "hitstun": 14,
    "blockstun": 10,
    "overhead": true,
@@ -292,7 +293,7 @@
    "startup": 5,
    "active": 10,
    "recovery": 4,
-   "damage": 10.2,
+   "damage": 10.8,
    "hitstun": 16,
    "blockstun": 12,
    "overhead": true,
@@ -322,7 +323,7 @@
    "startup": 7,
    "active": 8,
    "recovery": 6,
-   "damage": 13.6,
+   "damage": 14.4,
    "hitstun": 22,
    "blockstun": 14,
    "overhead": true,
@@ -354,7 +355,7 @@
    "startup": 4,
    "active": 3,
    "recovery": 7,
-   "damage": 4.5,
+   "damage": 4.8,
    "hitstun": 11,
    "blockstun": 8,
    "low": true,
@@ -384,7 +385,7 @@
    "startup": 6,
    "active": 6,
    "recovery": 12,
-   "damage": 7.9,
+   "damage": 8.4,
    "hitstun": 18,
    "blockstun": 12,
    "low": true,
@@ -415,7 +416,7 @@
    "startup": 8,
    "active": 4,
    "recovery": 14,
-   "damage": 11.3,
+   "damage": 12.0,
    "hitstun": 20,
    "blockstun": 14,
    "low": true,
@@ -476,36 +477,50 @@
   "super": {
    "phases": {
     "startup": [
-     30
+     35,
+     36
     ],
     "active": [
-     31,
-     32,
-     33
+     37,
+     38
     ],
     "recovery": [
-     34
+     39
     ]
    },
-   "startup": 10,
+   "startup": 12,
    "active": 14,
-   "recovery": 18,
+   "recovery": 20,
    "dash": 8,
    "damage": 27,
    "hitstun": 30,
    "blockstun": 18,
    "hitbox": {
     "x": 20,
-    "y": -190,
-    "w": 120,
-    "h": 190
+    "y": -225,
+    "w": 163,
+    "h": 225
    },
+   "hitboxes": [
+    {
+     "x": 20,
+     "y": -190,
+     "w": 125,
+     "h": 190
+    },
+    {
+     "x": 20,
+     "y": -225,
+     "w": 163,
+     "h": 225
+    }
+   ],
    "knockback": 20,
    "knockdown": true,
    "launch": -10,
    "meterCost": 100,
    "hitstop": 12,
-   "name": "DIRETO FINAL"
+   "name": "INVESTIDA DO TOURO"
   }
  }
 }

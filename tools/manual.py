@@ -11,8 +11,8 @@ SUPER = {
  'kevin': 'Saca a pistola e dispara três tiros rápidos em sequência, de qualquer distância.',
  'laura': 'Arranca, agarra, levanta e arremessa. Ignora a defesa: só escapa quem estiver no ar.',
  'dede': 'Gira as boleadeiras e arremessa. Projétil largo que derruba.',
- 'dias': 'Barrigada em corrida que atravessa meia tela e lança o adversário longe.',
- 'michael': 'Direto em avanço que termina em gancho. O super mais rápido de sair.',
+ 'dias': 'Vira uma bola, rola por cima do adversário e estoura numa chuva de notas e moedas.',
+ 'michael': 'Carrega a aura vermelha e avança com um direto que vira um touro em investida.',
  'eneias': 'Corre, mergulha de barriga e explode no chão. O maior dano bruto do jogo.',
  'van': 'Aponta a bebê e solta a nuvem tóxica. Área grande à frente, derruba.',
  'landim': 'Feixe da câmera que dispara a lente como projétil.',
@@ -26,8 +26,9 @@ LONG = {
  'edgard': 'Junta as mãos e solta uma revoada de morcegos à frente. Demora pra sair, mas alcança o dobro do golpe forte.',
  'santana': 'O braço mecânico se estica em três estágios e acerta de longe, de punho fechado.',
  'kevin': 'Saca o cassetete e estoca de longe. A ponta estoura em choque azul.',
+ 'dias': 'A velha barrigada em corrida: entra de longe e empurra.',
  'dede': 'Gira o laço e estala as boleadeiras lá na frente. O golpe longo que chega mais longe.',
- 'michael': 'Carrega a aura vermelha e solta um direto que vira um touro em investida.',
+ 'michael': 'Direto em avanço que termina em gancho: entra de longe e empurra.',
  'laura': 'Empurra o ar e um tubarão de água avança mordendo. O maior alcance entre os golpes longos.'}
 MAGIC_KIND = {'ball': 'bola de energia', 'slash': 'risco cortante', 'cloud': 'nuvem', 'coin': 'moeda giratória', 'heart': 'coração', 'wave': 'onda rasteira', 'bat': 'morcego'}
 SIDES = [(k, STORY['factions'][k][0], STORY['factions'][k][1]) for k in ('vilao', 'heroi', 'neutro')]

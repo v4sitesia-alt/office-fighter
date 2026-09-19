@@ -28,7 +28,11 @@ run dede    $M/dede.png --export 33:bolas.png \
   --extra $M/leo-golpelongo-vitoria.png --extra-scale 0.70 --white-fx 29-50:v0.74 \
   --white-drop 25,120,95,215 --white-drop 350,150,440,235 --white-drop 1730,125,1812,232 --white-drop 1758,258 \
   --white-drop 1181,176 --white-drop 1169,189 --white-drop 1654,209 --white-drop 1641,241 --white-drop 123,624 --white-drop 482,639   # frestas dentro do laço enrolado · entre as duas cordas · entre o punho e o cinto
-run dias    $M/dias.png
+# Dias: short, meia e punho são BRANCOS de verdade, então a regra se inverte: todo branco preso fica (--white-keep no board inteiro)
+# e só saem, por ponto, os dois vãos debaixo do redemoinho da bola.
+run dias    $M/dias.png \
+  --extra $M/dias-golpelongo-vitoria.png --extra-scale 0.68 --white-fx 95-135:v0.6:s0.08 --white-fx 45-70:v0.85:s0.08 \
+  --white-keep 0,0,1448,1086 --white-drop 337,434 --white-drop 348,452
 # Michael: roupa e efeito são do MESMO vermelho, então a cor não separa os dois. Nas poses sem chama em volta do corpo (0 e 4
 # do golpe e a linha da vitória inteira) todo branco cercado de vermelho é roupa (cós, punho da luva, listra): --white-fx-keep.
 # Nas poses com aura/riscos/touro o branco entre as chamas sai, e o cós do calção fica por ponto. Escala: a cabeça pede 0,84 e a

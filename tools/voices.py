@@ -184,7 +184,7 @@ def main():
     #   <id>-taunt / <id>-win       provocação no FIGHT! / risada ao vencer o round
     #   <id>-down-N                 sorteado toda vez que o lutador DERRUBA o adversário (Mundim provoca ou ri, Dener ri)
     #   sfx-<nome>                  troca o efeito sintetizado (hit, hitBig, jump, land, knockdown)
-    SONS = {'barrigada.wav': ['dias-special'], 'dede-especial.mp3': ['dede-special'], 'landim-especial.wav': ['landim-special'],
+    SONS = {'barrigada.wav': ['dias-special', 'dias-long'], 'dede-especial.mp3': ['dede-special'], 'landim-especial.wav': ['landim-special'],
             'mundin-especial.wav': ['mundim-special'], 'xablau-especial.wav': ['xablau-special'],
             'edgard-magia-leve.wav': ['edgard-magic'], 'magia-leve-dias.mp3': ['dias-magic'], 'xablau-magia-leve.wav': ['xablau-magic'],
             'eneias-especial.wav': ['eneias-special'], 'michael-especial.wav': ['michael-special'], 'van-especial.wav': ['van-special'],
