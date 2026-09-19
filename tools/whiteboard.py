@@ -100,19 +100,21 @@ def hsv(rgb):
 
 
 def parse_hue(txt):
-    """'250-335' ou '31-48:v0.72' (brilho mínimo: separa o dourado do efeito da roupa marrom de mesmo matiz)."""
+    """'250-335', '31-48:v0.72' (brilho mínimo: separa o dourado do efeito da roupa marrom de mesmo matiz) ou
+    '318-354:v0.7:s0.1' (saturação mínima menor: o rosa bem claro da borda do efeito também conta como efeito)."""
     rng, *opt = txt.split(':'); a, b = (float(t) for t in rng.split('-'))
-    return (a, b, float(opt[0][1:])) if opt else (a, b)
+    o = {t[0]: float(t[1:]) for t in opt}
+    return (a, b, o.get('v', 0.25), o.get('s', 0.25))
 
 
 def fx_mask(rgb, ranges):
     """Pixels na cor do efeito (matiz dentro das faixas, com alguma saturação e brilho)."""
     if not ranges: return np.zeros(rgb.shape[:2], bool)
     h, s, v = hsv(rgb); m = np.zeros(h.shape, bool)
-    for a, b, *vmin in ranges:
+    for a, b, *o in ranges:
         hue = ((h >= a) & (h <= b)) if a <= b else ((h >= a) | (h <= b))
-        m |= hue & (v >= (vmin[0] if vmin else 0.25))
-    return m & (s >= 0.25)
+        m |= hue & (v >= (o[0] if o else 0.25)) & (s >= (o[1] if len(o) > 1 else 0.25))
+    return m
 
 
 def parse_geom(txt):

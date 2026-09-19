@@ -212,7 +212,11 @@ def extract(arr, cols, rows, wides, alpha_t, grow_n, split_touching=True, fxm=No
         mq[(ys + y0) // Q, (xs + x0) // Q] = fid(cell) + 1
         c['frame'] = fid(cell)
     main_ids = set(id(c) for c in mains.values())
-    for c in comps:
+    def stamp(c):   # peça já atribuída passa a atrair as menores (a faísca fica com a garrafa dela, não com a pose de cima)
+        bx0, by0, bx1, by1 = c['box']; ys, xs = np.nonzero(lab[by0:by1, bx0:bx1] == c['id'])
+        free = mq[(ys + by0) // Q, (xs + bx0) // Q] == 0
+        mq[((ys + by0) // Q)[free], ((xs + bx0) // Q)[free]] = c['frame'] + 1
+    for c in sorted(comps, key=lambda c: -c['area']):
         if id(c) in main_ids: continue
         x0, y0, x1, y1 = c['box']; home = fid(c['cell']); best = None
         if c['area'] >= 500:   # objeto grande solto (garrafa, projétil): fica com a pose da própria célula se ela estiver por perto
@@ -220,7 +224,7 @@ def extract(arr, cols, rows, wides, alpha_t, grow_n, split_touching=True, fxm=No
             if len(qx):
                 px, py = qx * Q + Q / 2, qy * Q + Q / 2
                 dh = np.hypot(np.maximum(0, np.maximum(x0 - px, px - x1)), np.maximum(0, np.maximum(y0 - py, py - y1))).min()
-                if dh <= 0.6 * min(cw, ch): c['frame'] = home; continue
+                if dh <= 0.6 * min(cw, ch): c['frame'] = home; stamp(c); continue
         for R in (16, 32, 64, 128, 220):
             qy0, qy1, qx0, qx1 = max(0, (y0 - R) // Q), (y1 + R) // Q + 1, max(0, (x0 - R) // Q), (x1 + R) // Q + 1
             win = mq[qy0:qy1, qx0:qx1]; qy, qx = np.nonzero(win)
@@ -233,6 +237,7 @@ def extract(arr, cols, rows, wides, alpha_t, grow_n, split_touching=True, fxm=No
             near = [i for i, dd in cand.items() if dd <= dmin + 6]
             best = home + 1 if home + 1 in near else min(near, key=lambda i: cand[i]); break
         c['frame'] = (best - 1) if best else home
+        if c['area'] >= 500: stamp(c)
 
     # ---------- 4. mapa de dono por pixel + bordas semitransparentes
     lut = np.zeros(next_id + 1, np.int16)

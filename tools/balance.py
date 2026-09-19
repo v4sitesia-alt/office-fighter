@@ -65,7 +65,7 @@ ALCANCE = {
  'dias': {'heavy': (25, -230, 100, 190)},
  'crm': {'punch': (45, -112, 70, 70), 'kick': (35, -120, 75, 110), 'heavy': (45, -104, 78, 96), 'lowKick': (30, -90, 85, 80)},
  'leo': {'kick': (40, -145, 100, 95), 'heavy': (30, -165, 85, 110)},
- 'mundim': {'heavy': (40, -215, 125, 150)},
+ 'mundim': {'heavy': (36, -192, 118, 134)},      # unidades do board novo (2026-09-19), escala 1,10
 }
 # Golpe longo (frente + forte): é um cutucão de longe, tira menos que o forte.
 LONGO = {'edgard': 10, 'santana': 11, 'kevin': 11, 'laura': 9, 'dede': 10}

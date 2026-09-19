@@ -46,7 +46,16 @@ run leo     $M/leo.png --white-erase 358,598,540,688 --white-erase 343,598,358,6
 python3 tools/pieces.py $M/extensao-raio-leo.png public/fighters/leo --scale 0.55 --fx-hue 0-62 --fx-hue 340-360 \
   --wall 595,440,600 --wall 649,450,575 --wall 1131,450,575 --keep 300,484,600,532 --keep 645,496,1135,525 \
   --piece raio-inicio.png:257,436,412,561:fadeL=8:fadeR=12 --piece raio-meio.png:650,448,1131,573:tile --piece raio-fim.png:1165,376,1430,645
-run mundim  $M/mundim.png --alpha 130 --grow 40 --export 33:garrafas.png   # board com brilho suave ligando as poses
+# Mundim: board novo (2026-09-19) com FUNDO BRANCO. O rosa do efeito tem o matiz da gravata: brilho mínimo (v0.7) separa os dois,
+# e a saturação baixa (s0.08) faz o rosa bem claro da borda contar como efeito. Branco dentro do efeito só é brilho no disco de
+# magia e na aura (linhas 3 e 4); nos rastros de chute e nas garrafas (y >= 830) é vão entre os riscos. O resto são vãos entre
+# braço e corpo conferidos no zoom. Os rótulos brancos das garrafas ficam.
+run mundim  $M/mundim.png --export 33:garrafas.png --white-fx 318-354:v0.7:s0.08 \
+  --white-drop 950,445,1015,500 --white-drop 765,481 --white-fx-drop 0,830,1122,1402 \
+  --white-drop 906,929 --white-drop 930,946 --white-drop 969,945 --white-drop 1050,902 --white-drop 1063,887 \
+  --white-drop 300,99 --white-drop 502,100 --white-drop 708,100 --white-drop 958,103 --white-drop 116,388 --white-drop 549,723 \
+  --white-drop 751,834 --white-drop 96,1080 --white-drop 452,1226 --white-drop 769,1056 --white-drop 1049,1070 --white-drop 1081,1064 \
+  --white-drop 992,1070 --white-drop 554,950
 # Juiz (robô das bandeiras): 4 linhas x 5 poses, fundo branco. Os vãos entre o braço levantado e o corpo são fundo.
 python3 tools/sprites.py $M/juiz-sprite.png public/referee --cols 5 --rows 4 ${D:+--debug $D/juiz.png} \
   --white-drop 933,393 --white-drop 1198,393 --white-drop 1001,665 --white-drop 649,935 --white-drop 744,934 --white-drop 1200,937 --white-drop 1275,938 --white-drop 1269,671 --white-drop 1274,664
