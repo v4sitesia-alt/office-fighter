@@ -75,17 +75,18 @@ export class Screens {
     this.onConfirm = onStart;
   }
 
-  mainMenu(onArcade: () => void, onOnline: () => void, onBack: () => void) {
+  mainMenu(onArcade: () => void, onOnline: () => void, onRanking: () => void, onBack: () => void) {
     this.set('menu', `
       <div class="center">
         <div class="title-sm">MODO DE JOGO</div>
         <div class="menu">
           <div class="item" data-item><b>ARCADE</b><i>campanha contra a CPU</i></div>
           <div class="item" data-item><b>ARENA ONLINE</b><i>jogue contra outra pessoa · campeonato · assista às lutas</i></div>
+          <div class="item" data-item><b>RANKING</b><i>maiores pontuações do arcade · melhores da arena</i></div>
         </div>
         <div class="pix tiny">W S ESCOLHER · G / ENTER CONFIRMAR · V VOLTAR</div>
       </div>`);
-    this.onConfirm = (i) => (i === 0 ? onArcade() : onOnline());
+    this.onConfirm = (i) => [onArcade, onOnline, onRanking][i]();
     this.onBack = onBack;
   }
 
@@ -109,7 +110,7 @@ export class Screens {
     const img = (f: FighterAssets) => (f.portrait ? `<img src="${f.portrait.src}" alt="">` : '');
     const locked = (f: FighterAssets) => !!f.def.secret && secret.isLocked(f.def.id);
     const slots = roster.map((f, i) => locked(f)
-      ? `<div class="sf2-slot secret hidden" style="--c:${f.def.colors.primary}">${img(f)}<b>?</b></div>`
+      ? (f.secretPortrait ? `<div class="sf2-slot secret hidden art" style="--c:${f.def.colors.primary}"><img src="${f.secretPortrait.src}" alt=""></div>` : `<div class="sf2-slot secret hidden" style="--c:${f.def.colors.primary}">${img(f)}<b>?</b></div>`)
       : `<div class="sf2-slot${f.def.secret ? ' secret' : ''}" data-item data-i="${i}" style="--c:${f.def.colors.primary}">${img(f)}<span>${f.def.name}</span></div>`).join('')
       + Array.from({ length: Math.max(0, 15 - roster.length) }, () => '<div class="sf2-slot locked">?</div>').join('');
     this.set('select', `
@@ -223,6 +224,28 @@ export class Screens {
         <div class="pix tiny">G / ENTER PARA VOLTAR</div>
       </div>`);
     this.onConfirm = onDone;
+  }
+
+  /** Ranking: arcade (pontos) e arena online (vitórias). */
+  ranking(arcade: { name: string; fighter: string; score: number }[], arena: { name: string; wins: number; losses: number; points: number }[], mine: number, onBack: () => void) {
+    const row = (pos: number, name: string, val: string, hot = false) => `<div class="rk-row${hot ? ' hot' : ''}"><b>${pos}º</b><span>${name.replace(/[<>&]/g, '')}</span><i>${val}</i></div>`;
+    this.set('rank', `<div class="rk">
+      <div class="title-sm">RANKING</div>
+      <div class="rk-cols">
+        <div><h4>ARCADE · PONTOS</h4>${arcade.map((r, i) => row(i + 1, `${r.name} · ${r.fighter.toUpperCase()}`, String(r.score).padStart(6, '0'), r.score === mine)).join('') || '<div class="pix tiny">NINGUÉM PONTUOU AINDA. JOGUE O ARCADE.</div>'}</div>
+        <div><h4>ARENA ONLINE</h4>${arena.map((r, i) => row(i + 1, r.name, `${r.points} PTS · ${r.wins}V ${r.losses}D`)).join('') || '<div class="pix tiny">SEM LUTAS ONLINE AINDA.</div>'}</div>
+      </div>
+      <div class="pix tiny">G / ENTER OU V PRA VOLTAR</div></div>`);
+    this.onConfirm = onBack; this.onBack = onBack;
+  }
+
+  /** Pede um apelido (3 a 14 letras) pra gravar a pontuação. */
+  askName(title: string, onOk: (name: string) => void) {
+    this.set('lobby', `<div class="center"><div class="title-sm">${title}</div><div class="pix small">DIGITE SEU NOME PRO RANKING</div><input class="lb-input" maxlength="14" placeholder="SEU NOME" autofocus><div class="lb-btn" data-ok>GRAVAR</div></div>`);
+    const inp = this.root.querySelector<HTMLInputElement>('.lb-input')!;
+    const ok = () => { const v = inp.value.trim().toUpperCase(); if (v) onOk(v); };
+    inp.addEventListener('keydown', (e) => { e.stopPropagation(); if (e.key === 'Enter') ok(); }); inp.addEventListener('keyup', (e) => e.stopPropagation());
+    this.root.querySelector<HTMLElement>('[data-ok]')!.onclick = ok; setTimeout(() => inp.focus(), 50);
   }
 
   /** Menu da luta online: o jogo não para (o outro lado continua), só dá pra voltar ou sair. */

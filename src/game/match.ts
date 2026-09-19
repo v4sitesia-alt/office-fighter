@@ -22,6 +22,7 @@ export interface MatchOptions {
   seed?: number;
   label?: string;           // "LUTA 1", "FINAL"...
   roundsToWin?: number;     // melhor de 3 = 2
+  baseScore?: number;       // arcade: pontos acumulados das lutas anteriores (P1)
 }
 
 export interface MatchEvents {
@@ -49,6 +50,11 @@ export class Match {
   slowmo = 0;         // >0: roda 1 passo a cada N
   private slowAcc = 0;
   private endSent = false;
+  private koLanded = true;
+  private prevLife: [number, number] = [100, 100];
+  score: [number, number] = [0, 0];
+  /** Bônus do fim do round (o HUD mostra a contagem). */
+  tally: { who: 0 | 1; items: [string, number][]; total: number } | null = null;
   private roundsToWin: number;
 
   constructor(public a: FighterAssets, public b: FighterAssets, public stage: StageAssets, public opts: MatchOptions, private ev: MatchEvents) {
@@ -56,6 +62,7 @@ export class Match {
     if (opts.hueP2) this.fighters[1].hue = opts.hueP2;
     if (opts.cpu) this.ai = new Ai(this.fighters[1], this.fighters[0], opts.cpu, opts.seed);
     this.roundsToWin = opts.roundsToWin ?? 2;
+    this.score[0] = opts.baseScore ?? 0;
   }
 
   get midX() { return (this.fighters[0].x + this.fighters[1].x) / 2; }
@@ -70,6 +77,7 @@ export class Match {
     });
     this.projectiles = []; this.zones = [];
     this.timer = ROUND_SECONDS * 60;
+    this.prevLife = [100, 100]; this.tally = null; this.koLanded = true;
     this.phase = 'intro'; this.phaseFrame = 0; this.slowmo = 0; this.hitstop = 0; this.roundWinner = -1;
   }
 
@@ -82,7 +90,7 @@ export class Match {
 
     if (this.phase === 'intro') {
       if (this.phaseFrame === 1) { this.ev.message(`ROUND ${this.round}`, 70, 'big'); audio.voice(`ann-round-${Math.min(3, this.round)}`, 'ann'); }
-      if (this.phaseFrame === 75) { this.ev.message('FIGHT!', 45, 'big'); audio.voice('ann-fight', 'ann'); }
+      if (this.phaseFrame === 75) { this.ev.message('FIGHT!', 45, 'big'); audio.voice('ann-fight', 'ann'); this.fighters.forEach((f) => audio.voiceRandom(`${f.def.id}-laugh`, f.voiceChannel)); }
       if (this.phaseFrame >= 100) { this.phase = 'fight'; this.phaseFrame = 0; }
       this.idleUpdate();
       return;
@@ -112,12 +120,12 @@ export class Match {
       }
       this.fx.update();
 
+      this.fighters.forEach((f, i) => { const d = this.prevLife[i] - f.life; if (d > 0) this.score[1 - i] += Math.round(d * 10); this.prevLife[i] = f.life; });   // 10 pontos por ponto de dano
       const dead = this.fighters.findIndex((f) => f.life <= 0);
       if (dead >= 0) {
         this.roundWinner = dead === 0 ? 1 : 0;
-        this.phase = 'ko'; this.phaseFrame = 0; this.slowmo = 3;
-        this.ev.message('K.O.', 110, 'big');
-        audio.sfx('ko'); audio.voice('ann-ko', 'ann');
+        this.phase = 'ko'; this.phaseFrame = 0; this.slowmo = 4; this.koLanded = false;   // último golpe em câmera lenta
+        const ko = this.fighters[dead]; audio.voice(ko.def.gender === 'f' ? 'ko-oh-f' : 'ko-oh-m', ko.voiceChannel);   // o grito é de quem caiu
       } else if (this.timer <= 0) {
         this.roundWinner = p1.life === p2.life ? -1 : p1.life > p2.life ? 0 : 1;
         this.phase = 'ko'; this.phaseFrame = 0;
@@ -136,7 +144,11 @@ export class Match {
       this.zones.forEach((z) => z.update());
       this.zones = this.zones.filter((z) => !z.dead);
       this.fx.update();
-      if (this.phaseFrame > 30) this.slowmo = 0;
+      const loser = this.roundWinner >= 0 ? this.fighters[1 - (this.roundWinner as 0 | 1)] : null;
+      if (!this.koLanded && (!loser || !loser.knockdownAir || this.phaseFrame > 90)) {   // bateu no chão: volta a velocidade normal
+        this.koLanded = true; this.slowmo = 0; this.phaseFrame = Math.min(this.phaseFrame, 20);
+        this.ev.message('K.O.', 100, 'big'); audio.sfx('ko'); audio.voice('ann-ko', 'ann'); this.fx.shake = 14; this.fx.shakeMag = 8;
+      }
       if (this.phaseFrame > 70) {
         this.phase = 'over'; this.phaseFrame = 0;
         if (this.roundWinner >= 0) {
@@ -144,6 +156,11 @@ export class Match {
           const w = this.fighters[rw];
           if (w.state !== 'ko') w.setState('win');
           this.wins[rw]++;
+          const items: [string, number][] = [['VITÓRIA', 1000], ['VIDA', Math.round(w.life) * 30], ['TEMPO', this.training ? 0 : this.seconds * 50]];
+          if (w.life >= 100) items.push(['PERFECT', 5000]);
+          const total = items.reduce((s, [, v]) => s + v, 0);
+          this.score[rw] += total; this.tally = { who: rw, items, total };
+          audio.voiceRandom(`${w.def.id}-laugh`, w.voiceChannel);
         } else {
           this.wins[0]++; this.wins[1]++; // empate: os dois levam o round
         }

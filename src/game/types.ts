@@ -94,7 +94,7 @@ export type MoveName =
   | 'lowPunch' | 'lowKick' | 'lowHeavy';
 
 export interface FighterDef {
-  id: string; name: string; role: string; tagline?: string; bio?: string; side?: 'heroi' | 'neutro' | 'vilao'; secret?: boolean;
+  id: string; name: string; role: string; tagline?: string; bio?: string; side?: 'heroi' | 'neutro' | 'vilao'; secret?: boolean; gender?: 'f' | 'm';
   meterRegen?: number;          // barra de especial que se recarrega sozinha (por frame)
   colors: { primary: string; secondary: string };
   origin?: { region: string; city: string; lon: number; lat: number; label?: 'left' | 'right' | 'above' | 'below' };
@@ -113,6 +113,7 @@ export interface FighterAssets {
   frames: FramesFile;
   sheet: HTMLImageElement;
   fx: Record<string, HTMLImageElement>;   // sprites de projétil por arquivo
+  secretPortrait?: HTMLImageElement;      // thumb do slot enquanto o lutador está travado
   portrait?: HTMLImageElement;
 }
 

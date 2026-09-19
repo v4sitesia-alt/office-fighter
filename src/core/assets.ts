@@ -30,7 +30,8 @@ export async function loadFighter(id: string, onProgress?: () => void): Promise<
   const fx: Record<string, HTMLImageElement> = {};
   await Promise.all([...fxFiles].map((f) => loadImage(dir + f).then((img) => { fx[f] = img; }).catch(() => undefined))); tick();
   const portrait = await loadImage(dir + 'portrait.png').catch(() => undefined); tick();
-  return { def, frames, sheet, fx, portrait };
+  const secretPortrait = def.secret ? await loadImage(dir + 'secret.png').catch(() => undefined) : undefined;
+  return { def, frames, sheet, fx, portrait, secretPortrait };
 }
 
 export interface StageAssets { name: string; img: HTMLImageElement }

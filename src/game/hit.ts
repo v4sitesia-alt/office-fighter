@@ -49,7 +49,11 @@ export function resolveHits(fighters: [Fighter, Fighter], projectiles: Projectil
         atk.meter = Math.min(100, atk.meter + (m.meterGain ?? m.damage) * (blocked ? 0.7 : 1.5));
         if (!blocked) { atk.comboHits++; def.lastHitBy = atk.moveName; }
         fx.hit(px, py, blocked ? '#9ec5ff' : atk.def.colors.primary, !blocked && m.damage >= 12);
-        audio.sfx(blocked ? 'block' : m.damage >= 12 ? 'hitBig' : 'hit');
+        audio.sfx(blocked ? 'block' : m.damage >= 11 ? 'hitBig' : m.damage > 6 ? 'hitMed' : 'hit');   // soco fraco · chute médio · golpe forte
+        if (!blocked) {
+          fx.blood(px, py, atk.facing, m.damage >= 11 ? 16 : m.damage > 6 ? 9 : 5);
+          if (!audio.channelBusy(atk.voiceChannel) && Math.random() < 0.5) audio.voiceRandom(`${atk.def.id}-laugh`, atk.voiceChannel);
+        }
       });
       hitstop = Math.max(hitstop, blocked ? 3 : (m.hitstop ?? 5));
     }
@@ -65,6 +69,7 @@ export function resolveHits(fighters: [Fighter, Fighter], projectiles: Projectil
       pending.push(() => {
         def.takeHit(p.move, owner, blocked, owner.x, true);
         fx.hit(p.x + p.vx * 2, p.y, blocked ? '#9ec5ff' : owner.def.colors.primary, !blocked);
+        if (!blocked) fx.blood(p.x, p.y, Math.sign(p.vx), 10);
         audio.sfx(blocked ? 'block' : 'hitBig');
       });
       hitstop = Math.max(hitstop, blocked ? 4 : (p.move.hitstop ?? 8));
@@ -84,6 +89,7 @@ export function resolveHits(fighters: [Fighter, Fighter], projectiles: Projectil
       pending.push(() => {
         def.takeHit({ damage: h.damage, hitstun: z.def.hitstun, blockstun: z.def.blockstun, knockback: z.def.knockback, knockdown: h.knockdown, launch: h.launch }, owner, blocked, z.x - owner.facing, true);
         fx.hit(def.x, hurt.y + hurt.h * 0.45, blocked ? '#9ec5ff' : owner.def.colors.primary, !blocked);
+        if (!blocked) fx.blood(def.x, hurt.y + hurt.h * 0.45, owner.facing, 12);
         audio.sfx(blocked ? 'block' : 'hitBig');
       });
       hitstop = Math.max(hitstop, blocked ? 4 : (z.def.hitstop ?? 8));

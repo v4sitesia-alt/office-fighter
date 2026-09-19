@@ -326,7 +326,7 @@ export class Fighter {
     }
     // som do golpe: especial/super tocam o áudio enviado pro lutador; o resto só o whoosh
     if (name === 'special' && audio.hasVoice(`${this.def.id}-magic`)) audio.voice(`${this.def.id}-magic`, this.voiceChannel);   // magia leve tem som próprio quando existe
-    else if (name === 'super' || name === 'special') audio.voice(`${this.def.id}-special`, this.voiceChannel);
+    else if (name === 'super' || name === 'special') { if (audio.hasVoice(`${this.def.id}-special`)) audio.voice(`${this.def.id}-special`, this.voiceChannel); else audio.voiceRandom(`${this.def.id}-laugh`, this.voiceChannel); }
     else { audio.sfx('swing'); this.meter = Math.min(100, this.meter + 3); } // golpe no vazio já enche um pouco
     return true;
   }

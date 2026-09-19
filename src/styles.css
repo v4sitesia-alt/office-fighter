@@ -357,3 +357,18 @@ html, body { overscroll-behavior: none; touch-action: manipulation; -webkit-touc
 @keyframes flashOut { from { opacity: .85; } to { opacity: 0; } }
 .sf2 { grid-template-columns: 200px 1fr 200px; } .sf2-portrait { width: 196px; height: 186px; } .sf2-stats { width: 190px; } .sf2-name { font-size: 34px; }
 .sf2-map { width: 190px; height: 166px; } .sf2-grid { grid-template-columns: repeat(5, 94px); } .sf2-slot { width: 94px; height: 94px; } .sf2-slot span { font-size: 7px; }
+
+/* ---------- pontos no HUD, contagem do round, ranking */
+.name-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; } .p2 .name-row { flex-direction: row-reverse; } .name-row .name { margin: 0; }
+.score { font-size: 10px; color: #fff; text-shadow: 2px 2px 0 #000; letter-spacing: 1px; }
+.hud-tally { position: absolute; top: 120px; width: 300px; display: none; font-size: 11px; color: #fff; text-shadow: 2px 2px 0 #000; }
+.hud-tally.show { display: block; } .hud-tally.l { left: 40px; } .hud-tally.r { right: 40px; }
+.hud-tally div { display: flex; justify-content: space-between; padding: 5px 8px; background: rgba(4,6,20,.7); margin-bottom: 3px; opacity: 0; animation: tallyIn .25s ease-out forwards; }
+.hud-tally b { color: var(--yellow); font-weight: normal; } .hud-tally .tot { background: var(--yellow); color: #222; text-shadow: none; } .hud-tally .tot b { color: #222; }
+@keyframes tallyIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; } }
+.screens.rank { background: rgba(6,8,26,.9); }
+.rk { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 22px 40px; }
+.rk-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; width: 100%; flex: 1; } .rk-cols h4 { margin: 0 0 8px; font-size: 10px; color: var(--yellow); letter-spacing: 2px; }
+.rk-row { display: flex; gap: 10px; align-items: center; font-size: 9px; padding: 6px 8px; background: rgba(255,255,255,.05); margin-bottom: 4px; } .rk-row b { color: var(--yellow); width: 30px; font-weight: normal; } .rk-row span { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; } .rk-row i { font-style: normal; color: #9fe8a8; }
+.rk-row.hot { background: var(--yellow); color: #222; } .rk-row.hot b, .rk-row.hot i { color: #222; }
+.sf2-slot.secret.hidden.art img { filter: none; opacity: 1; } .sf2-slot.secret.hidden.art::after { display: none; }

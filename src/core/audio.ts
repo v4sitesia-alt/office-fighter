@@ -10,11 +10,11 @@ export const hasTrack = (name: string) => name in FILE_TRACKS;
 export type SongName = keyof typeof SONGS | string;
 
 export type SfxName =
-  | 'hit' | 'hitBig' | 'block' | 'swing' | 'jump' | 'land'
+  | 'hit' | 'hitMed' | 'hitBig' | 'block' | 'swing' | 'jump' | 'land'
   | 'menuMove' | 'menuConfirm' | 'menuBack' | 'selectChar'
   | 'projectile' | 'portal' | 'explosion' | 'ko' | 'tick' | 'win' | 'lose' | 'meter1' | 'meter2' | 'talkA' | 'talkB';
 
-export type VoiceChannel = 'ann' | 'p1' | 'p2';
+export type VoiceChannel = 'ann' | 'p1' | 'p2' | 'crowd';
 
 const NOTE_INDEX: Record<string, number> = { c: 0, d: 2, e: 4, f: 5, g: 7, a: 9, b: 11 };
 function noteFreq(tok: string): number {
@@ -93,6 +93,7 @@ class AudioEngine {
     this.ctx!.decodeAudioData(ab.slice(0)).then((buf) => this.buffers.set(id, buf)).catch(() => undefined);
   }
   hasVoice(id: string) { return this.buffers.has(id); }
+  channelBusy(ch: VoiceChannel) { return this.voiceNodes.has(ch); }
 
   /** Toca uma voz; cada canal (locutor, p1, p2) toca uma por vez. */
   voice(id: string, channel: VoiceChannel = 'ann', gain = 1) {
@@ -142,15 +143,22 @@ class AudioEngine {
     if (!this.ctx) return;
     const t = this.ctx.currentTime, B = this.sfxBus;
     switch (name) {
-      // golpes no estilo SF2: "thwack" curto (ruído com banda média + baque grave + estalo)
-      case 'hit':
-        this.noise(t, 0.07, 0.6, B, { type: 'bandpass', f0: 1400, f1: 600, q: 0.7 });
-        this.osc('sine', 190, 60, t, 0.09, 0.6, B);
-        this.osc('square', 240, 110, t, 0.03, 0.15, B); break;
-      case 'hitBig':
-        this.noise(t, 0.16, 0.8, B, { type: 'lowpass', f0: 1200, f1: 150 });
-        this.osc('sine', 140, 40, t, 0.22, 0.9, B);
-        this.osc('square', 180, 60, t, 0.07, 0.25, B); break;
+      // porrada estilo SF2: estalo seco na frente (clique agudo de 8 ms) + corpo que cresce com a força do golpe
+      case 'hit':      // soco fraco: tapa curto e agudo
+        this.noise(t, 0.008, 1.0, B, { type: 'highpass', f0: 4500 });
+        this.noise(t, 0.04, 0.7, B, { type: 'bandpass', f0: 3200, f1: 1600, q: 1.2 });
+        this.osc('triangle', 460, 190, t, 0.05, 0.5, B); break;
+      case 'hitMed':   // chute médio: estalo + baque
+        this.noise(t, 0.008, 1.0, B, { type: 'highpass', f0: 4000 });
+        this.noise(t, 0.07, 0.85, B, { type: 'bandpass', f0: 2100, f1: 700, q: 0.9 });
+        this.osc('square', 320, 95, t, 0.07, 0.3, B);
+        this.osc('sine', 190, 65, t, 0.11, 0.7, B); break;
+      case 'hitBig':   // golpe forte: dois estalos e um baque grave comprido
+        this.noise(t, 0.01, 1.0, B, { type: 'highpass', f0: 3500 });
+        this.noise(t + 0.035, 0.012, 0.9, B, { type: 'highpass', f0: 3000 });
+        this.noise(t, 0.2, 0.95, B, { type: 'lowpass', f0: 2000, f1: 110 });
+        this.osc('sine', 135, 32, t, 0.32, 1.0, B);
+        this.osc('square', 210, 48, t, 0.1, 0.3, B); break;
       case 'block':
         this.osc('square', 1100, 900, t, 0.045, 0.25, B);
         this.noise(t, 0.045, 0.35, B, { type: 'highpass', f0: 2500 });

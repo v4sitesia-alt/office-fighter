@@ -6,6 +6,7 @@ export class Hud {
   el: HTMLElement;
   private life: HTMLElement[]; private lifeGhost: HTMLElement[]; private gauges: HTMLElement[]; private names: HTMLElement[];
   private level = [0, 0];
+  private shownTally: unknown = null; private shownScore = [0, 0];
   /** Quem joga neste aparelho (0, 1) ou -1 pra espectador: só ele ouve o aviso e vê a dica do botão. */
   localIndex = 0;
   private rounds: HTMLElement[];
@@ -17,15 +18,16 @@ export class Hud {
     this.el = root;
     root.innerHTML = `
       <div class="hud-top">
-        <div class="side p1"><div class="portrait"></div><div class="bars"><div class="name"></div><div class="life"><div class="ghost"></div><div class="fill"></div></div><div class="rounds"><i></i><i></i></div></div></div>
+        <div class="side p1"><div class="portrait"></div><div class="bars"><div class="name-row"><div class="name"></div><div class="score">0</div></div><div class="life"><div class="ghost"></div><div class="fill"></div></div><div class="rounds"><i></i><i></i></div></div></div>
         <div class="timer">60</div>
-        <div class="side p2"><div class="bars"><div class="name"></div><div class="life"><div class="ghost"></div><div class="fill"></div></div><div class="rounds"><i></i><i></i></div></div><div class="portrait"></div></div>
+        <div class="side p2"><div class="bars"><div class="name-row"><div class="name"></div><div class="score">0</div></div><div class="life"><div class="ghost"></div><div class="fill"></div></div><div class="rounds"><i></i><i></i></div></div><div class="portrait"></div></div>
       </div>
       <div class="hud-bottom">${['p1', 'p2'].map((p) => `
         <div class="gauge ${p}"><div class="hint"><kbd>B</kbd> <em></em></div>
           <div class="g1"><div class="fill"></div><span>MAGIA <b>OK</b></span></div>
           <div class="g2"><div class="fill"></div><span>SUPER</span></div></div>`).join('')}
       </div>
+      <div class="hud-tally"></div>
       <div class="hud-msg"></div>`;
     const q = (s: string) => root.querySelectorAll<HTMLElement>(s);
     this.life = Array.from(q('.life .fill'));
@@ -45,7 +47,7 @@ export class Hud {
       p.innerHTML = '';
       if (f.assets.portrait) { const img = f.assets.portrait.cloneNode() as HTMLImageElement; if (f.hue) img.style.filter = `hue-rotate(${f.hue}deg)`; p.appendChild(img); }
     });
-    this.ghost = [100, 100]; this.level = [0, 0];
+    this.ghost = [100, 100]; this.level = [0, 0]; this.shownScore = [m.score[0], m.score[1]];
     this.gauges.forEach((g, i) => g.classList.toggle('local', i === this.localIndex));
     this.msg.textContent = '';
   }
@@ -75,6 +77,13 @@ export class Hud {
       }
       Array.from(this.rounds[i].children).forEach((dot, k) => dot.classList.toggle('won', k < m.wins[i]));
     });
+    const sc = this.el.querySelectorAll<HTMLElement>('.score');
+    m.score.forEach((v, i) => { this.shownScore[i] += Math.ceil((v - this.shownScore[i]) * 0.2); if (this.shownScore[i] > v) this.shownScore[i] = v; sc[i].textContent = String(this.shownScore[i]).padStart(6, '0'); });
+    if (m.tally !== this.shownTally) {
+      this.shownTally = m.tally; const el = this.el.querySelector<HTMLElement>('.hud-tally')!;
+      if (!m.tally) el.className = 'hud-tally';
+      else { el.className = `hud-tally show ${m.tally.who === 0 ? 'l' : 'r'}`; el.innerHTML = m.tally.items.map(([k, v], i) => `<div style="animation-delay:${i * 0.22}s"><span>${k}</span><b>${v}</b></div>`).join('') + `<div class="tot" style="animation-delay:${m.tally.items.length * 0.22}s"><span>BÔNUS</span><b>${m.tally.total}</b></div>`; audio.sfx('menuConfirm'); }
+    }
     this.timer.textContent = m.training ? '∞' : String(m.seconds).padStart(2, '0');
     this.timer.classList.toggle('low', m.seconds <= 10 && !m.training);
     if (this.msgFrames > 0 && --this.msgFrames === 0) this.msg.className = 'hud-msg';

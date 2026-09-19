@@ -48,3 +48,12 @@ alter publication supabase_realtime add table tournaments, tournament_entries, m
 
 -- cada lutador só pode ser usado por um inscrito no campeonato
 create unique index if not exists um_lutador_por_campeonato on tournament_entries (tournament_id, fighter);
+
+-- ranking do arcade (pontuação por partida)
+create table if not exists scores (
+  id bigint generated always as identity primary key, player_id text, name text not null, fighter text not null,
+  score int not null, created_at timestamptz not null default now());
+create index if not exists scores_top on scores (score desc);
+alter table scores enable row level security;
+drop policy if exists "livre" on scores;
+create policy "livre" on scores for all to anon, authenticated using (true) with check (true);

@@ -2,7 +2,19 @@
 interface Particle { x: number; y: number; vx: number; vy: number; life: number; max: number; color: string; size: number }
 interface Spark { x: number; y: number; life: number; big: boolean; color: string }
 
+import { GROUND_Y } from './consts';
+interface Drop { x: number; y: number; vx: number; vy: number; size: number; color: string }
+interface Stain { x: number; w: number; life: number }
+
 export class Fx {
+  drops: Drop[] = []; stains: Stain[] = [];
+  /** Gotas espirrando na direção do golpe; caem no chão e viram manchinhas que somem. */
+  blood(x: number, y: number, dir: number, amount: number) {
+    for (let i = 0; i < amount; i++) {
+      const sp = 2 + Math.random() * 6;
+      this.drops.push({ x, y, vx: dir * sp * (0.4 + Math.random()) + (Math.random() - 0.5) * 2, vy: -2 - Math.random() * 6, size: 2 + Math.random() * 3, color: Math.random() < 0.6 ? '#c1121f' : '#7a0a12' });
+    }
+  }
   particles: Particle[] = [];
   sparks: Spark[] = [];
   shake = 0; shakeMag = 0;
@@ -19,6 +31,11 @@ export class Fx {
   update() {
     for (const p of this.particles) { p.x += p.vx; p.y += p.vy; p.vy += 0.35; p.vx *= 0.92; p.life++; }
     this.particles = this.particles.filter((p) => p.life < p.max);
+    for (const d of this.drops) { d.x += d.vx; d.y += d.vy; d.vy += 0.5; d.vx *= 0.97; }
+    for (const d of this.drops) if (d.y >= GROUND_Y + 4 && this.stains.length < 60) this.stains.push({ x: d.x, w: d.size * 1.8, life: 200 });
+    this.drops = this.drops.filter((d) => d.y < GROUND_Y + 4);
+    for (const st of this.stains) st.life--;
+    this.stains = this.stains.filter((st) => st.life > 0);
     for (const s of this.sparks) s.life--;
     this.sparks = this.sparks.filter((s) => s.life > 0);
     if (this.shake > 0) this.shake--;
@@ -29,6 +46,9 @@ export class Fx {
     return [(Math.random() - 0.5) * 2 * m, (Math.random() - 0.5) * 2 * m];
   }
   draw(ctx: CanvasRenderingContext2D) {
+    for (const st of this.stains) { ctx.globalAlpha = Math.min(0.75, st.life / 60); ctx.fillStyle = '#7a0a12'; ctx.beginPath(); ctx.ellipse(st.x, GROUND_Y + 6, st.w, st.w * 0.3, 0, 0, Math.PI * 2); ctx.fill(); }
+    ctx.globalAlpha = 1;
+    for (const d of this.drops) { ctx.fillStyle = d.color; ctx.fillRect(d.x - d.size / 2, d.y - d.size / 2, d.size, d.size * 1.4); }
     for (const s of this.sparks) {
       const r = (s.big ? 46 : 26) * (1 - s.life / (s.big ? 14 : 9) * 0.5);
       ctx.save(); ctx.translate(s.x, s.y); ctx.rotate(s.life * 0.3);

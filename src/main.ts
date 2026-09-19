@@ -16,6 +16,7 @@ import { bindCabinet } from './ui/touch';
 import { Lobby, type NetMatchCfg } from './net/lobby';
 import { maskOf, NetSession } from './net/netplay';
 import { joinRoom, type Room } from './net/transport';
+import * as store from './net/store';
 
 type Mode = 'loading' | 'boot' | 'intro' | 'lobby' | 'netfight' | 'title' | 'difficulty' | 'select' | 'versus' | 'fight' | 'result' | 'ending';
 
@@ -89,10 +90,10 @@ const secret = {
   isLocked: (id: string) => !unlockedIds.has(id),
   unlock: (id: string) => { unlockedIds.add(id); try { localStorage.setItem('v4f-unlocked', JSON.stringify([...unlockedIds])); } catch { /* sem storage */ } },
 };
-let continues = 0, secretFight = false, tries = 0;
+let continues = 0, secretFight = false, tries = 0, arcadeScore = 0;
 
 function buildCampaign() {
-  continues = 0; secretFight = false; tries = 0;
+  continues = 0; secretFight = false; tries = 0; arcadeScore = 0;
   // 4 rivais do elenco (a partir da posição do jogador), depois o capanga, o subchefe e o chefão
   const bosses = ['xablau', 'dias', 'mundim'].map((id) => roster.findIndex((f) => f.def.id === id)).filter((i) => i >= 0);
   const pool = roster.map((_, i) => i).filter((i) => i !== playerIdx && !bosses.includes(i) && !roster[i].def.secret);
@@ -107,11 +108,12 @@ function startFight() {
   const isLast = fightNo === campaign.length - 1;
   const owner = opp.hue ? roster[playerIdx] : roster[opp.idx]; // luta no cenário (e com a música) do oponente
   const stage = stageOf(owner);
-  match = new Match(roster[playerIdx], roster[opp.idx], stage, { cpu: level, hueP2: opp.hue, label: secretFight ? '53º ANDAR' : isLast ? 'LUTA FINAL' : `LUTA ${fightNo + 1}` }, {
+  match = new Match(roster[playerIdx], roster[opp.idx], stage, { cpu: level, hueP2: opp.hue, label: secretFight ? '53º ANDAR' : isLast ? 'LUTA FINAL' : `LUTA ${fightNo + 1}`, baseScore: arcadeScore }, {
     message: (t, f, k) => hud.message(t, f, k),
     end: (winner, perfect) => {
       setMode('result');
       const won = winner === 0;
+      arcadeScore = match?.score[0] ?? arcadeScore;
       audio.sfx(won ? 'win' : 'lose'); audio.voice(won ? 'ann-you-win' : 'ann-you-lose', 'ann');
       screens.result(won, perfect, isLast, () => {
         if (!won) { continues++; tries++; showVersus(); return; }
@@ -125,8 +127,8 @@ function startFight() {
         }
         let note = '';
         if (secretFight && secret.isLocked(roster[boss].def.id)) { secret.unlock(roster[boss].def.id); note = `${roster[boss].def.name} DESBLOQUEADO`; }
-        setMode('ending'); screens.ending(roster[playerIdx], goTitle, note);
-      }, goTitle);
+        setMode('ending'); screens.ending(roster[playerIdx], () => finishArcade(), note);
+      }, () => finishArcade());
     },
   });
   hud.localIndex = 0; hud.bind(match);
@@ -134,6 +136,24 @@ function startFight() {
   screens.hide();
   setMode('fight');
   if (hasTrack(`fighter-${owner.def.id}`)) audio.music(`fighter-${owner.def.id}`); // música do dono do cenário
+}
+
+/** Fim do arcade (zerou ou desistiu no game over): grava a pontuação e mostra o ranking. */
+function finishArcade() {
+  const score = arcadeScore; arcadeScore = 0;
+  if (score <= 0) { goTitle(); return; }
+  const save = (name: string) => {
+    try { localStorage.setItem('v4f-name', name); } catch { /* sem storage */ }
+    let id = ''; try { id = sessionStorage.getItem('v4f-id') ?? Math.random().toString(36).slice(2, 10); sessionStorage.setItem('v4f-id', id); } catch { /* sem storage */ }
+    void store.submitScore(id, { name, fighter: roster[playerIdx].def.id, score }).catch(() => undefined).then(() => showRanking(score));
+  };
+  let name = ''; try { name = localStorage.getItem('v4f-name') ?? ''; } catch { /* sem storage */ }
+  setMode('difficulty');
+  if (name) save(name); else screens.askName(`${String(score).padStart(6, '0')} PONTOS`, save);
+}
+function showRanking(mine = -1) {
+  setMode('difficulty');
+  void Promise.all([store.topScores().catch(() => []), store.ranking().catch(() => [])]).then(([a, b]) => screens.ranking(a, b, mine, goTitle));
 }
 
 function showVersus() {
@@ -147,7 +167,7 @@ function goTitle() {
   match = null;
   setMode('title');
   if (audio.musicTime() < INTRO_END - 1) audio.seekMusic(INTRO_END); // título no trecho dos 19 s; se a música da intro já vinha tocando (voltou do menu), segue sem pular
-  const menu = () => { setMode('difficulty'); screens.mainMenu(() => { online = false; showSelect(); }, () => { online = true; showSelect(); }, goTitle); };
+  const menu = () => { setMode('difficulty'); screens.mainMenu(() => { online = false; showSelect(); }, () => { online = true; showSelect(); }, () => showRanking(), goTitle); };
   screens.title(menu, ROSTER.length);
 }
 

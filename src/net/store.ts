@@ -80,3 +80,19 @@ export function watch(onChange: () => void) {
     .subscribe();
   return () => { void db().removeChannel(ch); };
 }
+
+// ---------- ranking do arcade (tabela `scores`; sem rede ou sem a tabela, fica só neste navegador)
+export interface ScoreRow { name: string; fighter: string; score: number }
+const localScores = (): ScoreRow[] => { try { return JSON.parse(localStorage.getItem('v4f-scores') ?? '[]') as ScoreRow[]; } catch { return []; } };
+export async function submitScore(player_id: string, row: ScoreRow) {
+  const all = [...localScores(), row].sort((a, b) => b.score - a.score).slice(0, 20);
+  try { localStorage.setItem('v4f-scores', JSON.stringify(all)); } catch { /* sem storage */ }
+  if (ONLINE) await db().from('scores').insert({ player_id, ...row });
+}
+export async function topScores(): Promise<ScoreRow[]> {
+  if (ONLINE) {
+    const { data, error } = await db().from('scores').select('name,fighter,score').order('score', { ascending: false }).limit(10);
+    if (!error && data) return data as ScoreRow[];
+  }
+  return localScores().slice(0, 10);
+}
