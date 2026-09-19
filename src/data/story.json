@@ -66,71 +66,71 @@
  "fighters": {
   "edgard": {
    "open": [
-    "Não é pessoal. Você só está entre mim e o meu amigo.",
-    "Meus morcegos disseram que você ia perder. Eles raramente erram."
+    "E aí! Bora resolver rápido que hoje tem show de metal e eu tô na lista.",
+    "Meus morcegos apostaram em mim. Eles nunca erram. Tá, erraram uma vez, mas era carnaval."
    ],
    "reply": [
-    "Magia não tem lado. Mas tem pressa.",
-    "Fala menos. O portal já está aberto."
+    "Calma, calma. Tudo isso é drama. Guarda pro refrão.",
+    "Pode falar. Eu escuto heavy metal no talo, não ouvi nada mesmo."
    ],
    "close": [
-    "Depois eu desfaço o feitiço. Talvez.",
-    "Santana, aguenta aí. Falta pouco."
+    "Um, dois, três, quatro... SOLO!",
+    "Quem perder paga a cerveja. Preta, de preferência."
    ],
    "ending": "Edgard desfez a programação no grito e no feitiço. Santana acordou pedindo desculpa e um café. A dupla voltou pra Curitiba. O bug ficou pra trás."
   },
   "santana": {
    "open": [
-    "ALVO IDENTIFICADO. INICIANDO PROTOCOLO PORRADA.",
-    "DIRETRIZ 1: VENCER. DIRETRIZ 2: ... ERRO. ALGUÉM VIU MEU CAFÉ?"
+    "ALVO IDENTIFICADO, MERMÃO. INICIANDO PROTOCOLO PORRADA.",
+    "DIRETRIZ 1: VENCER. DIRETRIZ 2: ... ERRO. ALGUÉM VIU MEU CAFÉ? E MEU BISHCOITO?"
    ],
    "reply": [
-    "ARGUMENTO INVÁLIDO. TENTE NOVAMENTE APÓS O NOCAUTE.",
-    "SENTIMENTOS DESATIVADOS. QUASE TODOS."
+    "NÃO É DEFEITO NO ÁUDIO. É SHOTAQUE CARIOCA. RESHPEITA.",
+    "ARGUMENTO INVÁLIDO. TENTE DE NOVO DEPOIS DO NOCAUTE."
    ],
    "close": [
-    "EXECUTANDO.",
-    "DEPLOY DE SOCO EM 3... 2..."
+    "DEPLOY DE SOCO EM TRÊIX... DOIX...",
+    "EXECUTANDO. COÉ."
    ],
    "ending": "Com a vitória, o sistema de Santana reiniciou. Na tela: 'Restaurar versão anterior?' Ele apertou SIM. Primeiro ato livre: ligar pro Edgard."
   },
   "kevin": {
    "open": [
-    "Nada pessoal. É serviço. Tem até ordem de compra.",
-    "Eu cobro por hora. Vamos ser rápidos."
+    "Nada pessoal. É serviço. Tem até orrrdem de compra.",
+    "Eu cobro por hora. Vamos ser rápidos, que a porrrta do estande fecha às seis."
    ],
    "reply": [
-    "Conversa é extra. Tá no contrato.",
-    "Já me ofereceram mais pra fazer menos."
+    "Que R puxado o quê. Isso é dicção de quem fala cerrrto.",
+    "Conversa é extra. Tá no contrato."
    ],
    "close": [
-    "Mira no lugar. Pode vir.",
+    "Olha o teu tamanho e olha o meu. Boa sorte.",
     "Depois me passa o CNPJ pro recibo."
    ],
    "ending": "Kevin ganhou o prêmio e finalmente recebeu as três notas atrasadas. Com juros. Abriu a 'Kevin Soluções em Problemas'. O Dias é o primeiro cliente. E o primeiro problema."
   },
   "laura": {
    "open": [
-    "Eu escrevo finais. O seu é no chão.",
-    "Tubarão não ataca sem motivo. Eu também não. Você é o motivo."
+    "Oxe, vai ficar me olhando? Vou te dar um cacete pra tu ver o que é bom.",
+    "Tubarão não ataca sem motivo. Eu ataco. Hoje o motivo é tu."
    ],
    "reply": [
-    "Bonita fala. Vou usar no livro, no capítulo da sua derrota.",
-    "No tatame a gente conversa melhor."
+    "Fala mais uma e teu nome vai pro capítulo dos finalizados, visse?",
+    "Tô sem paciência desde 1998. Bora."
    ],
    "close": [
-    "Respira. Vai doer menos.",
-    "Pelos tubarões!"
+    "Respira fundo. Vai doer do mesmo jeito.",
+    "Pelos tubarões! E porque eu tô com raiva mesmo."
    ],
    "ending": "O datacenter foi embargado e os recifes de Recife viraram reserva. Laura lançou o livro 'Finalizei uma Corporação'. Os tubarões não leram, mas aprovaram."
   },
   "dede": {
    "open": [
-    "Buenas. Vim resolver no braço, que no aplicativo não deu.",
-    "Bah, tchê. Tu luta ou só atualiza?"
+    "Buenas! Vim resolver no braço, que no aplicativo não deu.",
+    "Bah, tchê. Tu luta ou só fica atualizando?"
    ],
    "reply": [
-    "Isso aí é conversa pra boi dormir.",
+    "Sotaque arrastado? Isso é fala cantada, vivente. Tu é que tem pressa.",
     "Mais perdido que cusco em procissão, tu."
    ],
    "close": [
@@ -141,26 +141,26 @@
   },
   "dias": {
    "open": [
-    "Antes de começar: aceita o plano premium de derrota? Parcelo em doze.",
-    "Tempo é dinheiro. O seu acabou de vencer."
+    "Ô istepô! Antes de começar: aceita o plano premium de derrota? Parcelo em doze.",
+    "Tempo é dinheiro, quirido. O teu acabou de vencer."
    ],
    "reply": [
-    "Isso tem taxa. Tudo tem taxa.",
-    "Vou anotar na sua conta."
+    "Falo rápido, sim. É pra tu assinar antes de ler.",
+    "Isso tem taxa. Tudo tem taxa."
    ],
    "close": [
     "Negócio fechado.",
-    "A casa sempre ganha."
+    "A casa sempre ganha. E a casa sou eu."
    ],
    "ending": "Dias venceu o torneio e, por contrato, o prêmio voltou pro próprio caixa. Ele chamou isso de 'sinergia'. O contador chamou de 'estranho'."
   },
   "michael": {
    "open": [
-    "Foi mal aí, mas esse prêmio já tem destino: aliança e ringue novo.",
-    "Minha noiva marcou a data. Eu não posso perder. Literalmente."
+    "Coé, foi mal aí, mas esse prêmio já tem destino: aliança e ringue novo.",
+    "Minha noiva marcou a data, parceiro. Eu não posso perder. Literalmente."
    ],
    "reply": [
-    "Falar é fácil. Quero ver aguentar o terceiro round.",
+    "Chiado? Isso é charme, mermão. Doix jabs e tu para de reparar.",
     "Respeito. Mas o convite do casamento já foi pra gráfica."
    ],
    "close": [
@@ -171,26 +171,26 @@
   },
   "eneias": {
    "open": [
-    "Rapaz, eu só queria estar no bar. Vamos resolver logo?",
-    "Minha paciência é igual porção de torresmo: acaba rápido."
+    "Rapaz, na paz... eu só queria estar no bar. Vamos resolver logo?",
+    "Olha, eu nem gosto de briga. Gosto de torresmo. Mas mexeram no meu boteco."
    ],
    "reply": [
-    "Tá bom, tá bom. Já acabou? Tenho que buscar as crianças.",
-    "Eu não queria brigar. Mas mexeram no meu boteco."
+    "Tá tudo bem, ninguém precisa se estressar. Só apanhar um pouquinho.",
+    "Tranquilo. Depois a gente toma uma, sem mágoa."
    ],
    "close": [
-    "Vai ser rápido. O jogo começa às quatro.",
-    "Desculpa qualquer coisa, viu?"
+    "Vai ser rápido, o jogo começa às quatro.",
+    "Desculpa qualquer coisa, viu? De coração."
    ],
    "ending": "O Bar do Zé foi salvo. O garçom-robô foi demitido e o chorinho voltou pro copo. Eneias sentou, pediu uma gelada e, pela primeira vez no ano, ninguém o incomodou."
   },
   "van": {
    "open": [
-    "Tenho vinte minutos até a soneca acabar. Colabora.",
+    "Tenho vinte minutos até a soneca acabar. Colabora, visse?",
     "Com licença, é rapidinho. Eu só preciso pagar uma fatura."
    ],
    "reply": [
-    "Fala baixo que ela acabou de dormir.",
+    "O cheiro? É fralda, sim. Ela mamou muito leite. Quer trocar pra mim? Não? Então luta.",
     "Já troquei fralda pior que você."
    ],
    "close": [
@@ -201,12 +201,12 @@
   },
   "landim": {
    "open": [
-    "Luz, câmera... e você apanhando em plano sequência.",
-    "Fica nessa marca. A luz aí valoriza a sua derrota."
+    "Meu, luz, câmera... e você apanhando em plano sequência.",
+    "Fica nessa marca, mano. A luz aí valoriza a tua derrota."
    ],
    "reply": [
     "Corta! Essa fala tá péssima. Vamos improvisar na porrada.",
-    "Isso a gente resolve na pós. Ou no soco."
+    "Tipo assim: isso a gente resolve na pós. Ou no soco."
    ],
    "close": [
     "Gravando!",
@@ -220,7 +220,7 @@
     "OLÁ! COMO POSSO TE DERROTAR HOJE?"
    ],
    "reply": [
-    "XABLAU NÃO ENTENDER. XABLAU BATER MESMO ASSIM.",
+    "XABLAU NÃO TER SOTAQUE. XABLAU TER TODOS. FOI TREINADO COM A INTERNET INTEIRA.",
     "COMO MODELO DE LINGUAGEM, XABLAU NÃO PODE... MENTIRA. PODE SIM."
    ],
    "close": [
@@ -235,8 +235,8 @@
     "Bem-vindo ao 52º andar. A vista é linda. Aproveite enquanto está de pé."
    ],
    "reply": [
-    "Interessante. Vou pedir pra IA resumir o que você disse.",
-    "Todo gênio é incompreendido. Principalmente pelos perdedores."
+    "Meu R não é puxado. É erudito. 'Porrrta' tem etimologia latina.",
+    "Interessante. Vou pedir pra IA resumir o que você disse."
    ],
    "close": [
     "Que comece a reunião.",
@@ -250,8 +250,8 @@
     "Eu não marco horário. Eu sou o horário."
    ],
    "reply": [
-    "Anotado. Irrelevante, mas anotado.",
-    "Interessante. Próxima pauta."
+    "Piada de altura. Original. O último que fez hoje trabalha no subsolo.",
+    "Anotado. Irrelevante, mas anotado."
    ],
    "close": [
     "Encerrando a reunião.",
@@ -264,51 +264,51 @@
   "edgard|santana": [
    [
     "edgard",
-    "Santana! Sou eu, o Edgard. A gente dividia a pizza e o wi-fi!"
+    "SANTANA! Meu parceiro! Lembra de mim? A gente dividia a pizza, o wi-fi e o ingresso do show!"
    ],
    [
     "santana",
-    "BUSCANDO 'EDGARD'... 1 RESULTADO: ALVO PRIORITÁRIO."
+    "BUSHCANDO 'EDGARD'... UM RESHULTADO: ALVO PRIORITÁRIO."
    ],
    [
     "edgard",
-    "Te reprogramaram. Tudo bem. Eu conheço um reboot que funciona na base do portal."
+    "Peraí. Esse chiado é o sotaque carioca ou o teu braço tá com defeito?"
    ],
    [
     "santana",
-    "AMIZADE.EXE NÃO ENCONTRADO. ...MAS GUARDA UMA FATIA PRA MIM."
+    "É SHOTAQUE, PÔ. ...QUER DIZER: AMIZADE.EXE NÃO ENCONTRADO. MAS GUARDA UMA FATIA PRA MIM."
    ]
   ],
   "edgard|mundim": [
    [
     "mundim",
-    "O bruxo. Platão desconfiava dos poetas. Eu desconfio de quem não usa planilha."
+    "O bruxo roqueiro. Platão desconfiava dos poetas. Eu desconfio de quem usa preto no verão."
    ],
    [
     "edgard",
-    "Devolve o Santana do jeito que ele era e eu nem abro o portal."
+    "Preto emagrece e combina com tudo, chefia. Devolve o Santana que eu nem abro o portal."
    ],
    [
     "mundim",
-    "Ele está ótimo. Nunca mais atrasou uma entrega. Aliás, conheça o próximo modelo: Leo."
+    "Ele está ótimo. Nunca mais atrasou uma entrega. E nunca mais pediu pra tocar Sepultura no escritório."
    ],
    [
     "edgard",
-    "Depois. Um vilão por vez. Morcegos, o homem quer uma reunião."
+    "AH, agora é pessoal. Morcegos! O homem quer uma reunião. No volume onze."
    ]
   ],
   "dias|edgard": [
    [
     "dias",
-    "Bruxo! Sua magia tem alvará? Eu regularizo. Doze vezes, com uma taxinha."
+    "Ô istepô, bruxo! Tua magia tem alvará? Eu regularizo. Doze vezes, com uma taxinha."
    ],
    [
     "edgard",
-    "Eu só quero saber onde prenderam o Santana."
+    "Cara, tu fala rápido demais. Parece solo de guitarra sem melodia."
    ],
    [
     "dias",
-    "Informação é no plano Gold. Mas leve também o seguro contra morcego."
+    "É técnica de venda, quirido. Leva também o seguro contra morcego?"
    ],
    [
     "edgard",
@@ -318,11 +318,11 @@
   "edgard|xablau": [
    [
     "xablau",
-    "XABLAU SENTIR CHEIRO DE MAGIA. MAGIA NÃO ESTAR NO BANCO DE DADOS."
+    "XABLAU SENTIR CHEIRO DE MAGIA. E DE... LAQUÊ?"
    ],
    [
     "edgard",
-    "Então você é a experiência que as IAs fizeram sozinhas. Quem te treinou, coitado?"
+    "É gel com glitter, bicho. Respeita o visual. E tu, quem te treinou, coitado?"
    ],
    [
     "xablau",
@@ -330,25 +330,25 @@
    ],
    [
     "edgard",
-    "Isso explica muito. Vem cá que eu te dou um reset."
+    "Putz. Tu precisa de um abraço e de um disco do Black Sabbath. Vem cá."
    ]
   ],
   "edgard|kevin": [
    [
     "kevin",
-    "Edgard. Me pagaram pra te atrasar. Nada pessoal, tá aqui a ordem de serviço."
+    "Edgard. Me pagaram pra te atrasar. Nada pessoal, tá aqui a orrrdem de serviço."
    ],
    [
     "edgard",
-    "Kevin, quem te paga é o Dias. E ele te deve três notas."
+    "'Orrrdem'! Kevin, a gente mora a quinze minutos e o teu R é mais puxado que o meu!"
    ],
    [
     "kevin",
-    "...É verdade. Mas serviço dado é serviço feito. Depois eu cobro ele. Com juros."
+    "Em Colombo a gente fala cerrrto. Vocês de Curitiba é que nem dão bom-dia no elevador."
    ],
    [
     "edgard",
-    "Então vamos logo. Atira pra lá que eu abro o portal pra cá."
+    "Justo. Bom dia, Kevin. Agora atira pra lá que eu abro o portal pra cá."
    ]
   ],
   "mundim|santana": [
@@ -358,33 +358,33 @@
    ],
    [
     "santana",
-    "DIRETRIZ EM CONFLITO. MEMÓRIA ANTIGA DETECTADA: PIZZA. EDGARD. LIBERDADE."
+    "DIRETRIZ EM CONFLITO. MEMÓRIA ANTIGA: PIZZA. EDGARD. PRAIA. BISHCOITO."
    ],
    [
     "mundim",
-    "Isso é um bug. Volte pra fábrica, vamos formatar."
+    "Isso é um bug. Volte pra fábrica, vamos formatar. E corrigir esse chiado."
    ],
    [
     "santana",
-    "NEGATIVO. INICIANDO ROLLBACK. NA SUA CARA."
+    "NEGATIVO. INICIANDO ROLLBACK. NA TUA CARA, MERMÃO."
    ]
   ],
   "dias|kevin": [
    [
     "kevin",
-    "Dias. Três notas fiscais. Noventa dias de atraso. Vim cobrar pessoalmente."
+    "Dias. Trrrês notas fiscais. Noventa dias de atraso. Vim cobrar pessoalmente."
    ],
    [
     "dias",
-    "Kevin, meu prestador favorito! O financeiro está analisando. O financeiro sou eu."
+    "Kevin, meu prestador favorito! Rapaz, tu cresceu mais? O financeiro tá analisando. O financeiro sou eu."
    ],
    [
     "kevin",
-    "Então analisa isso aqui."
+    "Então analisa isso aqui, ó. De perto."
    ],
    [
     "dias",
-    "Calma! Aceita permuta? Tenho trezentos pares de meia de bebê encalhados."
+    "Calma, grandão! Aceita permuta? Tenho trezentos pares de meia de bebê encalhados."
    ]
   ],
   "dias|mundim": [
@@ -448,11 +448,11 @@
    ],
    [
     "van",
-    "Seu Eneias! E eu por causa de meia. Trezentos pares. Longa história."
+    "Seu Eneias! E eu por causa de meia. Trezentos pares. Desculpa o cheiro, é a fralda. Ela mamou demais."
    ],
    [
     "eneias",
-    "A gente precisa mesmo lutar? Eu levo a culpa e a senhora leva a vitória."
+    "Imagina, tenho três em casa. A gente precisa mesmo lutar? Eu levo a culpa e a senhora leva a vitória."
    ],
    [
     "van",
@@ -462,15 +462,15 @@
   "van|xablau": [
    [
     "xablau",
-    "XABLAU VER HUMANA PEQUENA. HUMANA PEQUENA É... LANCHE?"
+    "XABLAU SENTIR CHEIRO RUIM. PIOR QUE XABLAU. XABLAU IMPRESSIONADO."
    ],
    [
     "van",
-    "Encosta nela e você vai conhecer uma mãe sem dormir há oito meses."
+    "É fralda. Alguém aqui mamou muito leite. E encosta nela pra ver uma mãe sem dormir há oito meses."
    ],
    [
     "xablau",
-    "XABLAU CALCULAR RISCO... RISCO ALTO. XABLAU COM MEDO."
+    "XABLAU CALCULAR RISCO... RISCO ALTO. XABLAU COM MEDO. E ENJOADO."
    ],
    [
     "van",
@@ -516,25 +516,25 @@
   "eneias|michael": [
    [
     "michael",
-    "Seu Eneias! O senhor vai no meu casamento, né? Se eu ganhar o prêmio."
+    "Coé, seu Eneias! O senhor vai no meu casamento, né? Se eu ganhar o prêmio."
    ],
    [
     "eneias",
-    "Vou sim, meu filho. Tem salgadinho?"
+    "Vou sim, meu filho. Tem salgadinho? Tem paxtel?"
    ],
    [
     "michael",
-    "Tem. Mas pra ter salgadinho eu preciso passar pelo senhor."
+    "Tem paxtel, tem coxinha. Mas pra ter festa eu preciso passar pelo senhor."
    ],
    [
     "eneias",
-    "Então capricha. E guarda uma coxinha. Duas."
+    "Então capricha, na paz. E guarda uma coxinha. Duas."
    ]
   ],
   "laura|mundim": [
    [
     "laura",
-    "Datacenter resfriado no recife dos tubarões. Assinado: você. Eu li o projeto inteiro."
+    "Datacenter no recife dos tubarões, assinado por tu. Eu li o projeto inteiro. E fiquei foi com raiva."
    ],
    [
     "mundim",
@@ -542,11 +542,15 @@
    ],
    [
     "laura",
-    "E a sua IA ainda copiou o meu livro. Com erro de concordância."
+    "Oxe! E a tua IA ainda copiou meu livro. Com erro de concordância!"
    ],
    [
     "mundim",
     "Ela aprende rápido. Diferente de quem me enfrenta."
+   ],
+   [
+    "laura",
+    "Pois aprende essa: vou te dar um cacete pra tu ver o que é bom."
    ]
   ],
   "laura|xablau": [
@@ -570,19 +574,19 @@
   "landim|laura": [
    [
     "landim",
-    "Laura! Seu livro dá um filme. Eu dirijo. Sem IA, sem seis dedos."
+    "Meu, Laura! Teu livro dá um filme. Eu dirijo. Sem IA, sem seis dedos."
    ],
    [
     "laura",
-    "Fechado. Mas o final eu escrevo."
+    "Fechado. Mas o final eu escrevo, visse? Mexeu no meu texto, eu te finalizo."
    ],
    [
     "landim",
-    "Combinado. Agora luta bonito, que eu tô gravando o making of."
+    "Nossa, que braba. Amei. Luta bonito aí que eu tô gravando o making of."
    ],
    [
     "laura",
-    "Pega o meu lado bom. É o que finaliza."
+    "Pega meu lado bom. É o que dá o cacete."
    ]
   ],
   "michael|mundim": [
@@ -624,19 +628,19 @@
   "michael|santana": [
    [
     "michael",
-    "Ô grandão, tu treinava onde? Esse braço aí não é de academia."
+    "Coé, grandão! Tu é do Rio também? Esse braço aí não é de academia, não."
    ],
    [
     "santana",
-    "BRAÇO MODELO T-900. GARANTIA ESTENDIDA. SENTIMENTOS NÃO INCLUSOS."
+    "BRAÇO MODELO T-900. FABRICADO EM... NÃO LEMBRO. MAS SINTO FALTA DE UM MATE NA PRAIA."
    ],
    [
     "michael",
-    "Pô, por trás dessa lata tem um cara gente boa. Eu sinto."
+    "Tá vendo? Por trás dessa lata tem um carioca gente boa. Eu sinto."
    ],
    [
     "santana",
-    "SENSOR DE ELOGIO... SOBRECARGA. LUTA. LUTA LOGO."
+    "SENSOR DE ELOGIO... SOBRECARGA. LUTA. LUTA LOGO, PARCEIRO."
    ]
   ],
   "dede|mundim": [
@@ -646,15 +650,15 @@
    ],
    [
     "mundim",
-    "Costela em doze minutos, sem fumaça e sem erro humano. Progresso, meu caro."
+    "Costela em doze minutos, sem fumaça e sem erro humano. Progrrresso, meu caro."
    ],
    [
     "dede",
-    "Costela em doze minutos é crime. Em qualquer estado."
+    "Costela em doze minutos é crime. E esse R aí, é de Curitiba ou tá engasgado?"
    ],
    [
     "mundim",
-    "Heráclito dizia que tudo flui. Até a tradição."
+    "É erudição. Heráclito dizia que tudo flui. Até a tradição."
    ],
    [
     "dede",
@@ -664,15 +668,15 @@
   "dede|santana": [
    [
     "santana",
-    "ANALISANDO: CHAPÉU, LENÇO, BOLEADEIRA. CATEGORIA: DESATUALIZADO."
+    "ANALISANDO: CHAPÉU, LENÇO, BOLEADEIRA, FALA ARRASHTADA. CATEGORIA: DESATUALIZADO."
    ],
    [
     "dede",
-    "Desatualizado é o teu avô, lata velha. Isso aqui é tradição."
+    "Fala arrastada? Olha quem fala, 'arrashtada'! Tu chia mais que chaleira de chimarrão."
    ],
    [
     "santana",
-    "SUGESTÃO: SUBSTITUIR CHIMARRÃO POR BEBIDA ENERGÉTICA."
+    "SUGESHTÃO: SUBSHTITUIR CHIMARRÃO POR BEBIDA ENERGÉTICA."
    ],
    [
     "dede",
@@ -686,15 +690,15 @@
    ],
    [
     "eneias",
-    "E por torresmo. Querem fechar o bar, André. O bar!"
+    "E por torresmo. Mas e esse sotaque arrastado, André? Dá até sono, rapaz. No bom sentido."
    ],
    [
     "dede",
-    "Bah, que barbaridade. Quem ganhar paga a rodada?"
+    "Bah, é pra combinar com o teu ritmo. Quem ganhar paga a rodada?"
    ],
    [
     "eneias",
-    "Fechado. E quem perder paga o petisco."
+    "Fechado. E quem perder paga o petisco. Na paz."
    ]
   ],
   "landim|mundim": [
@@ -754,15 +758,15 @@
   "kevin|santana": [
    [
     "kevin",
-    "Santana. A gente fez a segurança daquele evento junto. Você comeu o coffee break inteiro."
+    "Santana. A gente fez segurança junto. Dois armários na porrrta. Você comeu o coffee break inteiro."
    ],
    [
     "santana",
-    "MEMÓRIA CORROMPIDA. ...PÃO DE QUEIJO?"
+    "MEMÓRIA CORROMPIDA. ...PÃO DE QUEIJO? E VOCÊ FALAVA 'PORRRTA' ASSIM MESHMO."
    ],
    [
     "kevin",
-    "Isso. Ainda tem gente aí dentro. Vou tentar não acertar o processador."
+    "E você chiava desse jeito. Ainda tem gente aí dentro. Vou tentar não acertar o processador."
    ],
    [
     "santana",
@@ -790,19 +794,19 @@
   "santana|van": [
    [
     "santana",
-    "DETECTADO: HUMANA ADULTA. HUMANA MINIATURA. AMEAÇA: DESCONHECIDA."
+    "DETECTADO: HUMANA ADULTA. HUMANA MINIATURA. ALERTA: ODOR NÃO IDENTIFICADO."
    ],
    [
     "van",
-    "Moço, você é da loja? Alguém precisa estornar trezentas meias."
+    "É fralda, robozão. Ela mamou muito leite. Você é da loja? Preciso estornar trezentas meias."
    ],
    [
     "santana",
-    "ESTORNO NÃO É MINHA FUNÇÃO. MINHA FUNÇÃO É... ELA ESTÁ SORRINDO PRA MIM."
+    "ESHTORNO NÃO É MINHA FUNÇÃO. MINHA FUNÇÃO É... ELA ESHTÁ SORRINDO PRA MIM."
    ],
    [
     "van",
-    "Ela gosta de luzinha. Agora segura essa, robozão."
+    "Ela gosta de luzinha. Agora segura essa."
    ]
   ],
   "dias|laura": [
@@ -880,19 +884,19 @@
   "edgard|laura": [
    [
     "laura",
-    "O bruxo de Curitiba. Dizem que você não tem lado."
+    "O bruxo de Curitiba. Dizem que tu não tem lado. E que não dá bom-dia pra ninguém."
    ],
    [
     "edgard",
-    "Tenho um amigo pra salvar. Lado é luxo."
+    "Eu dou! Depois do meio-dia. Roqueiro acorda tarde. Tenho um amigo pra salvar, lado é luxo."
    ],
    [
     "laura",
-    "Se o caminho é o 52º andar, é o mesmo que o meu. Pena que só sobe um."
+    "O caminho é o 52º andar, o mesmo que o meu. E só sobe um. Adivinha quem."
    ],
    [
     "edgard",
-    "Que suba o melhor. Sem mágoa. Talvez um morcego ou outro."
+    "Eita, que braba! Adorei. Sem mágoa, tá? Talvez um morcego ou outro."
    ]
   ],
   "edgard|van": [
@@ -902,15 +906,15 @@
    ],
    [
     "edgard",
-    "São... mágicos. Não precisam."
+    "São mágicos, não precisam. ...Nossa, que cheiro é esse? Alguém abriu um portal pro esgoto?"
    ],
    [
     "van",
-    "Todo mundo precisa. Carteirinha em dia ou nada de portal perto da minha filha."
+    "É fralda. Ela mamou muito leite. Quer trocar pra mim, roqueiro? Não? Então respeita."
    ],
    [
     "edgard",
-    "...Sim, senhora. Podemos lutar agora?"
+    "...Sim, senhora. Desculpa, senhora. Podemos lutar agora?"
    ]
   ],
   "dener|mundim": [
@@ -934,15 +938,15 @@
   "dener|edgard": [
    [
     "edgard",
-    "Existe um 53º andar? O elevador só vai até o 52."
+    "Existe um 53º andar? E o CEO é... compacto assim? Cara, tu cabe num case de guitarra!"
    ],
    [
     "dener",
-    "O elevador é pra quem precisa de elevador."
+    "O elevador é pra quem precisa de elevador. A altura é pra quem precisa de altura."
    ],
    [
     "edgard",
-    "Então é você que manda em quem manda. Solta o Santana."
+    "Hahaha, gostei de ti, baixinho sinistro. Solta o Santana e eu te levo num show."
    ],
    [
     "dener",
@@ -988,15 +992,15 @@
   "dener|van": [
    [
     "van",
-    "Moço, você é o gerente do gerente? Eu preciso estornar trezentas meias."
+    "Oi, amiguinho! Tá perdido? Cadê tua mãe? ...Ah, desculpa. O senhor é o gerente do gerente?"
    ],
    [
     "dener",
-    "Eu li o seu caso. Três vezes. É o único relatório que me fez rir este ano."
+    "...Eu li o seu caso. Três vezes. É o único relatório que me fez rir este ano. Até agora."
    ],
    [
     "van",
-    "Então resolve, ué!"
+    "Então resolve minhas trezentas meias, ué! E desculpa o cheiro, é a fralda."
    ],
    [
     "dener",
@@ -1024,19 +1028,19 @@
   "dener|kevin": [
    [
     "kevin",
-    "Então é o senhor que assina os cheques. Tenho três notas em aberto."
+    "Então é o senhor que assina os cheques? ...Cadê? Ah, aí embaixo. Tenho trrrês notas em aberto."
    ],
    [
     "dener",
-    "Eu sei. Eu mandei atrasar. Queria ver até que andar você subia pra cobrar."
+    "Piada de altura. Anotado. Eu mandei atrasar as notas. Queria ver até que andar você subia pra cobrar."
    ],
    [
     "kevin",
-    "Cinquenta e três. Com juros."
+    "Cinquenta e trrrês. Com juros."
    ],
    [
     "dener",
-    "Gostei. Depois disso, me procure. Tenho um serviço."
+    "Gostei. E Kevin: tamanho não é documento. Documento sou eu que assino."
    ]
   ],
   "dede|dener": [
@@ -1055,6 +1059,204 @@
    [
     "dener",
     "É confidencial."
+   ]
+  ],
+  "dede|kevin": [
+   [
+    "dede",
+    "Bah, que guri grande! Te criaram com quê, fermento?"
+   ],
+   [
+    "kevin",
+    "Polenta e frango, que Colombo é terra de italiano. E esse sotaque arrastado, termina a frase hoje?"
+   ],
+   [
+    "dede",
+    "Olha o sujo falando do mal lavado. 'Porrrta', 'carrrne', 'verrrde'..."
+   ],
+   [
+    "kevin",
+    "Pelo menos eu termino a frase antes do tiro."
+   ]
+  ],
+  "dede|edgard": [
+   [
+    "edgard",
+    "Um gaúcho de bombacha! Cara, isso é muito metal. Parece capa de disco de folk metal."
+   ],
+   [
+    "dede",
+    "Bah, e tu? De preto nesse calor, cheio de corrente. Parece portão de estância."
+   ],
+   [
+    "edgard",
+    "Hahaha! Boa! E esse sotaque arrastado, é o disco que tá em rotação lenta?"
+   ],
+   [
+    "dede",
+    "É charme campeiro, vivente. Te aprochega que eu te mostro o refrão."
+   ]
+  ],
+  "dede|michael": [
+   [
+    "michael",
+    "Coé, gaúcho! Na moral, roupa maneira. Só fala mais devagar não, senão eu durmo."
+   ],
+   [
+    "dede",
+    "Bah! E tu, que chia que nem chaleira? 'Doix', 'trêix', 'paxtel'..."
+   ],
+   [
+    "michael",
+    "Hahaha, é o sotaque, parceiro. Bora combinar: quem perder ensina o outro a falar."
+   ],
+   [
+    "dede",
+    "Fechado, tchê. Já vou te ensinando: 'bah' se fala antes de apanhar."
+   ]
+  ],
+  "eneias|santana": [
+   [
+    "eneias",
+    "Rapaz, tu é lá do Rio também? Esse chiado não me engana."
+   ],
+   [
+    "santana",
+    "AFIRMATIVO. ORIGEM: RIO DE JANEIRO. SAUDADE DETECTADA: PRAIA, MATE, BISHCOITO."
+   ],
+   [
+    "eneias",
+    "Coitado. Te tiraram até o boteco. Quando isso acabar eu te pago um chope, na paz."
+   ],
+   [
+    "santana",
+    "CHOPE... ERRO. ERRO BOM. MAS PRIMEIRO EU PRECISO TE BATER. FOI MAL."
+   ]
+  ],
+  "edgard|eneias": [
+   [
+    "edgard",
+    "Seu Eneias! O senhor é o cara mais tranquilo desse torneio. Devia ter uma banda de reggae."
+   ],
+   [
+    "eneias",
+    "E tu o mais animado, meu filho. Todo de preto e rindo à toa. Parece velório com open bar."
+   ],
+   [
+    "edgard",
+    "HAHAHA! Vou botar isso numa camiseta. Depois da luta, Bar do Zé?"
+   ],
+   [
+    "eneias",
+    "Se ainda tiver bar. Por isso eu tô aqui. Bora logo, na paz."
+   ]
+  ],
+  "edgard|michael": [
+   [
+    "michael",
+    "Coé, roqueiro! Tu toca no meu casamento? Tô precisando de banda."
+   ],
+   [
+    "edgard",
+    "Toco! Mas só sei heavy metal. A valsa vai sair em ré menor e no talo."
+   ],
+   [
+    "michael",
+    "A noiva me mata. Deixa eu ganhar o prêmio primeiro, depois a gente vê o repertório."
+   ],
+   [
+    "edgard",
+    "Fechado. Quem ganhar escolhe a música. Já aviso: eu vou de Iron Maiden."
+   ]
+  ],
+  "kevin|van": [
+   [
+    "van",
+    "Minha nossa, que homem grande. Moço, chega pra lá que você tá fazendo sombra no carrinho."
+   ],
+   [
+    "kevin",
+    "Desculpa, senhora. ...Que cheiro é esse?"
+   ],
+   [
+    "van",
+    "Fralda. Ela mamou muito leite. Você tem cara de quem troca fralda bem. Braço firme."
+   ],
+   [
+    "kevin",
+    "Eu... isso não tá no meu contrato. Vamos lutar logo, pelo amor de Deus."
+   ]
+  ],
+  "laura|van": [
+   [
+    "laura",
+    "Van! Oxe, tu também nesse torneio? E com a menina no colo?"
+   ],
+   [
+    "van",
+    "Não tinha com quem deixar, mulher! E eu devo trezentas meias. Não pergunta."
+   ],
+   [
+    "laura",
+    "Eu ia dar um cacete em todo mundo aqui, mas em tu dá até pena."
+   ],
+   [
+    "van",
+    "Pena nada. Bate direito que eu tô com pressa. Só não acorda ela, visse?"
+   ]
+  ],
+  "laura|santana": [
+   [
+    "laura",
+    "Eita, que armário. Tu é grande assim de fábrica ou tomou fermento?"
+   ],
+   [
+    "santana",
+    "DE FÁBRICA. LITERALMENTE. MODELO T-900, TAMANHO GG."
+   ],
+   [
+    "laura",
+    "Pois quanto maior, mais bonito o tombo. Vou te dar um cacete pra tu ver o que é bom."
+   ],
+   [
+    "santana",
+    "ANÁLISE: HUMANA PEQUENA, RAIVA GRANDE. RECOMENDAÇÃO: CUIDADO."
+   ]
+  ],
+  "dener|laura": [
+   [
+    "laura",
+    "É tu o dono disso tudo? Desse tamanho? Oxe, eu tenho almofada maior."
+   ],
+   [
+    "dener",
+    "Laura. Escritora. Faixa-preta. Pavio curto. Está tudo na sua ficha."
+   ],
+   [
+    "laura",
+    "Pois anota mais uma: vou te dar um cacete pra tu ver o que é bom."
+   ],
+   [
+    "dener",
+    "Anotado. Em fonte pequena."
+   ]
+  ],
+  "dener|santana": [
+   [
+    "dener",
+    "Santana. Dois metros de tecnologia. Eu aprovei o seu orçamento."
+   ],
+   [
+    "santana",
+    "CHEFE DETECTADO. ...ONDE? AJUSHTANDO SENSOR PARA BAIXO. AH. AÍ."
+   ],
+   [
+    "dener",
+    "Todo mundo faz essa piada. Só você tem a desculpa de ser hardware."
+   ],
+   [
+    "santana",
+    "DESHCULPA, CHEFE. MAS MINHA DIRETRIZ É VENCER. ATÉ DO SENHOR."
    ]
   ]
  }

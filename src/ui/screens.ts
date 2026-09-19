@@ -188,7 +188,7 @@ export class Screens {
       full = ln.text; shown = 0; textEl.textContent = '';
       // fonte grande e dinâmica: fala curta é gritada em letra enorme; fala em maiúsculas (robôs, monstro) treme
       const shout = full === full.toUpperCase() && /[A-ZÀ-Ú]{3}/.test(full);
-      textEl.style.fontSize = `${full.length < 28 ? 46 : full.length < 55 ? 36 : full.length < 90 ? 29 : 24}px`;
+      textEl.style.fontSize = `${full.length < 28 ? 46 : full.length < 55 ? 36 : full.length < 85 ? 29 : full.length < 120 ? 24 : 21}px`;
       textEl.className = `vs-text${shout ? ' shout' : ''}`; talk.classList.remove('pop'); void talk.offsetWidth; talk.classList.add('pop');
     };
     this.onConfirm = next;
