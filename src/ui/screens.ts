@@ -243,7 +243,8 @@ export class Screens {
   askName(title: string, onOk: (name: string) => void) {
     this.set('lobby', `<div class="center"><div class="title-sm">${title}</div><div class="pix small">DIGITE SEU NOME PRO RANKING</div><input class="lb-input" maxlength="14" placeholder="SEU NOME" autofocus><div class="lb-btn" data-ok>GRAVAR</div></div>`);
     const inp = this.root.querySelector<HTMLInputElement>('.lb-input')!;
-    const ok = () => { const v = inp.value.trim().toUpperCase(); if (v) onOk(v); };
+    let sent = false;
+    const ok = () => { const v = inp.value.trim().toUpperCase(); if (!v || sent) return; sent = true; inp.disabled = true; this.root.querySelector<HTMLElement>('[data-ok]')!.textContent = 'GRAVANDO…'; onOk(v); };
     inp.addEventListener('keydown', (e) => { e.stopPropagation(); if (e.key === 'Enter') ok(); }); inp.addEventListener('keyup', (e) => e.stopPropagation());
     this.root.querySelector<HTMLElement>('[data-ok]')!.onclick = ok; setTimeout(() => inp.focus(), 50);
   }

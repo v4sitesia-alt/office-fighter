@@ -14,7 +14,7 @@ import { Screens } from './ui/screens';
 import { Intro, INTRO_END } from './ui/intro';
 import { bindCabinet } from './ui/touch';
 import { Lobby, type NetMatchCfg } from './net/lobby';
-import { maskOf, NetSession } from './net/netplay';
+import { maskOf, NetSession, WatchSession } from './net/netplay';
 import { joinRoom, type Room } from './net/transport';
 import * as store from './net/store';
 
@@ -142,7 +142,10 @@ function startFight() {
 function finishArcade() {
   const score = arcadeScore; arcadeScore = 0;
   if (score <= 0) { goTitle(); return; }
+  let saved = false;
   const save = (name: string) => {
+    if (saved) return;            // Enter repetido / vários cliques em GRAVAR gravavam a mesma pontuação várias vezes
+    saved = true;
     try { localStorage.setItem('v4f-name', name); } catch { /* sem storage */ }
     let id = ''; try { id = sessionStorage.getItem('v4f-id') ?? Math.random().toString(36).slice(2, 10); sessionStorage.setItem('v4f-id', id); } catch { /* sem storage */ }
     void store.submitScore(id, { name, fighter: roster[playerIdx].def.id, score }).catch(() => undefined).then(() => showRanking(score));
@@ -180,18 +183,37 @@ function showSelect() {
 let online = false;
 let lobby: Lobby | null = null;
 let session: NetSession | null = null;
-let netRoom: Room | null = null;
+let watchSession: WatchSession | null = null;
+let netRoom: Room | null = null, watchRoom: Room | null = null;
 let netCfg: NetMatchCfg | null = null;
 let netMenuOpen = false, netOver = false;
+const netStatus = document.createElement('div'); netStatus.className = 'net-status';
+const netPing = document.createElement('div'); netPing.className = 'net-ping';
+document.querySelector('.screen')!.append(netStatus, netPing);
 
 function openLobby() {
   screens.hide();
-  lobby ??= new Lobby(document.getElementById('screens')!, document.getElementById('room')!, roster, startNetMatch, () => { lobby?.close(); lobby = null; goTitle(); }, () => showSelect());
+  lobby ??= new Lobby(document.getElementById('screens')!, document.getElementById('room')!, roster, {
+    start: startNetMatch,
+    abort: (matchId, why) => { if (netCfg?.matchId === matchId && session && !session.connected) abortNetMatch(why); },
+    exit: () => { lobby?.close(); lobby?.dispose(); lobby = null; goTitle(); },
+    changeFighter: () => showSelect(),
+  });
   setMode('lobby');
   lobby.open(roster[playerIdx].def.id);
 }
 
+const otherName = () => (netCfg ? netCfg.names[netCfg.local === 1 ? 0 : 1] : '');
+
+function closeNetRooms() {
+  netRoom?.leave(); watchRoom?.leave(); netRoom = null; watchRoom = null; session = null; watchSession = null;
+  loop.setBackground(false);
+  netStatus.className = 'net-status'; netPing.textContent = '';
+}
+
 function startNetMatch(cfg: NetMatchCfg) {
+  if (session || watchSession) closeNetRooms();          // ex.: aceitou um desafio enquanto assistia
+  paused = false;
   const fa = roster.find((r) => r.def.id === cfg.f[0]) ?? roster[0], fb = roster.find((r) => r.def.id === cfg.f[1]) ?? roster[0];
   const vs = `${cfg.names[0]} x ${cfg.names[1]}`;
   let over = false;
@@ -200,6 +222,7 @@ function startNetMatch(cfg: NetMatchCfg) {
     message: (t, f, k) => hud.message(t, f, k),
     end: (winner) => {
       if (over || netOver) return; over = true; netOver = true;
+      session?.flushFeed();
       if (cfg.local === 0 && winner >= 0) lobby?.report(cfg, winner as 0 | 1);
       hud.message(winner >= 0 ? `${cfg.names[winner as 0 | 1]} VENCEU` : 'EMPATE', 200, 'small');
       setTimeout(leaveNetMatch, 3500);
@@ -207,47 +230,51 @@ function startNetMatch(cfg: NetMatchCfg) {
   });
   match = m; hud.localIndex = cfg.local; hud.bind(m);
   m.fighters.forEach((f, i) => { (document.querySelectorAll('#hud .name')[i] as HTMLElement).textContent = `${cfg.names[i]} · ${f.def.name}`; });
-  netRoom = joinRoom(`match-${cfg.matchId}`, null, { onMsg: (msg) => session?.onMsg(msg) });
-  session = new NetSession(m, netRoom, cfg.local);
+  if (cfg.local < 0) {
+    watchRoom = joinRoom(`watch-${cfg.matchId}`, null, { onMsg: (msg) => watchSession?.onMsg(msg) });
+    watchSession = new WatchSession(m, watchRoom);
+  } else {
+    netRoom = joinRoom(`match-${cfg.matchId}`, null, { onMsg: (msg) => session?.onMsg(msg) });
+    if (cfg.local === 0) watchRoom = joinRoom(`watch-${cfg.matchId}`, null, { onMsg: (msg) => session?.onWatchMsg(msg) });
+    const s = new NetSession(m, netRoom, cfg.local as 0 | 1, watchRoom);
+    s.onConnect = () => { lobby?.connected(cfg.matchId); audio.sfx('menuConfirm'); };
+    session = s;
+  }
   lobby?.setStatus(cfg.local < 0 ? 'assistindo' : 'lutando', cfg.matchId, vs);
   screens.hide();
   setMode('netfight');
+  loop.setBackground(true);
   if (hasTrack(`fighter-${fb.def.id}`)) audio.music(`fighter-${fb.def.id}`);
 }
 
 function leaveNetMatch() {
-  netRoom?.leave(); netRoom = null; session = null; match = null;
+  closeNetRooms(); match = null;
   if (mode === 'netfight') openLobby();
 }
 
-/** Autoteste do lockstep (console: await __of().netSelfTest()): duas simulações ligadas por uma "rede" com latência
- *  e botões aleatórios têm que terminar exatamente no mesmo estado, e um espectador tardio também. */
-function netSelfTest(frames = 1500, latency = 5) {
-  const queue: { at: number; to: NetSession[]; m: Parameters<NetSession['onMsg']>[0] }[] = [];
-  let now = 0;
-  const sessions: NetSession[] = [];
-  const mk = (local: 0 | 1 | -1) => {
-    const m = new Match(roster[0], roster[1], stageOf(roster[1]), { cpu: null }, { message() {}, end() {} });
-    const ref: { s: NetSession | null } = { s: null };
-    const room: Room = { send: (msg) => queue.push({ at: now + latency + Math.floor(Math.random() * 4), to: sessions.filter((x) => x !== ref.s), m: JSON.parse(JSON.stringify(msg)) }), setPresence() {}, leave() {} };
-    const sess: NetSession = new NetSession(m, room, local); ref.s = sess; sessions.push(sess); return sess;
-  };
-  const hist: Map<number, string>[] = [];
-  const snap = (x: NetSession) => ({ frame: x.frame, st: x.match.fighters.map((f) => [Math.round(f.x * 100), Math.round(f.y * 100), Math.round(f.life * 100), Math.round(f.meter * 100), f.state].join(',')).join(' | ') });
-  const a = mk(0), b = mk(1); let spec: NetSession | null = null;
-  const wasMuted = audio.muted; if (!wasMuted) audio.toggleMute();
-  let ma = 0, mb = 0;
-  for (now = 0; now < frames; now++) {
-    if (now === 400) spec = mk(-1);
-    if (now % 7 === 0) ma = Math.floor(Math.random() * 512); if (now % 5 === 0) mb = Math.floor(Math.random() * 512);
-    for (let i = queue.length - 1; i >= 0; i--) if (queue[i].at <= now) { const q = queue.splice(i, 1)[0]; q.to.forEach((t) => t.onMsg(q.m)); }
-    a.tick(ma); b.tick(mb); spec?.tick(0);
-    sessions.forEach((x, i) => (hist[i] ??= new Map()).set(x.frame, snap(x).st));
-  }
-  if (!wasMuted) audio.toggleMute();
-  const common = Math.min(...sessions.map((x) => x.frame));
-  const at = hist.map((h) => h.get(common));
-  return { frames: sessions.map((x) => x.frame), common, equal: at.every((v) => v !== undefined && v === at[0]), state: at[0], round: a.match.round, wins: a.match.wins };
+/** A luta não vai rolar (ninguém conectou, caiu, cancelou): volta pra sala com o motivo. */
+function abortNetMatch(why: string) {
+  session?.quit();
+  closeNetRooms(); match = null; netMenuOpen = false; screens.hide();
+  if (mode === 'netfight') openLobby();
+  lobby?.note(why);
+}
+
+/** Aviso no meio da tela: conectando / esperando o outro / entrando na transmissão. */
+function paintNetStatus() {
+  let title = '', sub = '';
+  const s = session, w = watchSession;
+  if (s && !s.connected) {
+    const left = Math.max(0, Math.ceil(((netCfg?.connectMs ?? 15000) - (Date.now() - s.born)) / 1000));
+    title = `CONECTANDO COM ${otherName()}…`; sub = `${left}s · V OU PAUSE CANCELA`;
+  } else if (s && s.stalled > 45 && !netOver) {
+    title = `AGUARDANDO ${otherName()}…`; sub = 'A INTERNET DELE OSCILOU OU ELE TROCOU DE JANELA';
+  } else if (w && !w.playing) { title = 'ENTRANDO NA TRANSMISSÃO…'; sub = 'A LUTA APARECE EM INSTANTES'; }
+  const cls = title ? 'net-status show' : 'net-status', html = title ? `<b>${title}</b><i>${sub}</i>` : '';
+  if (netStatus.className !== cls) netStatus.className = cls;
+  if (netStatus.innerHTML !== html) netStatus.innerHTML = html;
+  const ping = s?.connected ? `${Math.round(s.rtt)} ms · atraso ${s.delay}${s.desync ? ' · ⚠ DESSINCRONIZOU' : ''}` : '';
+  if (netPing.textContent !== ping) netPing.textContent = ping;
 }
 
 // ---------- teclas de debug
@@ -258,10 +285,10 @@ window.addEventListener('keydown', (e) => {
 });
 
 // acesso de debug no console: __of().match.fighters[0]
-(window as unknown as { __of: () => unknown }).__of = () => ({ mode, match, debug, input, audio, netSelfTest });
+(window as unknown as { __of: () => unknown }).__of = () => ({ mode, match, debug, input, audio, get session() { return session; }, get watchSession() { return watchSession; }, get lobby() { return lobby; } });
 
 // ---------- loop
-startLoop({
+const loop = startLoop({
   update() {
     input.step();
     const p = input.ports[0];
@@ -276,23 +303,30 @@ startLoop({
       hud.update(match);
       return;
     }
-    if (mode === 'netfight' && session && match) {
-      session.tick(netMenuOpen ? 0 : maskOf(p));
+    if (mode === 'netfight' && match && (session || watchSession)) {
+      const s = session;
+      if (s) {
+        s.tick(netMenuOpen ? 0 : maskOf(p));
+        if (!s.connected && Date.now() - s.born > (netCfg?.connectMs ?? 15000)) { abortNetMatch(`${otherName()} não conectou. Tente de novo.`); return; }
+      } else watchSession!.tick();
+      if (!match) return;
       hud.update(match);
-      if (session.lost) { hud.message('CONEXÃO PERDIDA', 120, 'small'); leaveNetMatch(); }
-      else if (session.quitBy !== null && !netOver) {           // o outro desistiu: quem ficou leva a vitória e registra
+      paintNetStatus();
+      if (s?.lost) { abortNetMatch(`A conexão com ${otherName()} caiu.`); return; }
+      if (watchSession?.lost) { abortNetMatch('A transmissão da luta caiu.'); return; }
+      if (s && s.quitBy !== null && !netOver) {                 // o outro desistiu: quem ficou leva a vitória e registra
         netOver = true; netMenuOpen = false; screens.hide();
-        const w = (1 - session.quitBy) as 0 | 1;
-        if (session.local === w && netCfg) lobby?.report(netCfg, w);
-        hud.message(`${netCfg?.names[session.quitBy] ?? ''} DESISTIU`, 200, 'small');
+        const w = (1 - s.quitBy) as 0 | 1;
+        if (s.local === w && netCfg && s.frame > 100) lobby?.report(netCfg, w);
+        hud.message(s.frame > 100 ? `${otherName()} DESISTIU` : `${otherName()} SAIU`, 200, 'small');
         setTimeout(leaveNetMatch, 2500);
       } else if (netMenuOpen) screens.update(input);
+      else if (s && !s.connected && (p.pressed('pause') || p.pressed('start') || p.pressed('block'))) { abortNetMatch('Desafio cancelado.'); return; }
       else if ((p.pressed('pause') || p.pressed('start')) && !netOver) {
         netMenuOpen = true;
-        const s = session;
-        screens.netMenu(s.local < 0, () => { netMenuOpen = false; screens.hide(); }, () => {
+        screens.netMenu(!s, () => { netMenuOpen = false; screens.hide(); }, () => {
           netMenuOpen = false; screens.hide();
-          if (s.local >= 0) { netRoom?.send({ t: 'quit', p: s.local }); netOver = true; }
+          if (s) { s.quit(); netOver = true; }
           leaveNetMatch();
         });
       }

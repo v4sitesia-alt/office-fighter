@@ -10,32 +10,41 @@ export interface Room {
   send(m: Msg): void;
   setPresence(me: Peer): void;
   leave(): void;
+  ready(): boolean;               // inscrito na sala (antes disso as mensagens ficam na fila)
 }
-export interface RoomHandlers { onMsg(m: Msg): void; onPeers?(peers: Peer[]): void }
+export interface RoomHandlers { onMsg(m: Msg): void; onPeers?(peers: Peer[]): void; onStatus?(ok: boolean): void }
 
 const URL_ = (import.meta.env.VITE_SUPABASE_URL as string | undefined) ?? 'https://rijffrhwuwouogurovkz.supabase.co';
 const KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
 export const ONLINE = !!(URL_ && KEY);
 let client: SupabaseClient | null = null;
-export const supa = () => (client ??= createClient(URL_!, KEY!, { realtime: { params: { eventsPerSecond: 20 } } }));
+export const supa = () => (client ??= createClient(URL_!, KEY!));
 
 export function joinRoom(name: string, me: Peer | null, h: RoomHandlers): Room {
   return ONLINE ? supabaseRoom(name, me, h) : localRoom(name, me, h);
 }
 
 function supabaseRoom(name: string, me: Peer | null, h: RoomHandlers): Room {
-  const ch: RealtimeChannel = supa().channel(`v4f:${name}`, { config: { broadcast: { self: false, ack: false }, presence: { key: me?.id ?? '' } } });
+  const ch: RealtimeChannel = supa().channel(`v4f:${name}`, { config: { broadcast: { self: false, ack: false }, ...(me ? { presence: { key: me.id } } : {}) } });
   ch.on('broadcast', { event: 'm' }, ({ payload }) => h.onMsg(payload as Msg));
-  ch.on('presence', { event: 'sync' }, () => {
+  if (h.onPeers) ch.on('presence', { event: 'sync' }, () => {
     const st = ch.presenceState() as Record<string, unknown[]>;
     h.onPeers?.(Object.values(st).map((arr) => arr[arr.length - 1] as unknown as Peer).filter((p) => p && p.id));
   });
-  let ready = false; let pending: Peer | null = me;
-  ch.subscribe((status) => { if (status === 'SUBSCRIBED') { ready = true; if (pending) void ch.track(pending); } });
+  // Até a inscrição confirmar (~1,5 s), o supabase-js mandaria cada mensagem por uma requisição HTTP separada.
+  // Em vez disso elas esperam numa fila curta e saem juntas quando a sala abre.
+  let ready = false; let pending: Peer | null = me; const queue: Msg[] = [];
+  const push = (m: Msg) => void ch.send({ type: 'broadcast', event: 'm', payload: m });
+  ch.subscribe((status) => {
+    if (status === 'SUBSCRIBED') { ready = true; if (pending) void ch.track(pending); queue.splice(0).forEach(push); h.onStatus?.(true); }
+    else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') { ready = false; h.onStatus?.(false); }
+    else if (status === 'CLOSED') ready = false;
+  });
   return {
-    send: (m) => { void ch.send({ type: 'broadcast', event: 'm', payload: m }); },
+    send: (m) => { if (ready) push(m); else { queue.push(m); if (queue.length > 60) queue.shift(); } },
     setPresence: (p) => { pending = p; if (ready) void ch.track(p); },
-    leave: () => { void supa().removeChannel(ch); },
+    leave: () => { ready = false; void supa().removeChannel(ch); },
+    ready: () => ready,
   };
 }
 
@@ -56,10 +65,11 @@ function localRoom(name: string, me: Peer | null, h: RoomHandlers): Room {
     for (const [id, v] of peers) if (now - v.seen > 3500) { peers.delete(id); changed = true; }
     if (changed) emit();
   };
-  const timer = window.setInterval(beat, 1000); beat(); emit();
+  const timer = setInterval(beat, 1000); beat(); emit();
   return {
     send: (m) => bc.postMessage(m),
     setPresence: (p) => { self = p; beat(); emit(); },
     leave: () => { if (self) bc.postMessage({ t: '__bye', id: self.id }); clearInterval(timer); bc.close(); },
+    ready: () => true,
   };
 }

@@ -372,3 +372,16 @@ html, body { overscroll-behavior: none; touch-action: manipulation; -webkit-touc
 .rk-row { display: flex; gap: 10px; align-items: center; font-size: 9px; padding: 6px 8px; background: rgba(255,255,255,.05); margin-bottom: 4px; } .rk-row b { color: var(--yellow); width: 30px; font-weight: normal; } .rk-row span { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; } .rk-row i { font-style: normal; color: #9fe8a8; }
 .rk-row.hot { background: var(--yellow); color: #222; } .rk-row.hot b, .rk-row.hot i { color: #222; }
 .sf2-slot.secret.hidden.art img { filter: none; opacity: 1; } .sf2-slot.secret.hidden.art::after { display: none; }
+
+/* ---------- arena: convite com contagem, status da conexão na luta */
+.inv-btns { display: flex; gap: 8px; justify-content: center; margin-top: 8px; }
+.rm-alert b, .lb-modal b, .lb-sent b { color: var(--yellow); font-weight: normal; }
+.rm-alert.sent { animation: none; border-style: dashed; } .rm-alert.sent .rm-btn { margin-top: 6px; }
+.lb-sent { grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; gap: 14px; padding: 8px; border: 2px dashed var(--yellow); background: rgba(255,210,63,.08); }
+.lb-btn.off, .rm-btn.off { opacity: .35; pointer-events: none; }
+.rm-note { font-size: 6px; line-height: 1.8; color: #b9c6e4; padding: 2px 0; }
+.net-status { position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 12px; background: rgba(4,6,20,.55); z-index: 8; pointer-events: none; text-align: center; }
+.net-status.show { display: flex; }
+.net-status b { font-family: var(--logo); font-size: 40px; letter-spacing: 2px; color: var(--yellow); text-shadow: 3px 3px 0 #000; font-weight: normal; animation: pulse 1s ease-in-out infinite; }
+.net-status i { font-style: normal; font-size: 9px; color: #fff; text-shadow: 2px 2px 0 #000; letter-spacing: 1px; }
+.net-ping { position: absolute; top: 74px; left: 0; right: 0; text-align: center; font-size: 7px; color: rgba(255,255,255,.7); text-shadow: 1px 1px 0 #000; z-index: 7; pointer-events: none; }

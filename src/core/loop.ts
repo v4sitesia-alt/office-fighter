@@ -1,5 +1,8 @@
 // Loop de passo fixo a 60 fps com acumulador. A lógica de combate roda sempre em
 // passos inteiros de 1/60 s (frame data determinística); o render roda por rAF.
+//
+// Com a aba escondida o navegador para o requestAnimationFrame. Numa luta online isso congelaria os DOIS
+// jogadores, então, quando pedido (setBackground), um Worker segue batendo 60x/s e a simulação continua.
 
 export const STEP_MS = 1000 / 60;
 const MAX_STEPS = 5; // evita espiral da morte se a aba ficar em segundo plano
@@ -14,9 +17,10 @@ export function startLoop(hooks: LoopHooks) {
   let last = performance.now();
   let frame = 0;
   let rafId = 0;
+  let background = false;
+  let worker: Worker | null = null;
 
-  function tick(now: number) {
-    rafId = requestAnimationFrame(tick);
+  function step(now: number, draw: boolean) {
     let dt = now - last;
     last = now;
     if (dt > 250) dt = 250; // voltou de aba oculta: não tenta compensar tudo
@@ -28,8 +32,25 @@ export function startLoop(hooks: LoopHooks) {
       steps++;
     }
     if (steps === MAX_STEPS) acc = 0;
-    hooks.render(acc / STEP_MS);
+    if (draw) hooks.render(acc / STEP_MS);
   }
+  function tick(now: number) {
+    rafId = requestAnimationFrame(tick);
+    step(now, true);
+  }
+  function syncWorker() {
+    const want = background && document.hidden;
+    if (want && !worker) {
+      const src = 'setInterval(() => postMessage(0), 16);';
+      worker = new Worker(URL.createObjectURL(new Blob([src], { type: 'text/javascript' })));
+      worker.onmessage = () => { if (document.hidden) step(performance.now(), false); };
+    } else if (!want && worker) { worker.terminate(); worker = null; }
+  }
+  document.addEventListener('visibilitychange', () => { last = performance.now(); acc = 0; syncWorker(); });
   rafId = requestAnimationFrame(tick);
-  return { stop: () => cancelAnimationFrame(rafId) };
+  return {
+    stop: () => { cancelAnimationFrame(rafId); background = false; syncWorker(); },
+    /** true = segue simulando mesmo com a aba escondida (luta online). */
+    setBackground: (on: boolean) => { background = on; syncWorker(); },
+  };
 }
