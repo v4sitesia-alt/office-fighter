@@ -197,7 +197,7 @@ export class Match {
   private drainSpawns() {
     for (const f of this.fighters) {
       for (const sp of f.spawns) {
-        if (sp.kind === 'projectile') { this.projectiles.push(new Projectile(f, sp.move)); audio.sfx('projectile'); }
+        if (sp.kind === 'projectile') { const pr = new Projectile(f, sp.move); pr.target = this.fighters[1 - f.playerIndex]; this.projectiles.push(pr); audio.sfx('projectile'); }
         else if (sp.kind === 'beam') audio.sfx('projectile');
         else if (sp.kind === 'fx') { this.fx.hit(sp.x, sp.y ?? GROUND_Y - 80, f.def.colors.primary, true); audio.sfx('hitBig'); continue; }
         else { this.zones.push(new Zone(f, sp.move, sp.x)); audio.sfx(sp.move.kind === 'dive' ? 'explosion' : 'portal'); }

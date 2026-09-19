@@ -87,6 +87,8 @@ export class Ai {
       else { this.debug = 'defende o pulo'; this.set(['block'], 18); }
       return;
     }
+    // oponente carregando energia: não adianta bater (intocável) e a aura machuca -> sai de perto e se prepara pra defender o raio
+    if (ot.charging) { this.debug = 'foge da aura'; this.set(dx < 170 ? [back] : ['block'], 12); return; }
     // oponente em startup perto: defende (agachado se o golpe for baixo)
     if (ot.state === 'attacking' && ot.phase !== 'recovery' && dx < Math.max(reach + 80, this.threat()) && this.rng.chance(p.blockChance)) {
       const low = !!ot.move?.low, over = !!ot.move?.overhead;
@@ -100,7 +102,7 @@ export class Ai {
     }
     // super com barra cheia
     if (me.meter >= 100 && M.super && this.superCd <= 0) {
-      const kind = M.super.kind ?? (M.super.projectile ? 'shot' : 'ground');
+      const kind = M.super.kind ?? (M.super.projectile || M.super.beam ? 'shot' : 'ground');
       if ((kind === 'portal' && this.rng.chance(p.specialChance * 0.6)) || (kind === 'dive' && dx < 430 && this.rng.chance(p.specialChance))
         || (kind === 'shot' && dx > 220 && this.rng.chance(p.specialChance * 0.7))
         || (kind === 'ground' && dx < 260 && this.rng.chance(p.specialChance))

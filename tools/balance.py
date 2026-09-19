@@ -34,9 +34,9 @@ FICHA = [
     ('dias',     0.88,  1.30,  0.95,  1.05, 'rapido',   12,    25),
     ('michael',  1.10,  1.05,  0.95,  1.00, 'normal',   13,    27),
     ('eneias',   1.18,  0.85,  1.00,  1.30, 'firme',    13,    28),
-    ('van',      0.92,  1.20,  1.10,  0.95, 'normal',   13,    25),
+    ('van',      0.92,  1.20,  1.10,  0.95, 'normal',   13,    6),           # raio contínuo: até 5 acertos + aura
     ('landim',   0.95,  1.05,  1.25,  0.95, 'normal',   13,    7),           # claquete bumerangue: até 4 acertos
-    ('crm',      1.30,  0.70,  1.30,  1.50, 'maquina',  15,    27),
+    ('crm',      1.30,  0.60,  1.30,  1.50, 'maquina',  15,    27),
     ('leo',      1.15,  1.15,  1.15,  1.10, 'normal',   13,    8),          # x3 drones
     ('xablau',   1.22,  0.75,  1.00,  1.40, 'lento',    13,    28),
     ('mundim',   1.10,  1.00,  1.25,  1.10, 'normal',   13,    25),
@@ -63,12 +63,12 @@ ALCANCE = {
  'dede': {'heavy': (25, -230, 105, 190), 'kick': (40, -170, 115, 70)}, 'michael': {'heavy': (25, -230, 108, 190), 'kick': (40, -170, 115, 70)},
  'van': {'heavy': (25, -230, 108, 190), 'kick': (40, -170, 118, 72)}, 'landim': {'heavy': (25, -230, 108, 190), 'kick': (40, -170, 118, 72)},
  'dias': {'heavy': (25, -230, 100, 190)},
- 'crm': {'punch': (45, -112, 70, 70), 'kick': (35, -120, 75, 110), 'heavy': (45, -104, 78, 96), 'lowKick': (30, -90, 85, 80)},
+ 'crm': {},
  'leo': {'kick': (40, -145, 100, 95), 'heavy': (30, -165, 85, 110)},
  'mundim': {'heavy': (36, -192, 118, 134)},      # unidades do board novo (2026-09-19), escala 1,10
 }
 # Golpe longo (frente + forte): é um cutucão de longe, tira menos que o forte.
-LONGO = {'edgard': 10, 'santana': 11, 'kevin': 11, 'laura': 9, 'dede': 10, 'michael': 11, 'dias': 9, 'landim': 9}
+LONGO = {'edgard': 10, 'santana': 11, 'kevin': 11, 'laura': 9, 'dede': 10, 'michael': 11, 'dias': 9, 'landim': 9, 'van': 9}
 # Dias: combo de porrada. O golpe que encostou pode ser cortado no seguinte (soco -> soco/chute -> forte), até 3 emendas.
 CHAIN = {'dias': {'punch': ['punch', 'kick'], 'kick': ['heavy'], 'lowPunch': ['punch', 'kick']}}
 

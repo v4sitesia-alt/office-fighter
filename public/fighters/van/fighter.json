@@ -104,11 +104,14 @@
   },
   "win": {
    "frames": [
-    15,
-    0
+    40,
+    41,
+    42,
+    43,
+    44
    ],
-   "fps": 2,
-   "loop": true
+   "fps": 4,
+   "loopFrom": 4
   }
  },
  "moves": {
@@ -128,7 +131,7 @@
    "startup": 3,
    "active": 3,
    "recovery": 6,
-   "damage": 6.0,
+   "damage": 5.3,
    "hitstun": 12,
    "blockstun": 8,
    "hitbox": {
@@ -156,7 +159,7 @@
    "startup": 6,
    "active": 3,
    "recovery": 9,
-   "damage": 9.6,
+   "damage": 8.4,
    "hitstun": 15,
    "blockstun": 10,
    "hitbox": {
@@ -184,7 +187,7 @@
    "startup": 10,
    "active": 4,
    "recovery": 16,
-   "damage": 16.8,
+   "damage": 14.8,
    "hitstun": 24,
    "blockstun": 14,
    "hitbox": {
@@ -196,6 +199,36 @@
    "knockback": 12,
    "launch": -5,
    "hitstop": 9
+  },
+  "long": {
+   "name": "FRALDA TÓXICA",
+   "phases": {
+    "startup": [
+     30,
+     31,
+     32
+    ],
+    "active": [
+     33
+    ],
+    "recovery": [
+     34
+    ]
+   },
+   "startup": 16,
+   "active": 8,
+   "recovery": 22,
+   "damage": 9.5,
+   "hitstun": 22,
+   "blockstun": 16,
+   "hitbox": {
+    "x": 50,
+    "y": -170,
+    "w": 210,
+    "h": 150
+   },
+   "knockback": 15,
+   "hitstop": 8
   },
   "airPunch": {
    "kind": "air",
@@ -213,7 +246,7 @@
    "startup": 4,
    "active": 8,
    "recovery": 4,
-   "damage": 7.2,
+   "damage": 6.3,
    "hitstun": 14,
    "blockstun": 10,
    "overhead": true,
@@ -243,7 +276,7 @@
    "startup": 5,
    "active": 10,
    "recovery": 4,
-   "damage": 10.8,
+   "damage": 9.5,
    "hitstun": 16,
    "blockstun": 12,
    "overhead": true,
@@ -273,7 +306,7 @@
    "startup": 7,
    "active": 8,
    "recovery": 6,
-   "damage": 14.4,
+   "damage": 12.7,
    "hitstun": 22,
    "blockstun": 14,
    "overhead": true,
@@ -305,7 +338,7 @@
    "startup": 4,
    "active": 3,
    "recovery": 7,
-   "damage": 4.8,
+   "damage": 4.2,
    "hitstun": 11,
    "blockstun": 8,
    "low": true,
@@ -335,7 +368,7 @@
    "startup": 6,
    "active": 6,
    "recovery": 12,
-   "damage": 8.4,
+   "damage": 7.4,
    "hitstun": 18,
    "blockstun": 12,
    "low": true,
@@ -366,7 +399,7 @@
    "startup": 8,
    "active": 4,
    "recovery": 14,
-   "damage": 12.0,
+   "damage": 10.5,
    "hitstun": 20,
    "blockstun": 14,
    "low": true,
@@ -427,35 +460,60 @@
   "super": {
    "phases": {
     "startup": [
-     30,
-     31,
-     32
+     35,
+     36,
+     37,
+     37
     ],
     "active": [
-     33
+     39
     ],
     "recovery": [
-     34
+     38,
+     35
     ]
    },
-   "startup": 18,
-   "active": 10,
-   "recovery": 20,
-   "damage": 25,
-   "hitstun": 30,
-   "blockstun": 18,
+   "startup": 100,
+   "active": 42,
+   "recovery": 24,
+   "damage": 6,
+   "hitstun": 16,
+   "blockstun": 10,
    "hitbox": {
-    "x": 50,
-    "y": -170,
-    "w": 210,
-    "h": 150
+    "x": 0,
+    "y": 0,
+    "w": 0,
+    "h": 0
    },
-   "knockback": 16,
-   "knockdown": true,
-   "launch": -8,
+   "knockback": 2,
    "meterCost": 100,
-   "hitstop": 12,
-   "name": "FRALDA TÓXICA"
+   "hitstop": 3,
+   "name": "AMOR DE MÃE",
+   "aura": {
+    "box": {
+     "x": -105,
+     "y": -250,
+     "w": 210,
+     "h": 250
+    },
+    "damage": 4,
+    "hitstun": 16,
+    "blockstun": 10,
+    "knockback": 14,
+    "every": 22
+   },
+   "beam": {
+    "x": 52,
+    "y": -90,
+    "reach": 680,
+    "grow": 80,
+    "thick": 56,
+    "every": 8,
+    "start": "raio-inicio.png",
+    "mid": "raio-meio.png",
+    "end": "raio-fim.png",
+    "overlap": 2
+   }
   }
  },
  "gender": "f"

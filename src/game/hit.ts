@@ -39,7 +39,8 @@ export function resolveHits(fighters: [Fighter, Fighter], projectiles: Projectil
     if (atk.move?.kind === 'throw') continue;
     const hb = atk.hitbox, hurt = def.hurtbox;
     if (hb && hurt && overlaps(hb, hurt)) {
-      const m = atk.move!;
+      const aura = atk.charging ? atk.move!.aura! : null;
+      const m = aura ? { ...atk.move!, ...aura, knockdown: false, launch: undefined, beam: undefined } : atk.move!;
       atk.hasHit = true;
       if (m.beam) atk.beamStop = atk.facing === 1 ? hurt.x + hurt.w * 0.35 : hurt.x + hurt.w * 0.65;   // entra um pouco no corpo do alvo
       const blocked = isBlocked(def, m.low, m.overhead);

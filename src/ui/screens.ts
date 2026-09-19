@@ -174,7 +174,7 @@ export class Screens {
         <div class="pix small vs-label">${label}</div>
         <img class="vs-logo" src="${base}versus/vs.png" alt="VS">
         <div class="vs-talk"><div class="vs-who"></div><div class="vs-text"></div><div class="vs-next">▼</div></div>
-        <div class="pix tiny vs-hint">G / ENTER CONTINUA</div></div>`);
+        <div class="pix tiny vs-hint">G / ENTER ADIANTA · V PULA</div></div>`);
     const stage = this.root.querySelector<HTMLElement>('.vs-stage')!, talk = stage.querySelector<HTMLElement>('.vs-talk')!;
     const whoEl = stage.querySelector<HTMLElement>('.vs-who')!, textEl = stage.querySelector<HTMLElement>('.vs-text')!;
     let idx = -1, shown = 0, full = '';
@@ -183,8 +183,7 @@ export class Screens {
       if (++idx >= script.length) { onGo(); return; }
       const ln = script[idx], f = ln.who === 0 ? a : b;
       stage.dataset.speaker = ln.who === 0 ? 'l' : 'r'; stage.classList.add('talking');
-      stage.querySelector('.vs-hint')!.textContent = 'G / ENTER AVANÇA · V PULA';
-      talk.style.setProperty('--c', f.def.colors.primary);
+            talk.style.setProperty('--c', f.def.colors.primary);
       whoEl.textContent = f.def.name + (ln.who === 1 && hueB ? ' 2.0' : '');
       full = ln.text; shown = 0; textEl.textContent = '';
       // fonte grande e dinâmica: fala curta é gritada em letra enorme; fala em maiúsculas (robôs, monstro) treme
@@ -195,10 +194,17 @@ export class Screens {
     this.onConfirm = next;
     this.onBack = onGo;
     this.root.onclick = () => next();
+    // ritmo de arcade: ninguém precisa apertar nada. Os dois aparecem (0,9 s), cada fala é digitada rápido (3 letras por frame),
+    // fica na tela o tempo de ler e passa sozinha. G/ENTER ou toque adianta, V pula tudo.
+    let wait = 54;
     this.onTick = () => {
-      if (idx < 0 || shown >= full.length) return;
-      shown++; textEl.textContent = full.slice(0, shown);
-      if (shown % 3 === 0 && full[shown - 1] !== ' ') audio.sfx(script[idx].who === 0 ? 'talkA' : 'talkB');
+      if (idx >= 0 && shown < full.length) {
+        shown = Math.min(full.length, shown + 3); textEl.textContent = full.slice(0, shown);
+        if (full[shown - 1] !== ' ') audio.sfx(script[idx].who === 0 ? 'talkA' : 'talkB');
+        if (shown >= full.length) wait = Math.min(150, 45 + Math.round(full.length * 1.1));
+        return;
+      }
+      if (--wait <= 0) next();
     };
   }
 

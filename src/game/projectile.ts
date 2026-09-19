@@ -4,6 +4,7 @@ import type { Fighter } from './fighter';
 
 export class Projectile {
   x: number; y: number; vx: number; life: number; dead = false; age = 0;
+  vy = 0; target: Fighter | null = null;
   hitsLeft: number; cool = 0; private returning = false; private dir: 1 | -1;
   hitbox: Box;
   img: HTMLImageElement | undefined;
@@ -20,6 +21,17 @@ export class Projectile {
   update() {
     const p = this.move.projectile!;
     if (this.cool > 0) this.cool--;
+    if (p.homing) {                                           // míssil: 1) sobe em arco  2) vira aos poucos na direção do alvo  3) mergulha
+      const sp = p.speed;
+      if (this.age < 16) { this.vx = this.dir * sp * 0.55; this.vy = -sp * (1 - this.age / 22); }
+      else if (this.target) {
+        const ty = GROUND_Y + this.target.y - 90 * this.target.scale, dx = this.target.x - this.x, dy = ty - this.y, d = Math.hypot(dx, dy) || 1;
+        const k = this.age < 70 ? 0.09 : 0.03;                // depois de um tempo para de perseguir: dá pra desviar
+        this.vx += (dx / d * sp - this.vx) * k; this.vy += (dy / d * sp - this.vy) * k;
+      }
+      this.y += this.vy;
+      if (this.y > GROUND_Y - 6) this.dead = true;
+    }
     if (p.boomerang) {                                        // freia até parar, inverte e acelera de volta pra mão
       const half = p.lifetime / 2;
       if (!this.returning && (this.age >= half || this.x < 20 || this.x > W - 20)) { this.returning = true; if (this.hitsLeft > 0) this.cool = 0; }
@@ -36,6 +48,7 @@ export class Projectile {
     ctx.save();
     ctx.translate(this.x, this.y);
     ctx.scale(this.dir, 1);
+    if (this.move.projectile?.homing) ctx.rotate(Math.atan2(this.vy, Math.abs(this.vx) + 0.001) * (this.vx * this.dir < 0 ? -1 : 1) + (this.vx * this.dir < 0 ? Math.PI : 0));
     if (this.move.projectile?.spin) ctx.rotate(this.age * this.move.projectile.spin);
     const pulse = 1 + 0.08 * Math.sin(this.age * 0.6);
     ctx.scale(pulse, pulse);

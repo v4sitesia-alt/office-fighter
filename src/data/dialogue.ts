@@ -19,7 +19,9 @@ function fromBank(bank: Exchange[], a: string, b: string, aIs: 0 | 1): Line[] {
 }
 
 /** attempt = quantas vezes o jogador já perdeu esta luta: na revanche a conversa muda. */
-export function scriptFor(a: string, b: string, mirror: boolean, attempt = 0): Line[] {
+/** Conversa curta: provocação, resposta e tréplica. Nada além disso, pra não esfriar a luta. */
+export function scriptFor(a: string, b: string, mirror: boolean, attempt = 0): Line[] { return fullScript(a, b, mirror, attempt).slice(0, 3); }
+function fullScript(a: string, b: string, mirror: boolean, attempt = 0): Line[] {
   if (mirror || a === b) return S.mirror.map(([w, t]) => ({ who: w === 'A' ? 0 : 1, text: t }));
   if (attempt > 0) return fromBank(B.rematch, a, b, 1);                         // A = o adversário, que ganhou a anterior
   const key = [a, b].sort().join('|'), pair = S.pairs[key];

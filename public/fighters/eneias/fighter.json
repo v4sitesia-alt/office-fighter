@@ -305,7 +305,7 @@
    "startup": 4,
    "active": 3,
    "recovery": 8,
-   "damage": 4.8,
+   "damage": 4.7,
    "hitstun": 11,
    "blockstun": 8,
    "low": true,

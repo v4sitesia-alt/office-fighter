@@ -109,7 +109,7 @@ def grow(own, allowed, iters=None):
     return own
 
 
-def extract(arr, cols, rows, wides, alpha_t, grow_n, split_touching=True, fxm=None):
+def extract(arr, cols, rows, wides, alpha_t, grow_n, split_touching=True, fxm=None, xcuts_fixed=None):
     """Isola as poses de um board RGBA. Devolve (frames, crops, own, xcuts, ycuts); o índice do frame é local (0..).
     fxm = máscara dos pixels de EFEITO (magia): com ela o eixo e a linha dos pés são medidos no corpo."""
     H, W = arr.shape[:2]; cw, ch = W / cols, H / rows
@@ -124,6 +124,7 @@ def extract(arr, cols, rows, wides, alpha_t, grow_n, split_touching=True, fxm=No
         return np.array(out)
     core = alpha > 200
     ycuts, xcuts = find_cuts(core.sum(axis=1), rows, ch) if rows > 1 else np.array([], int), find_cuts(core.sum(axis=0), cols, cw)
+    if xcuts_fixed is not None: xcuts = np.array(xcuts_fixed)      # poses mal distribuídas (um raio comprido ocupa o lugar da vizinha)
     xedges = [0, *xcuts.tolist(), W]
     def cell_of(x, y):
         r, c = int(np.searchsorted(ycuts, y, side='right')), int(np.searchsorted(xcuts, x, side='right'))
@@ -345,6 +346,7 @@ def main():
     ap.add_argument('--grow', type=int, default=EDGE_GROW, help='quantos px de borda/brilho semitransparente devolver à pose mais próxima')
     ap.add_argument('--axis-ignore-smoke', action='store_true', help='mede o eixo e os pés no corpo, ignorando fumaça/poeira clara')
     ap.add_argument('--extra', default=None, help='board extra (golpe longo + vitória), anexado como linhas 8 e 9')
+    ap.add_argument('--extra-cuts', default=None, help='divisórias verticais do board extra, em px do original (ex.: 290,510,784,1104)')
     ap.add_argument('--extra-rows', type=int, default=2); ap.add_argument('--extra-scale', type=float, default=1.0); ap.add_argument('--extra-grow', type=int, default=6)
     for k in ('fx', 'keep', 'drop', 'fx-keep', 'fx-drop', 'core', 'erase'): ap.add_argument(f'--white-{k}', action='append', default=[])
     args = ap.parse_args()
@@ -383,7 +385,8 @@ def main():
 
     if args.extra:
         earr, fxm = load_board(args.extra, args.extra_scale, args)
-        ef, ec, eown, excuts, eycuts = extract(earr, cols, args.extra_rows, [], ALPHA_T, args.extra_grow, split_touching=False, fxm=fxm)
+        fixed = [round(int(t) * args.extra_scale) for t in args.extra_cuts.split(',')] if args.extra_cuts else None
+        ef, ec, eown, excuts, eycuts = extract(earr, cols, args.extra_rows, [], ALPHA_T, args.extra_grow, split_touching=False, fxm=fxm, xcuts_fixed=fixed)
         lost = int(((earr[:, :, 3] > ALPHA_T) & (eown == 0)).sum())
         if lost: print(f'   atenção: {lost} px sólidos do board extra ficaram sem pose', file=sys.stderr)
         if args.debug: debug_images(args.debug.replace('.png', '-extra.png'), earr, eown, excuts, eycuts, [dict(fr, i=fr['i'] + rows * cols) for fr in ef], ec, cols, args.extra_rows)

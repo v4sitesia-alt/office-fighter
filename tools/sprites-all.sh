@@ -42,7 +42,13 @@ run michael $M/michael.png \
   --white-fx-keep 0,150,215,560 --white-fx-keep 1015,150,1254,560 --white-fx-keep 0,640,1254,1100 \
   --white-keep 758,418 --white-keep 623,888 --white-keep 871,894 --white-keep 94,412 --white-keep 1113,408 --white-keep 111,887 --white-keep 1129,896 --white-keep 683,1004
 run eneias  $M/thumb-eneias.png          # os nomes vieram trocados: thumb-eneias.png é o board
-run van     $M/van.png
+# Van: jaqueta e efeito do mesmo rosa, tênis e body brancos: todo branco preso fica. Os raios desenhados nas poses 3 e 4 saem dos
+# frames (o jogo monta o raio contínuo com as peças de baixo do board); a linha 3 do board (peças) não vira frame.
+run van     $M/van.png \
+  --extra $M/van-golpelongo-vitoria.png --extra-scale 0.72 --extra-rows 3 --extra-cuts 290,510,784,1104 --white-fx 295-345:v0.7:s0.06 --white-keep 0,0,1536,1024 \
+  --white-erase 783,0,786,420 --white-erase 1000,100,1104,420 --white-erase 1312,100,1536,420 --white-erase 0,745,1536,1024
+python3 tools/pieces.py $M/van-golpelongo-vitoria.png public/fighters/van --scale 0.72 --fx-hue 295-345:v0.7:s0.06 --keep 0,0,1536,1024 \
+  --piece raio-inicio.png:180,815,300,965:fadeL=14 --piece raio-meio.png:300,815,880,965:tile --piece raio-fim.png:1060,735,1365,1015
 # Landim: macacão amarelo e efeito amarelo (mesmo matiz) e tênis brancos: todo branco preso fica, só saem os vãos dos redemoinhos
 # das claquetes. As 4 claquetes do board viram o projétil bumerangue (tools/pieces.py) e somem dos frames.
 run landim  $M/landim.png --wide 6,2 \
@@ -53,8 +59,7 @@ python3 tools/pieces.py $M/landim-golpelongo-vitoria.png public/fighters/landim 
 run xablau  $M/xablau.png --wide 2,3 --wide 6,2
 run dener   $M/dener.png --alpha 150 --grow 22
 # CRM War Machine e Leo: boards principais com FUNDO BRANCO (recorte do whiteboard.py). Coordenadas em px do board.
-run crm     $M/CRM-warmachine2.png --axis-ignore-smoke --wide 6,3 --crop missil.png:900,1140,1100,1216:erase:rot=-12 \
-  --white-erase 1000,1300 --white-erase 900,1255,935,1295 --white-drop 297,1202 --white-drop 312,1201   # míssil vira projétil · some o mecha pequeno da última célula · miolo da mira é vão
+run crm     $M/CRM-warmachine.png --axis-ignore-smoke --crop missil.png:712,1200,860,1275:erase:rot=-8   # o tanque (pedido do usuário); o míssil vira projétil teleguiado
 run leo     $M/leo.png --white-erase 358,598,540,688 --white-erase 343,598,358,652 --white-erase 500,688,530,702 \
   --crop drone.png:602,1186,686,1250 --white-erase 618,1095,758,1262 --white-erase 575,1095,618,1143 --white-erase 575,1195,618,1262   # o raio do olho sai do frame (vira o raio contínuo abaixo) · o drone vira projétil
 # Raio contínuo do Leo (extensao-raio-leo.png): início (cortado onde o cone tem a altura do trecho do meio e sumindo na emenda),

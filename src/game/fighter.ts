@@ -54,7 +54,8 @@ export class Fighter {
   comboHits = 0;
   comboTaken = 0;              // acertos seguidos que estou levando sem voltar ao neutro (escala o dano do combo)
   chainCount = 0;              // quantos golpes já encadeei nesta sequência
-  beamStop: number | null = null;   // raio: x (de tela) onde ele parou ao encostar no adversário
+  beamStop: number | null = null;
+  private ramp = 0;            // máquina pesada: quantos frames já está andando (pega velocidade aos poucos)   // raio: x (de tela) onde ele parou ao encostar no adversário
   private buffered: { btn: AttackBtn; frame: number } | null = null;
   private frameCounter = 0;
   private flashCanvas: HTMLCanvasElement | null = null;
@@ -238,6 +239,8 @@ export class Fighter {
     this.vx *= 0.8; this.x += this.vx;
     if (m.dash && this.phase !== 'recovery') this.x += m.dash * this.facing;
     if (m.kind === 'portal' && this.stateFrame === m.startup) this.spawns.push({ kind: 'zone', move: m, x: other.x });
+    if (m.aura && this.stateFrame <= m.startup && this.stateFrame % m.aura.every === 0) this.hasHit = false;          // a aura volta a acertar
+    if (m.beam?.every && this.phase === 'active' && (this.stateFrame - m.startup) % m.beam.every === 0) this.hasHit = false;   // raio contínuo
     if (m.beam && this.stateFrame === m.startup) this.spawns.push({ kind: 'beam', move: m, x: this.x });   // som + nome do golpe
     if (m.projectile) {
       const count = m.projectile.count ?? 1, every = m.projectile.every ?? 0;
@@ -314,7 +317,9 @@ export class Fighter {
       this.y = -0.01; this.airAttackUsed = false; this.doubleJumped = false;
       this.setState('jumping'); audio.sfx('jump'); return;
     }
-    const sp = this.def.stats.speed;
+    const inertia = this.def.stats.inertia ?? 0, moving = ctrl.held(fwd) || ctrl.held(back);
+    this.ramp = moving ? this.ramp + 1 : 0;
+    const sp = this.def.stats.speed * (inertia ? Math.min(1, 0.15 + 0.85 * this.ramp / inertia) : 1);
     if (ctrl.held(fwd)) { this.x += WALK_SPEED * sp * this.facing; this.setState('walking'); this.vx = 1; }
     else if (ctrl.held(back)) { this.x -= BACK_SPEED * sp * this.facing; this.setState('walking'); this.vx = -1; }
     else { this.setState('idle'); this.vx = 0; }
@@ -391,10 +396,12 @@ export class Fighter {
   }
   get hurtbox(): Box | null {
     if (this.state === 'ko' || this.state === 'knockdown' || this.state === 'grabbed') return null;
+    if (this.charging) return null;                                        // carregando energia: nada atinge
     return this.toWorld(this.crouched ? this.def.crouchHurtbox : this.def.hurtbox);
   }
   get hitbox(): Box | null {
     const m = this.move;
+    if (this.charging) return this.hasHit ? null : this.toWorld(m!.aura!.box);
     if (this.state !== 'attacking' || !m || this.phase !== 'active' || this.hasHit) return null;
     let hb = m.hitbox;
     if (m.beam) { const len = this.beamLength(); hb = { x: m.beam.x, y: m.beam.y - m.beam.thick / 2, w: len, h: m.beam.thick }; }
@@ -405,6 +412,8 @@ export class Fighter {
     if (hb.w === 0) return null;
     return this.toWorld(hb);
   }
+  /** Está no preparo de um golpe com aura (carregando energia)? */
+  get charging() { return this.state === 'attacking' && !!this.move?.aura && this.phase === 'startup'; }
   /** Comprimento atual do raio, em unidades do sprite (0 fora da fase ativa). */
   beamLength() {
     const m = this.move;
@@ -464,6 +473,7 @@ export class Fighter {
         const list = m.phases[ph as 'startup' | 'active' | 'recovery'];
         const start = ph === 'startup' ? 0 : ph === 'active' ? m.startup : m.startup + m.active;
         const len = ph === 'startup' ? m.startup : ph === 'active' ? m.active : m.recovery;
+        if (m.aura && ph === 'startup') return { frame: F[list[Math.min(list.length - 1, Math.floor(this.stateFrame / 14))] ], anchor };   // cresce e segura o último quadro da carga
         const t = (this.stateFrame - start) / Math.max(1, len);
         return { frame: F[list[Math.min(list.length - 1, Math.floor(t * list.length))]], anchor };
       }

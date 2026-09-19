@@ -44,6 +44,7 @@ export interface ProjectileDef {
   count?: number;              // rajada: quantos projéteis
   every?: number;              // rajada: frames entre um e outro
   sprite?: string;             // arquivo em public/fighters/<id>/ (padrão special_fx.png)
+  homing?: boolean;            // teleguiado: sobe em curva pro céu e desce em cima do adversário
   boomerang?: boolean;         // vai, freia e volta pra mão de quem jogou (some ao chegar)
   hits?: number;               // quantos acertos o mesmo projétil pode dar (padrão 1); entre um e outro espera `rehit` frames
   rehit?: number;
@@ -72,6 +73,7 @@ export interface BeamDef {
   grow: number;                // quanto o raio cresce por frame (unidades do sprite)
   thick: number;               // altura da caixa de acerto (unidades do sprite)
   start: string; mid: string; end: string;   // peças em public/fighters/<id>/
+  every?: number;              // raio contínuo: acerta de novo a cada N frames enquanto estiver ativo
   overlap?: number;            // quanto o trecho do meio entra por baixo do início, onde o início vai sumindo (px da peça)
 }
 
@@ -105,6 +107,8 @@ export interface MoveDef extends HitDef {
   name?: string;
   projectile?: ProjectileDef;
   beam?: BeamDef;
+  /** Carga de energia: durante o preparo o lutador fica INTOCÁVEL e a aura em volta dele acerta quem chegar perto. */
+  aura?: { box: Box; damage: number; hitstun: number; blockstun: number; knockback: number; every: number };
   zone?: ZoneDef;
   throw?: ThrowDef;
 }
@@ -121,7 +125,7 @@ export interface FighterDef {
   origin?: { region: string; city: string; lon: number; lat: number; label?: 'left' | 'right' | 'above' | 'below' };
   stage?: string;               // public/stages/<stage>.png (cenário do lutador)
   scale: number;
-  stats: { speed: number; power: number; weight: number; magic?: number; jump?: number };   // força = power, agilidade = speed, poder = magic
+  stats: { speed: number; power: number; weight: number; magic?: number; jump?: number; inertia?: number }   // inertia = frames pra máquina pesada pegar a velocidade cheia ao andar;   // força = power, agilidade = speed, poder = magic
   hurtbox: Box; crouchHurtbox: Box;
   pushbox: { x: number; w: number };
   anims: Record<string, AnimDef>;
