@@ -14,10 +14,15 @@ SUPER = {
  'dias': 'Barrigada em corrida que atravessa meia tela e lança o adversário longe.',
  'michael': 'Direto em avanço que termina em gancho. O super mais rápido de sair.',
  'eneias': 'Corre, mergulha de barriga e explode no chão. O maior dano bruto do jogo.',
- 'van': 'Aponta o bebê e solta a nuvem tóxica. Área grande à frente, derruba.',
+ 'van': 'Ergue o filho, os dois miram juntos e a rajada verde varre a área à frente. Derruba.',
  'landim': 'Feixe da câmera que dispara a lente como projétil.',
  'xablau': 'Língua com punho que alcança quase a tela inteira.',
  'mundim': 'Abre o paletó e arremessa as garrafas da diretoria.'}
+LONG = {
+ 'edgard': 'Junta as mãos e solta uma revoada de morcegos à frente. Demora pra sair, mas alcança o dobro do golpe forte.',
+ 'santana': 'O braço mecânico se estica em três estágios e acerta de longe, de punho fechado.',
+ 'kevin': 'Saca o cassetete e estoca de longe. A ponta estoura em choque azul.',
+ 'laura': 'Empurra o ar e um tubarão de água avança mordendo. O maior alcance entre os golpes longos.'}
 MAGIC_KIND = {'ball': 'bola de energia', 'slash': 'risco cortante', 'cloud': 'nuvem', 'coin': 'moeda giratória', 'heart': 'coração', 'wave': 'onda rasteira', 'bat': 'morcego'}
 SIDES = [(k, STORY['factions'][k][0], STORY['factions'][k][1]) for k in ('vilao', 'heroi', 'neutro')]
 e = html.escape
@@ -30,6 +35,9 @@ def card(i):
     kind = MAGIC_KIND.get(sp.get('projectile', {}).get('style', ''), 'projétil próprio do lutador')
     sdmg = su.get('throw', {}).get('release', {}).get('damage') or (sum(h['damage'] for h in su['zone']['hits']) + su.get('damage', 0) if 'zone' in su else su['damage'] * su.get('projectile', {}).get('count', 1))
     city = d.get('origin', {}).get('city', 'Origem desconhecida')
+    lg = M.get('long')
+    long_box = f'''
+      <div class="wide"><h4>GOLPE LONGO · frente + J</h4><b>{e(lg.get('name', 'Golpe longo'))}</b><p>{LONG.get(i, '')} Não gasta barra. Dano {lg['damage'] * st['power']:.0f}.</p></div>''' if lg else ''
     return f'''<article class="fighter" style="--c:{c}" id="{i}">
   <div class="art"><img src="versus/{i}.png" alt="{e(d['name'])}" loading="lazy"></div>
   <div class="info">
@@ -39,12 +47,14 @@ def card(i):
     <div class="stats">{bar('FORÇA', st['power'], c)}{bar('AGILIDADE', st['speed'], c)}{bar('PODER', mg, c)}{bar('PESO', st['weight'], c)}</div>
     <div class="moves">
       <div><h4>MAGIA · meia barra</h4><b>{e(sp.get('name', 'Magia'))}</b><p>Lança {kind}. Dano {sp['damage'] * mg:.0f}.</p></div>
-      <div><h4>SUPER · barra cheia</h4><b>{e(su.get('name', 'Super'))}</b><p>{SUPER.get(i, '')} Dano {sdmg * mg:.0f}.</p></div>
+      <div><h4>SUPER · barra cheia</h4><b>{e(su.get('name', 'Super'))}</b><p>{SUPER.get(i, '')} Dano {sdmg * mg:.0f}.</p></div>{long_box}
     </div>
     <div class="stage"><img src="stages/{d.get('stage', 'office')}.png" alt="" loading="lazy"><span>CENÁRIO</span></div>
   </div></article>'''
 sections = ''.join(f'<h2 class="side">{t}</h2><p class="lead">{s}</p>' + ''.join(card(i) for i in ROSTER if F[i].get('side', 'heroi') == k) for k, t, s in SIDES)
 rows = ''.join(f"<tr><td><a href='#{i}'>{e(F[i]['name'])}</a></td><td>{F[i]['stats']['power']:.2f}</td><td>{F[i]['stats']['speed']:.2f}</td><td>{F[i]['stats'].get('magic',1):.2f}</td><td>{F[i]['stats']['weight']:.2f}</td><td>{e(F[i]['role'])}</td></tr>" for i in ROSTER)
+LONGS = [F[i]['name'].title() for i in ROSTER if 'long' in F[i]['moves']]
+LONG_WHO = ', '.join(LONGS[:-1]) + (' e ' if len(LONGS) > 1 else '') + LONGS[-1] if LONGS else ''
 acts = ''.join(f'<div><h4>{t}</h4><p>{x}</p></div>' for t, x in STORY['acts'])
 page = f'''<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>V4 Fighters – Trouble Work · Manual</title>
@@ -76,7 +86,7 @@ kbd{{display:inline-block;min-width:26px;text-align:center;padding:2px 7px;borde
 h3{{margin:0;font-family:Anton,Impact,sans-serif;font-weight:400;font-style:italic;font-size:40px;line-height:1;color:var(--c);text-shadow:2px 2px 0 #000}}
 .role{{margin:4px 0 0;font-family:'Press Start 2P';font-size:9px;color:var(--mut)}}.tag{{margin:12px 0 4px;color:#fff;font-style:italic}}.bio{{margin:0 0 12px;color:var(--mut)}}
 .stat{{display:grid;grid-template-columns:96px 1fr 40px;gap:10px;align-items:center;margin:5px 0}}.stat span{{font-family:'Press Start 2P';font-size:8px}}.stat div{{height:10px;background:#070a18;border:2px solid #fff}}.stat i{{display:block;height:100%}}.stat b{{font-size:12px;color:var(--mut);font-weight:400}}
-.moves{{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}}.moves>div{{background:#0c1128;border:1px solid var(--line);padding:12px}}
+.moves{{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}}.moves>div{{background:#0c1128;border:1px solid var(--line);padding:12px}}.moves>.wide{{grid-column:1/-1}}
 .moves h4{{margin:0 0 6px;font-family:'Press Start 2P';font-size:8px;color:var(--mut)}}.moves b{{color:var(--c);font-family:Anton;font-weight:400;font-size:20px;letter-spacing:1px}}.moves p{{margin:4px 0 0;font-size:14px}}
 .stage{{position:relative;margin-top:12px;height:90px;overflow:hidden;border:1px solid var(--line)}}.stage img{{width:100%;height:100%;object-fit:cover}}.stage span{{position:absolute;left:8px;bottom:6px;font-family:'Press Start 2P';font-size:8px;text-shadow:2px 2px 0 #000}}
 footer{{text-align:center;color:var(--mut);font-size:13px;margin-top:70px}}
@@ -93,7 +103,7 @@ footer{{text-align:center;color:var(--mut);font-size:13px;margin-top:70px}}
 <h2 id="controles">CONTROLES</h2>
 <div class="grid2"><div class="box"><h4>MOVIMENTO</h4><p><kbd>A</kbd><kbd>D</kbd> andar · <kbd>W</kbd> pular (de novo no ar = pulo duplo) · <kbd>S</kbd> agachar. As setas também funcionam.</p></div>
 <div class="box"><h4>GOLPES</h4><p><kbd>G</kbd> soco · <kbd>H</kbd> chute · <kbd>J</kbd> golpe forte · <kbd>V</kbd> defesa · <kbd>B</kbd> especial</p></div>
-<div class="box"><h4>VARIAÇÕES</h4><p>Segurando <kbd>S</kbd>, os três golpes viram rasteiros, e <kbd>S</kbd>+<kbd>B</kbd> solta a magia mesmo com a barra cheia. No ar, viram aéreos. Um golpe aéreo por pulo.</p></div>
+<div class="box"><h4>VARIAÇÕES</h4><p>Segurando <kbd>S</kbd>, os três golpes viram rasteiros, e <kbd>S</kbd>+<kbd>B</kbd> solta a magia mesmo com a barra cheia. No ar, viram aéreos. Um golpe aéreo por pulo. Segurando pra frente, <kbd>J</kbd> vira o <b>golpe longo</b>: lento, mas acerta de longe e empurra (por enquanto: {LONG_WHO}).</p></div>
 <div class="box"><h4>MENUS E CELULAR</h4><p><kbd>Enter</kbd> ou <kbd>G</kbd> confirma · <kbd>V</kbd> volta · <kbd>Esc</kbd> pausa. No celular, o joystick e os botões do gabinete funcionam no toque.</p></div></div>
 
 <h2 id="sistema">SISTEMA DE LUTA</h2>

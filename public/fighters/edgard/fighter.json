@@ -104,10 +104,16 @@
   },
   "win": {
    "frames": [
-    14,
-    0
+    40,
+    41,
+    42,
+    43,
+    44,
+    43,
+    42,
+    41
    ],
-   "fps": 2,
+   "fps": 7,
    "loop": true
   }
  },
@@ -196,6 +202,52 @@
    "knockback": 12,
    "launch": -5,
    "hitstop": 9
+  },
+  "long": {
+   "name": "REVOADA",
+   "phases": {
+    "startup": [
+     35,
+     36,
+     37
+    ],
+    "active": [
+     38,
+     39
+    ],
+    "recovery": [
+     37,
+     36
+    ]
+   },
+   "startup": 16,
+   "active": 8,
+   "recovery": 20,
+   "damage": 12,
+   "hitstun": 22,
+   "blockstun": 16,
+   "hitbox": {
+    "x": 60,
+    "y": -185,
+    "w": 125,
+    "h": 145
+   },
+   "hitboxes": [
+    {
+     "x": 60,
+     "y": -185,
+     "w": 125,
+     "h": 145
+    },
+    {
+     "x": 60,
+     "y": -205,
+     "w": 200,
+     "h": 185
+    }
+   ],
+   "knockback": 15,
+   "hitstop": 8
   },
   "special": {
    "phases": {

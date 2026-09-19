@@ -23,6 +23,7 @@ npm run build      # gera dist/ (estático, serve em qualquer host)
 | Pausa | Esc ou P | PAUSE |
 
 Debug (só teclado): **F1** hitboxes/hurtboxes/estado · **F2** câmera lenta · **F3** treino (barra e vida infinitas).
+No console, `__of().fight('edgard', 'landim')` abre uma luta avulsa (cenário do segundo; terceiro argumento `null` = sem CPU). Não conta pro ranking.
 
 ## Assets
 
@@ -49,9 +50,26 @@ Board de cada lutador: 5 colunas × 7 linhas (35 poses), fundo transparente, tod
 | 5 | golpes no ar: neutro, soco aéreo, neutro 2, voadora, forte aéreo | airPunch, airKick, airHeavy |
 | 6 | golpes rasteiros: soco baixo, guarda baixa, rasteira ×2, forte baixo | lowPunch, lowKick, lowHeavy |
 | 7 | super: 2 frames do lutador, 2 frames de efeito (portal / explosão), recuperação | super (zona com hitbox própria) |
+| 8 | golpe longo: preparo → efeito no alcance máximo → volta (frames 35–39) | long |
+| 9 | pose de vitória em 5 quadros (frames 40–44) | win |
+
+As linhas 8 e 9 vêm num board à parte, `<id>-golpelongo-vitoria.png` (2 linhas × 5 poses), que o `sprites.py` anexa ao mesmo atlas
+com `--extra`. Esse board chega com **fundo branco** e em outra escala, então:
+
+- `tools/whiteboard.py` tira o fundo sem comer o branco do desenho (dentes, mecha prateada, núcleo do brilho, vapor): cada bolsão
+  branco preso no desenho é julgado pelo que tem em volta, o efeito de magia (`--white-fx matiz`) vira translúcido e o que a regra
+  errar se corrige por ponto/retângulo (`--white-keep`, `--white-drop`, `--white-fx-keep`, `--white-fx-drop`, `--white-erase`).
+  Rode sozinho com `--debug mapa.png --list 25` pra ver o que saiu (magenta) e o que ficou (verde).
+- `--extra-scale` iguala o tamanho ao board principal. Meça pela cabeça (casamento de padrão em várias escalas), não pela altura
+  da pose: Edgard 0,71 · Santana 0,92 · Laura 0,75.
+- No extra, o eixo e a linha dos pés são medidos no **corpo** (o feixe lá na frente não puxa o lutador pra trás; o portal debaixo
+  dele conta como chão). Sempre confira `<debug>-extra-contact.png`.
 
 Comandos: no chão A/S/D dão soco/chute/forte; segurando ↓ viram os rasteiros (só defende agachado);
 no ar viram os aéreos (só defende em pé). B com meia barra (50) = especial com projétil; B com barra cheia = super.
+Frente + forte = **golpe longo** (`moves.long`, só pra quem tem): sai devagar, alcança o dobro, empurra e é punível no vazio.
+Ele usa `hitboxes` (uma caixa por frame ativo, acompanhando o desenho). A vitória (`anims.win`) aceita `loopFrom`: toca a
+sequência uma vez e repete do índice dado (a Laura senta, medita e fica nos dois últimos quadros).
 
 ## História e diálogos
 

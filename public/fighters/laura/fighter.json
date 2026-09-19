@@ -104,11 +104,15 @@
   },
   "win": {
    "frames": [
-    14,
-    0
+    40,
+    41,
+    42,
+    43,
+    44
    ],
-   "fps": 2,
-   "loop": true
+   "fps": 3,
+   "loopFrom": 3,
+   "anchor": "center"
   }
  },
  "moves": {
@@ -196,6 +200,50 @@
    "knockback": 11,
    "launch": -5,
    "hitstop": 9
+  },
+  "long": {
+   "name": "MORDIDA DO TUBARÃO",
+   "phases": {
+    "startup": [
+     35,
+     36
+    ],
+    "active": [
+     37,
+     38
+    ],
+    "recovery": [
+     39
+    ]
+   },
+   "startup": 12,
+   "active": 8,
+   "recovery": 18,
+   "damage": 11,
+   "hitstun": 20,
+   "blockstun": 14,
+   "hitbox": {
+    "x": 60,
+    "y": -175,
+    "w": 170,
+    "h": 155
+   },
+   "hitboxes": [
+    {
+     "x": 60,
+     "y": -175,
+     "w": 170,
+     "h": 155
+    },
+    {
+     "x": 80,
+     "y": -165,
+     "w": 210,
+     "h": 150
+    }
+   ],
+   "knockback": 14,
+   "hitstop": 8
   },
   "special": {
    "phases": {

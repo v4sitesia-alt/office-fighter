@@ -74,7 +74,7 @@ function sim() {
     let sw: WatchSession | null = null;
     const ia = player(1), ib = player(2);
     let longest = 0, streak = 0, lastFrame = 0, stalls = 0;
-    for (now = 0; now < 16000 && !(ended[0] && ended[1] && ended[2]); now++) {
+    for (now = 0; now < 30000 && !(ended[0] && ended[1] && ended[2]); now++) {   // cabe uma luta de 3 rounds mesmo com metade dos ticks travados
       for (let i = q.length - 1; i >= 0; i--) if (q[i].at <= now) { const x = q.splice(i, 1)[0]; x.to.on(x.m); }
       if (now >= c.late) sa.tick(ia());           // quem convidou entra depois de quem aceitou
       sb.tick(ib());

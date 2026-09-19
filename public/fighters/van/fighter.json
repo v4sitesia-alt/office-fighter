@@ -3,7 +3,7 @@
  "name": "VANESSA",
  "role": "A Mãe",
  "tagline": "Conciliou a agenda. E o nocaute.",
- "bio": "Só foi ao shopping em Recife comprar roupinha com a filha. O caixa inteligente 'otimizou' a compra: 300 pares de meia em 48 vezes. O prêmio paga a fatura.",
+ "bio": "Só foi ao shopping em Recife comprar roupinha com o filho. O caixa inteligente 'otimizou' a compra: 300 pares de meia em 48 vezes. O prêmio paga a fatura.",
  "side": "heroi",
  "colors": {
   "primary": "#ff4fa0",
@@ -455,7 +455,7 @@
    "launch": -8,
    "meterCost": 100,
    "hitstop": 12,
-   "name": "FRALDA TÓXICA"
+   "name": "DUPLA IMBATÍVEL"
   }
  },
  "gender": "f"

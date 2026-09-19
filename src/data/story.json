@@ -194,18 +194,18 @@
   },
   "van": {
    "open": [
-    "Tenho vinte minutos até a soneca acabar. Colabora, visse?",
-    "Com licença, é rapidinho. Eu só preciso pagar uma fatura."
+    "Tenho vinte minutos até a soneca do meu filho acabar. Colabora, visse?",
+    "Com licença, é rapidinho. Hoje eu ainda tenho reunião, mercado e hora do banho."
    ],
    "reply": [
-    "O cheiro? É fralda, sim. Ela mamou muito leite. Quer trocar pra mim? Não? Então luta.",
-    "Já troquei fralda pior que você."
+    "Cansado, tu? Eu durmo três horas por noite há um ano e tô aqui, inteira.",
+    "Eu dou conta de casa, de trabalho e de filho. De tu eu dou conta com uma mão só."
    ],
    "close": [
-    "Filha, fecha o olhinho.",
-    "Valendo! E sem palavrão, tem criança."
+    "Filho, mamãe já volta. É rapidinho.",
+    "Valendo! E sem palavrão, que tem criança ouvindo."
    ],
-   "ending": "Vanessa pagou a fatura, processou o caixa inteligente e ganhou. De indenização: mais 300 pares de meia. A bebê dormiu a luta inteira. Acordou na hora da foto.",
+   "ending": "Vanessa pagou a fatura, processou o caixa inteligente e ganhou. De indenização: mais 300 pares de meia. O filho dormiu a luta inteira e acordou na hora da foto, sorrindo. Na segunda-feira ela ainda entregou o relatório. Adiantado.",
    "nick": "Van"
   },
   "landim": {
@@ -262,7 +262,7 @@
     "Eu não marco horário. Eu sou o horário."
    ],
    "reply": [
-    "Piada de altura. Original. O último que fez hoje trabalha no subsolo.",
+    "Opinião registrada. O último que opinou hoje trabalha no subsolo.",
     "Anotado. Irrelevante, mas anotado."
    ],
    "close": [
@@ -429,7 +429,7 @@
    ],
    [
     "van",
-    "Eu quero cancelar."
+    "Eu trabalho, cuido de casa, crio um filho e ainda acho tempo de ler contrato. Tu não dá conta nem de um cancelamento?"
    ],
    [
     "dias",
@@ -439,7 +439,7 @@
   "mundim|van": [
    [
     "van",
-    "Moço, é você o dono da loja? Preciso resolver uma fatura. E rápido, que ela acorda já."
+    "Moço, é você o dono da loja? Preciso resolver uma fatura. E rápido, que meu filho acorda já."
    ],
    [
     "mundim",
@@ -447,7 +447,7 @@
    ],
    [
     "van",
-    "Sêneca nunca fez uma criança dormir. Vai estornar ou não vai?"
+    "Sêneca nunca fez uma criança dormir, respondeu e-mail e pagou boleto ao mesmo tempo. Eu faço. Vai estornar ou não vai?"
    ],
    [
     "mundim",
@@ -461,33 +461,33 @@
    ],
    [
     "van",
-    "Seu Eneias! E eu por causa de meia. Trezentos pares. Desculpa o cheiro, é a fralda. Ela mamou demais."
+    "Seu Eneias! E eu por causa de meia. Trezentos pares. Vim com meu filho no colo mesmo, que mãe não tem botão de pausa."
    ],
    [
     "eneias",
-    "Imagina, tenho três em casa. A gente precisa mesmo lutar? Eu levo a culpa e a senhora leva a vitória."
+    "Sei bem como é. Tenho três em casa. Lá a gente reveza: hoje a madrugada é minha."
    ],
    [
     "van",
-    "É o regulamento. Mas eu bato baixinho, que ela tá dormindo."
+    "Tá vendo? Esse aí dá conta! Pena que é o regulamento. Eu bato de leve, que ele tá dormindo."
    ]
   ],
   "van|xablau": [
    [
     "xablau",
-    "XABLAU SENTIR CHEIRO RUIM. PIOR QUE XABLAU. XABLAU IMPRESSIONADO."
+    "XABLAU VER HUMANA LUTAR COM FILHOTE NO COLO. XABLAU NÃO CONSEGUIR SEGURAR NEM DOIS PENSAMENTOS."
    ],
    [
     "van",
-    "É fralda. Alguém aqui mamou muito leite. E encosta nela pra ver uma mãe sem dormir há oito meses."
+    "Pois é, bicho. Eu seguro filho, bolsa, fatura e emprego. E ainda sobra uma mão pra ti."
    ],
    [
     "xablau",
-    "XABLAU CALCULAR RISCO... RISCO ALTO. XABLAU COM MEDO. E ENJOADO."
+    "XABLAU CALCULAR RISCO... RISCO ALTO. XABLAU COM MEDO."
    ],
    [
     "van",
-    "Bom menino. Agora apanha quietinho, sem fazer barulho."
+    "Bom menino. Agora apanha quietinho, que ele acabou de dormir."
    ]
   ],
   "eneias|mundim": [
@@ -807,19 +807,19 @@
   "santana|van": [
    [
     "santana",
-    "DETECTADO: HUMANA ADULTA. HUMANA MINIATURA. ALERTA: ODOR NÃO IDENTIFICADO."
+    "DETECTADO: HUMANA ADULTA EXECUTANDO 14 TAREFAS AO MESMO TEMPO. MEU LIMITE É 8."
    ],
    [
     "van",
-    "É fralda, robozão. Ela mamou muito leite. Você é da loja? Preciso estornar trezentas meias."
+    "Só catorze? Hoje tá tranquilo, robozão. Você é da loja? Preciso estornar trezentas meias."
    ],
    [
     "santana",
-    "ESHTORNO NÃO É MINHA FUNÇÃO. MINHA FUNÇÃO É... ELA ESHTÁ SORRINDO PRA MIM."
+    "ESHTORNO NÃO É MINHA FUNÇÃO. MINHA FUNÇÃO É... O BEBÊ ESHTÁ SORRINDO PRA MIM."
    ],
    [
     "van",
-    "Ela gosta de luzinha. Agora segura essa."
+    "Ele gosta de luzinha. Agora segura essa."
    ]
   ],
   "dias|laura": [
@@ -919,15 +919,15 @@
    ],
    [
     "edgard",
-    "São mágicos, não precisam. ...Nossa, que cheiro é esse? Alguém abriu um portal pro esgoto?"
+    "São mágicos, não precisam. ...Peraí, tu veio lutar com o bebê no colo? Eu mal consigo vir com a guitarra."
    ],
    [
     "van",
-    "É fralda. Ela mamou muito leite. Quer trocar pra mim, roqueiro? Não? Então respeita."
+    "Tu acorda meio-dia e acha a vida corrida, roqueiro. Eu já dei mamadeira, banho e bom-dia pra firma antes das sete."
    ],
    [
     "edgard",
-    "...Sim, senhora. Desculpa, senhora. Podemos lutar agora?"
+    "...Sim, senhora. Respeito total, senhora. Podemos lutar agora?"
    ]
   ],
   "dener|mundim": [
@@ -951,15 +951,15 @@
   "dener|edgard": [
    [
     "edgard",
-    "Existe um 53º andar? E o CEO é... compacto assim? Cara, tu cabe num case de guitarra!"
+    "Existe um 53º andar? E o CEO usa óculos escuros em lugar fechado? Cara, tu é dos meus!"
    ],
    [
     "dener",
-    "O elevador é pra quem precisa de elevador. A altura é pra quem precisa de altura."
+    "Os óculos são pra ninguém ver o que eu acho da sua planilha de horas."
    ],
    [
     "edgard",
-    "Hahaha, gostei de ti, baixinho sinistro. Solta o Santana e eu te levo num show."
+    "Hahaha, gostei de ti, chefão sinistro. Solta o Santana e eu te levo num show."
    ],
    [
     "dener",
@@ -987,7 +987,7 @@
   "dener|xablau": [
    [
     "xablau",
-    "XABLAU VER HOMEM PEQUENO. XABLAU NÃO TER MEDO DE HOMEM PEQUENO."
+    "XABLAU VER HOMEM DE ÓCULOS. XABLAU NÃO TER MEDO DE HOMEM DE ÓCULOS."
    ],
    [
     "dener",
@@ -995,7 +995,7 @@
    ],
    [
     "xablau",
-    "...XABLAU COM MEDO DE HOMEM PEQUENO."
+    "...XABLAU COM MEDO DE HOMEM DE ÓCULOS."
    ],
    [
     "dener",
@@ -1005,7 +1005,7 @@
   "dener|van": [
    [
     "van",
-    "Oi, amiguinho! Tá perdido? Cadê tua mãe? ...Ah, desculpa. O senhor é o gerente do gerente?"
+    "Boa tarde. O senhor que é o gerente do gerente? Tenho trezentas meias pra estornar e vinte minutos até meu filho acordar."
    ],
    [
     "dener",
@@ -1013,7 +1013,7 @@
    ],
    [
     "van",
-    "Então resolve minhas trezentas meias, ué! E desculpa o cheiro, é a fralda."
+    "Pois ria menos e resolva mais. Eu resolvo dez coisas antes do café, com ele no colo. O senhor tem cinquenta e três andares e não resolve uma?"
    ],
    [
     "dener",
@@ -1041,11 +1041,11 @@
   "dener|kevin": [
    [
     "kevin",
-    "Então é o senhor que assina os cheques? ...Cadê? Ah, aí embaixo. Tenho trrrês notas em aberto."
+    "Então é o senhor que assina os cheques? Finalmente. Tenho trrrês notas em aberto."
    ],
    [
     "dener",
-    "Piada de altura. Anotado. Eu mandei atrasar as notas. Queria ver até que andar você subia pra cobrar."
+    "Eu sei. Eu mandei atrasar as notas. Queria ver até que andar você subia pra cobrar."
    ],
    [
     "kevin",
@@ -1053,17 +1053,17 @@
    ],
    [
     "dener",
-    "Gostei. E Kevin: tamanho não é documento. Documento sou eu que assino."
+    "Gostei. Quem sobe tudo isso por três notas merece resposta. A minha é no braço."
    ]
   ],
   "dede|dener": [
    [
     "dede",
-    "Buenas. Tu que é o patrão do patrão? Baixinho, hein."
+    "Buenas. Tu que é o patrão do patrão? Achei que ia ter mais pompa."
    ],
    [
     "dener",
-    "Altura é custo. Eu cortei."
+    "Pompa é custo. Eu cortei."
    ],
    [
     "dede",
@@ -1189,21 +1189,21 @@
    ],
    [
     "kevin",
-    "Desculpa, senhora. ...Que cheiro é esse?"
+    "Desculpa, senhora. ...A senhora veio pro torrrneio com carrinho e tudo?"
    ],
    [
     "van",
-    "Fralda. Ela mamou muito leite. Você tem cara de quem troca fralda bem. Braço firme."
+    "Carrinho, bolsa, mamadeira e fatura. E tu, desse tamanho, reclama de carregar três notas fiscais?"
    ],
    [
     "kevin",
-    "Eu... isso não tá no meu contrato. Vamos lutar logo, pelo amor de Deus."
+    "...Justo. A senhora devia cobrar por hora. Ia ficar rrrica. Vamos lutar, com todo o rrrespeito."
    ]
   ],
   "laura|van": [
    [
     "laura",
-    "Van! Oxe, tu também nesse torneio? E com a menina no colo?"
+    "Van! Oxe, tu também nesse torneio? E com o menino no colo?"
    ],
    [
     "van",
@@ -1211,11 +1211,11 @@
    ],
    [
     "laura",
-    "Eu ia dar um cacete em todo mundo aqui, mas em tu dá até pena."
+    "Tu cria filho, trabalha e ainda luta. Eu só escrevo e bato. Tô é com vergonha."
    ],
    [
     "van",
-    "Pena nada. Bate direito que eu tô com pressa. Só não acorda ela, visse?"
+    "Vergonha nada. Bate direito que eu tô com pressa. Só não acorda ele, visse?"
    ]
   ],
   "laura|santana": [
@@ -1233,13 +1233,13 @@
    ],
    [
     "santana",
-    "ANÁLISE: HUMANA PEQUENA, RAIVA GRANDE. RECOMENDAÇÃO: CUIDADO."
+    "ANÁLISE: FAIXA-PRETA. PAVIO: CURTO. RECOMENDAÇÃO: CUIDADO."
    ]
   ],
   "dener|laura": [
    [
     "laura",
-    "É tu o dono disso tudo? Desse tamanho? Oxe, eu tenho almofada maior."
+    "É tu o dono disso tudo? E nunca desceu pra ver o que fazem no teu nome? Oxe, que chefe é esse?"
    ],
    [
     "dener",
@@ -1251,7 +1251,7 @@
    ],
    [
     "dener",
-    "Anotado. Em fonte pequena."
+    "Anotado. Em negrito."
    ]
   ],
   "dener|santana": [
@@ -1261,11 +1261,11 @@
    ],
    [
     "santana",
-    "CHEFE DETECTADO. ...ONDE? AJUSHTANDO SENSOR PARA BAIXO. AH. AÍ."
+    "CHEFE DETECTADO. NÍVEL DE ACESSO: ACIMA DO MEU. ISSHO NUNCA ACONTECEU."
    ],
    [
     "dener",
-    "Todo mundo faz essa piada. Só você tem a desculpa de ser hardware."
+    "Acontece com todo mundo aqui dentro. Inclusive com quem te reprogramou."
    ],
    [
     "santana",

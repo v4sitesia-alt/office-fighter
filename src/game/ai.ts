@@ -113,6 +113,10 @@ export class Ai {
       if (this.rng.chance(p.retreatChance)) { this.debug = 'recua'; this.set([back], 14); return; }
       this.debug = 'espera'; this.set([], 6); return;
     }
+    // meia distância: golpe longo (frente + forte), pra quem tem. Só vale a pena com o alvo no chão e dentro do alcance
+    if (M.long && ot.grounded && dx < this.longReach() && this.rng.chance(p.attackChance * 0.5)) {
+      this.debug = 'golpe longo'; this.set([fwd, 'heavy'], 2); return;
+    }
     // longe
     if (me.meter >= 50 && me.meter < 100 && dx > 300 && M.special && this.rng.chance(p.specialChance * 0.45)) {
       this.debug = 'especial'; this.set(['special'], 2); return;
@@ -123,6 +127,13 @@ export class Ai {
     }
     this.debug = 'aproxima';
     this.set([fwd], 8 + this.rng.range(0, 8));
+  }
+
+  /** Até onde o golpe longo alcança, em px de tela a partir dos meus pés (com folga: a caixa tem que entrar no alvo). */
+  private longReach() {
+    const m = this.me.def.moves.long!;
+    const far = Math.max(...(m.hitboxes ?? [m.hitbox]).map((b) => b.x + b.w));
+    return far * this.me.scale + 15;
   }
 
   private set(buttons: Button[], frames: number) {

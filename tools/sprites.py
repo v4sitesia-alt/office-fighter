@@ -8,12 +8,19 @@ carrega pedaço da pose vizinha, mesmo quando os desenhos se encostam ou um efei
 
   python3 tools/sprites.py <board.png> <outdir> [--cols 5 --rows 7] [--wide r,c] [--fx x0,y0,x1,y1]
                                                 [--export 33:arquivo.png] [--debug out.png]
+                                                [--extra board2.png --extra-scale 0.75 --white-fx 250-335 ...]
 
   --wide r,c    a pose da linha r, coluna c ocupa DUAS células (ex.: braço ou língua esticados). A célula seguinte
                 vira um frame vazio e nada é cortado. Pode repetir. "r,c,3" = três células.
   --fx          retângulo do board copiado como special_fx.png (projétil). O desenho continua no frame (nada é cortado);
                 com --fx-erase ele é apagado do frame.
   --export      salva o frame i (já isolado) como PNG avulso no outdir, pra usar como sprite de projétil.
+  --extra       segundo board do mesmo lutador (golpe longo + vitória: 2 linhas de 5 poses), anexado ao MESMO atlas
+                como linhas 8 e 9 (frames 35..44). Se vier com fundo branco, o recorte é do tools/whiteboard.py
+                (--white-fx matiz do efeito; --white-keep/--white-drop/--white-fx-keep/--white-fx-drop corrigem
+                bolsões, em px do board original; --white-core devolve o miolo branco de um estouro; --white-erase apaga uma sobra solta). --extra-scale iguala o tamanho do desenho ao do board principal
+                (meça pela cabeça: os boards não vêm na mesma escala). As poses do extra nunca são partidas
+                (efeito largo é uma pose só) e o eixo/pés são medidos no CORPO, não no efeito.
 
 Saída: sheet.png (atlas) + frames.json. O índice do frame é sempre linha*COLS + coluna; célula vazia gera um frame
 "empty" de 1x1. Por frame: sx,sy,sw,sh (retângulo no atlas), ay (linha dos pés), ax (eixo do corpo medido pelos pés),
@@ -97,31 +104,11 @@ def grow(own, allowed, iters=None):
     return own
 
 
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument('src'); ap.add_argument('outdir')
-    ap.add_argument('--cols', type=int, default=5); ap.add_argument('--rows', type=int, default=7)
-    ap.add_argument('--wide', action='append', default=[]); ap.add_argument('--fx', default=None); ap.add_argument('--fx-erase', action='store_true')
-    ap.add_argument('--export', action='append', default=[]); ap.add_argument('--debug', default=None)
-    ap.add_argument('--alpha', type=int, default=ALPHA_T, help='alpha mínimo pra separar as poses (suba se o board tiver brilho suave ligando as poses)')
-    ap.add_argument('--grow', type=int, default=EDGE_GROW, help='quantos px de borda/brilho semitransparente devolver à pose mais próxima')
-    args = ap.parse_args()
-    os.makedirs(args.outdir, exist_ok=True)
-    arr = np.array(Image.open(args.src).convert('RGBA'))
-    H, W = arr.shape[:2]; cols, rows = args.cols, args.rows; cw, ch = W / cols, H / rows
-    meta = {'sheet': 'sheet.png', 'cols': cols, 'rows': rows, 'source': os.path.basename(args.src)}
-
-    if args.fx:
-        fx0, fy0, fx1, fy1 = (int(v) for v in args.fx.split(','))
-        reg = arr[fy0:fy1, fx0:fx1]; ys, xs = np.nonzero(reg[:, :, 3] > ALPHA_T)
-        Image.fromarray(reg[ys.min():ys.max() + 1, xs.min():xs.max() + 1].copy()).save(os.path.join(args.outdir, 'special_fx.png'))
-        if args.fx_erase: arr[fy0:fy1, fx0:fx1] = 0
-        meta['fx'] = {'file': 'special_fx.png', 'w': int(xs.max() + 1 - xs.min()), 'h': int(ys.max() + 1 - ys.min())}
-
-    wides = []
-    for w in args.wide:
-        v = [int(t) for t in w.split(',')]; wides.append((v[0], v[1], v[2] if len(v) > 2 else 2))
-    alpha = arr[:, :, 3]; solid = alpha > args.alpha
+def extract(arr, cols, rows, wides, alpha_t, grow_n, split_touching=True, fxm=None):
+    """Isola as poses de um board RGBA. Devolve (frames, crops, own, xcuts, ycuts); o índice do frame é local (0..).
+    fxm = máscara dos pixels de EFEITO (magia): com ela o eixo e a linha dos pés são medidos no corpo."""
+    H, W = arr.shape[:2]; cw, ch = W / cols, H / rows
+    alpha = arr[:, :, 3]; solid = alpha > alpha_t
     # a grade do board nem sempre é uniforme: acha cada divisória na faixa mais vazia perto da linha teórica
     def find_cuts(profile, n, cell):
         sm = np.convolve(profile.astype(np.float64), np.ones(7) / 7, mode='same'); out = []
@@ -131,7 +118,7 @@ def main():
             out.append(a + int(low[np.argmin(np.abs(low + a - g))]))
         return np.array(out)
     core = alpha > 200
-    ycuts, xcuts = find_cuts(core.sum(axis=1), rows, ch), find_cuts(core.sum(axis=0), cols, cw)
+    ycuts, xcuts = find_cuts(core.sum(axis=1), rows, ch) if rows > 1 else np.array([], int), find_cuts(core.sum(axis=0), cols, cw)
     xedges = [0, *xcuts.tolist(), W]
     def cell_of(x, y):
         r, c = int(np.searchsorted(ycuts, y, side='right')), int(np.searchsorted(xcuts, x, side='right'))
@@ -197,7 +184,7 @@ def main():
     out = []
     for c in comps:
         x0, y0, x1, y1 = c['box']; w, h = x1 - x0, y1 - y0
-        if w <= 1.25 * cw and h <= 1.25 * ch: out.append(c); continue
+        if not split_touching or (w <= 1.25 * cw and h <= 1.25 * ch): out.append(c); continue
         wide = [wn for wr, wc, wn in wides if (wr, wc) == c['cell']]      # o centroide cai numa pose declarada larga
         if wide and h <= 1.25 * ch and w <= (wide[0] + 0.6) * cw: out.append(c); continue
         for pm, cell in split(c):
@@ -245,9 +232,9 @@ def main():
     # ---------- 4. mapa de dono por pixel + bordas semitransparentes
     lut = np.zeros(next_id + 1, np.int16)
     for c in comps: lut[c['id']] = c['frame'] + 1
-    own = grow(lut[lab], alpha > EDGE_T, args.grow)
+    own = grow(lut[lab], alpha > EDGE_T, grow_n)
 
-    # ---------- atlas
+    # ---------- recorte e medidas de cada frame
     total = rows * cols; crops = [None] * total; frames = []
     for f in range(total):
         ys, xs = np.nonzero(own == f + 1)
@@ -259,12 +246,114 @@ def main():
         sol = crop[:, :, 3] > ALPHA_T
         limit = [xedges[wc + 1] - x0 for wr, wc, wn in wides if (wr, wc) == (r, c)]   # pose larga: eixo medido só no corpo
         if limit: sol = sol & (np.arange(x1 - x0)[None, :] < limit[0])
-        sy_, sx_ = np.nonzero(sol)
-        if len(sx_) == 0: sy_, sx_ = np.nonzero(crop[:, :, 3] > 0)
-        feet = int(sy_.max()) + 1; top = int(sy_.min()); band = max(12, int((feet - top) * FEET_PCT))
-        fb = sx_[sy_ >= feet - band]
+        body = sol & ~fxm[y0:y1, x0:x1] if fxm is not None else sol
+        if fxm is not None and body.sum() >= 200:
+            # pose com efeito (feixe, tubarão, portal): os pés são o ponto mais baixo DEBAIXO do corpo (o portal conta,
+            # o morcego lá na frente não) e o eixo sai do corpo, senão o efeito puxa o lutador pra trás
+            colsum = body.sum(axis=0); bx = np.nonzero(colsum >= 3)[0]; lo, hi = int(bx.min()), int(bx.max())
+            under = sol.copy(); under[:, :lo] = False; under[:, hi + 1:] = False
+            uy, ux = np.nonzero(under); by_, bx_ = np.nonzero(body)
+            feet = int(uy.max()) + 1; top = int(by_.min()); band = max(12, int((feet - top) * FEET_PCT))
+            fb = bx_[by_ >= feet - band]
+            if len(fb) < 30: fb = ux[uy >= feet - band]
+            sx_ = bx_
+        else:
+            sy_, sx_ = np.nonzero(sol)
+            if len(sx_) == 0: sy_, sx_ = np.nonzero(crop[:, :, 3] > 0)
+            feet = int(sy_.max()) + 1; top = int(sy_.min()); band = max(12, int((feet - top) * FEET_PCT))
+            fb = sx_[sy_ >= feet - band]
         crops[f] = crop
         frames.append({'i': f, 'cell': [r, c], 'sw': x1 - x0, 'sh': y1 - y0, 'ax': round(float(fb.mean()), 1), 'cx': round(float(sx_.mean()), 1), 'ay': feet, 'src': [x0, y0]})
+    return frames, crops, own, xcuts, ycuts
+
+
+def debug_images(path, arr, own, xcuts, ycuts, frames, crops, cols, rows):
+    """Conferência: board com cada pose pintada de uma cor + contact sheet com os frames já isolados (linha vermelha = chão)."""
+    H, W = arr.shape[:2]
+    rng = np.random.RandomState(7); pal = rng.randint(60, 255, (rows * cols + 1, 3)); pal[0] = 0
+    tint = pal[own].astype(np.float32); base = arr[:, :, :3].astype(np.float32)
+    vis = np.where((own > 0)[:, :, None], base * 0.55 + tint * 0.45, 20).astype(np.uint8)
+    dbg = Image.fromarray(vis); d = ImageDraw.Draw(dbg)
+    for yc in ycuts: d.line([(0, int(yc)), (W, int(yc))], fill=(255, 255, 0))
+    for xc in xcuts: d.line([(int(xc), 0), (int(xc), H)], fill=(255, 255, 0))
+    for fr in frames:
+        if not fr.get('empty'): d.text((fr['src'][0] + 2, fr['src'][1] + 2), f"#{fr['i']}", fill=(255, 255, 0))
+    dbg.save(path)
+    B = max(260, max(max(fr['sw'], fr['sh']) for fr in frames) + 24)
+    sheet = Image.new('RGBA', (B * cols, B * rows), (24, 24, 32, 255)); d2 = ImageDraw.Draw(sheet)
+    for k, fr in enumerate(frames):
+        r, c = divmod(k, cols)
+        d2.line([(c * B, r * B + B - 10), (c * B + B, r * B + B - 10)], fill=(255, 60, 60, 120)); d2.rectangle([c * B, r * B, c * B + B - 1, r * B + B - 1], outline=(60, 60, 90, 255))
+        d2.text((c * B + 4, r * B + 4), f"#{fr['i']}" + (' vazio' if fr.get('empty') else ''), fill=(255, 255, 0, 255))
+        if fr.get('empty'): continue
+        ox = int(c * B + min(B - fr['sw'] - 2, max(2, B / 2 - fr['ax']))); oy = int(r * B + B - 10 - fr['ay'])
+        sheet.alpha_composite(Image.fromarray(crops[k]), (ox, max(r * B, oy)))
+        d2.line([(ox + fr['ax'], r * B + B - 16), (ox + fr['ax'], r * B + B - 4)], fill=(80, 255, 120, 255))      # eixo do corpo
+    sheet.save(path.replace('.png', '-contact.png'))
+
+
+def load_extra(path, scale, args):
+    """Board extra -> RGBA já sem fundo e na escala do board principal, mais a máscara de efeito."""
+    from whiteboard import unwhite, fx_mask, parse_geom
+    im = Image.open(path)
+    rgba = np.array(im.convert('RGBA'))
+    hues = [tuple(float(t) for t in r.split('-')) for r in args.white_fx]
+    if (rgba[:, :, 3] < 40).mean() < 0.02:                       # sem transparência: fundo branco
+        g = lambda L: [parse_geom(t) for t in L]; rep = []
+        rgba, _ = unwhite(np.array(im.convert('RGB')), hues, g(args.white_keep), g(args.white_drop), rep, 0, g(args.white_fx_keep), g(args.white_fx_drop), g(args.white_core))
+        print('\n'.join(rep))
+    for e in args.white_erase:                                   # sobra solta da geração da arte (tracinho, respingo sem dono)
+        ex0, ey0, ex1, ey1 = (int(t) for t in e.split(',')); rgba[ey0:ey1, ex0:ex1] = 0
+    if abs(scale - 1) > 1e-6:                                     # alpha pré-multiplicado, senão a borda escurece/clareia
+        size = (round(rgba.shape[1] * scale), round(rgba.shape[0] * scale))
+        rgba = np.array(Image.fromarray(rgba).convert('RGBa').resize(size, Image.LANCZOS).convert('RGBA'))
+    return rgba, (fx_mask(rgba[:, :, :3], hues) if hues else None)
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument('src'); ap.add_argument('outdir')
+    ap.add_argument('--cols', type=int, default=5); ap.add_argument('--rows', type=int, default=7)
+    ap.add_argument('--wide', action='append', default=[]); ap.add_argument('--fx', default=None); ap.add_argument('--fx-erase', action='store_true')
+    ap.add_argument('--export', action='append', default=[]); ap.add_argument('--debug', default=None)
+    ap.add_argument('--alpha', type=int, default=ALPHA_T, help='alpha mínimo pra separar as poses (suba se o board tiver brilho suave ligando as poses)')
+    ap.add_argument('--grow', type=int, default=EDGE_GROW, help='quantos px de borda/brilho semitransparente devolver à pose mais próxima')
+    ap.add_argument('--extra', default=None, help='board extra (golpe longo + vitória), anexado como linhas 8 e 9')
+    ap.add_argument('--extra-rows', type=int, default=2); ap.add_argument('--extra-scale', type=float, default=1.0); ap.add_argument('--extra-grow', type=int, default=6)
+    for k in ('fx', 'keep', 'drop', 'fx-keep', 'fx-drop', 'core', 'erase'): ap.add_argument(f'--white-{k}', action='append', default=[])
+    args = ap.parse_args()
+    os.makedirs(args.outdir, exist_ok=True)
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    arr = np.array(Image.open(args.src).convert('RGBA'))
+    cols, rows = args.cols, args.rows
+    meta = {'sheet': 'sheet.png', 'cols': cols, 'rows': rows, 'source': os.path.basename(args.src)}
+
+    if args.fx:
+        fx0, fy0, fx1, fy1 = (int(v) for v in args.fx.split(','))
+        reg = arr[fy0:fy1, fx0:fx1]; ys, xs = np.nonzero(reg[:, :, 3] > ALPHA_T)
+        Image.fromarray(reg[ys.min():ys.max() + 1, xs.min():xs.max() + 1].copy()).save(os.path.join(args.outdir, 'special_fx.png'))
+        if args.fx_erase: arr[fy0:fy1, fx0:fx1] = 0
+        meta['fx'] = {'file': 'special_fx.png', 'w': int(xs.max() + 1 - xs.min()), 'h': int(ys.max() + 1 - ys.min())}
+
+    wides = []
+    for w in args.wide:
+        v = [int(t) for t in w.split(',')]; wides.append((v[0], v[1], v[2] if len(v) > 2 else 2))
+    frames, crops, own, xcuts, ycuts = extract(arr, cols, rows, wides, args.alpha, args.grow)
+    if args.debug: debug_images(args.debug, arr, own, xcuts, ycuts, frames, crops, cols, rows)
+
+    if args.extra:
+        earr, fxm = load_extra(args.extra, args.extra_scale, args)
+        ef, ec, eown, excuts, eycuts = extract(earr, cols, args.extra_rows, [], ALPHA_T, args.extra_grow, split_touching=False, fxm=fxm)
+        lost = int(((earr[:, :, 3] > ALPHA_T) & (eown == 0)).sum())
+        if lost: print(f'   atenção: {lost} px sólidos do board extra ficaram sem pose', file=sys.stderr)
+        if args.debug: debug_images(args.debug.replace('.png', '-extra.png'), earr, eown, excuts, eycuts, [dict(fr, i=fr['i'] + rows * cols) for fr in ef], ec, cols, args.extra_rows)
+        for fr in ef: fr['i'] += rows * cols; fr['cell'][0] += rows; fr['extra'] = True
+        frames += ef; crops += ec
+        meta['extra'] = {'source': os.path.basename(args.extra), 'scale': args.extra_scale, 'rows': args.extra_rows, 'first': rows * cols}
+        meta['rows'] = rows + args.extra_rows
+
+    # ---------- atlas
+    total = len(frames)
     aw = max(ATLAS_W, max(fr['sw'] for fr in frames) + 2 * PAD); x = y = PAD; rowh = 0
     for fr in frames:
         if fr.get('empty'): continue
@@ -281,26 +370,6 @@ def main():
     empties = [fr['i'] for fr in frames if fr.get('empty')]
     print(f"{os.path.basename(args.src)}: {total - len(empties)} frames, atlas {aw}x{atlas.shape[0]}" + (f", vazios: {empties}" if empties else ''))
 
-    if args.debug:
-        rng = np.random.RandomState(7); pal = rng.randint(60, 255, (total + 1, 3)); pal[0] = 0
-        tint = pal[own].astype(np.float32); base = arr[:, :, :3].astype(np.float32)
-        vis = np.where((own > 0)[:, :, None], base * 0.55 + tint * 0.45, 20).astype(np.uint8)
-        dbg = Image.fromarray(vis); d = ImageDraw.Draw(dbg)
-        for yc in ycuts: d.line([(0, int(yc)), (W, int(yc))], fill=(255, 255, 0))
-        for xc in xcuts: d.line([(int(xc), 0), (int(xc), H)], fill=(255, 255, 0))
-        for fr in frames:
-            if not fr.get('empty'): d.text((fr['src'][0] + 2, fr['src'][1] + 2), f"#{fr['i']}", fill=(255, 255, 0))
-        dbg.save(args.debug)
-        B = max(260, max(max(fr['sw'], fr['sh']) for fr in frames) + 24)
-        sheet = Image.new('RGBA', (B * cols, B * rows), (24, 24, 32, 255)); d2 = ImageDraw.Draw(sheet)
-        for fr in frames:
-            r, c = fr['cell']
-            d2.line([(c * B, r * B + B - 10), (c * B + B, r * B + B - 10)], fill=(255, 60, 60, 120)); d2.rectangle([c * B, r * B, c * B + B - 1, r * B + B - 1], outline=(60, 60, 90, 255))
-            d2.text((c * B + 4, r * B + 4), f"#{fr['i']}" + (' vazio' if fr.get('empty') else ''), fill=(255, 255, 0, 255))
-            if fr.get('empty'): continue
-            ox = int(c * B + min(B - fr['sw'] - 2, max(2, B / 2 - fr['ax']))); oy = int(r * B + B - 10 - fr['ay'])
-            sheet.alpha_composite(Image.fromarray(crops[fr['i']]), (ox, max(r * B, oy)))
-        sheet.save(args.debug.replace('.png', '-contact.png'))
 
 
 if __name__ == '__main__':

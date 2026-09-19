@@ -284,8 +284,16 @@ window.addEventListener('keydown', (e) => {
   if (e.code === 'F3' && match) { match.training = !match.training; e.preventDefault(); }
 });
 
-// acesso de debug no console: __of().match.fighters[0]
-(window as unknown as { __of: () => unknown }).__of = () => ({ mode, match, debug, input, audio, get session() { return session; }, get watchSession() { return watchSession; }, get lobby() { return lobby; } });
+/** Debug: começa uma luta avulsa entre dois lutadores, no cenário do segundo. Não conta pro arcade nem pro ranking. */
+function debugFight(a: string, b: string, cpu: Difficulty | null = 'normal') {
+  const fa = roster.find((f) => f.def.id === a), fb = roster.find((f) => f.def.id === b);
+  if (!fa || !fb) return false;
+  match = new Match(fa, fb, stageOf(fb), { cpu, hueP2: a === b ? 150 : 0, label: 'TESTE' }, { message: (t, f, k) => hud.message(t, f, k), end: () => goTitle() });
+  hud.localIndex = 0; hud.bind(match); paused = false; screens.hide(); setMode('fight');
+  return true;
+}
+// acesso de debug no console: __of().match.fighters[0] · __of().fight('edgard', 'landim')
+(window as unknown as { __of: () => unknown }).__of = () => ({ mode, match, debug, input, audio, fight: debugFight, get session() { return session; }, get watchSession() { return watchSession; }, get lobby() { return lobby; } });
 
 // ---------- loop
 const loop = startLoop({

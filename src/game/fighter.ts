@@ -83,6 +83,7 @@ export class Fighter {
   setState(s: State) {
     if (this.state === s) return;
     this.state = s; this.stateFrame = 0;
+    if (s === 'win') this.animTime = 0;                  // a pose de vitória é uma sequência: começa do primeiro quadro
     if (s !== 'attacking' && this.victim) {            // interrompido no meio do agarrão: solta a vítima
       const v = this.victim; this.victim = null;
       if (v.state === 'grabbed') { v.grabbedBy = null; v.vy = 0; v.setState(v.y < 0 ? 'jumping' : 'idle'); }
@@ -256,8 +257,8 @@ export class Fighter {
     if (this.buffered && this.frameCounter - this.buffered.frame > INPUT_BUFFER) this.buffered = null;
   }
 
-  /** Golpe que o botão vira no chão (ou agachado). */
-  private groundMove(btn: AttackBtn, crouched: boolean): MoveName | null {
+  /** Golpe que o botão vira no chão (ou agachado). Frente + forte = golpe longo, pra quem tem. */
+  private groundMove(btn: AttackBtn, crouched: boolean, forward = false): MoveName | null {
     const M = this.def.moves;
     if (btn === 'special') {
       if (crouched && M.special && this.meter >= (M.special.meterCost ?? 50)) return 'special';   // ↓ + B: magia, mesmo com a barra cheia
@@ -269,6 +270,7 @@ export class Fighter {
       const low: Record<string, MoveName> = { punch: 'lowPunch', kick: 'lowKick', heavy: 'lowHeavy' };
       return M[low[btn]] ? low[btn] : btn;
     }
+    if (btn === 'heavy' && forward && M.long) return 'long';
     return btn;
   }
   private airMove(btn: AttackBtn): MoveName | null {
@@ -280,13 +282,13 @@ export class Fighter {
   private handleNeutral(ctrl: Controller, other: Fighter) {
     if (this.lag > 0) { this.lag--; this.setState('idle'); return; }
     const down = ctrl.held('down');
+    const fwd: Button = this.facing === 1 ? 'right' : 'left';
+    const back: Button = this.facing === 1 ? 'left' : 'right';
     if (this.buffered) {
-      const name = this.groundMove(this.buffered.btn, down);
+      const name = this.groundMove(this.buffered.btn, down, ctrl.held(fwd));
       if (name && this.startMove(name, other)) { this.buffered = null; return; }
       if (this.buffered.btn === 'special') this.buffered = null; // sem barra: descarta
     }
-    const fwd: Button = this.facing === 1 ? 'right' : 'left';
-    const back: Button = this.facing === 1 ? 'left' : 'right';
     if (ctrl.held('block')) {
       this.crouchBlock = down;
       this.setState('blocking'); this.vx = 0; return;
@@ -371,9 +373,15 @@ export class Fighter {
     return this.toWorld(this.crouched ? this.def.crouchHurtbox : this.def.hurtbox);
   }
   get hitbox(): Box | null {
-    if (this.state !== 'attacking' || !this.move || this.phase !== 'active' || this.hasHit) return null;
-    if (this.move.hitbox.w === 0) return null;
-    return this.toWorld(this.move.hitbox);
+    const m = this.move;
+    if (this.state !== 'attacking' || !m || this.phase !== 'active' || this.hasHit) return null;
+    let hb = m.hitbox;
+    if (m.hitboxes?.length) {                            // mesma conta do desenho: a caixa acompanha o frame ativo na tela
+      const t = (this.stateFrame - m.startup) / Math.max(1, m.active);
+      hb = m.hitboxes[Math.min(m.hitboxes.length - 1, Math.floor(t * m.hitboxes.length))];
+    }
+    if (hb.w === 0) return null;
+    return this.toWorld(hb);
   }
   get pushbox(): Box {
     const s = this.scale;
@@ -386,8 +394,8 @@ export class Fighter {
     const F = this.assets.frames.frames;
     const byFps = (name: string) => {
       const a = A[name]; const fps = a.fps ?? 8;
-      const idx = Math.floor(this.animTime * fps / 60);
-      const i = a.loop ? idx % a.frames.length : Math.min(idx, a.frames.length - 1);
+      const idx = Math.floor(this.animTime * fps / 60), n = a.frames.length;
+      const i = a.loop ? idx % n : a.loopFrom !== undefined && idx >= n ? a.loopFrom + (idx - n) % (n - a.loopFrom) : Math.min(idx, n - 1);
       return { frame: F[a.frames[i]], anchor: a.anchor ?? 'feet' as const };
     };
     switch (this.state) {

@@ -104,11 +104,14 @@
   },
   "win": {
    "frames": [
-    14,
-    11
+    40,
+    41,
+    42,
+    43,
+    44
    ],
-   "fps": 2,
-   "loop": true
+   "fps": 4,
+   "loopFrom": 1
   }
  },
  "moves": {
@@ -196,6 +199,56 @@
    "knockback": 13,
    "launch": -6,
    "hitstop": 10
+  },
+  "long": {
+   "name": "BRAÇO TELESCÓPICO",
+   "phases": {
+    "startup": [
+     35
+    ],
+    "active": [
+     36,
+     37,
+     38
+    ],
+    "recovery": [
+     39
+    ]
+   },
+   "startup": 13,
+   "active": 9,
+   "recovery": 22,
+   "damage": 13,
+   "hitstun": 22,
+   "blockstun": 16,
+   "hitbox": {
+    "x": 40,
+    "y": -172,
+    "w": 105,
+    "h": 55
+   },
+   "hitboxes": [
+    {
+     "x": 40,
+     "y": -172,
+     "w": 105,
+     "h": 55
+    },
+    {
+     "x": 40,
+     "y": -170,
+     "w": 132,
+     "h": 55
+    },
+    {
+     "x": 40,
+     "y": -178,
+     "w": 190,
+     "h": 70
+    }
+   ],
+   "knockback": 16,
+   "hitstop": 9
   },
   "special": {
    "phases": {

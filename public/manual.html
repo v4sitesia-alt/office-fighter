@@ -28,7 +28,7 @@ kbd{display:inline-block;min-width:26px;text-align:center;padding:2px 7px;border
 h3{margin:0;font-family:Anton,Impact,sans-serif;font-weight:400;font-style:italic;font-size:40px;line-height:1;color:var(--c);text-shadow:2px 2px 0 #000}
 .role{margin:4px 0 0;font-family:'Press Start 2P';font-size:9px;color:var(--mut)}.tag{margin:12px 0 4px;color:#fff;font-style:italic}.bio{margin:0 0 12px;color:var(--mut)}
 .stat{display:grid;grid-template-columns:96px 1fr 40px;gap:10px;align-items:center;margin:5px 0}.stat span{font-family:'Press Start 2P';font-size:8px}.stat div{height:10px;background:#070a18;border:2px solid #fff}.stat i{display:block;height:100%}.stat b{font-size:12px;color:var(--mut);font-weight:400}
-.moves{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}.moves>div{background:#0c1128;border:1px solid var(--line);padding:12px}
+.moves{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}.moves>div{background:#0c1128;border:1px solid var(--line);padding:12px}.moves>.wide{grid-column:1/-1}
 .moves h4{margin:0 0 6px;font-family:'Press Start 2P';font-size:8px;color:var(--mut)}.moves b{color:var(--c);font-family:Anton;font-weight:400;font-size:20px;letter-spacing:1px}.moves p{margin:4px 0 0;font-size:14px}
 .stage{position:relative;margin-top:12px;height:90px;overflow:hidden;border:1px solid var(--line)}.stage img{width:100%;height:100%;object-fit:cover}.stage span{position:absolute;left:8px;bottom:6px;font-family:'Press Start 2P';font-size:8px;text-shadow:2px 2px 0 #000}
 footer{text-align:center;color:var(--mut);font-size:13px;margin-top:70px}
@@ -45,7 +45,7 @@ footer{text-align:center;color:var(--mut);font-size:13px;margin-top:70px}
 <h2 id="controles">CONTROLES</h2>
 <div class="grid2"><div class="box"><h4>MOVIMENTO</h4><p><kbd>A</kbd><kbd>D</kbd> andar · <kbd>W</kbd> pular (de novo no ar = pulo duplo) · <kbd>S</kbd> agachar. As setas também funcionam.</p></div>
 <div class="box"><h4>GOLPES</h4><p><kbd>G</kbd> soco · <kbd>H</kbd> chute · <kbd>J</kbd> golpe forte · <kbd>V</kbd> defesa · <kbd>B</kbd> especial</p></div>
-<div class="box"><h4>VARIAÇÕES</h4><p>Segurando <kbd>S</kbd>, os três golpes viram rasteiros, e <kbd>S</kbd>+<kbd>B</kbd> solta a magia mesmo com a barra cheia. No ar, viram aéreos. Um golpe aéreo por pulo.</p></div>
+<div class="box"><h4>VARIAÇÕES</h4><p>Segurando <kbd>S</kbd>, os três golpes viram rasteiros, e <kbd>S</kbd>+<kbd>B</kbd> solta a magia mesmo com a barra cheia. No ar, viram aéreos. Um golpe aéreo por pulo. Segurando pra frente, <kbd>J</kbd> vira o <b>golpe longo</b>: lento, mas acerta de longe e empurra (por enquanto: Edgard, Santana, Kevin e Laura).</p></div>
 <div class="box"><h4>MENUS E CELULAR</h4><p><kbd>Enter</kbd> ou <kbd>G</kbd> confirma · <kbd>V</kbd> volta · <kbd>Esc</kbd> pausa. No celular, o joystick e os botões do gabinete funcionam no toque.</p></div></div>
 
 <h2 id="sistema">SISTEMA DE LUTA</h2>
@@ -65,6 +65,7 @@ footer{text-align:center;color:var(--mut);font-size:13px;margin-top:70px}
     <div class="moves">
       <div><h4>MAGIA · meia barra</h4><b>OVERCLOCK</b><p>Lança projétil próprio do lutador. Dano 15.</p></div>
       <div><h4>SUPER · barra cheia</h4><b>SOCO SÍSMICO</b><p>Salta sobre o adversário, desce com o punho e a explosão atinge uma área larga ao redor do impacto. Dano 26.</p></div>
+      <div class="wide"><h4>GOLPE LONGO · frente + J</h4><b>BRAÇO TELESCÓPICO</b><p>O braço mecânico se estica em três estágios e acerta de longe, de punho fechado. Não gasta barra. Dano 16.</p></div>
     </div>
     <div class="stage"><img src="stages/factory.png" alt="" loading="lazy"><span>CENÁRIO</span></div>
   </div></article><article class="fighter" style="--c:#35d46a" id="dias">
@@ -113,6 +114,7 @@ footer{text-align:center;color:var(--mut);font-size:13px;margin-top:70px}
     <div class="moves">
       <div><h4>MAGIA · meia barra</h4><b>ONDA VERDE</b><p>Lança projétil próprio do lutador. Dano 11.</p></div>
       <div><h4>SUPER · barra cheia</h4><b>ARREMESSO FAIXA-PRETA</b><p>Arranca, agarra, levanta e arremessa. Ignora a defesa: só escapa quem estiver no ar. Dano 25.</p></div>
+      <div class="wide"><h4>GOLPE LONGO · frente + J</h4><b>MORDIDA DO TUBARÃO</b><p>Empurra o ar e um tubarão de água avança mordendo. O maior alcance entre os golpes longos. Não gasta barra. Dano 10.</p></div>
     </div>
     <div class="stage"><img src="stages/recife.png" alt="" loading="lazy"><span>CENÁRIO</span></div>
   </div></article><article class="fighter" style="--c:#d9a441" id="dede">
@@ -156,11 +158,11 @@ footer{text-align:center;color:var(--mut);font-size:13px;margin-top:70px}
   <div class="info">
     <div class="head"><img class="av" src="fighters/van/portrait.png" alt=""><div><h3>VANESSA</h3><p class="role">A Mãe · Recife</p></div></div>
     <p class="tag">“Conciliou a agenda. E o nocaute.”</p>
-    <p class="bio">Só foi ao shopping em Recife comprar roupinha com a filha. O caixa inteligente &#x27;otimizou&#x27; a compra: 300 pares de meia em 48 vezes. O prêmio paga a fatura.</p>
+    <p class="bio">Só foi ao shopping em Recife comprar roupinha com o filho. O caixa inteligente &#x27;otimizou&#x27; a compra: 300 pares de meia em 48 vezes. O prêmio paga a fatura.</p>
     <div class="stats"><div class="stat"><span>FORÇA</span><div><i style="width:23%;background:#ff4fa0"></i></div><b>0.85</b></div><div class="stat"><span>AGILIDADE</span><div><i style="width:69%;background:#ff4fa0"></i></div><b>1.15</b></div><div class="stat"><span>PODER</span><div><i style="width:77%;background:#ff4fa0"></i></div><b>1.20</b></div><div class="stat"><span>PESO</span><div><i style="width:31%;background:#ff4fa0"></i></div><b>0.90</b></div></div>
     <div class="moves">
       <div><h4>MAGIA · meia barra</h4><b>CORAÇÃO DE MÃE</b><p>Lança coração. Dano 16.</p></div>
-      <div><h4>SUPER · barra cheia</h4><b>FRALDA TÓXICA</b><p>Aponta o bebê e solta a nuvem tóxica. Área grande à frente, derruba. Dano 31.</p></div>
+      <div><h4>SUPER · barra cheia</h4><b>DUPLA IMBATÍVEL</b><p>Ergue o filho, os dois miram juntos e a rajada verde varre a área à frente. Derruba. Dano 31.</p></div>
     </div>
     <div class="stage"><img src="stages/van.png" alt="" loading="lazy"><span>CENÁRIO</span></div>
   </div></article><article class="fighter" style="--c:#ffd21f" id="landim">
@@ -174,7 +176,7 @@ footer{text-align:center;color:var(--mut);font-size:13px;margin-top:70px}
       <div><h4>MAGIA · meia barra</h4><b>FLASH</b><p>Lança bola de energia. Dano 16.</p></div>
       <div><h4>SUPER · barra cheia</h4><b>PLANO SEQUÊNCIA</b><p>Feixe da câmera que dispara a lente como projétil. Dano 31.</p></div>
     </div>
-    <div class="stage"><img src="stages/office.png" alt="" loading="lazy"><span>CENÁRIO</span></div>
+    <div class="stage"><img src="stages/landim.png" alt="" loading="lazy"><span>CENÁRIO</span></div>
   </div></article><h2 class="side">OS NEUTROS</h2><p class="lead">Poder de sobra e nenhum lado escolhido. Ainda.</p><article class="fighter" style="--c:#c43cff" id="edgard">
   <div class="art"><img src="versus/edgard.png" alt="EDGARD" loading="lazy"></div>
   <div class="info">
@@ -185,6 +187,7 @@ footer{text-align:center;color:var(--mut);font-size:13px;margin-top:70px}
     <div class="moves">
       <div><h4>MAGIA · meia barra</h4><b>GRID SAGRADO</b><p>Lança projétil próprio do lutador. Dano 18.</p></div>
       <div><h4>SUPER · barra cheia</h4><b>PORTAL DOS MORCEGOS</b><p>Bate a mão no chão e abre um portal de morcegos sob o adversário, onde quer que ele esteja. Dois acertos; o segundo derruba. Dano 28.</p></div>
+      <div class="wide"><h4>GOLPE LONGO · frente + J</h4><b>REVOADA</b><p>Junta as mãos e solta uma revoada de morcegos à frente. Demora pra sair, mas alcança o dobro do golpe forte. Não gasta barra. Dano 11.</p></div>
     </div>
     <div class="stage"><img src="stages/alley.png" alt="" loading="lazy"><span>CENÁRIO</span></div>
   </div></article><article class="fighter" style="--c:#3d8bff" id="kevin">
@@ -197,6 +200,7 @@ footer{text-align:center;color:var(--mut);font-size:13px;margin-top:70px}
     <div class="moves">
       <div><h4>MAGIA · meia barra</h4><b>TIRO CERTEIRO</b><p>Lança projétil próprio do lutador. Dano 12.</p></div>
       <div><h4>SUPER · barra cheia</h4><b>RAJADA TRIPLA</b><p>Saca a pistola e dispara três tiros rápidos em sequência, de qualquer distância. Dano 31.</p></div>
+      <div class="wide"><h4>GOLPE LONGO · frente + J</h4><b>BASTÃO DE CHOQUE</b><p>Saca o cassetete e estoca de longe. A ponta estoura em choque azul. Não gasta barra. Dano 12.</p></div>
     </div>
     <div class="stage"><img src="stages/colombo.png" alt="" loading="lazy"><span>CENÁRIO</span></div>
   </div></article>

@@ -105,11 +105,16 @@
   },
   "win": {
    "frames": [
-    16,
-    0
+    40,
+    41,
+    42,
+    41,
+    42,
+    43,
+    44
    ],
-   "fps": 2,
-   "loop": true
+   "fps": 5,
+   "loopFrom": 6
   }
  },
  "moves": {
@@ -197,6 +202,50 @@
    "knockback": 12,
    "hitstop": 9,
    "launch": -5
+  },
+  "long": {
+   "name": "BASTÃO DE CHOQUE",
+   "phases": {
+    "startup": [
+     35,
+     36
+    ],
+    "active": [
+     37,
+     38
+    ],
+    "recovery": [
+     39
+    ]
+   },
+   "startup": 14,
+   "active": 7,
+   "recovery": 20,
+   "damage": 13,
+   "hitstun": 22,
+   "blockstun": 16,
+   "hitbox": {
+    "x": 50,
+    "y": -130,
+    "w": 118,
+    "h": 50
+   },
+   "hitboxes": [
+    {
+     "x": 50,
+     "y": -130,
+     "w": 118,
+     "h": 50
+    },
+    {
+     "x": 50,
+     "y": -150,
+     "w": 145,
+     "h": 90
+    }
+   ],
+   "knockback": 15,
+   "hitstop": 9
   },
   "special": {
    "phases": {

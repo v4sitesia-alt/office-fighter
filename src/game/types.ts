@@ -21,6 +21,7 @@ export interface AnimDef {
   frames: number[];
   fps?: number;
   loop?: boolean;
+  loopFrom?: number;           // sem `loop`: toca tudo uma vez e depois repete a partir deste índice (pose de vitória que "senta e medita")
   anchor?: 'feet' | 'center';
 }
 
@@ -80,6 +81,7 @@ export interface MoveDef extends HitDef {
   landingLag?: number;         // air: frames travado ao pousar
   anchor?: 'feet' | 'center';
   hitbox: Box;                 // relativo aos pés, x pra frente, y negativo pra cima (unidades do sprite)
+  hitboxes?: Box[];            // uma por frame de `phases.active` (golpe longo: o alcance cresce junto com o desenho)
   meterGain?: number;
   meterCost?: number;
   name?: string;
@@ -89,7 +91,7 @@ export interface MoveDef extends HitDef {
 }
 
 export type MoveName =
-  | 'punch' | 'kick' | 'heavy' | 'special' | 'super'
+  | 'punch' | 'kick' | 'heavy' | 'long' | 'special' | 'super'
   | 'airPunch' | 'airKick' | 'airHeavy'
   | 'lowPunch' | 'lowKick' | 'lowHeavy';
 
