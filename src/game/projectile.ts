@@ -4,6 +4,7 @@ import type { Fighter } from './fighter';
 
 export class Projectile {
   x: number; y: number; vx: number; life: number; dead = false; age = 0;
+  hitsLeft: number; cool = 0; private returning = false; private dir: 1 | -1;
   hitbox: Box;
   img: HTMLImageElement | undefined;
   constructor(public owner: Fighter, public move: MoveDef) {
@@ -13,10 +14,19 @@ export class Projectile {
     this.x = owner.x + owner.facing * p.x * s;
     this.y = GROUND_Y + owner.y + p.y * s;
     this.vx = p.speed * owner.facing;
-    this.life = p.lifetime;
+    this.life = p.lifetime; this.hitsLeft = p.hits ?? 1; this.dir = owner.facing;
     this.hitbox = { x: p.hitbox.x * s, y: p.hitbox.y * s, w: p.hitbox.w * s, h: p.hitbox.h * s };
   }
   update() {
+    const p = this.move.projectile!;
+    if (this.cool > 0) this.cool--;
+    if (p.boomerang) {                                        // freia até parar, inverte e acelera de volta pra mão
+      const half = p.lifetime / 2;
+      if (!this.returning && (this.age >= half || this.x < 20 || this.x > W - 20)) { this.returning = true; if (this.hitsLeft > 0) this.cool = 0; }
+      const t = this.returning ? Math.min(1, (this.age - half) / half + 0.25) : 1 - this.age / half * 0.85;
+      this.vx = p.speed * (this.returning ? -this.dir : this.dir) * Math.max(0.15, t);
+      if (this.returning && (this.x - this.owner.x) * this.dir <= 30) this.dead = true;
+    }
     this.x += this.vx; this.age++;
     if (--this.life <= 0 || this.x < -100 || this.x > W + 100) this.dead = true;
   }
@@ -25,7 +35,8 @@ export class Projectile {
     const s = this.owner.scale * (this.move.projectile?.scale ?? 1);
     ctx.save();
     ctx.translate(this.x, this.y);
-    ctx.scale(this.owner.facing, 1);
+    ctx.scale(this.dir, 1);
+    if (this.move.projectile?.spin) ctx.rotate(this.age * this.move.projectile.spin);
     const pulse = 1 + 0.08 * Math.sin(this.age * 0.6);
     ctx.scale(pulse, pulse);
     if (this.owner.hue) ctx.filter = `hue-rotate(${this.owner.hue}deg)`;

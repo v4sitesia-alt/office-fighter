@@ -44,6 +44,10 @@ export interface ProjectileDef {
   count?: number;              // rajada: quantos projéteis
   every?: number;              // rajada: frames entre um e outro
   sprite?: string;             // arquivo em public/fighters/<id>/ (padrão special_fx.png)
+  boomerang?: boolean;         // vai, freia e volta pra mão de quem jogou (some ao chegar)
+  hits?: number;               // quantos acertos o mesmo projétil pode dar (padrão 1); entre um e outro espera `rehit` frames
+  rehit?: number;
+  spin?: number;               // giro do sprite (rad/frame)
   hitVoice?: string;           // som gravado ao acertar ou bater na defesa (míssil explodindo, garrafa quebrando)
   style?: 'ball' | 'slash' | 'cloud' | 'bat' | 'coin' | 'heart' | 'wave';   // magia desenhada por código (sem sprite)
   color?: string; size?: number;

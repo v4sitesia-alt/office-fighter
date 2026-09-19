@@ -15,7 +15,7 @@ SUPER = {
  'michael': 'Carrega a aura vermelha e avança com um direto que vira um touro em investida.',
  'eneias': 'Corre, mergulha de barriga e explode no chão. O maior dano bruto do jogo.',
  'van': 'Aponta a bebê e solta a nuvem tóxica. Área grande à frente, derruba.',
- 'landim': 'Feixe da câmera que dispara a lente como projétil.',
+ 'landim': 'Arremessa a claquete, que vai e volta como bumerangue: até 4 acertos.',
  'xablau': 'Língua com punho que alcança quase a tela inteira.',
  'mundim': 'Abre o paletó e arremessa as garrafas da diretoria.',
  'crm': 'O João trava a mira e dispara o míssil. Demora pra sair, atravessa a tela e derruba. Junto com o do Edgard, o especial que mais tira.',
@@ -27,6 +27,7 @@ LONG = {
  'santana': 'O braço mecânico se estica em três estágios e acerta de longe, de punho fechado.',
  'kevin': 'Saca o cassetete e estoca de longe. A ponta estoura em choque azul.',
  'dias': 'A velha barrigada em corrida: entra de longe e empurra.',
+ 'landim': 'O feixe da câmera com a lente na ponta: acerta de muito longe.',
  'dede': 'Gira o laço e estala as boleadeiras lá na frente. O golpe longo que chega mais longe.',
  'michael': 'Direto em avanço que termina em gancho: entra de longe e empurra.',
  'laura': 'Empurra o ar e um tubarão de água avança mordendo. O maior alcance entre os golpes longos.'}
@@ -40,7 +41,8 @@ def card(i):
     d = F[i]; st = d['stats']; M = d['moves']; c = d['colors']['primary']; mg = st.get('magic', 1)
     sp, su = M['special'], M['super']
     kind = MAGIC_KIND.get(sp.get('projectile', {}).get('style', ''), 'projétil próprio do lutador')
-    sdmg = su.get('throw', {}).get('release', {}).get('damage') or (sum(h['damage'] for h in su['zone']['hits']) + su.get('damage', 0) if 'zone' in su else su['damage'] * su.get('projectile', {}).get('count', 1))
+    hitsN = su.get('projectile', {}).get('hits', 1)
+    sdmg = su.get('throw', {}).get('release', {}).get('damage') or (sum(h['damage'] for h in su['zone']['hits']) + su.get('damage', 0) if 'zone' in su else su['damage'] * su.get('projectile', {}).get('count', 1) * hitsN)
     city = d.get('origin', {}).get('city', 'Origem desconhecida')
     lg = M.get('long')
     long_box = f'''

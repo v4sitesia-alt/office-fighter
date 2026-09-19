@@ -43,7 +43,13 @@ run michael $M/michael.png \
   --white-keep 758,418 --white-keep 623,888 --white-keep 871,894 --white-keep 94,412 --white-keep 1113,408 --white-keep 111,887 --white-keep 1129,896 --white-keep 683,1004
 run eneias  $M/thumb-eneias.png          # os nomes vieram trocados: thumb-eneias.png é o board
 run van     $M/van.png
-run landim  $M/landim.png --wide 6,2     # feixe + lente são uma pose só
+# Landim: macacão amarelo e efeito amarelo (mesmo matiz) e tênis brancos: todo branco preso fica, só saem os vãos dos redemoinhos
+# das claquetes. As 4 claquetes do board viram o projétil bumerangue (tools/pieces.py) e somem dos frames.
+run landim  $M/landim.png --wide 6,2 \
+  --extra $M/landim-golpelongo-vitoria.png --extra-scale 0.80 --white-fx 48-66:v0.85:s0.08 \
+  --white-keep 0,0,1254,1254 --white-fx-drop 460,290,1050,500 --white-erase 548,290,1050,500 --white-erase 535,420     # feixe + lente são uma pose só
+python3 tools/pieces.py $M/landim-golpelongo-vitoria.png public/fighters/landim --scale 0.80 --fx-hue 48-66:v0.85:s0.08 \
+  --keep 0,0,1254,1254 --fx-drop 460,290,1050,500 --piece claquete.png:792,312,948,492
 run xablau  $M/xablau.png --wide 2,3 --wide 6,2
 run dener   $M/dener.png --alpha 150 --grow 22
 # CRM War Machine e Leo: boards principais com FUNDO BRANCO (recorte do whiteboard.py). Coordenadas em px do board.

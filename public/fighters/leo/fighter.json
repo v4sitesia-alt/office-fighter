@@ -157,7 +157,7 @@
    "startup": 6,
    "active": 3,
    "recovery": 9,
-   "damage": 9.4,
+   "damage": 9.5,
    "hitstun": 15,
    "blockstun": 10,
    "hitbox": {
@@ -185,7 +185,7 @@
    "startup": 10,
    "active": 4,
    "recovery": 16,
-   "damage": 16.5,
+   "damage": 16.6,
    "hitstun": 24,
    "blockstun": 14,
    "hitbox": {
@@ -331,7 +331,7 @@
    "startup": 5,
    "active": 10,
    "recovery": 4,
-   "damage": 10.6,
+   "damage": 10.7,
    "hitstun": 16,
    "blockstun": 12,
    "hitbox": {
@@ -361,7 +361,7 @@
    "startup": 7,
    "active": 8,
    "recovery": 6,
-   "damage": 14.1,
+   "damage": 14.2,
    "hitstun": 22,
    "blockstun": 14,
    "hitbox": {
@@ -423,7 +423,7 @@
    "startup": 6,
    "active": 6,
    "recovery": 12,
-   "damage": 8.2,
+   "damage": 8.3,
    "hitstun": 18,
    "blockstun": 12,
    "hitbox": {
@@ -456,7 +456,7 @@
    "startup": 8,
    "active": 4,
    "recovery": 14,
-   "damage": 11.8,
+   "damage": 11.9,
    "hitstun": 20,
    "blockstun": 14,
    "hitbox": {

@@ -66,8 +66,8 @@ export function resolveHits(fighters: [Fighter, Fighter], projectiles: Projectil
     if (p.dead) continue;
     const def = other(p.owner);
     const hurt = def.hurtbox;
-    if (hurt && overlaps(p.worldBox, hurt)) {
-      p.dead = true;
+    if (hurt && p.cool === 0 && overlaps(p.worldBox, hurt)) {
+      if (--p.hitsLeft <= 0) p.dead = true; else p.cool = p.move.projectile?.rehit ?? 10;      // bumerangue: o mesmo projétil acerta várias vezes
       const blocked = isBlocked(def);
       const owner = p.owner;
       pending.push(() => {
