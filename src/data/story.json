@@ -77,7 +77,8 @@
     "Um, dois, três, quatro... SOLO!",
     "Quem perder paga a cerveja. Preta, de preferência."
    ],
-   "ending": "Edgard desfez a programação no grito e no feitiço. Santana acordou pedindo desculpa e um café. A dupla voltou pra Curitiba. O bug ficou pra trás."
+   "ending": "Edgard desfez a programação no grito e no feitiço. Santana acordou pedindo desculpa e um café. A dupla voltou pra Curitiba. O bug ficou pra trás.",
+   "nick": "Edgard"
   },
   "santana": {
    "open": [
@@ -92,7 +93,8 @@
     "DEPLOY DE SOCO EM TRÊIX... DOIX...",
     "EXECUTANDO. COÉ."
    ],
-   "ending": "Com a vitória, o sistema de Santana reiniciou. Na tela: 'Restaurar versão anterior?' Ele apertou SIM. Primeiro ato livre: ligar pro Edgard."
+   "ending": "Com a vitória, o sistema de Santana reiniciou. Na tela: 'Restaurar versão anterior?' Ele apertou SIM. Primeiro ato livre: ligar pro Edgard.",
+   "nick": "Santana"
   },
   "kevin": {
    "open": [
@@ -107,7 +109,8 @@
     "Olha o teu tamanho e olha o meu. Boa sorte.",
     "Depois me passa o CNPJ pro recibo."
    ],
-   "ending": "Kevin ganhou o prêmio e finalmente recebeu as três notas atrasadas. Com juros. Abriu a 'Kevin Soluções em Problemas'. O Dias é o primeiro cliente. E o primeiro problema."
+   "ending": "Kevin ganhou o prêmio e finalmente recebeu as três notas atrasadas. Com juros. Abriu a 'Kevin Soluções em Problemas'. O Dias é o primeiro cliente. E o primeiro problema.",
+   "nick": "Kevin"
   },
   "laura": {
    "open": [
@@ -122,7 +125,8 @@
     "Respira fundo. Vai doer do mesmo jeito.",
     "Pelos tubarões! E porque eu tô com raiva mesmo."
    ],
-   "ending": "O datacenter foi embargado e os recifes de Recife viraram reserva. Laura lançou o livro 'Finalizei uma Corporação'. Os tubarões não leram, mas aprovaram."
+   "ending": "O datacenter foi embargado e os recifes de Recife viraram reserva. Laura lançou o livro 'Finalizei uma Corporação'. Os tubarões não leram, mas aprovaram.",
+   "nick": "Laura"
   },
   "dede": {
    "open": [
@@ -137,7 +141,8 @@
     "Segura o laço!",
     "Depois te convido pro churrasco. Se sobrar dente."
    ],
-   "ending": "André voltou pra querência com o prêmio e sem sinal de wi-fi, do jeito que gosta. O fogo de chão segue aceso. A air fryer virou comedouro de galinha."
+   "ending": "André voltou pra querência com o prêmio e sem sinal de wi-fi, do jeito que gosta. O fogo de chão segue aceso. A air fryer virou comedouro de galinha.",
+   "nick": "André"
   },
   "dias": {
    "open": [
@@ -152,7 +157,8 @@
     "Negócio fechado.",
     "A casa sempre ganha. E a casa sou eu."
    ],
-   "ending": "Dias venceu o torneio e, por contrato, o prêmio voltou pro próprio caixa. Ele chamou isso de 'sinergia'. O contador chamou de 'estranho'."
+   "ending": "Dias venceu o torneio e, por contrato, o prêmio voltou pro próprio caixa. Ele chamou isso de 'sinergia'. O contador chamou de 'estranho'.",
+   "nick": "Dias"
   },
   "michael": {
    "open": [
@@ -167,7 +173,8 @@
     "Guarda alta!",
     "Essa é pela comunidade."
    ],
-   "ending": "Michael casou no ringue novo da Academia Gancho de Ouro. A valsa teve três rounds. As crianças do morro treinam de graça. Ninguém mais aprende a lutar por aplicativo."
+   "ending": "Michael casou no ringue novo da Academia Gancho de Ouro. A valsa teve três rounds. As crianças do morro treinam de graça. Ninguém mais aprende a lutar por aplicativo.",
+   "nick": "Michael"
   },
   "eneias": {
    "open": [
@@ -182,7 +189,8 @@
     "Vai ser rápido, o jogo começa às quatro.",
     "Desculpa qualquer coisa, viu? De coração."
    ],
-   "ending": "O Bar do Zé foi salvo. O garçom-robô foi demitido e o chorinho voltou pro copo. Eneias sentou, pediu uma gelada e, pela primeira vez no ano, ninguém o incomodou."
+   "ending": "O Bar do Zé foi salvo. O garçom-robô foi demitido e o chorinho voltou pro copo. Eneias sentou, pediu uma gelada e, pela primeira vez no ano, ninguém o incomodou.",
+   "nick": "Eneias"
   },
   "van": {
    "open": [
@@ -197,7 +205,8 @@
     "Filha, fecha o olhinho.",
     "Valendo! E sem palavrão, tem criança."
    ],
-   "ending": "Vanessa pagou a fatura, processou o caixa inteligente e ganhou. De indenização: mais 300 pares de meia. A bebê dormiu a luta inteira. Acordou na hora da foto."
+   "ending": "Vanessa pagou a fatura, processou o caixa inteligente e ganhou. De indenização: mais 300 pares de meia. A bebê dormiu a luta inteira. Acordou na hora da foto.",
+   "nick": "Van"
   },
   "landim": {
    "open": [
@@ -212,7 +221,8 @@
     "Gravando!",
     "Ação!"
    ],
-   "ending": "O documentário 'Trouble Work' lotou as salas de São Paulo. Nenhum ator tinha seis dedos. A crítica chamou de 'humano'. Landim chamou de 'primeiro take'."
+   "ending": "O documentário 'Trouble Work' lotou as salas de São Paulo. Nenhum ator tinha seis dedos. A crítica chamou de 'humano'. Landim chamou de 'primeiro take'.",
+   "nick": "Landim"
   },
   "xablau": {
    "open": [
@@ -227,7 +237,8 @@
     "GRRR. ENVIAR.",
     "XABLAU ACEITA OS TERMOS."
    ],
-   "ending": "Xablau venceu e ninguém soube o que fazer. Ele também não. Foi adotado pelo pessoal do suporte, que o alimenta com planilhas velhas. Dizem que está mais calmo."
+   "ending": "Xablau venceu e ninguém soube o que fazer. Ele também não. Foi adotado pelo pessoal do suporte, que o alimenta com planilhas velhas. Dizem que está mais calmo.",
+   "nick": "Xablau"
   },
   "mundim": {
    "open": [
@@ -242,7 +253,8 @@
     "Que comece a reunião.",
     "Anote aí: isso é uma aula."
    ],
-   "ending": "Mundim venceu o próprio torneio e discursou duas horas citando filósofos. As IAs aprenderam tudo. Inclusive a pedir aumento. No subsolo, um olho biônico acendeu: Leo acordou."
+   "ending": "Mundim venceu o próprio torneio e discursou duas horas citando filósofos. As IAs aprenderam tudo. Inclusive a pedir aumento. No subsolo, um olho biônico acendeu: Leo acordou.",
+   "nick": "Mundim"
   },
   "dener": {
    "open": [
@@ -257,7 +269,8 @@
     "Encerrando a reunião.",
     "Sem perguntas? Ótimo."
    ],
-   "ending": "Dener venceu sem suar, sem sorrir e sem tirar os óculos. Desceu do 53º andar só pra isso. Subiu de volta sem apertar botão nenhum. No dia seguinte, todo mundo recebeu um convite: 'Alinhamento rápido. 5 min.'"
+   "ending": "Dener venceu sem suar, sem sorrir e sem tirar os óculos. Desceu do 53º andar só pra isso. Subiu de volta sem apertar botão nenhum. No dia seguinte, todo mundo recebeu um convite: 'Alinhamento rápido. 5 min.'",
+   "nick": "Dener"
   }
  },
  "pairs": {
@@ -286,7 +299,7 @@
    ],
    [
     "edgard",
-    "Preto emagrece e combina com tudo, chefia. Devolve o Santana que eu nem abro o portal."
+    "Preto é a cor oficial do rock, chefia. Devolve o Santana que eu nem abro o portal."
    ],
    [
     "mundim",
@@ -1259,5 +1272,343 @@
     "DESHCULPA, CHEFE. MAS MINHA DIRETRIZ É VENCER. ATÉ DO SENHOR."
    ]
   ]
- }
+ },
+ "banter": [
+  [
+   [
+    "A",
+    "{b}! Essa luta podia ter sido um e-mail."
+   ],
+   [
+    "B",
+    "Podia. Mas aí eu não ia poder te dar um soco com cópia pra todo mundo."
+   ]
+  ],
+  [
+   [
+    "A",
+    "Vou ser rápido, que eu deixei café na mesa."
+   ],
+   [
+    "B",
+    "Relaxa. Quando tu acordar ele já esfriou."
+   ]
+  ],
+  [
+   [
+    "A",
+    "{b}, foi você que pegou o meu carregador?"
+   ],
+   [
+    "B",
+    "Peguei. E vou pegar o prêmio também."
+   ],
+   [
+    "A",
+    "O prêmio tudo bem. O carregador é pessoal."
+   ]
+  ],
+  [
+   [
+    "A",
+    "Aviso: hoje eu acordei inspirado."
+   ],
+   [
+    "B",
+    "Que bom. Eu acordei atrasado, então vamos logo."
+   ]
+  ],
+  [
+   [
+    "A",
+    "Quem perder paga o almoço."
+   ],
+   [
+    "B",
+    "Fechado. Eu quero o executivo com sobremesa."
+   ],
+   [
+    "A",
+    "Confiante, hein? Gostei. Vai de prato feito mesmo."
+   ]
+  ],
+  [
+   [
+    "A",
+    "{b}, com todo o carinho: prepara o gelo."
+   ],
+   [
+    "B",
+    "Já preparei. Pro teu olho e pra minha bebida de comemoração."
+   ]
+  ],
+  [
+   [
+    "A",
+    "Tu treinou pra hoje?"
+   ],
+   [
+    "B",
+    "Treinei. Subi dois lances de escada sem parar."
+   ],
+   [
+    "A",
+    "Atleta! Tô até com medo."
+   ]
+  ],
+  [
+   [
+    "A",
+    "Combinado: sem golpe baixo."
+   ],
+   [
+    "B",
+    "Combinado."
+   ],
+   [
+    "A",
+    "..."
+   ],
+   [
+    "B",
+    "Tu já tá pensando em dar golpe baixo, né?"
+   ]
+  ],
+  [
+   [
+    "A",
+    "Vou pegar leve contigo, {b}."
+   ],
+   [
+    "B",
+    "Não precisa. Pega leve é no ar-condicionado, que tá um gelo."
+   ]
+  ],
+  [
+   [
+    "A",
+    "Sabe o que é pior que perder pra mim?"
+   ],
+   [
+    "B",
+    "Te ouvir contando isso no almoço a semana inteira."
+   ],
+   [
+    "A",
+    "Exato. Já tô ensaiando."
+   ]
+  ],
+  [
+   [
+    "A",
+    "{b}, tu tá com cara de quem dormiu pouco."
+   ],
+   [
+    "B",
+    "E tu com cara de quem vai dormir agora."
+   ]
+  ],
+  [
+   [
+    "A",
+    "Última chance de desistir com dignidade."
+   ],
+   [
+    "B",
+    "Dignidade eu perdi na festa da firma. Vem."
+   ]
+  ],
+  [
+   [
+    "A",
+    "Se eu ganhar, tu assume minha planilha por um mês."
+   ],
+   [
+    "B",
+    "E se eu ganhar?"
+   ],
+   [
+    "A",
+    "Eu finjo que li a tua."
+   ]
+  ],
+  [
+   [
+    "A",
+    "Nada contra ti, {b}. Tu é até legal."
+   ],
+   [
+    "B",
+    "'Até'? Agora eu fiquei ofendido. Agora é sério."
+   ]
+  ],
+  [
+   [
+    "A",
+    "Tô devendo um soco desde aquela reunião de segunda."
+   ],
+   [
+    "B",
+    "Entra na fila. Eu também tô me devendo um."
+   ]
+  ],
+  [
+   [
+    "A",
+    "Olha, eu sou de paz. Mas hoje é sexta."
+   ],
+   [
+    "B",
+    "E na sexta ninguém segura ninguém. Bora!"
+   ]
+  ],
+  [
+   [
+    "A",
+    "{b}, tu luta igual tu estaciona."
+   ],
+   [
+    "B",
+    "Devagar e com cuidado?"
+   ],
+   [
+    "A",
+    "Torto e ocupando duas vagas."
+   ]
+  ],
+  [
+   [
+    "A",
+    "Já escolhi a música da minha vitória."
+   ],
+   [
+    "B",
+    "Coloca pra tocar agora, que depois tu não vai estar no clima."
+   ]
+  ],
+  [
+   [
+    "A",
+    "Eu li um livro sobre luta ontem."
+   ],
+   [
+    "B",
+    "Inteiro?"
+   ],
+   [
+    "A",
+    "O resumo. Da contracapa. Mas tô confiante."
+   ]
+  ],
+  [
+   [
+    "A",
+    "Promete que não fica de mal depois?"
+   ],
+   [
+    "B",
+    "Prometo. Segunda-feira a gente toma café como se nada tivesse acontecido."
+   ],
+   [
+    "A",
+    "Beleza. Então lá vai."
+   ]
+  ],
+  [
+   [
+    "A",
+    "{b}, o wi-fi caiu de novo. A culpa é tua?"
+   ],
+   [
+    "B",
+    "Não. Mas já que tu tá nervoso, aproveita e desconta aqui."
+   ]
+  ],
+  [
+   [
+    "A",
+    "Eu avisei no grupo que ia ganhar."
+   ],
+   [
+    "B",
+    "Eu vi. Deixei no vácuo de propósito."
+   ]
+  ],
+  [
+   [
+    "A",
+    "Trouxe torcida?"
+   ],
+   [
+    "B",
+    "Minha mãe tá assistindo."
+   ],
+   [
+    "A",
+    "Putz. Vou bater com educação então."
+   ]
+  ],
+  [
+   [
+    "A",
+    "Tu não tem medo de mim, {b}?"
+   ],
+   [
+    "B",
+    "Tenho medo é de boleto. Tu é tranquilo."
+   ]
+  ]
+ ],
+ "rematch": [
+  [
+   [
+    "A",
+    "De novo, {b}? Tu gosta de sofrer, hein."
+   ],
+   [
+    "B",
+    "Aquela não valeu. Eu tava com o cadarço desamarrado."
+   ]
+  ],
+  [
+   [
+    "B",
+    "Voltei. E dessa vez eu alonguei."
+   ],
+   [
+    "A",
+    "Alongou o quê, a desculpa?"
+   ]
+  ],
+  [
+   [
+    "B",
+    "Revanche. Eu vi onde eu errei."
+   ],
+   [
+    "A",
+    "Foi na hora que tu apertou o START."
+   ]
+  ],
+  [
+   [
+    "A",
+    "Olha quem voltou! Senti saudade."
+   ],
+   [
+    "B",
+    "Aproveita, que agora o café fez efeito."
+   ]
+  ],
+  [
+   [
+    "B",
+    "Melhor de três. Depois melhor de cinco. Eu tenho o dia todo."
+   ],
+   [
+    "A",
+    "E eu tenho o mesmo soco. Vem."
+   ]
+  ]
+ ]
 }

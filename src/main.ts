@@ -89,10 +89,10 @@ const secret = {
   isLocked: (id: string) => !unlockedIds.has(id),
   unlock: (id: string) => { unlockedIds.add(id); try { localStorage.setItem('v4f-unlocked', JSON.stringify([...unlockedIds])); } catch { /* sem storage */ } },
 };
-let continues = 0, secretFight = false;
+let continues = 0, secretFight = false, tries = 0;
 
 function buildCampaign() {
-  continues = 0; secretFight = false;
+  continues = 0; secretFight = false; tries = 0;
   // 4 rivais do elenco (a partir da posição do jogador), depois o capanga, o subchefe e o chefão
   const bosses = ['xablau', 'dias', 'mundim'].map((id) => roster.findIndex((f) => f.def.id === id)).filter((i) => i >= 0);
   const pool = roster.map((_, i) => i).filter((i) => i !== playerIdx && !bosses.includes(i) && !roster[i].def.secret);
@@ -114,8 +114,8 @@ function startFight() {
       const won = winner === 0;
       audio.sfx(won ? 'win' : 'lose'); audio.voice(won ? 'ann-you-win' : 'ann-you-lose', 'ann');
       screens.result(won, perfect, isLast, () => {
-        if (!won) { continues++; showVersus(); return; }
-        fightNo++;
+        if (!won) { continues++; tries++; showVersus(); return; }
+        fightNo++; tries = 0;
         if (fightNo < campaign.length) { showVersus(); return; }
         // zerou sem perder nenhuma luta: o elevador sobe mais um andar
         const boss = roster.findIndex((f) => f.def.secret);
@@ -140,7 +140,7 @@ function showVersus() {
   const opp = campaign[fightNo];
   setMode('versus');
   audio.preload(`fighter-${(opp.hue ? roster[playerIdx] : roster[opp.idx]).def.id}`);
-  screens.versus(roster[playerIdx], roster[opp.idx], secretFight ? 'LUTA SECRETA · 53º ANDAR' : fightNo === campaign.length - 1 ? 'LUTA FINAL' : `LUTA ${fightNo + 1} DE ${campaign.length}`, opp.hue, scriptFor(roster[playerIdx].def.id, roster[opp.idx].def.id, !!opp.hue), startFight);
+  screens.versus(roster[playerIdx], roster[opp.idx], secretFight ? 'LUTA SECRETA · 53º ANDAR' : fightNo === campaign.length - 1 ? 'LUTA FINAL' : `LUTA ${fightNo + 1} DE ${campaign.length}`, opp.hue, scriptFor(roster[playerIdx].def.id, roster[opp.idx].def.id, !!opp.hue, tries), startFight);
 }
 
 function goTitle() {

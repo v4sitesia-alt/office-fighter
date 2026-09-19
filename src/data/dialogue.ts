@@ -5,14 +5,31 @@ export interface Line { who: 0 | 1; text: string }
 interface Voice { open: string[]; reply: string[]; close: string[]; ending: string }
 const S = story as unknown as { pairs: Record<string, [string, string][]>; mirror: [string, string][]; fighters: Record<string, Voice> };
 
-export function scriptFor(a: string, b: string, mirror: boolean, villainB = true): Line[] {
+type Exchange = [string, string][];
+const B = story as unknown as { banter: Exchange[]; rematch: Exchange[]; fighters: Record<string, { nick: string }> };
+const rnd = <T>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)];
+
+/** Conversa do banco: A é o jogador na revanche (quem perdeu é o B... ou seja, quem volta); fora isso, sorteado. */
+function fromBank(bank: Exchange[], a: string, b: string, aIs: 0 | 1): Line[] {
+  const ids = aIs === 0 ? [a, b] : [b, a];
+  return rnd(bank).map(([w, t]) => {
+    const who = ((w === 'A' ? 0 : 1) ^ aIs) as 0 | 1, me = w === 'A' ? ids[0] : ids[1], other = w === 'A' ? ids[1] : ids[0];
+    return { who, text: t.replace('{a}', B.fighters[me]?.nick ?? '').replace('{b}', B.fighters[other]?.nick ?? '') };
+  });
+}
+
+/** attempt = quantas vezes o jogador já perdeu esta luta: na revanche a conversa muda. */
+export function scriptFor(a: string, b: string, mirror: boolean, attempt = 0): Line[] {
   if (mirror || a === b) return S.mirror.map(([w, t]) => ({ who: w === 'A' ? 0 : 1, text: t }));
+  if (attempt > 0) return fromBank(B.rematch, a, b, 1);                         // A = o adversário, que ganhou a anterior
   const key = [a, b].sort().join('|'), pair = S.pairs[key];
   if (pair) return pair.map(([id, t]) => ({ who: id === a ? 0 : 1, text: t }));
-  const A = S.fighters[a], B = S.fighters[b]; if (!A || !B) return [];
-  let h = 0; for (const c of key) h = (h * 31 + c.charCodeAt(0)) >>> 0;
-  const pick = (arr: string[], k: number) => arr[(h + k) % arr.length];
-  const first = villainB ? 1 : 0, O = first ? B : A, R = first ? A : B;   // quem desafia fala primeiro
-  return [{ who: first as 0 | 1, text: pick(O.open, 0) }, { who: (1 - first) as 0 | 1, text: pick(R.reply, 1) }, { who: first as 0 | 1, text: pick(O.close, 2) }, { who: (1 - first) as 0 | 1, text: pick(R.close, 3) }];
+  const A = S.fighters[a], Bv = S.fighters[b]; if (!A || !Bv) return [];
+  // sem roteiro próprio: uma conversa do banco + a frase de efeito de cada um
+  const lines = fromBank(B.banter, a, b, Math.random() < 0.5 ? 0 : 1), last = lines[lines.length - 1].who;
+  const closer = (1 - last) as 0 | 1;
+  lines.push({ who: closer, text: rnd((closer === 0 ? A : Bv).close) });
+  if (lines.length < 4) lines.push({ who: last, text: rnd((last === 0 ? A : Bv).close) });
+  return lines;
 }
 export const endingOf = (id: string) => S.fighters[id]?.ending ?? '';
