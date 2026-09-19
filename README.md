@@ -88,13 +88,16 @@ O desbloqueio fica salvo no navegador (`v4f-unlocked`). Ele usa `meterRegen` (ba
 - `lobby.ts`: a tela da sala; os botões usam `data-act`/`data-arg` com um clique delegado só (re-render não perde clique).
 - Com a aba escondida no meio de uma luta online, um Worker segue o relógio (`core/loop.ts`) pra não travar o outro lado.
 
-Ranking e campeonato usam as tabelas de `supabase/schema.sql` (rode no SQL Editor). O campeonato é eliminatória simples com uma
+Ranking e campeonato usam as tabelas de `supabase/schema.sql` (rode no SQL Editor). O ranking da arena é por nome
+(sem acento, maiúsculo, sem símbolos: "Graúda" e "GRAUDA" somam juntos), porque o id de quem entra muda a cada visita;
+linhas antigas da mesma pessoa são somadas na leitura (`store.ts`, `rankKey`/`mergeRanking`). O campeonato é eliminatória simples com uma
 luta por vez: o cliente do organizador chama a próxima luta da fila, os dois jogadores recebem "É SUA VEZ" e o resto assiste.
 
 Testes da arena (rodam o jogo no Node):
 
 ```
 npm run nettest -- invites   # protocolo de convite: aceitar, recusar, expirar, cruzado, aceite perdido…
+npm run nettest -- ranking   # ranking por nome e pontuação repetida do arcade (sem banco)
 npm run nettest -- sim       # rede falsa boa / ruim / 30% de perda: os dois lados e o espectador têm que bater frame a frame
 npm run nettest -- real      # dois robôs lutando pelo Supabase de verdade
 npm run nettest -- bot --name ROBO --challenge EDGARD   # robô que desafia (ou aceita) quem está no navegador

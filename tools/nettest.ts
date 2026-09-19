@@ -6,6 +6,8 @@
 //                                   aceita, lutam uma partida inteira e os estados são comparados frame a frame
 //   npm run nettest -- invites      protocolo de convite: aceitar, recusar, cancelar, expirar, aceite atrasado,
 //                                   quem convidou ocupado, desafio cruzado e aceite perdido na rede
+//   npm run nettest -- ranking      ranking: a mesma pessoa (outra visita, outro aparelho, com ou sem acento) soma numa
+//                                   linha só, e a pontuação do arcade gravada repetida aparece uma vez
 //   npm run nettest -- bot [--name ROBÔ] [--fighter santana] [--challenge NOME]
 //                                   robô que entra na sala: aceita qualquer desafio (ou desafia NOME) e luta sozinho,
 //                                   pra testar com o jogo aberto no navegador
@@ -19,6 +21,7 @@ import { Rng } from '../src/core/rng';
 import { NetSession, WatchSession, hashMatch } from '../src/net/netplay';
 import { Invites } from '../src/net/invites';
 import { joinRoom, type Msg, type Peer, type Room } from '../src/net/transport';
+import { mergeRanking, rankKey, resultArgs, uniqueScores, type RankRow } from '../src/net/store';
 
 const load = (id: string): FighterAssets => ({
   def: JSON.parse(fs.readFileSync(`public/fighters/${id}/fighter.json`, 'utf8')),
@@ -252,8 +255,35 @@ async function real() {
   process.exitCode = res.fim[0] && res.fim[1] && diff === 0 && compared > 20 ? 0 : 1;
 }
 
+// ---------------------------------------------------------------- ranking (sem banco: só as regras)
+function rankingTest() {
+  const results: [string, boolean, unknown][] = [];
+  const check = (name: string, ok: boolean, info: unknown) => results.push([name, ok, info]);
+  const keys = ['EDGARD', ' edgard ', 'Edgard', 'GRAÚDA', 'GRAUDA', 'graúda!', 'NAVEGADOR  TEST'].map((n) => rankKey(n, 'x'));
+  check('nome vira a mesma chave com espaço, minúscula e acento', keys[0] === keys[1] && keys[1] === keys[2] && keys[3] === keys[4] && keys[4] === keys[5] && keys[0] !== keys[3], keys);
+  check('nome só com símbolo fica com o id da visita', rankKey('???', 'abc123') === 'abc123' && rankKey('', 'abc123') === 'abc123', rankKey('???', 'abc123'));
+  // linhas como estão hoje no banco: uma por visita, mais recente primeiro
+  const row = (id: string, name: string, wins: number, losses: number): RankRow => ({ id, name, wins, losses, points: wins * 3 + losses });
+  const merged = mergeRanking([
+    row('nome:EDGARD', 'EDGARD', 2, 1), row('k1', 'Edgard', 1, 0), row('k2', 'EDGARD', 0, 2), row('k3', 'GRAÚDA', 3, 0),
+    row('k4', 'GRAUDA', 1, 1), row('k5', 'TESTE', 0, 1),
+  ]);
+  const ed = merged.find((r) => r.id === 'nome:EDGARD'), gr = merged.find((r) => r.id === 'nome:GRAUDA');
+  check('visitas da mesma pessoa somam numa linha', merged.length === 3 && !!ed && ed.wins === 3 && ed.losses === 3 && ed.points === 12 && !!gr && gr.wins === 4 && gr.losses === 1 && gr.points === 13, merged);
+  check('ordem por pontos e nome exibido é o mais recente', merged[0].id === 'nome:GRAUDA' && merged[0].name === 'GRAÚDA' && merged[1].name === 'EDGARD', merged.map((r) => `${r.name} ${r.points}`));
+  check('ranking mostra no máximo 8', mergeRanking(Array.from({ length: 20 }, (_, i) => row(`p${i}`, `JOGADOR ${i}`, i, 0))).length === 8, null);
+  const args = resultArgs({ id: 'a1', name: 'Graúda' }, { id: 'b2', name: 'EDGARD' });
+  check('vitória grava na linha do nome, não na da visita', args?.w_id === 'nome:GRAUDA' && args?.l_id === 'nome:EDGARD' && args?.w_name === 'Graúda', args);
+  check('mesmo nome dos dois lados não conta', resultArgs({ id: 'a1', name: 'EDGARD' }, { id: 'b2', name: 'edgard' }) === null, null);
+  const dup = { player_id: 'fb2q3gmv', name: 'TESTE', fighter: 'van', score: 11974 };
+  const top = uniqueScores([dup, { ...dup }, { ...dup }, { player_id: 'zz', name: 'TESTE', fighter: 'van', score: 11974 }, { player_id: 'fb2q3gmv', name: 'TESTE', fighter: 'kevin', score: 9000 }]);
+  check('pontuação do arcade gravada repetida aparece uma vez', top.length === 3 && top.filter((r) => r.score === 11974).length === 2, top);
+  for (const [n, ok, info] of results) log({ caso: n, passou: ok, detalhe: info });
+  process.exitCode = results.every((r) => r[1]) ? 0 : 1;
+}
+
 const [mode, ...rest] = process.argv.slice(2);
 const args: Record<string, string> = {};
 for (let i = 0; i < rest.length; i++) if (rest[i].startsWith('--')) args[rest[i].slice(2)] = rest[i + 1]?.startsWith('--') || rest[i + 1] === undefined ? 'yes' : rest[++i];
-if (mode === 'sim') sim(); else if (mode === 'invites') void invitesTest(); else if (mode === 'real') void real(); else if (mode === 'bot') bot(args);
-else console.log('uso: nettest sim | real | bot [--name N] [--fighter id] [--challenge NOME]');
+if (mode === 'sim') sim(); else if (mode === 'invites') void invitesTest(); else if (mode === 'ranking') rankingTest(); else if (mode === 'real') void real(); else if (mode === 'bot') bot(args);
+else console.log('uso: nettest sim | invites | ranking | real | bot [--name N] [--fighter id] [--challenge NOME]');

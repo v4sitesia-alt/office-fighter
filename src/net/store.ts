@@ -9,18 +9,45 @@ export interface TMatch { id: string; tournament_id: string; round: number; slot
 const db = () => supa();
 export const storeReady = ONLINE;
 
+// ---------- ranking da arena
+// Quem entra na arena ganha um id novo a cada visita (é por aba, pra duas abas serem dois jogadores). Se o ranking
+// usasse esse id, a mesma pessoa virava uma linha por visita e as vitórias ficavam espalhadas. Por isso o ranking
+// é pelo NOME: sem acento, maiúsculo e sem símbolos ("Graúda" = "GRAUDA"), igual em qualquer visita ou aparelho.
+
+/** Linha do ranking de uma pessoa: `nome:EDGARD`. Nome sem letra nem número fica com o id da visita. */
+export function rankKey(name: string, fallback: string) {
+  const n = name.normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase().replace(/[^A-Z0-9]+/g, ' ').trim();
+  return n ? `nome:${n}` : fallback;
+}
+/** Junta as linhas da mesma pessoa (inclusive as antigas, de antes do ranking por nome). Espera a mais recente primeiro. */
+export function mergeRanking(rows: RankRow[], top = 8): RankRow[] {
+  const by = new Map<string, RankRow>();
+  for (const r of rows) {
+    const k = rankKey(r.name, r.id), cur = by.get(k);
+    if (cur) { cur.wins += r.wins; cur.losses += r.losses; cur.points += r.points; }
+    else by.set(k, { id: k, name: r.name, wins: r.wins, losses: r.losses, points: r.points }); // nome exibido: o mais recente
+  }
+  return [...by.values()].sort((a, b) => b.points - a.points || b.wins - a.wins || a.losses - b.losses).slice(0, top);
+}
+/** Argumentos do registro de uma luta; null quando os dois lados são a mesma pessoa (duas abas com o mesmo nome). */
+export function resultArgs(w: { id: string; name: string }, l: { id: string; name: string }) {
+  const wk = rankKey(w.name, w.id), lk = rankKey(l.name, l.id);
+  return wk === lk ? null : { w_id: wk, w_name: w.name, l_id: lk, l_name: l.name };
+}
+
 export async function upsertPlayer(id: string, name: string, fighter: string) {
   if (!ONLINE) return;
-  await db().from('players').upsert({ id, name, fighter, updated_at: new Date().toISOString() }, { onConflict: 'id', ignoreDuplicates: false });
+  await db().from('players').upsert({ id: rankKey(name, id), name, fighter, updated_at: new Date().toISOString() }, { onConflict: 'id', ignoreDuplicates: false });
 }
 export async function ranking(): Promise<RankRow[]> {
   if (!ONLINE) return [];
-  const { data } = await db().from('players').select('id,name,wins,losses,points').gt('points', 0).order('points', { ascending: false }).order('wins', { ascending: false }).limit(8);
-  return (data ?? []) as RankRow[];
+  const { data } = await db().from('players').select('id,name,wins,losses,points').gt('points', 0).order('updated_at', { ascending: false }).limit(1000);
+  return mergeRanking((data ?? []) as RankRow[]);
 }
 export async function recordResult(w: { id: string; name: string }, l: { id: string; name: string }) {
-  if (!ONLINE) return;
-  await db().rpc('record_result', { w_id: w.id, w_name: w.name, l_id: l.id, l_name: l.name });
+  const args = resultArgs(w, l);
+  if (!ONLINE || !args) return;
+  await db().rpc('record_result', args);
 }
 
 // ---------- campeonato
@@ -89,10 +116,16 @@ export async function submitScore(player_id: string, row: ScoreRow) {
   try { localStorage.setItem('v4f-scores', JSON.stringify(all)); } catch { /* sem storage */ }
   if (ONLINE) await db().from('scores').insert({ player_id, ...row });
 }
+/** A mesma partida gravada mais de uma vez (Enter repetido, na versão antiga do jogo) aparece uma vez só. */
+export function uniqueScores(rows: (ScoreRow & { player_id?: string | null })[], top = 10): ScoreRow[] {
+  const seen = new Set<string>();
+  return rows.filter((r) => { const k = `${r.player_id ?? r.name}|${r.fighter}|${r.score}`; return !seen.has(k) && !!seen.add(k); })
+    .slice(0, top).map(({ name, fighter, score }) => ({ name, fighter, score }));
+}
 export async function topScores(): Promise<ScoreRow[]> {
   if (ONLINE) {
-    const { data, error } = await db().from('scores').select('name,fighter,score').order('score', { ascending: false }).limit(10);
-    if (!error && data) return data as ScoreRow[];
+    const { data, error } = await db().from('scores').select('player_id,name,fighter,score').order('score', { ascending: false }).limit(40);
+    if (!error && data) return uniqueScores(data as ScoreRow[]);
   }
-  return localScores().slice(0, 10);
+  return uniqueScores(localScores());
 }
