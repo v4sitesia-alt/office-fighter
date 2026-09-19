@@ -77,11 +77,28 @@ O desbloqueio fica salvo no navegador (`v4f-unlocked`). Ele usa `meterRegen` (ba
 ## Arena online
 
 `src/net/`: saguão com presença, desafios 1×1, lutas ao vivo pra assistir e placar da sessão, sobre Supabase Realtime
-(broadcast + presença; ainda sem tabelas). A luta usa lockstep: só os botões de cada frame trafegam, com 10 frames de atraso
-de entrada, e espectadores simulam a mesma luta. Sem `VITE_SUPABASE_ANON_KEY` (veja `.env.example`) cai no modo local, que só
-liga abas do mesmo navegador.
+(broadcast + presença). Sem `VITE_SUPABASE_ANON_KEY` (veja `.env.example`) cai no modo local, que só liga abas do mesmo navegador.
+
+- `transport.ts`: salas `v4f:<nome>` (lobby, `match-<id>`, `watch-<id>`); mensagens enviadas antes da inscrição esperam numa fila.
+- `invites.ts`: protocolo de desafio sem DOM (challenge/accept/decline/cancel/gone). Prazo de 30 s nos dois lados, aceite
+  reenviado até a luta conectar, aceite atrasado ainda vale se quem convidou está livre, desafio cruzado vira uma luta só.
+- `netplay.ts`: lockstep. Só os botões de cada frame trafegam (em trechos RLE, com confirmação e reenvio do que se perdeu);
+  o atraso de entrada se ajusta pelo ping (4 a 15 frames) e a cada segundo os dois comparam um hash da luta. O jogador 1
+  manda a transmissão numa sala separada, e o espectador pede de novo o trecho que faltar.
+- `lobby.ts`: a tela da sala; os botões usam `data-act`/`data-arg` com um clique delegado só (re-render não perde clique).
+- Com a aba escondida no meio de uma luta online, um Worker segue o relógio (`core/loop.ts`) pra não travar o outro lado.
+
 Ranking e campeonato usam as tabelas de `supabase/schema.sql` (rode no SQL Editor). O campeonato é eliminatória simples com uma
-luta por vez: o cliente do organizador chama a próxima luta da fila, os dois jogadores recebem "É SUA VEZ" e o resto assiste. Autoteste do sincronismo no console: `__of().netSelfTest()` (tem que devolver `equal: true`).
+luta por vez: o cliente do organizador chama a próxima luta da fila, os dois jogadores recebem "É SUA VEZ" e o resto assiste.
+
+Testes da arena (rodam o jogo no Node):
+
+```
+npm run nettest -- invites   # protocolo de convite: aceitar, recusar, expirar, cruzado, aceite perdido…
+npm run nettest -- sim       # rede falsa boa / ruim / 30% de perda: os dois lados e o espectador têm que bater frame a frame
+npm run nettest -- real      # dois robôs lutando pelo Supabase de verdade
+npm run nettest -- bot --name ROBO --challenge EDGARD   # robô que desafia (ou aceita) quem está no navegador
+```
 
 ## Áudio
 
