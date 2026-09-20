@@ -99,6 +99,13 @@ const secret = {
 };
 let continues = 0, secretFight = false, tries = 0, arcadeScore = 0;
 
+/** Primeiro adversário do arcade pra quem escolher o lutador i (a mesma conta do buildCampaign). */
+function firstRival(i: number) {
+  const bosses = ['dias', 'leo', 'xablau', 'mundim'].map((id) => roster.findIndex((f) => f.def.id === id));
+  const pool = roster.map((_, k) => k).filter((k) => k !== i && !bosses.includes(k) && !roster[k].def.secret);
+  return pool.length ? pool[i % pool.length] : -1;
+}
+
 function buildCampaign() {
   continues = 0; secretFight = false; tries = 0; arcadeScore = 0;
   // 4 rivais do elenco (a partir da posição do jogador), depois Dias, Leo (no elevador), Xablau e o chefão
@@ -129,7 +136,7 @@ function startFight() {
           setMode('select');
           screens.select(roster, secret, (i) => {
             playerIdx = i; campaign = campaign.map((c) => ({ idx: c.idx, hue: c.idx === i ? 150 : 0 })); showVersus();
-          }, () => finishArcade());
+          }, () => finishArcade(), playerIdx, () => campaign[fightNo].idx);
           return;
         }
         fightNo++; tries = 0;
@@ -197,7 +204,7 @@ function goTitle() {
 
 function showSelect() {
   setMode('select');
-  screens.select(roster, secret, (i) => { playerIdx = i; if (online) openLobby(); else { buildCampaign(); showVersus(); } }, goTitle);
+  screens.select(roster, secret, (i) => { playerIdx = i; if (online) openLobby(); else { buildCampaign(); showVersus(); } }, goTitle, playerIdx, online ? null : firstRival);
 }
 
 // ---------- arena online

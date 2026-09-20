@@ -50,12 +50,20 @@ export class Projectile {
     ctx.scale(this.dir, 1);
     if (this.move.projectile?.homing) ctx.rotate(Math.atan2(this.vy, Math.abs(this.vx) + 0.001) * (this.vx * this.dir < 0 ? -1 : 1) + (this.vx * this.dir < 0 ? Math.PI : 0));
     if (this.move.projectile?.spin) ctx.rotate(this.age * this.move.projectile.spin);
-    const pulse = 1 + 0.08 * Math.sin(this.age * 0.6);
+    const pulse = this.move.projectile?.ground ? 1 : 1 + 0.08 * Math.sin(this.age * 0.6);
     ctx.scale(pulse, pulse);
     if (this.owner.hue) ctx.filter = `hue-rotate(${this.owner.hue}deg)`;
     const st = this.move.projectile?.style;
     if (st) {
       drawMagic(ctx, st, this.move.projectile?.color ?? this.owner.def.colors.primary, (this.move.projectile?.size ?? 34) * this.owner.def.scale, this.age);
+    } else if (this.img && this.move.projectile?.ground) {     // onda de pedras: brota do chão, sobe e desce enquanto avança
+      const tr = this.owner.assets.fx[this.move.projectile.trail ?? ''];
+      const pump = (ph: number) => 0.72 + 0.34 * Math.abs(Math.sin(this.age * 0.22 + ph));
+      if (tr) for (const [back, ph] of [[150, 1.6], [80, 0.8]] as const) {
+        if (this.age * Math.abs(this.vx) < back) continue;
+        const k = pump(ph) * 0.9; ctx.drawImage(tr, -back * s / this.owner.scale - tr.width * s / 2, -tr.height * s * k, tr.width * s, tr.height * s * k);
+      }
+      const k = pump(0); ctx.drawImage(this.img, -this.img.width * s / 2, -this.img.height * s * k, this.img.width * s, this.img.height * s * k);
     } else if (this.img) {
       const w = this.img.width * s, h = this.img.height * s;
       ctx.drawImage(this.img, -w / 2, -h / 2, w, h);

@@ -44,6 +44,8 @@ export interface ProjectileDef {
   count?: number;              // rajada: quantos projéteis
   every?: number;              // rajada: frames entre um e outro
   sprite?: string;             // arquivo em public/fighters/<id>/ (padrão special_fx.png)
+  ground?: boolean;            // onda que corre pelo chão: o sprite fica apoiado no chão, pulsando, com `trail` (peça menor) vindo atrás
+  trail?: string;
   homing?: boolean;            // teleguiado: sobe em curva pro céu e desce em cima do adversário
   boomerang?: boolean;         // vai, freia e volta pra mão de quem jogou (some ao chegar)
   hits?: number;               // quantos acertos o mesmo projétil pode dar (padrão 1); entre um e outro espera `rehit` frames

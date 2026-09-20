@@ -2,7 +2,7 @@
 import type { Button, Input } from '../core/input';
 import type { Difficulty, FighterAssets } from '../game/types';
 import { audio } from '../core/audio';
-import { brazilMapSvg } from './brazil';
+import { placeOf, valeMapSvg } from './valemap';
 import { endingOf, type Line } from '../data/dialogue';
 
 export class Screens {
@@ -106,56 +106,102 @@ export class Screens {
   }
 
   /** Seleção. `secret` = lutadores ocultos: slot escuro até o código ser digitado aqui mesmo (↑ ↑ ↓ ↓ ← → ← → B J). */
-  select(roster: FighterAssets[], secret: { isLocked(id: string): boolean; unlock(id: string): void }, onPick: (i: number) => void, onBack: () => void, focus = 0) {
+  /** rival(i) = quem a CPU vai usar contra o lutador i (null = sem CPU, arena online). O adversário fica escondido num "?"
+   *  até o jogador confirmar; aí a CPU gira a roleta pelos retratos, para no escolhido e a luta segue. */
+  select(roster: FighterAssets[], secret: { isLocked(id: string): boolean; unlock(id: string): void }, onPick: (i: number) => void, onBack: () => void, focus = 0, rival: ((i: number) => number | null) | null = null) {
+    const base = import.meta.env.BASE_URL;
     const img = (f: FighterAssets) => (f.portrait ? `<img src="${f.portrait.src}" alt="">` : '');
     const locked = (f: FighterAssets) => !!f.def.secret && secret.isLocked(f.def.id);
     const slots = roster.map((f, i) => locked(f)
       ? (f.secretPortrait ? `<div class="sf2-slot secret hidden art" style="--c:${f.def.colors.primary}"><img src="${f.secretPortrait.src}" alt=""></div>` : `<div class="sf2-slot secret hidden" style="--c:${f.def.colors.primary}">${img(f)}<b>?</b></div>`)
       : `<div class="sf2-slot${f.def.secret ? ' secret' : ''}" data-item data-i="${i}" style="--c:${f.def.colors.primary}">${img(f)}<span>${f.def.name}</span></div>`).join('')
       + Array.from({ length: Math.max(0, 15 - roster.length) }, () => '<div class="sf2-slot locked">?</div>').join('');
+    const side = (k: string, tag: string) => `<div class="sf2-side ${k === 'p1' ? 'left' : 'right'}"><div class="sf2-bg ${k}"></div>
+        <div class="sf2-tag ${k}">${tag}</div><div class="sf2-portrait ${k}"></div><canvas class="sf2-anim ${k}" width="230" height="230"></canvas>
+        <div class="sf2-name ${k}"></div><div class="sf2-region ${k}"></div><div class="sf2-stats ${k}"></div></div>`;
     this.set('select', `
       <div class="sf2">
-        <div class="sf2-side left"><div class="sf2-portrait p1"></div><div class="sf2-name p1"></div><div class="sf2-tag">1P</div><div class="sf2-region p1"></div><div class="sf2-stats p1"></div></div>
-        <div class="sf2-center"><div class="sf2-map">${brazilMapSvg(roster.filter((f) => !locked(f)))}</div><div class="sf2-title">PLAYER SELECT</div><div class="sf2-grid">${slots}</div></div>
-        <div class="sf2-side right"><div class="sf2-portrait cpu"></div><div class="sf2-name cpu"></div><div class="sf2-tag cpu">CPU</div><div class="sf2-region cpu"></div><div class="sf2-stats cpu"></div></div>
+        ${side('p1', '1P')}
+        <div class="sf2-center"><div class="sf2-map">${valeMapSvg(roster.filter((f) => !locked(f)))}</div><div class="sf2-title">PLAYER SELECT</div><div class="sf2-grid">${slots}</div></div>
+        ${side('cpu', rival ? 'CPU' : 'ARENA')}
       </div>`);
     this.gridCols = 5;
     const q = (sel: string) => this.root.querySelector<HTMLElement>(sel)!;
     const open = roster.filter((f) => !locked(f));
     const marks = Array.from(this.root.querySelectorAll<SVGGElement>('.mark'));
     const idxOf = (menu: number) => Number(this.menuItems[menu].dataset.i);
-    const fill = (side: 'p1' | 'cpu', f: FighterAssets) => {
-      q(`.sf2-portrait.${side}`).innerHTML = img(f);
-      q(`.sf2-name.${side}`).textContent = f.def.name;
-      q(`.sf2-region.${side}`).textContent = `${f.def.role} · ${f.def.origin?.city ?? '?'}`.toUpperCase();
-      const st = f.def.stats;
+    const shown: Record<string, FighterAssets | null> = { p1: null, cpu: null };
+    const fill = (sd: 'p1' | 'cpu', f: FighterAssets | null) => {
+      shown[sd] = f;
+      q(`.sf2-side.${sd === 'p1' ? 'left' : 'right'}`).style.setProperty('--c', f?.def.colors.primary ?? '#4ab3ff');
+      q(`.sf2-bg.${sd}`).style.backgroundImage = f ? `url(${base}stages/${f.def.stage ?? 'office'}.png)` : 'none';
+      q(`.sf2-portrait.${sd}`).innerHTML = f ? img(f) : '<b class="sf2-q">?</b>';
+      q(`.sf2-name.${sd}`).textContent = f ? f.def.name : '???';
+      q(`.sf2-region.${sd}`).textContent = f ? `${f.def.role} · ${placeOf(f.def.id)}`.toUpperCase() : (rival ? 'A CPU AINDA NÃO ESCOLHEU' : 'QUEM ESTIVER NA SALA');
+      const st = f?.def.stats;
       const bar = (label: string, v: number) => {
         const pct = Math.round(Math.max(0.05, Math.min(1, (v - 0.7) / 0.65)) * 100); // 0,70 = mínimo · 1,35 = cheio
-        return `<div class="stat"><span>${label}</span><div><i style="width:${pct}%;background:${f.def.colors.primary}"></i></div></div>`;
+        return `<div class="stat"><span>${label}</span><div><i style="width:${st ? pct : 0}%;background:${f?.def.colors.primary ?? '#fff'}"></i></div></div>`;
       };
-      q(`.sf2-stats.${side}`).innerHTML = bar('FORÇA', st.power) + bar('AGILIDADE', st.speed) + bar('PODER', st.magic ?? 1);
+      q(`.sf2-stats.${sd}`).innerHTML = bar('FORÇA', st?.power ?? 0) + bar('AGILIDADE', st?.speed ?? 0) + bar('PODER', st?.magic ?? 1);
     };
+    // o lutador de verdade, comemorando (animação de vitória tirada do atlas)
+    let clock = 0;
+    const drawAnim = (sd: 'p1' | 'cpu') => {
+      const cv = this.root.querySelector<HTMLCanvasElement>(`.sf2-anim.${sd}`); if (!cv) return;
+      const g = cv.getContext('2d')!; g.clearRect(0, 0, cv.width, cv.height); g.imageSmoothingEnabled = false;
+      const f = shown[sd]; if (!f) return;
+      const a = f.def.anims.win, n = a.frames.length, idx = Math.floor(clock * (a.fps ?? 4) / 60);
+      const i = a.loop ? idx % n : a.loopFrom !== undefined && idx >= n ? a.loopFrom + (idx - n) % (n - a.loopFrom) : idx % n;
+      const fr = f.frames.frames[a.frames[i]], tall = Math.max(...a.frames.map((k) => f.frames.frames[k].ay)), k = Math.min(1.1, 214 / tall, 224 / fr.sw) * Math.min(1.15, f.def.scale);
+      g.save(); g.translate(cv.width / 2, cv.height - 6); if (sd === 'cpu') g.scale(-1, 1);
+      g.drawImage(f.sheet, fr.sx, fr.sy, fr.sw, fr.sh, -(a.anchor === 'center' ? fr.cx : fr.ax) * k, -fr.ay * k, fr.sw * k, fr.sh * k); g.restore();
+    };
+    let spinning = 0, spinTo = -1, spinPick = -1;
     this.onMove = (m) => {
-      const i = idxOf(m), cpu = i === 0 ? 1 : 0; // primeiro oponente da campanha (ordem da lista)
-      fill('p1', roster[i]); fill('cpu', roster[cpu]);
-      marks.forEach((mk) => { const f = open[Number(mk.dataset.i)]; const k = roster.indexOf(f); mk.querySelector('.dot')!.setAttribute('class', `dot${k === i ? ' on' : k === cpu ? ' cpu' : ''}`); });
-      this.menuItems.forEach((el) => el.classList.toggle('cpu', Number(el.dataset.i) === cpu && cpu !== i));
+      if (spinning) return;
+      const i = idxOf(m); clock = 0;
+      fill('p1', roster[i]); fill('cpu', null);
+      marks.forEach((mk) => { const f = open[Number(mk.dataset.i)]; const k = roster.indexOf(f); mk.querySelector('.dot')!.setAttribute('class', `dot${k === i ? ' on' : ''}`); });
     };
     this.menuIndex = Math.max(0, this.menuItems.findIndex((el) => Number(el.dataset.i) === focus)); this.paintMenu();
-    this.onConfirm = (m) => { const i = idxOf(m); audio.sfx('selectChar'); audio.voice(`ann-${roster[i].def.id}`, 'ann'); onPick(i); };
-    this.onBack = onBack;
+    this.onConfirm = (m) => {
+      if (spinning) return;
+      const i = idxOf(m), r = rival ? rival(i) : null; audio.sfx('selectChar'); audio.voice(`ann-${roster[i].def.id}`, 'ann');
+      if (r === null || r < 0) { onPick(i); return; }
+      spinning = 1; spinTo = r; spinPick = i; q('.sf2')!.classList.add('spin');          // roleta da CPU
+    };
+    this.onBack = () => { if (!spinning) onBack(); };
+    const cand = roster.map((_, k) => k).filter((k) => !locked(roster[k]));
+    const spinTick = () => {
+      if (!spinning) return;
+      const t = spinning++, every = t < 50 ? 4 : t < 80 ? 7 : t < 104 ? 12 : 0;        // gira rápido, vai freando e para
+      if (every && t % every === 0) {
+        let k = cand[Math.floor(Math.random() * cand.length)]; if (k === spinPick && cand.length > 1) k = cand[(cand.indexOf(k) + 1) % cand.length];
+        fill('cpu', roster[k]); audio.sfx('menuMove');
+        this.menuItems.forEach((el) => el.classList.toggle('cpu', Number(el.dataset.i) === k));
+      }
+      if (t === 104) {
+        fill('cpu', roster[spinTo]); clock = 0; audio.sfx('meter2'); audio.voice(`ann-${roster[spinTo].def.id}`, 'ann');
+        this.menuItems.forEach((el) => el.classList.toggle('cpu', Number(el.dataset.i) === spinTo)); q('.sf2')!.classList.add('locked-in');
+        marks.forEach((mk) => { const f = open[Number(mk.dataset.i)]; const k = roster.indexOf(f); if (k === spinTo) mk.querySelector('.dot')!.setAttribute('class', 'dot cpu'); });
+      }
+      if (t === 175) { spinning = 0; onPick(spinPick); }
+    };
     // código secreto: os botões H, J e B não fazem nada nos menus, então dá pra digitar sem sair da tela
     const CODE: Button[] = ['up', 'up', 'down', 'down', 'left', 'right', 'left', 'right', 'special', 'heavy'];
     const WATCH: Button[] = ['up', 'down', 'left', 'right', 'punch', 'kick', 'heavy', 'block', 'special'];
     const typed: Button[] = [];
     const target = roster.find(locked);
-    if (target) this.onTick = (input) => {
+    this.onTick = (input) => {
+      clock++; drawAnim('p1'); drawAnim('cpu'); spinTick();
+      if (!target || spinning) return;
       for (const b of WATCH) if (input.ports[0].pressed(b)) typed.push(b);
       if (typed.length > CODE.length) typed.splice(0, typed.length - CODE.length);
       if (typed.length === CODE.length && CODE.every((b, k) => typed[k] === b)) {
         secret.unlock(target.def.id);
         audio.sfx('explosion'); audio.sfx('meter2'); audio.voice('ann-secret', 'ann');
-        this.select(roster, secret, onPick, onBack, roster.indexOf(target));
+        this.select(roster, secret, onPick, onBack, roster.indexOf(target), rival);
         this.root.querySelector('.sf2-slot.secret')?.classList.add('reveal');
         this.root.querySelector('.sf2')?.classList.add('flash');
       }
@@ -167,7 +213,7 @@ export class Screens {
     const base = import.meta.env.BASE_URL;
     const panel = (f: FighterAssets, hue: number, side: string) => `<div class="vs-panel ${side}" style="--c:${f.def.colors.primary}"><div class="vs-bg"></div>
       <img class="vs-face" src="${base}versus/${f.def.id}.png" onerror="this.onerror=null;this.src='${f.portrait?.src ?? ''}';this.classList.add('thumbfall')" style="--hue:${hue}deg" alt=""></div>`;
-    const plate = (f: FighterAssets, hue: number, side: string) => `<div class="vs-plate ${side}" style="--c:${f.def.colors.primary}"><div class="vs-name">${f.def.name}${hue ? ' 2.0' : ''}</div><div class="vs-role">${f.def.role}${f.def.origin ? ' · ' + f.def.origin.city : ''}</div></div>`;
+    const plate = (f: FighterAssets, hue: number, side: string) => `<div class="vs-plate ${side}" style="--c:${f.def.colors.primary}"><div class="vs-name">${f.def.name}${hue ? ' 2.0' : ''}</div><div class="vs-role">${f.def.role} · ${placeOf(f.def.id)}</div></div>`;
     this.set('versus', `<div class="vs-stage" data-speaker="none" style="background-image:url(${base}versus/base.jpg)">
         ${panel(a, 0, 'l')}${panel(b, hueB, 'r')}<div class="vs-cut"></div><div class="vs-floor"></div>
         ${plate(a, 0, 'l')}${plate(b, hueB, 'r')}

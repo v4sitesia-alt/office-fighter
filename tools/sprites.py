@@ -347,7 +347,7 @@ def main():
     ap.add_argument('--axis-ignore-smoke', action='store_true', help='mede o eixo e os pés no corpo, ignorando fumaça/poeira clara')
     ap.add_argument('--extra', default=None, help='board extra (golpe longo + vitória), anexado como linhas 8 e 9')
     ap.add_argument('--extra-cuts', default=None, help='divisórias verticais do board extra, em px do original (ex.: 290,510,784,1104)')
-    ap.add_argument('--extra-rows', type=int, default=2); ap.add_argument('--extra-scale', type=float, default=1.0); ap.add_argument('--extra-grow', type=int, default=6)
+    ap.add_argument('--extra-rows', type=int, default=2); ap.add_argument('--extra-scale', default='1.0', help='escala do board extra; "0.84,0.75" = uma por linha (as linhas nem sempre vêm no mesmo tamanho)'); ap.add_argument('--extra-grow', type=int, default=6)
     for k in ('fx', 'keep', 'drop', 'fx-keep', 'fx-drop', 'core', 'erase'): ap.add_argument(f'--white-{k}', action='append', default=[])
     args = ap.parse_args()
     os.makedirs(args.outdir, exist_ok=True)
@@ -384,15 +384,21 @@ def main():
     if args.debug: debug_images(args.debug, arr, own, xcuts, ycuts, frames, crops, cols, rows)
 
     if args.extra:
+        row_scales = [float(t) for t in str(args.extra_scale).split(',')]; args.extra_scale = max(row_scales)
         earr, fxm = load_board(args.extra, args.extra_scale, args)
         fixed = [round(int(t) * args.extra_scale) for t in args.extra_cuts.split(',')] if args.extra_cuts else None
         ef, ec, eown, excuts, eycuts = extract(earr, cols, args.extra_rows, [], ALPHA_T, args.extra_grow, split_touching=False, fxm=fxm, xcuts_fixed=fixed)
         lost = int(((earr[:, :, 3] > ALPHA_T) & (eown == 0)).sum())
         if lost: print(f'   atenção: {lost} px sólidos do board extra ficaram sem pose', file=sys.stderr)
         if args.debug: debug_images(args.debug.replace('.png', '-extra.png'), earr, eown, excuts, eycuts, [dict(fr, i=fr['i'] + rows * cols) for fr in ef], ec, cols, args.extra_rows)
+        for k, fr in enumerate(ef):                                # linha desenhada maior que a outra: encolhe só os quadros dela
+            rs = row_scales[min(len(row_scales) - 1, k // cols)] / args.extra_scale
+            if fr.get('empty') or abs(rs - 1) < 1e-3: continue
+            im = Image.fromarray(ec[k]).convert('RGBa'); im = im.resize((max(1, round(im.width * rs)), max(1, round(im.height * rs))), Image.LANCZOS).convert('RGBA')
+            ec[k] = np.array(im); fr.update({'sw': im.width, 'sh': im.height, 'ax': round(fr['ax'] * rs, 1), 'cx': round(fr['cx'] * rs, 1), 'ay': min(im.height, round(fr['ay'] * rs))})
         for fr in ef: fr['i'] += rows * cols; fr['cell'][0] += rows; fr['extra'] = True
         frames += ef; crops += ec
-        meta['extra'] = {'source': os.path.basename(args.extra), 'scale': args.extra_scale, 'rows': args.extra_rows, 'first': rows * cols}
+        meta['extra'] = {'source': os.path.basename(args.extra), 'scale': args.extra_scale, 'rowScales': row_scales, 'rows': args.extra_rows, 'first': rows * cols}
         meta['rows'] = rows + args.extra_rows
 
     # ---------- atlas

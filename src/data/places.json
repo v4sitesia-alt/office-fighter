@@ -1,0 +1,20 @@
+{
+ "state": "VALE QUATRO",
+ "places": {
+  "edgard":  { "name": "Beco do Grid", "x": 96, "y": 118 },
+  "laura":   { "name": "Recife dos Tubarões", "x": 292, "y": 70 },
+  "landim":  { "name": "Set da Paulista", "x": 214, "y": 182 },
+  "eneias":  { "name": "Bar do Zé", "x": 250, "y": 128 },
+  "santana": { "name": "Fábrica 7", "x": 150, "y": 84 },
+  "michael": { "name": "Morro do Gancho", "x": 272, "y": 176 },
+  "dede":    { "name": "Pampa do Fogo de Chão", "x": 118, "y": 236 },
+  "van":     { "name": "Shopping Meia-Sola", "x": 236, "y": 58 },
+  "kevin":   { "name": "Estande Colombo", "x": 70, "y": 176 },
+  "crm":     { "name": "Pátio do CRM", "x": 122, "y": 156 },
+  "leo":     { "name": "Elevador da Torre", "x": 176, "y": 134 },
+  "dias":    { "name": "Cassino Caixa-Forte", "x": 176, "y": 232 },
+  "xablau":  { "name": "Subsolo Tóxico", "x": 196, "y": 150 },
+  "mundim":  { "name": "52º Andar · Mundim Corp", "x": 186, "y": 118 },
+  "dener":   { "name": "53º Andar", "x": 186, "y": 100 }
+ }
+}

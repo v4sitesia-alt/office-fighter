@@ -4,6 +4,7 @@ Uso: python3 tools/manual.py"""
 import json, html, re
 ROSTER = re.findall(r"'([a-z]+)'", open('src/data/roster.ts').read().split('ROSTER')[1].split(']')[0])
 STORY = json.load(open('src/data/story.json'))
+PLACES = json.load(open('src/data/places.json'))['places']
 F = {i: json.load(open(f'public/fighters/{i}/fighter.json')) for i in ROSTER}
 SUPER = {
  'edgard': 'Bate a mão no chão e abre um portal de morcegos sob o adversário, onde quer que ele esteja. Dois acertos; o segundo derruba.',
@@ -13,7 +14,7 @@ SUPER = {
  'dede': 'Gira as boleadeiras e arremessa. Projétil largo que derruba.',
  'dias': 'Vira uma bola, rola por cima do adversário e estoura numa chuva de notas e moedas.',
  'michael': 'Carrega a aura vermelha e avança com um direto que vira um touro em investida.',
- 'eneias': 'Corre, mergulha de barriga e explode no chão. O maior dano bruto do jogo.',
+ 'eneias': 'Vira a caneca de chopp, explode em energia e soca o chão: uma onda de pedras corre até o adversário e derruba.',
  'van': 'Carrega energia por quase 2 segundos: nesse tempo nada a atinge e a aura machuca quem chegar perto. Depois solta um raio contínuo de corações que cruza a tela.',
  'landim': 'Arremessa a claquete, que vai e volta como bumerangue: até 4 acertos.',
  'xablau': 'Língua com punho que alcança quase a tela inteira.',
@@ -29,6 +30,7 @@ LONG = {
  'dias': 'A velha barrigada em corrida: entra de longe e empurra.',
  'landim': 'O feixe da câmera com a lente na ponta: acerta de muito longe.',
  'van': 'Aponta a bebê e solta a nuvem tóxica: área grande à frente.',
+ 'eneias': 'O peixinho: corre e mergulha de barriga. Entra de longe.',
  'dede': 'Gira o laço e estala as boleadeiras lá na frente. O golpe longo que chega mais longe.',
  'michael': 'Direto em avanço que termina em gancho: entra de longe e empurra.',
  'laura': 'Empurra o ar e um tubarão de água avança mordendo. O maior alcance entre os golpes longos.'}
@@ -44,7 +46,7 @@ def card(i):
     kind = MAGIC_KIND.get(sp.get('projectile', {}).get('style', ''), 'projétil próprio do lutador')
     hitsN = su.get('projectile', {}).get('hits', 1) * (su['active'] // su['beam']['every'] if su.get('beam', {}).get('every') else 1)
     sdmg = su.get('throw', {}).get('release', {}).get('damage') or (sum(h['damage'] for h in su['zone']['hits']) + su.get('damage', 0) if 'zone' in su else su['damage'] * su.get('projectile', {}).get('count', 1) * hitsN)
-    city = d.get('origin', {}).get('city', 'Origem desconhecida')
+    city = PLACES.get(i, {}).get('name', 'Vale Quatro')
     lg = M.get('long')
     long_box = f'''
       <div class="wide"><h4>GOLPE LONGO · frente + J</h4><b>{e(lg.get('name', 'Golpe longo'))}</b><p>{LONG.get(i, '')} Não gasta barra. Dano {lg['damage'] * st['power']:.0f}.</p></div>''' if lg else ''

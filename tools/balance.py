@@ -68,7 +68,7 @@ ALCANCE = {
  'mundim': {'heavy': (36, -192, 118, 134)},      # unidades do board novo (2026-09-19), escala 1,10
 }
 # Golpe longo (frente + forte): é um cutucão de longe, tira menos que o forte.
-LONGO = {'edgard': 10, 'santana': 11, 'kevin': 11, 'laura': 9, 'dede': 10, 'michael': 11, 'dias': 9, 'landim': 9, 'van': 9}
+LONGO = {'edgard': 10, 'santana': 11, 'kevin': 11, 'laura': 9, 'dede': 10, 'michael': 11, 'dias': 9, 'landim': 9, 'van': 9, 'eneias': 11}
 # Dias: combo de porrada. O golpe que encostou pode ser cortado no seguinte (soco -> soco/chute -> forte), até 3 emendas.
 CHAIN = {'dias': {'punch': ['punch', 'kick'], 'kick': ['heavy'], 'lowPunch': ['punch', 'kick']}}
 

@@ -6,6 +6,9 @@
  "extra": {
   "source": "edgard-golpelongo-vitoria.png",
   "scale": 0.71,
+  "rowScales": [
+   0.71
+  ],
   "rows": 2,
   "first": 35
  },
@@ -765,7 +768,7 @@
    "sw": 203,
    "sh": 266,
    "ax": 103.2,
-   "cx": 98.8,
+   "cx": 98.9,
    "ay": 266,
    "src": [
     293,

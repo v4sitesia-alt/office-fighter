@@ -28,6 +28,7 @@ export async function loadFighter(id: string, onProgress?: () => void): Promise<
   const fxFiles = new Set<string>(['special_fx.png']);
   for (const m of Object.values(def.moves)) {
     if (m?.projectile?.sprite) fxFiles.add(m.projectile.sprite);
+    if (m?.projectile?.trail) fxFiles.add(m.projectile.trail);
     if (m?.beam) [m.beam.start, m.beam.mid, m.beam.end].forEach((f) => fxFiles.add(f));
   }
   const fx: Record<string, HTMLImageElement> = {};

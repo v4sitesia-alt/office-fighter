@@ -132,7 +132,7 @@
    "startup": 2,
    "active": 3,
    "recovery": 5,
-   "damage": 4.2,
+   "damage": 4.5,
    "hitstun": 12,
    "blockstun": 8,
    "hitbox": {
@@ -160,7 +160,7 @@
    "startup": 5,
    "active": 3,
    "recovery": 7,
-   "damage": 7.3,
+   "damage": 7.9,
    "hitstun": 15,
    "blockstun": 10,
    "hitbox": {
@@ -188,7 +188,7 @@
    "startup": 8,
    "active": 4,
    "recovery": 13,
-   "damage": 11.4,
+   "damage": 12.5,
    "hitstun": 24,
    "blockstun": 14,
    "hitbox": {
@@ -219,27 +219,27 @@
    "startup": 12,
    "active": 8,
    "recovery": 18,
-   "damage": 9.3,
+   "damage": 10.2,
    "hitstun": 20,
    "blockstun": 14,
    "hitbox": {
-    "x": 60,
-    "y": -175,
-    "w": 170,
-    "h": 155
+    "x": 55,
+    "y": -161,
+    "w": 156,
+    "h": 143
    },
    "hitboxes": [
     {
-     "x": 60,
-     "y": -175,
-     "w": 170,
-     "h": 155
+     "x": 55,
+     "y": -161,
+     "w": 156,
+     "h": 143
     },
     {
-     "x": 80,
-     "y": -165,
-     "w": 210,
-     "h": 150
+     "x": 74,
+     "y": -152,
+     "w": 193,
+     "h": 138
     }
    ],
    "knockback": 14,
@@ -363,7 +363,7 @@
    "startup": 3,
    "active": 8,
    "recovery": 3,
-   "damage": 5.2,
+   "damage": 5.7,
    "hitstun": 14,
    "blockstun": 10,
    "overhead": true,
@@ -393,7 +393,7 @@
    "startup": 4,
    "active": 10,
    "recovery": 3,
-   "damage": 8.3,
+   "damage": 9.1,
    "hitstun": 16,
    "blockstun": 12,
    "overhead": true,
@@ -423,7 +423,7 @@
    "startup": 6,
    "active": 8,
    "recovery": 5,
-   "damage": 11.4,
+   "damage": 12.5,
    "hitstun": 22,
    "blockstun": 14,
    "overhead": true,
@@ -455,7 +455,7 @@
    "startup": 3,
    "active": 3,
    "recovery": 6,
-   "damage": 3.1,
+   "damage": 3.4,
    "hitstun": 11,
    "blockstun": 8,
    "low": true,
@@ -485,7 +485,7 @@
    "startup": 5,
    "active": 6,
    "recovery": 10,
-   "damage": 6.2,
+   "damage": 6.8,
    "hitstun": 18,
    "blockstun": 12,
    "low": true,
@@ -516,7 +516,7 @@
    "startup": 7,
    "active": 4,
    "recovery": 12,
-   "damage": 9.3,
+   "damage": 10.2,
    "hitstun": 22,
    "blockstun": 14,
    "low": true,

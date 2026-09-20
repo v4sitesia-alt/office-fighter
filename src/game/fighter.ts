@@ -438,7 +438,7 @@ export class Fighter {
     switch (this.state) {
       case 'idle': return byFps('idle');
       case 'walking': {
-        const a = A.walk; const fps = a.fps ?? 8;
+        const a = A.walk; const fps = (a.fps ?? 8) * Math.max(0.75, Math.min(1.35, this.def.stats.speed));   // quem é ágil dá passos mais rápidos
         const back = (this.vx < 0);
         const idx = Math.floor(this.animTime * fps / 60) % a.frames.length;
         return { frame: F[a.frames[back ? a.frames.length - 1 - idx : idx]], anchor: 'feet' };
@@ -498,6 +498,15 @@ export class Fighter {
     ctx.save();
     ctx.translate(this.x, fy);
     ctx.scale(this.facing, 1);
+    if (this.state === 'walking') {
+      // os boards só trazem 3 quadros de passada, quase iguais: o corpo ganha o balanço do passo por código
+      // (sobe e desce a cada pisada, inclina pra frente ao avançar e pra trás ao recuar, e "amassa" de leve ao pisar)
+      const a = this.def.anims.walk, fps = (a.fps ?? 8) * Math.max(0.75, Math.min(1.35, this.def.stats.speed));
+      const ph = this.animTime * fps / 60 * Math.PI / 2, step = Math.abs(Math.sin(ph)), heavy = Math.min(1.4, this.def.stats.weight);
+      ctx.translate(0, -step * 3.2 * s / heavy);
+      ctx.rotate((this.vx < 0 ? -1 : 1) * 0.028 + Math.sin(ph * 2) * 0.012);
+      ctx.scale(1 + (1 - step) * 0.018, 1 - (1 - step) * 0.022);
+    }
     if (this.hue) ctx.filter = `hue-rotate(${this.hue}deg)`;
     const src: [HTMLImageElement | HTMLCanvasElement, number, number] = this.flash > 0 ? [this.flashed(frame), 0, 0] : [this.assets.sheet, frame.sx, frame.sy];
     ctx.drawImage(src[0], src[1], src[2], frame.sw, frame.sh, -ax * s, -frame.ay * s, dw, dh);

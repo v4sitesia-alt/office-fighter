@@ -104,11 +104,18 @@
   },
   "win": {
    "frames": [
-    13,
-    0
+    40,
+    41,
+    42,
+    43,
+    44,
+    43,
+    42,
+    41
    ],
-   "fps": 2,
-   "loop": true
+   "fps": 5,
+   "loop": true,
+   "anchor": "center"
   }
  },
  "moves": {
@@ -128,7 +135,7 @@
    "startup": 4,
    "active": 3,
    "recovery": 7,
-   "damage": 5.7,
+   "damage": 6.1,
    "hitstun": 12,
    "blockstun": 8,
    "hitbox": {
@@ -156,7 +163,7 @@
    "startup": 7,
    "active": 3,
    "recovery": 10,
-   "damage": 8.6,
+   "damage": 9.2,
    "hitstun": 15,
    "blockstun": 10,
    "hitbox": {
@@ -184,7 +191,7 @@
    "startup": 11,
    "active": 4,
    "recovery": 18,
-   "damage": 15.3,
+   "damage": 16.3,
    "hitstun": 24,
    "blockstun": 14,
    "hitbox": {
@@ -195,6 +202,37 @@
    },
    "knockback": 12,
    "launch": -5,
+   "hitstop": 9
+  },
+  "long": {
+   "name": "PEIXINHO SÍSMICO",
+   "phases": {
+    "startup": [
+     30,
+     31
+    ],
+    "active": [
+     32,
+     33
+    ],
+    "recovery": [
+     34
+    ]
+   },
+   "startup": 12,
+   "active": 14,
+   "recovery": 22,
+   "dash": 12,
+   "damage": 11.2,
+   "hitstun": 22,
+   "blockstun": 16,
+   "hitbox": {
+    "x": 10,
+    "y": -120,
+    "w": 150,
+    "h": 120
+   },
+   "knockback": 16,
    "hitstop": 9
   },
   "airPunch": {
@@ -213,7 +251,7 @@
    "startup": 4,
    "active": 8,
    "recovery": 4,
-   "damage": 6.7,
+   "damage": 7.1,
    "hitstun": 14,
    "blockstun": 10,
    "overhead": true,
@@ -243,7 +281,7 @@
    "startup": 5,
    "active": 10,
    "recovery": 4,
-   "damage": 9.5,
+   "damage": 10.2,
    "hitstun": 16,
    "blockstun": 12,
    "overhead": true,
@@ -273,7 +311,7 @@
    "startup": 7,
    "active": 8,
    "recovery": 6,
-   "damage": 12.4,
+   "damage": 13.2,
    "hitstun": 22,
    "blockstun": 14,
    "overhead": true,
@@ -305,7 +343,7 @@
    "startup": 4,
    "active": 3,
    "recovery": 8,
-   "damage": 4.8,
+   "damage": 5.1,
    "hitstun": 11,
    "blockstun": 8,
    "low": true,
@@ -335,7 +373,7 @@
    "startup": 7,
    "active": 6,
    "recovery": 13,
-   "damage": 7.6,
+   "damage": 8.1,
    "hitstun": 18,
    "blockstun": 12,
    "low": true,
@@ -366,7 +404,7 @@
    "startup": 10,
    "active": 4,
    "recovery": 17,
-   "damage": 12.4,
+   "damage": 13.2,
    "hitstun": 20,
    "blockstun": 14,
    "low": true,
@@ -427,36 +465,52 @@
   "super": {
    "phases": {
     "startup": [
-     30,
-     31
+     35,
+     36,
+     36,
+     37
     ],
     "active": [
-     32,
-     33
+     38
     ],
     "recovery": [
-     34
+     39,
+     0
     ]
    },
-   "startup": 10,
-   "active": 14,
-   "recovery": 18,
-   "dash": 10,
+   "startup": 46,
+   "active": 6,
+   "recovery": 26,
    "damage": 28,
    "hitstun": 30,
    "blockstun": 18,
    "hitbox": {
-    "x": 10,
-    "y": -120,
-    "w": 150,
-    "h": 120
+    "x": 0,
+    "y": 0,
+    "w": 0,
+    "h": 0
    },
-   "knockback": 20,
+   "knockback": 18,
    "knockdown": true,
    "launch": -10,
    "meterCost": 100,
    "hitstop": 12,
-   "name": "PEIXINHO SÍSMICO"
+   "name": "CHOPP SÍSMICO",
+   "projectile": {
+    "x": 120,
+    "y": 0,
+    "speed": 9,
+    "lifetime": 140,
+    "sprite": "pedras.png",
+    "trail": "pedras-p.png",
+    "ground": true,
+    "hitbox": {
+     "x": -100,
+     "y": -150,
+     "w": 200,
+     "h": 150
+    }
+   }
   }
  }
 }

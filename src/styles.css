@@ -408,3 +408,32 @@ html, body { overscroll-behavior: none; touch-action: manipulation; -webkit-touc
 
 .cont-num { font-family: var(--logo); font-style: italic; font-size: 150px; line-height: 1; color: var(--yellow); -webkit-text-stroke: 4px #7a2a00; text-shadow: 8px 8px 0 #000; margin: 6px 0 14px; }
 .cont-num.pop { animation: comboPop .25s ease-out; }
+
+/* ---------- seleção v3: mapa do Vale Quatro no centro; em cada lado, o cenário do lutador ao fundo, thumb, lutador comemorando e os níveis */
+.sf2-side { position: relative; justify-content: flex-start; gap: 3px; padding: 6px 4px 8px; border: 3px solid color-mix(in srgb, var(--c, #4ab3ff) 75%, #000); box-shadow: 0 0 0 2px #000, inset 0 0 0 2px rgba(0,0,0,.6); overflow: hidden; }
+.sf2-bg { position: absolute; inset: 0; background: #0b1030 center/cover no-repeat; filter: brightness(.5) saturate(1.1); z-index: 0; transition: background-image .15s; }
+.sf2-bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(4,6,20,.55) 0%, rgba(4,6,20,0) 30%, rgba(4,6,20,0) 55%, rgba(4,6,20,.9) 100%); }
+.sf2-side > :not(.sf2-bg) { position: relative; z-index: 1; }
+.sf2-side .sf2-tag { position: absolute; top: 6px; left: 8px; font-size: 14px; margin: 0; z-index: 2; }
+.sf2-side.right .sf2-tag { left: auto; right: 8px; }
+.sf2-side .sf2-portrait { width: 92px; height: 92px; border: 3px solid var(--c, #fff); box-shadow: 0 0 0 2px #000, 4px 4px 0 rgba(0,0,0,.6); background: #0b1030; align-self: flex-end; margin: 14px 6px 0 0; }
+.sf2-side.right .sf2-portrait { align-self: flex-start; margin: 14px 0 0 6px; }
+.sf2-side .sf2-portrait img { object-fit: cover; }
+.sf2-q { font-family: var(--logo); font-size: 70px; color: #4ab3ff; text-shadow: 4px 4px 0 #000; animation: blink .6s steps(1) infinite; }
+.sf2-anim { width: 206px; height: 180px; margin-top: -34px; image-rendering: pixelated; filter: drop-shadow(0 6px 0 rgba(0,0,0,.45)); pointer-events: none; }
+.sf2-side .sf2-name { font-size: 30px; margin-top: -2px; text-align: center; }
+.sf2-side .sf2-region { font-size: 7px; text-align: center; line-height: 1.5; min-height: 22px; padding: 0 4px; }
+.sf2-side .sf2-stats { width: 196px; margin-top: 2px; }
+.sf2.spin .sf2-side.right { animation: shake .1s steps(2) infinite; } .sf2.locked-in .sf2-side.right { animation: none; box-shadow: 0 0 0 2px #000, 0 0 26px var(--c); }
+.sf2.spin .sf2-slot { cursor: default; }
+.sf2-map .sea { fill: #16307a; stroke: #9fd2ff; stroke-width: 2; }
+.sf2-map .land { fill: #5d9a52; stroke: #24481f; stroke-width: 2; stroke-linejoin: round; }
+.sf2-map .river { fill: none; stroke: #4aa3ff; stroke-width: 3; stroke-linecap: round; opacity: .8; }
+.sf2-map .hill { fill: #3f6f3a; stroke: #24481f; stroke-width: 1; }
+.sf2-map .tower { fill: #c4122f; stroke: #000; stroke-width: 1; }
+.sf2-map .state { font-family: var(--pix); font-size: 9px; fill: #ffe97a; paint-order: stroke; stroke: #000; stroke-width: 3px; letter-spacing: 2px; }
+.sf2-side { justify-content: center; gap: 6px; }
+.sf2-side .sf2-portrait { width: 104px; height: 104px; }
+.sf2-anim { width: 210px; height: 210px; margin-top: -40px; }
+.sf2-side .sf2-name { font-size: 34px; }
+.sf2-q { animation: none; display: block; line-height: 96px; text-align: center; width: 100%; }
