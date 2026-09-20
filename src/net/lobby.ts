@@ -8,7 +8,7 @@ import type { FighterAssets } from '../game/types';
 import { audio } from '../core/audio';
 import { joinRoom, ONLINE, type Msg, type Peer, type Room } from './transport';
 import { Invites } from './invites';
-import { Squad, duoConfig, type SquadState } from './squad';
+import { Squad, duoConfig, soloConfig, type SquadState } from './squad';
 import { drawWinPose } from '../ui/pose';
 import { placeOf } from '../ui/valemap';
 import * as store from './store';
@@ -64,12 +64,8 @@ export class Lobby {
     if (!id) { id = Math.random().toString(36).slice(2, 10); sessionStorage.setItem('v4f-id', id); }
     this.me = { id, name: localStorage.getItem('v4f-name') ?? '', fighter: roster[0].def.id, status: 'livre' };
     this.invites = new Invites(() => this.room, () => this.me, () => this.me.status === 'lutando' || !!this.squad, {
-      start: (matchId, other, local) => this.hooks.start({
-        matchId, local, connectMs: 15000,
-        f: local === 0 ? [this.me.fighter, other.fighter] : [other.fighter, this.me.fighter],
-        names: local === 0 ? [this.me.name, other.name] : [other.name, this.me.name],
-        ids: local === 0 ? [this.me.id, other.id] : [other.id, this.me.id],
-      }),
+      // desafio aceito: antes da luta, os dois vão JUNTOS pra tela de escolha (quem convidou abre a sala, o outro entra)
+      start: (matchId, other, local) => { this.duelInvite = matchId; this.sit(local === 0 ? this.me.id : other.id, true); },
       abort: (matchId, why) => this.hooks.abort(matchId, why),
       note: (t) => this.note(t),
       ring: () => { audio.sfx('selectChar'); document.body.classList.add('room-open'); },
@@ -98,6 +94,7 @@ export class Lobby {
 
   open(fighterId: string) {
     this.me.fighter = fighterId; this.me.status = this.squad ? 'dupla' : 'livre'; this.me.matchId = undefined; this.me.vs = undefined; this.me.mc = undefined;
+    if (this.squad?.solo) { this.squad.leave(); this.squad = null; this.me.status = 'livre'; }        // duelo acabou: a sala de escolha era só dele
     if (this.squad) { this.squad.resume(); this.view = 'duplas'; }
     this.pick ||= fighterId;
     this.root.className = 'screens show lobby';
@@ -229,21 +226,23 @@ export class Lobby {
 
   // ---------- duplas
   /** Senta numa mesa (a minha = crio uma). */
-  private sit(hostId: string) {
+  private duelInvite = '';
+  private sit(hostId: string, solo = false) {
     if (this.squad || this.me.status === 'lutando') return;
     this.invites.cancel();
     this.squad = new Squad(hostId, () => this.me, (n, h) => joinRoom(n, null, h), {
       change: () => this.squadChanged(),
       start: (st) => this.squadStart(st),
       closed: (why) => { this.squad = null; this.me.table = undefined; this.me.at = undefined; this.setStatus('livre'); this.note(why); },
-    }, () => this.roster.filter((f) => !f.def.secret).map((f) => f.def.id).concat(this.roster.filter((f) => f.def.secret).map((f) => f.def.id)), () => this.hooks.stages());
-    this.me.at = hostId; this.view = 'duplas'; this.pick = this.me.fighter;
+    }, () => this.roster.filter((f) => !f.def.secret).map((f) => f.def.id).concat(this.roster.filter((f) => f.def.secret).map((f) => f.def.id)), () => this.hooks.stages(), solo);
+    this.me.at = solo ? undefined : hostId; this.view = 'duplas'; this.pick = this.me.fighter;
     this.setStatus('dupla'); this.squadChanged();
   }
   private lastPhase = '';
   private squadChanged() {
     const sq = this.squad, st = sq?.state; if (!sq) return;
-    if (sq.isHost && st) { const t = { n: st.members.length, open: st.phase === 'mesa' && st.members.length < 4 }; if (t.n !== this.me.table?.n || t.open !== this.me.table?.open) { this.me.table = t; this.room?.setPresence(this.me); } }
+    if (sq.solo && st && st.members.length === 2 && this.duelInvite) { this.invites.connected(this.duelInvite); this.duelInvite = ''; }   // o outro chegou: para de reenviar o aceite
+    if (sq.isHost && st && !sq.solo) { const t = { n: st.members.length, open: st.phase === 'mesa' && st.members.length < 4 }; if (t.n !== this.me.table?.n || t.open !== this.me.table?.open) { this.me.table = t; this.room?.setPresence(this.me); } }
     if (st && st.phase !== this.lastPhase) {                                  // mudou de fase: som e foco
       if (st.phase === 'confirma') { audio.sfx('meter2'); document.body.classList.add('room-open'); }
       if (st.phase === 'draft') { audio.sfx('selectChar'); this.pick = this.me.fighter; if (sq.taken(this.pick)) this.pick = ''; }
@@ -252,6 +251,7 @@ export class Lobby {
     this.paint();
   }
   private squadStart(st: SquadState) {
+    if (this.squad?.solo) { const c = soloConfig(st, this.me.id); try { localStorage.setItem('v4f-fighter', c.f[c.local === 1 ? 1 : 0]); } catch { /* sem storage */ } this.me.fighter = c.f[c.local === 1 ? 1 : 0]; setTimeout(() => { if (this.squad) this.hooks.start(c); }, Math.max(0, this.squad.leftMs - 200)); return; }
     const cfg = duoConfig(st, this.me.id);
     const mc = JSON.stringify({ f: cfg.f, names: cfg.names, stage: cfg.stage, duo: { f: cfg.duo.f, players: cfg.duo.players, owner: cfg.duo.owner } });
     this.pendingMc = mc;
@@ -425,7 +425,7 @@ export class Lobby {
 
   private topBar(title: string, sub: string, back: string | null) {
     const mine = this.rank.find((r) => r.id === store.rankKey(this.me.name, this.me.id));
-    return `<div class="ar-top">${back ? `<div class="ar-back" data-act="view" data-arg="${back}">‹ ARENA</div>` : `<div class="ar-me">${this.face(this.me.fighter, 'lg')}<div><b>${esc(this.me.name)}</b><small>${esc(this.F(this.me.fighter)?.def.name ?? '')} · <u data-act="swap">TROCAR</u></small></div></div>`}
+    return `<div class="ar-top">${back ? `<div class="ar-back" data-act="view" data-arg="${back}">‹ ARENA</div>` : `<div class="ar-me">${this.face(this.me.fighter, 'lg')}<div><b>${esc(this.me.name)}</b><small>${esc(this.F(this.me.fighter)?.def.name ?? '')}</small></div></div>`}
       <div class="ar-title"><h1>${title}</h1><small>${sub}</small></div>
       <div class="ar-right"><span class="pill gold">🏆 ${mine?.points ?? 0} PTS</span><span class="pill">${this.peers.length}/${MAX_PEERS} ONLINE</span>${back ? '' : `<span class="pill btn" data-act="invite">${this.copied ? '✔ COPIADO' : '🔗 CONVIDAR'}</span><span class="pill btn dark" data-act="back">SAIR</span>`}</div></div>`;
   }
@@ -482,6 +482,7 @@ export class Lobby {
     if (!st) return `<div class="center"><div class="title-sm">SENTANDO NA MESA…</div><div class="lb-btn ghost" data-act="sq-leave">CANCELAR</div></div>`;
     const host = st.members.find((m) => m.id === st.host), meId = this.me.id;
     const tag = (m: { id: string }) => `${m.id === st.host ? '<i class="crown">★ ANFITRIÃO</i>' : ''}${m.id === meId ? '<i class="you">VOCÊ</i>' : ''}`;
+    if (sq.solo && (st.phase === 'mesa' || st.phase === 'luta')) return `<div class="center"><div class="title-sm">DUELO</div><div class="wait">ABRINDO A TELA DE ESCOLHA COM O ADVERSÁRIO…</div><div class="lb-btn ghost" data-act="sq-leave">CANCELAR</div></div>`;
     if (st.phase === 'mesa' || st.phase === 'luta') {
       const side = (t: 0 | 1) => { const ms = st.members.filter((m) => m.team === t), mine = sq.mine?.team === t;
         return `<div class="team t${t}"><h3>${t === 0 ? 'DUPLA AZUL' : 'DUPLA VERMELHA'}</h3>${[0, 1].map((k) => ms[k]
@@ -503,7 +504,7 @@ export class Lobby {
     const seatCard = (i: number) => { const x = st.seats[i], fid = x.fighter ?? x.hover ?? '', f = this.F(fid);
       return `<div class="dseat ${x.locked ? 'locked' : ''} ${i === mySeat ? 'mine' : ''}" style="--c:${f?.def.colors.primary ?? '#3d4a63'}"><div class="dthumb">${f?.portrait ? `<img src="${f.portrait.src}" alt="">` : '<b>?</b>'}</div>
         <b>${esc(nameOf(x.owner))}${x.owner === meId ? ' (VOCÊ)' : ''}</b><small>${x.locked ? `🔒 ${esc(f?.def.name ?? '')}` : f ? `OLHANDO ${esc(f.def.name)}…` : 'ESCOLHENDO…'}</small></div>`; };
-    const team = (t: 0 | 1) => `<div class="dteam t${t}"><h3>${t === 0 ? 'DUPLA AZUL' : 'DUPLA VERMELHA'}</h3>${seatCard(t * 2)}${seatCard(t * 2 + 1)}</div>`;
+    const team = (t: 0 | 1) => `<div class="dteam t${t} ${sq.solo ? 'solo' : ''}"><h3>${sq.solo ? (t === 0 ? 'AZUL' : 'VERMELHO') : t === 0 ? 'DUPLA AZUL' : 'DUPLA VERMELHA'}</h3>${st.seats.map((x, i) => (x.team === t ? seatCard(i) : '')).join('')}</div>`;
     const taken = (id: string) => { const x = st.seats.find((q) => q.locked && q.fighter === id); return x ? nameOf(x.owner) : ''; };
     const stages = ['random', ...this.hooks.stages()];
     const stageStrip = `<div class="stages ${sq.isHost && !go ? 'host' : ''}">${stages.map((n) => `<span class="${st.stage === n ? 'on' : ''}" ${sq.isHost && !go ? `data-act="sq-stage" data-arg="${n}"` : ''} ${n === 'random' ? '' : `style="background-image:url(${BASE}stages/${n}.png)"`}>${n === 'random' ? '?' : ''}</span>`).join('')}</div>`;

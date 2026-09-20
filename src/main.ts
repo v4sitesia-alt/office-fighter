@@ -199,7 +199,7 @@ function goTitle() {
   match = null;
   setMode('title');
   if (audio.musicTime() < INTRO_END - 1) audio.seekMusic(INTRO_END); // título no trecho dos 19 s; se a música da intro já vinha tocando (voltou do menu), segue sem pular
-  const menu = () => { setMode('difficulty'); screens.mainMenu(() => { online = false; showSelect(); }, () => { online = true; showSelect(); }, () => showRanking(), goTitle); };
+  const menu = () => { setMode('difficulty'); screens.mainMenu(() => { online = false; showSelect(); }, () => { online = true; openLobby(); }, () => showRanking(), goTitle); };
   screens.title(menu, ROSTER.length);
 }
 
@@ -231,7 +231,8 @@ function openLobby() {
     stages: () => [...new Set(roster.filter((f) => !f.def.secret).map((f) => f.def.stage ?? DEFAULT_STAGE))].filter((n) => stages.has(n)),
   });
   setMode('lobby');
-  lobby.open(roster[playerIdx].def.id);
+  let last = ''; try { last = localStorage.getItem('v4f-fighter') ?? ''; } catch { /* sem storage */ }   // na arena o lutador é escolhido DEPOIS do modo; aqui vai só o último usado, pro avatar
+  lobby.open(netCfg && netCfg.local >= 0 ? netCfg.f[netCfg.local === 1 ? 1 : 0] : roster.some((f) => f.def.id === last) ? last : roster[playerIdx].def.id);
 }
 
 const otherName = () => (!netCfg ? '' : netCfg.duo ? (session && session.lostWho >= 0 ? netCfg.duo.players[session.lostWho] : 'OS OUTROS') : netCfg.names[netCfg.local === 1 ? 0 : 1]);
@@ -440,5 +441,5 @@ const loop = startLoop({
   // o navegador só libera som depois de um gesto: a abertura começa no primeiro toque/tecla
   setMode('boot');
   const invited = new URLSearchParams(location.search).has('arena');
-  screens.boot(() => { screens.hide(); if (invited) { online = true; showSelect(); } else { introClock = 0; setMode('intro'); } }, invited);
+  screens.boot(() => { screens.hide(); if (invited) { online = true; openLobby(); } else { introClock = 0; setMode('intro'); } }, invited);
 })().catch((err) => { console.error(err); screens.loading(0, 1); document.getElementById('screens')!.innerHTML += `<div class="err">${String(err)}</div>`; });

@@ -37,7 +37,9 @@ export class Squad {
   readonly born = Date.now();
 
   constructor(public hostId: string, private me: () => Me, join: (name: string, h: RoomHandlers) => Room, private hooks: SquadHooks,
-    private fighters: () => string[], private stages: () => string[]) {
+    private fighters: () => string[], private stages: () => string[],
+    /** Duelo 1x1: uma pessoa de cada lado, um lutador cada; a escolha abre sozinha quando o segundo chega (sem mesa nem confirmação). */
+    public solo = false) {
     this.room = join(`duo-${hostId}`, { onMsg: (m) => this.onMsg(m) });
     if (this.isHost) {
       const m = me();
@@ -90,7 +92,8 @@ export class Squad {
         const gone = s.members.filter((m) => m.id !== s.host && now - (this.seen.get(m.id) ?? now) > SQUAD.SILENT_MS);
         if (gone.length) { s.members = s.members.filter((m) => !gone.includes(m)); s.note = `${gone.map((m) => m.name).join(', ')} SAIU DA MESA`; if (s.phase !== 'mesa') this.phase('mesa', 0); else this.push(); }
       }
-      if (s.phase === 'confirma' && s.members.every((m) => m.ok)) this.openDraft();
+      if (this.solo && s.phase === 'mesa' && s.members.length === 2 && this.canStart) this.openDraft();
+      else if (s.phase === 'confirma' && s.members.every((m) => m.ok)) this.openDraft();
       else if (s.phase === 'confirma' && now >= this.until) { s.note = `${s.members.filter((m) => !m.ok).map((m) => m.name).join(', ')} NÃO CONFIRMOU`; this.phase('mesa', 0); }
       else if (s.phase === 'draft' && (s.seats.every((x) => x.locked) || now >= this.until)) this.go();
       else if (s.phase === 'vai' && now >= this.until) this.phase('luta', 0);
@@ -143,7 +146,7 @@ export class Squad {
     switch (m.t) {
       case 'sq-join': {
         if (mem) { this.push(false); return; }
-        if (s.phase !== 'mesa' || s.members.length >= 4) { this.push(false); return; }
+        if (s.phase !== 'mesa' || s.members.length >= (this.solo ? 2 : 4)) { this.push(false); return; }
         const count = (t: number) => s.members.filter((x) => x.team === t).length;
         const want = m.team === 0 || m.team === 1 ? (m.team as 0 | 1) : count(1) <= count(0) - 1 ? 1 : count(0) <= count(1) ? 0 : 1;
         const team = count(want) < 2 ? want : ((1 - want) as 0 | 1);
@@ -164,7 +167,7 @@ export class Squad {
   private phase(p: SquadPhase, ms: number) { const s = this.state!; s.phase = p; this.until = Date.now() + ms; if (p === 'mesa') { s.seats = []; s.members.forEach((m) => { m.ok = false; }); } this.push(); }
   private openDraft() {
     const s = this.state!; s.seats = []; s.stage = 'random'; s.note = '';
-    for (const t of [0, 1] as const) { const ms = s.members.filter((m) => m.team === t); for (let k = 0; k < 2; k++) s.seats.push({ owner: (ms[k] ?? ms[0]).id, team: t, fighter: null, hover: null, locked: false }); }
+    for (const t of [0, 1] as const) { const ms = s.members.filter((m) => m.team === t); for (let k = 0; k < (this.solo ? 1 : 2); k++) s.seats.push({ owner: (ms[k] ?? ms[0]).id, team: t, fighter: null, hover: null, locked: false }); }
     this.phase('draft', SQUAD.DRAFT_MS);
   }
   private go() {
@@ -189,6 +192,14 @@ export class Squad {
 }
 
 /** Configuração da luta a partir da mesa travada: jogadores na ordem da mesa, dono de cada lutador e lado de cada um. */
+/** Duelo 1x1 escolhido junto: a mesma configuração de uma luta comum (vale ranking). */
+export function soloConfig(s: SquadState, myId: string) {
+  const a = s.members.find((m) => m.team === 0)!, b = s.members.find((m) => m.team === 1)!;
+  const fa = s.seats.find((x) => x.team === 0)!.fighter!, fb = s.seats.find((x) => x.team === 1)!.fighter!;
+  return { matchId: s.matchId, f: [fa, fb] as [string, string], names: [a.name, b.name] as [string, string], ids: [a.id, b.id] as [string, string],
+    local: (myId === a.id ? 0 : myId === b.id ? 1 : -1) as 0 | 1 | -1, stage: s.stage, connectMs: 20000 };
+}
+
 export function duoConfig(s: SquadState, myId: string) {
   const players = s.members.map((m) => m.name), idx = (id: string) => s.members.findIndex((m) => m.id === id);
   const team = (t: number) => s.seats.filter((x) => x.team === t);
