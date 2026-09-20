@@ -499,18 +499,28 @@ export class Fighter {
     ctx.save();
     ctx.translate(this.x, fy);
     ctx.scale(this.facing, 1);
-    if (this.state === 'walking') {
-      // os boards só trazem 3 quadros de passada, quase iguais: o corpo ganha o balanço do passo por código
-      // (sobe e desce a cada pisada, inclina pra frente ao avançar e pra trás ao recuar, e "amassa" de leve ao pisar)
+    // Passada: os boards trazem 3 quadros de perna aberta quase iguais. O passo de verdade sai por código: perna ABERTA (quadro 2),
+    // pernas JUNTAS na passagem (quadro 3), perna aberta de novo (quadro 4)... As pernas fecham e abrem em direção ao eixo do corpo
+    // (a largura vai afinando do quadril até os pés), o corpo sobe na passagem e desce na pisada, e inclina pro lado que anda.
+    let spread = 1;
+    if (this.state === 'walking' && !this.def.stats.inertia) {
       const a = this.def.anims.walk, fps = (a.fps ?? 8) * Math.max(0.75, Math.min(1.35, this.def.stats.speed));
-      const ph = this.animTime * fps / 60 * Math.PI / 2, step = Math.abs(Math.sin(ph)), heavy = Math.min(1.4, this.def.stats.weight);
-      ctx.translate(0, -step * 3.2 * s / heavy);
-      ctx.rotate((this.vx < 0 ? -1 : 1) * 0.028 + Math.sin(ph * 2) * 0.012);
-      ctx.scale(1 + (1 - step) * 0.018, 1 - (1 - step) * 0.022);
+      const t = this.animTime * fps / 60, heavy = Math.min(1.4, this.def.stats.weight);
+      spread = 0.5 + 0.5 * Math.cos(Math.PI * (t - 0.5));                       // 1 = perna aberta (meio dos quadros pares), 0 = pernas juntas
+      ctx.translate(0, -(1 - spread) * 4 * s / heavy);
+      ctx.rotate((this.vx < 0 ? -1 : 1) * 0.03 + Math.sin(Math.PI * t) * 0.012);
     }
     if (this.hue) ctx.filter = `hue-rotate(${this.hue}deg)`;
     const src: [HTMLImageElement | HTMLCanvasElement, number, number] = this.flash > 0 ? [this.flashed(frame), 0, 0] : [this.assets.sheet, frame.sx, frame.sy];
-    ctx.drawImage(src[0], src[1], src[2], frame.sw, frame.sh, -ax * s, -frame.ay * s, dw, dh);
+    if (spread < 0.999) {
+      const hip = Math.round(frame.sh - Math.min(frame.sh, frame.ay) * 0.46), low = frame.sh - hip, N = 12, close = 0.4 * (1 - spread);
+      ctx.drawImage(src[0], src[1], src[2], frame.sw, hip, -ax * s, -frame.ay * s, dw, hip * s);
+      for (let k = 0; k < N; k++) {                                              // faixas do quadril aos pés, cada uma um pouco mais fechada que a de cima
+        const y0 = hip + Math.floor(low * k / N), y1 = hip + Math.floor(low * (k + 1) / N); if (y1 <= y0) continue;
+        const kx = 1 - close * ((k + 1) / N) ** 1.3;
+        ctx.drawImage(src[0], src[1], src[2] + y0, frame.sw, y1 - y0, -ax * s * kx, (-frame.ay + y0) * s, dw * kx, (y1 - y0) * s + 0.6);
+      }
+    } else ctx.drawImage(src[0], src[1], src[2], frame.sw, frame.sh, -ax * s, -frame.ay * s, dw, dh);
     this.drawBeam(ctx, s);
     ctx.restore();
 

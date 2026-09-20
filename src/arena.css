@@ -171,3 +171,4 @@
 .rm-chat input:focus { border-color: var(--yellow); } .rm-chat button { font-family: var(--pix); font-size: 9px; padding: 0 11px; border: 0; border-radius: 6px; background: var(--yellow); color: #222; box-shadow: 0 3px 0 #a86b00; cursor: pointer; }
 #room-toggle.bump { animation: gpop .4s; background: #ff5468; color: #fff; }
 .mini.kick { background: #7a1c2c; color: #fff; box-shadow: none; margin-left: 3px; }
+.cup-count { margin-top: 8px; padding: 8px; border-radius: 12px; text-align: center; background: rgba(60,40,0,.8); box-shadow: inset 0 0 0 2px var(--yellow), 0 0 18px rgba(255,210,63,.5); display: flex; flex-direction: column; align-items: center; gap: 3px; } .cup-count b { font-family: var(--logo); font-weight: normal; font-size: 44px; line-height: 1; color: var(--yellow); text-shadow: 3px 3px 0 #000; }

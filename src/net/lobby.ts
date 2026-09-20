@@ -32,7 +32,8 @@ export interface LobbyHooks {
 type View = 'hub' | 'duplas' | 'copa';
 const BASE = import.meta.env.BASE_URL;
 
-export const MAX_PEERS = 15;   // teto da rede: 9 jogadores + plateia, dentro da cota gratuita do Supabase
+export const MAX_PEERS = 15;
+export const CUP = { MAX: 10, COUNT_MS: 10000 };   // campeonato: 10 competem (os outros 5 da sala assistem); contagem antes de fechar as chaves   // teto da rede: 9 jogadores + plateia, dentro da cota gratuita do Supabase
 
 export class Lobby {
   private room: Room | null = null;
@@ -51,6 +52,7 @@ export class Lobby {
   private chat: { n: string; f: string; x: string; me?: boolean }[] = [];
   private sideDyn: HTMLElement | null = null; private chatLog: HTMLElement | null = null;
   private liveTourney: store.TMatch | null = null;      // a luta do campeonato que estou jogando
+  private tCount = 0; private tCountMine = false; private tCountBeat = 0;   // contagem pra fechar as chaves (quem apertou repete o aviso a cada segundo)
   private autoWatched = new Set<string>(); private creating = false; private rang = '';
   private clock = 0; private raf = 0;
   private invites: Invites;
@@ -80,7 +82,7 @@ export class Lobby {
     });
     delegate(root, () => root.classList.contains('lobby'));
     delegate(side, () => true);
-    this.timer = setInterval(() => { this.tickCountdowns(); this.squad?.tick(); if (this.me.status === 'procurando') this.matchmake(); }, 250);
+    this.timer = setInterval(() => { this.tickCountdowns(); this.squad?.tick(); this.tickCup(); if (this.me.status === 'procurando') this.matchmake(); }, 250);
     // lutadores comemorando nas telas de escolha: todo <canvas data-anim="id"> é redesenhado a cada quadro
     const draw = () => {
       this.raf = requestAnimationFrame(draw); this.clock++;
@@ -166,6 +168,7 @@ export class Lobby {
 
   private onMsg(m: Msg) {
     if (m.t === 'result') { this.addResult(m.winner as string, m.loser as string); return; }
+    if (m.t === 'tcount') { const left = Number(m.left); const was = this.tCount; this.tCount = left > 0 ? Date.now() + left : 0; if (left <= 0) this.tCountMine = false; if (!was !== !this.tCount) { if (this.tCount) audio.sfx('meter1'); this.paint(); } return; }
     if (m.t === 'chat') { this.pushChat({ n: String(m.n ?? '?').slice(0, 14), f: String(m.f ?? ''), x: String(m.x ?? '').slice(0, 140) }); if (!document.body.classList.contains('room-open')) this.bumpToggle(); return; }
     this.invites.onMsg(m);
   }
@@ -273,6 +276,7 @@ export class Lobby {
           const next = this.tMatches.find((m) => m.status === 'pendente' && m.p1 && m.p2);
           if (next) await store.patchMatch(next.id, { status: 'chamando' });
         }
+        if (this.tour.status === 'inscricoes' && this.runsTourney && !this.tCount && this.tEntries.filter((e) => this.isOnline(e.player_id)).length >= CUP.MAX) this.cupCount(true);   // lotou: começa sozinho
         this.tourneyEvents();
       } else { this.tEntries = []; this.tMatches = []; }
     } catch (e) { console.warn('supabase', e); }
@@ -287,6 +291,24 @@ export class Lobby {
     if (mineCalled && this.rang !== mineCalled.id) { this.rang = mineCalled.id; this.view = 'copa'; audio.sfx('meter2'); audio.voice('ann-fight', 'ann'); }
     const live = this.tMatches.find((m) => m.status === 'lutando' && m.p1 !== this.tid && m.p2 !== this.tid);
     if (live && this.view === 'copa' && !this.autoWatched.has(live.id)) { this.autoWatched.add(live.id); this.tourAct('twatch', live.id); }
+  }
+  /** Confirmados que estão na sala, na ordem em que confirmaram; só os 10 primeiros competem. */
+  private get cupReady() { return this.tEntries.filter((e) => this.isOnline(e.player_id)).slice(0, CUP.MAX); }
+  /** Contagem pra fechar as chaves: começa sozinha com 10 confirmados, ou quando um confirmado aperta COMEÇAR. Dá tempo de alguém trocar de lutador. */
+  private cupCount(on: boolean) {
+    this.tCount = on ? Date.now() + CUP.COUNT_MS : 0; this.tCountMine = on; this.tCountBeat = 0;
+    this.room?.send({ t: 'tcount', left: on ? CUP.COUNT_MS : -1 }); if (on) audio.sfx('meter1'); this.paint();
+  }
+  private tickCup() {
+    const t = this.tour; if (!this.tCount) return;
+    const now = Date.now();
+    if (!t || t.status !== 'inscricoes' || this.cupReady.length < 2) { if (this.tCountMine) this.cupCount(false); else this.tCount = 0; this.paint(); return; }
+    if (this.tCountMine && now - this.tCountBeat >= 1000) { this.tCountBeat = now; this.room?.send({ t: 'tcount', left: this.tCount - now }); }
+    if (now >= this.tCount) {
+      this.tCount = 0; this.tCountMine = false;
+      if (this.runsTourney) void store.startTournament(t, this.cupReady).then(() => this.refresh()); else setTimeout(() => void this.refresh(), 1200);
+      this.paint();
+    }
   }
   /** Abrir o CAMPEONATO já cai na sala de escolha: se não tem nenhum aberto, quem entrou primeiro abre um. */
   private ensureTournament() {
@@ -308,7 +330,9 @@ export class Lobby {
       audio.sfx('selectChar'); audio.voice(`ann-${arg}`, 'ann');
       void store.joinTournament(t.id, this.tid, this.me.name, arg).then(() => this.refresh());
     } else if (a === 'tkick' && t && this.runsTourney && !this.isOnline(arg)) void store.leaveTournament(t.id, arg).then(() => this.refresh());   // libera o lutador de quem saiu da sala
-    else if (a === 'tleave' && t) void store.leaveTournament(t.id, this.tid).then(() => this.refresh()); else if (a === 'tstart' && t) void store.startTournament(t, this.tEntries.filter((e) => this.isOnline(e.player_id))).then(() => this.refresh());
+    else if (a === 'tleave' && t) void store.leaveTournament(t.id, this.tid).then(() => this.refresh()); else if (a === 'tcancel') this.cupCount(false);
+    else if (a === 'tstart' && t && !this.tCount && this.cupReady.length >= 2) this.cupCount(true);
+    else if (a === 'tstart-now' && t) void store.startTournament(t, this.cupReady).then(() => this.refresh());
     else if (a === 'tplay' && m) {
       this.liveTourney = m;
       this.invites.cancel();
@@ -411,7 +435,7 @@ export class Lobby {
     const others = this.peers.filter((p) => p.id !== this.me.id), out = this.invites.out, searching = this.me.status === 'procurando';
     const free = others.filter((p) => p.status === 'livre' || p.status === 'procurando').length;
     const tables = others.filter((p) => p.table?.open), t = this.tour;
-    const copaBadge = !store.storeReady ? 'SEM BANCO' : !t || t.status === 'fim' ? (t?.champion ? `CAMPEÃO: ${esc(t.champion)}` : 'NENHUM ABERTO') : t.status === 'inscricoes' ? `INSCRIÇÕES ABERTAS · ${this.tEntries.length}` : 'EM ANDAMENTO';
+    const copaBadge = !store.storeReady ? 'SEM BANCO' : !t || t.status === 'fim' ? (t?.champion ? `CAMPEÃO: ${esc(t.champion)}` : 'NENHUM ABERTO') : t.status === 'inscricoes' ? `SALA ABERTA · ${this.tEntries.length}/10` : 'EM ANDAMENTO';
     const myTurn = this.tMatches.some((m) => (m.status === 'chamando' || m.status === 'lutando') && (m.p1 === this.tid || m.p2 === this.tid));
     const art = (ids: string[]) => `<div class="mc-art">${ids.map((id, i) => `<img src="${BASE}fighters/${id}/face.png" style="--i:${i}" alt="">`).join('')}</div>`;
     const pool = this.roster.filter((f) => !f.def.secret).map((f) => f.def.id), k = pool.indexOf(this.me.fighter), rot = (n: number) => pool[(k + n + pool.length) % pool.length];
@@ -504,17 +528,19 @@ export class Lobby {
       const takenBy = (id: string) => { const e = this.tEntries.find((x) => x.fighter === id); return e ? (e.player_id === me ? 'VOCÊ' : e.name) : ''; };
       const free = (id: string) => !this.tEntries.some((x) => x.fighter === id && x.player_id !== me);
       const pick = this.pick && free(this.pick) ? this.pick : '';
-      const ready = this.tEntries.filter((e) => this.isOnline(e.player_id));
-      const enrolled = this.tEntries.map((e) => { const on = this.isOnline(e.player_id);
-        return `<div class="prow in ${on ? 'glow' : 'off'}" style="--c:${this.F(e.fighter)?.def.colors.primary ?? '#3d4a63'}">${this.face(e.fighter)}<div class="pn"><b>${esc(e.name)}${e.player_id === me ? ' (VOCÊ)' : ''}</b><small>🔒 ${esc(this.F(e.fighter)?.def.name ?? e.fighter)}</small></div><span class="mini ${on ? 'ok' : 'ghost'}">${on ? '✔ CONFIRMADO' : 'FORA DA SALA'}</span>${!on && runs ? `<span class="mini kick" data-act="tkick" data-arg="${esc(e.player_id)}" title="tirar da chave">✕</span>` : ''}</div>`; }).join('');
-      const looking = this.peers.filter((p) => !this.tEntries.some((e) => e.player_id === this.tidOf(p))).map((p) => `<div class="prow look" style="--c:#3d4a63">${this.face(p.fighter)}<div class="pn"><b>${esc(p.name)}${p.id === this.me.id ? ' (VOCÊ)' : ''}</b><small>ESCOLHENDO… ${esc(this.F(p.fighter)?.def.name ?? '')}</small></div></div>`).join('');
-      const btn = !pick ? '<div class="cta big off">ESCOLHA UM LUTADOR LIVRE</div>' : !mine ? `<div class="cta big" data-act="tjoin" data-arg="${pick}">🔒 CONFIRMAR ${esc(this.F(pick)?.def.name ?? '')}</div>`
-        : mine.fighter !== pick ? `<div class="cta big" data-act="tjoin" data-arg="${pick}">TROCAR PARA ${esc(this.F(pick)?.def.name ?? '')}</div>` : '<div class="wait">CONFIRMADO ✔ · ESPERANDO FECHAR AS CHAVES</div>';
-      return `${top(`${esc(t.name)} · ESCOLHA O SEU LUTADOR`)}
+      const ready = this.cupReady, full = ready.length >= CUP.MAX && !mine, counting = this.tCount > 0;
+      const enrolled = this.tEntries.map((e) => { const on = this.isOnline(e.player_id), inCup = ready.includes(e);
+        return `<div class="prow in ${on && inCup ? 'glow' : 'off'}" style="--c:${this.F(e.fighter)?.def.colors.primary ?? '#3d4a63'}">${this.face(e.fighter)}<div class="pn"><b>${esc(e.name)}${e.player_id === me ? ' (VOCÊ)' : ''}</b><small>🔒 ${esc(this.F(e.fighter)?.def.name ?? e.fighter)}</small></div><span class="mini ${on && inCup ? 'ok' : 'ghost'}">${!on ? 'FORA DA SALA' : inCup ? '✔ CONFIRMADO' : 'SEM VAGA'}</span>${!on && runs ? `<span class="mini kick" data-act="tkick" data-arg="${esc(e.player_id)}" title="tirar da chave">✕</span>` : ''}</div>`; }).join('');
+      const looking = this.peers.filter((p) => !this.tEntries.some((e) => e.player_id === this.tidOf(p))).map((p) => `<div class="prow look" style="--c:#3d4a63">${this.face(p.fighter)}<div class="pn"><b>${esc(p.name)}${p.id === this.me.id ? ' (VOCÊ)' : ''}</b><small>${ready.length >= CUP.MAX ? 'ASSISTINDO' : `ESCOLHENDO… ${esc(this.F(p.fighter)?.def.name ?? '')}`}</small></div><span class="mini ghost">NÃO CONFIRMOU</span></div>`).join('');
+      const btn = full ? '<div class="wait">AS 10 VAGAS FECHARAM · VOCÊ ASSISTE ÀS LUTAS</div>' : !pick ? '<div class="cta big off">ESCOLHA UM LUTADOR LIVRE</div>' : !mine ? `<div class="cta big" data-act="tjoin" data-arg="${pick}">🔒 CONFIRMAR ${esc(this.F(pick)?.def.name ?? '')}</div>`
+        : mine.fighter !== pick ? `<div class="cta big" data-act="tjoin" data-arg="${pick}">TROCAR PARA ${esc(this.F(pick)?.def.name ?? '')}</div>` : '<div class="wait">CONFIRMADO ✔</div>';
+      const startBox = counting ? `<div class="cup-count"><small>AS CHAVES FECHAM EM</small><b data-until="${this.tCount}" data-fmt="n"></b><small>AINDA DÁ PRA TROCAR DE LUTADOR</small>${this.tCountMine || runs ? '<span class="mini ghost" data-act="tcancel">CANCELAR</span>' : ''}</div>`
+        : mine ? `<div class="cta ${ready.length >= 2 ? '' : 'off'}" data-act="tstart">⚔ COMEÇAR AGORA · ${ready.length}/${CUP.MAX}</div><small class="hint">${ready.length >= 2 ? 'COM 10 CONFIRMADOS COMEÇA SOZINHO. QUEM NÃO CONFIRMAR, ASSISTE.' : 'PRECISA DE 2 CONFIRMADOS NA SALA'}</small>`
+        : `<small class="hint">${ready.length}/${CUP.MAX} CONFIRMADOS · CONFIRME UM LUTADOR PRA COMPETIR, OU FIQUE PRA ASSISTIR</small>`;
+      return `${top(`${esc(t.name)} · ESCOLHA E CONFIRME O SEU LUTADOR`)}
         <div class="copa-room"><div class="cr-left"><h4>LUTADORES</h4>${this.grid('tpick', takenBy, 3)}</div>
-          <div class="cr-mid">${this.showcase(pick || mine?.fighter || '')}<div class="cr-act">${btn}${mine ? '<span class="mini ghost" data-act="tleave">SAIR DA CHAVE</span>' : ''}</div></div>
-          <div class="cr-right"><h4>NA SALA · ${ready.length} CONFIRMADO${ready.length === 1 ? '' : 'S'}</h4><div class="ar-list">${enrolled}${looking}</div>
-            ${runs ? `<div class="cta ${ready.length >= 2 ? '' : 'off'}" data-act="tstart">⚔ FECHAR AS CHAVES · ${ready.length}</div><small class="hint">${ready.length >= 2 ? 'SORTEIA QUEM ESTÁ CONFIRMADO E NA SALA' : 'PRECISA DE 2 CONFIRMADOS NA SALA'}</small>` : `<small class="hint">${esc(this.tEntries.find((e) => e.player_id === this.runnerId)?.name ?? 'O ORGANIZADOR')} FECHA AS CHAVES QUANDO TODOS CONFIRMAREM</small>`}</div></div>`;
+          <div class="cr-mid">${this.showcase(pick || mine?.fighter || '')}<div class="cr-act">${btn}${mine ? '<span class="mini ghost" data-act="tleave">DESCONFIRMAR</span>' : ''}</div></div>
+          <div class="cr-right"><h4>NA SALA · ${ready.length}/${CUP.MAX} CONFIRMADOS</h4><div class="ar-list">${enrolled}${looking}</div>${startBox}</div></div>`;
     }
     // chave em organograma: cada coluna é uma fase; as linhas ligam cada luta à seguinte
     const rounds = Math.max(0, ...this.tMatches.map((m) => m.round)) + 1, fOf = (id: string | null) => this.tEntries.find((e) => e.player_id === id)?.fighter ?? '';
