@@ -20,7 +20,7 @@
   ],
   [
    "O TORNEIO",
-   "A torre anunciou o torneio <b>Trouble Work</b>, com prêmio milionário. Nas letras miúdas: cada golpe dado na arena treina as máquinas. Da fábrica saíram três resultados. <b>Leo</b>, o cyborg dourado, é o que deu certo: duas IAs em fusão, ligadas direto ao Mundim via MCP. <b>Santana</b> deu certo só no hardware: a mente não foi tomada por inteiro, e ele briga por dentro. E o que as IAs criaram sozinhas deu errado: <i>Xablau</i>."
+   "A torre anunciou o torneio <b>Trouble Work</b>, com prêmio milionário. Nas letras miúdas: cada golpe dado na arena treina as máquinas. Da fábrica saíram três resultados. <b>Leo</b>, o cyborg dourado, é o que deu certo: duas IAs em fusão, ligadas direto ao Mundim via MCP. <b>Sant'Anna</b> deu certo só no hardware: a mente não foi tomada por inteiro, e ele briga por dentro. E o que as IAs criaram sozinhas deu errado: <i>Xablau</i>."
   ],
   [
    "GENTE COMUM",
@@ -28,7 +28,7 @@
   ],
   [
    "OS NEUTROS",
-   "<b>Edgard</b>, o bruxo, não tem lado: entrou pra resgatar o amigo Santana. <b>Kevin</b> atira pra quem pagar, e o Dias está devendo três notas. Todos os caminhos sobem pelo mesmo elevador. No último andar, alguém vai ter que desligar as máquinas. <i>Ou o chefe.</i>"
+   "<b>Edgard</b>, o bruxo, não tem lado: entrou pra resgatar o amigo Sant'Anna. <b>Kevin</b> atira pra quem pagar, e o Dias está devendo três notas. Todos os caminhos sobem pelo mesmo elevador. No último andar, alguém vai ter que desligar as máquinas. <i>Ou o chefe.</i>"
   ]
  ],
  "crawl": [
@@ -77,7 +77,7 @@
     "Um, dois, três, quatro... SOLO!",
     "Quem perder paga a cerveja. Preta, de preferência."
    ],
-   "ending": "Edgard desfez a programação no grito e no feitiço. Santana acordou pedindo desculpa e um café. A dupla voltou pra Curitiba. O bug ficou pra trás.",
+   "ending": "Edgard desfez a programação no grito e no feitiço. Sant'Anna acordou pedindo desculpa e um café. A dupla voltou pra Curitiba. O bug ficou pra trás.",
    "nick": "Edgard"
   },
   "santana": {
@@ -93,8 +93,8 @@
     "DEPLOY DE SOCO EM TRÊIX... DOIX...",
     "EXECUTANDO. COÉ."
    ],
-   "ending": "Com a vitória, o sistema de Santana reiniciou. Na tela: 'Restaurar versão anterior?' Ele apertou SIM. Primeiro ato livre: ligar pro Edgard.",
-   "nick": "Santana"
+   "ending": "Com a vitória, o sistema de Sant'Anna reiniciou. Na tela: 'Restaurar versão anterior?' Ele apertou SIM. Primeiro ato livre: ligar pro Edgard.",
+   "nick": "Sant'Anna"
   },
   "kevin": {
    "open": [
@@ -309,7 +309,7 @@
   "edgard|santana": [
    [
     "edgard",
-    "SANTANA! Meu parceiro! Lembra de mim? A gente dividia a pizza, o wi-fi e o ingresso do show!"
+    "SANT'ANNA! Meu parceiro! Lembra de mim? A gente dividia a pizza, o wi-fi e o ingresso do show!"
    ],
    [
     "santana",
@@ -331,7 +331,7 @@
    ],
    [
     "edgard",
-    "Preto é a cor oficial do rock, chefia. Devolve o Santana que eu nem abro o portal."
+    "Preto é a cor oficial do rock, chefia. Devolve o Sant'Anna que eu nem abro o portal."
    ],
    [
     "mundim",
@@ -399,7 +399,7 @@
   "mundim|santana": [
    [
     "mundim",
-    "Santana. Meu melhor produto. Por que está me encarando?"
+    "Sant'Anna. Meu melhor produto. Por que está me encarando?"
    ],
    [
     "santana",
@@ -803,7 +803,7 @@
   "kevin|santana": [
    [
     "kevin",
-    "Santana. A gente fez segurança junto. Dois armários na porrrta. Você comeu o coffee break inteiro."
+    "Sant'Anna. A gente fez segurança junto. Dois armários na porrrta. Você comeu o coffee break inteiro."
    ],
    [
     "santana",
@@ -991,7 +991,7 @@
    ],
    [
     "edgard",
-    "Hahaha, gostei de ti, chefão sinistro. Solta o Santana e eu te levo num show."
+    "Hahaha, gostei de ti, chefão sinistro. Solta o Sant'Anna e eu te levo num show."
    ],
    [
     "dener",
@@ -1289,7 +1289,7 @@
   "dener|santana": [
    [
     "dener",
-    "Santana. Dois metros de tecnologia. Eu aprovei o seu orçamento."
+    "Sant'Anna. Dois metros de tecnologia. Eu aprovei o seu orçamento."
    ],
    [
     "santana",
@@ -1343,7 +1343,7 @@
   "crm|santana": [
    [
     "crm",
-    "THIAGO: Santana! Tu era do nosso andar, cara! Lembra do churrasco do CRM? JOÃO: Tu comeu a farofa toda!"
+    "THIAGO: Sant'Anna! Tu era do nosso andar, cara! Lembra do churrasco do CRM? JOÃO: Tu comeu a farofa toda!"
    ],
    [
     "santana",
@@ -1451,7 +1451,7 @@
   "leo|santana": [
    [
     "leo",
-    "Santana. Mesma fábrica, mesmo projeto. Em você a integração falhou: sobrou gente aí dentro."
+    "Sant'Anna. Mesma fábrica, mesmo projeto. Em você a integração falhou: sobrou gente aí dentro."
    ],
    [
     "santana",
@@ -1491,7 +1491,7 @@
    ],
    [
     "leo",
-    "Edgard. Classificação: imprevisível. O único que o Santana não consegue esquecer."
+    "Edgard. Classificação: imprevisível. O único que o Sant'Anna não consegue esquecer."
    ],
    [
     "edgard",

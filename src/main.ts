@@ -55,6 +55,12 @@ fit();
 let mode: Mode = 'loading';
 let roster: FighterAssets[] = [];
 let stages = new Map<string, StageAssets>();
+/** Música do cenário: a do dono; se ele não tem, a de outro lutador que mora no mesmo cenário (a fábrica é do Sant'Anna). */
+const trackOf = (f: FighterAssets) => {
+  if (hasTrack(`fighter-${f.def.id}`)) return `fighter-${f.def.id}`;
+  const mate = roster.find((o) => o.def.stage === f.def.stage && hasTrack(`fighter-${o.def.id}`));
+  return mate ? `fighter-${mate.def.id}` : null;
+};
 const stageOf = (f: FighterAssets) => stages.get(f.def.stage ?? DEFAULT_STAGE) ?? stages.get(DEFAULT_STAGE)!;
 let match: Match | null = null;
 let demo: Match | null = null;
@@ -95,8 +101,9 @@ let continues = 0, secretFight = false, tries = 0, arcadeScore = 0;
 
 function buildCampaign() {
   continues = 0; secretFight = false; tries = 0; arcadeScore = 0;
-  // 4 rivais do elenco (a partir da posição do jogador), depois o capanga, o subchefe e o chefão
-  const bosses = ['xablau', 'dias', 'mundim'].map((id) => roster.findIndex((f) => f.def.id === id)).filter((i) => i >= 0);
+  // 4 rivais do elenco (a partir da posição do jogador), depois Dias, Leo (no elevador), Xablau e o chefão
+  const bosses = ['dias', 'leo', 'xablau', 'mundim']   // subchefe, o elevador com o Leo, a parada no andar do Xablau e o último andar
+    .map((id) => roster.findIndex((f) => f.def.id === id)).filter((i) => i >= 0);
   const pool = roster.map((_, i) => i).filter((i) => i !== playerIdx && !bosses.includes(i) && !roster[i].def.secret);
   const rivals = pool.map((_, k) => pool[(k + playerIdx) % pool.length]).slice(0, 4);
   campaign = [...rivals, ...bosses].map((idx) => (idx === playerIdx ? { idx, hue: 150 } : { idx, hue: 0 }));  // se você é um dos chefes, enfrenta o seu clone
@@ -136,7 +143,7 @@ function startFight() {
   paused = false;
   screens.hide();
   setMode('fight');
-  if (hasTrack(`fighter-${owner.def.id}`)) audio.music(`fighter-${owner.def.id}`); // música do dono do cenário
+  { const tr = trackOf(owner); if (tr) audio.music(tr); } // música do dono do cenário
 }
 
 /** Fim do arcade (zerou ou desistiu no game over): grava a pontuação e mostra o ranking. */
@@ -245,7 +252,7 @@ function startNetMatch(cfg: NetMatchCfg) {
   screens.hide();
   setMode('netfight');
   loop.setBackground(true);
-  if (hasTrack(`fighter-${fb.def.id}`)) audio.music(`fighter-${fb.def.id}`);
+  { const tr = trackOf(fb); if (tr) audio.music(tr); }
 }
 
 function leaveNetMatch() {

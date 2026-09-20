@@ -195,7 +195,7 @@ def main():
             'van-golpe.wav': ['van-hit'], 'yah-laura.wav': ['laura-hit'],
             'grito-final-homem.wav': ['ko-m'], 'golpe-final-female.wav': ['ko-f'], 'enaias-dias-golpe-final-grito.wav': ['ko-eneias', 'ko-dias'],
             'mundim-provocação.wav': ['mundim-taunt', 'mundim-down-1'], 'risada-mundim.wav': ['mundim-win', 'mundim-down-2'],
-            'golpe.wav': ['sfx-hit'], 'golpe-forte.wav': ['sfx-hitBig'], 'pulo.wav': ['sfx-jump'], 'pulo-chao.wav': ['sfx-land'],
+            'V01.wav': ['sfx-hit'], 'V02.wav': ['sfx-hitMed'], 'V03.wav': ['sfx-hitBig'], 'V26.wav': ['sfx-hitHuge'], 'van-longo.mp3': ['van-long'], 'pulo.wav': ['sfx-jump'], 'pulo-chao.wav': ['sfx-land'],
             'quando-leva-golpe-cai-chao.wav': ['sfx-knockdown']}
     for fn, targets in SONS.items():
         src = os.path.join('Personagens/sons', fn)

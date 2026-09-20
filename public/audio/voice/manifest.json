@@ -67,7 +67,10 @@
   "mundim-win.wav",
   "mundim-down-2.wav",
   "sfx-hit.wav",
+  "sfx-hitMed.wav",
   "sfx-hitBig.wav",
+  "sfx-hitHuge.wav",
+  "van-long.mp3",
   "sfx-jump.wav",
   "sfx-land.wav",
   "sfx-knockdown.wav"

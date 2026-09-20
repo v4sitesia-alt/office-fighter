@@ -43,10 +43,15 @@ export async function loadReferee() {
   try { const frames = await loadJSON<FramesFile>(dir + 'frames.json'); return { frames, sheet: await loadImage(dir + frames.sheet) }; } catch { return null; }
 }
 
-export interface StageAssets { name: string; img: HTMLImageElement }
+export interface StageAssets { name: string; img: HTMLImageElement; scroll?: HTMLImageElement; front?: HTMLImageElement }
+
+/** Cenários em camadas (elevador): <name>-scroll.jpg desce em loop atrás e <name>-front.png (transparente) fica parado na frente. */
+const LAYERED = new Set(['leo']);
 
 /** Cenário = uma imagem 16:9 em public/stages/<name>.png (chão dos lutadores em ~87% da altura). */
 export async function loadStage(name: string, onProgress?: () => void): Promise<StageAssets> {
   const img = await loadImage(`${BASE}stages/${name}.png`); onProgress?.();
-  return { name, img };
+  if (!LAYERED.has(name)) return { name, img };
+  const [scroll, front] = await Promise.all([loadImage(`${BASE}stages/${name}-scroll.jpg`), loadImage(`${BASE}stages/${name}-front.png`)].map((q) => q.catch(() => undefined)));
+  return { name, img, scroll, front };
 }

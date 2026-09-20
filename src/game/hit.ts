@@ -51,7 +51,7 @@ export function resolveHits(fighters: [Fighter, Fighter], projectiles: Projectil
         atk.meter = Math.min(100, atk.meter + (m.meterGain ?? m.damage) * (blocked ? 0.7 : 1.5));
         if (!blocked) { atk.comboHits++; def.lastHitBy = atk.moveName; }
         fx.hit(px, py, blocked ? '#9ec5ff' : atk.def.colors.primary, !blocked && m.damage >= 12);
-        audio.sfx(blocked ? 'block' : m.damage >= 11 ? 'hitBig' : m.damage > 6 ? 'hitMed' : 'hit');   // soco fraco · chute médio · golpe forte
+        audio.sfx(blocked ? 'block' : m.damage >= 20 ? 'hitHuge' : m.damage >= 11 ? 'hitBig' : m.damage > 6 ? 'hitMed' : 'hit');   // soco fraco · chute médio · golpe forte
         if (!blocked) {
           fx.blood(px, py, atk.facing, m.damage >= 11 ? 16 : m.damage > 6 ? 9 : 5);
           if (!audio.channelBusy(atk.voiceChannel)) {
@@ -75,7 +75,7 @@ export function resolveHits(fighters: [Fighter, Fighter], projectiles: Projectil
         def.takeHit(p.move, owner, blocked, owner.x, true);
         fx.hit(p.x + p.vx * 2, p.y, blocked ? '#9ec5ff' : owner.def.colors.primary, !blocked);
         if (!blocked) fx.blood(p.x, p.y, Math.sign(p.vx), 10);
-        audio.sfx(blocked ? 'block' : 'hitBig');
+        audio.sfx(blocked ? 'block' : p.move.damage >= 20 ? 'hitHuge' : 'hitBig');
         const hv = p.move.projectile?.hitVoice; if (hv) audio.voice(hv, 'fx');
       });
       hitstop = Math.max(hitstop, blocked ? 4 : (p.move.hitstop ?? 8));
