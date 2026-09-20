@@ -405,3 +405,6 @@ html, body { overscroll-behavior: none; touch-action: manipulation; -webkit-touc
 .cut-stage.face .cut-face { transform: none; } .cut-stage.face .cut-cap { opacity: 0; transition: opacity .3s; }
 .cut-stage.face .cut-img.on { filter: brightness(.45) saturate(.8); transition: filter .4s, opacity .28s linear; }
 .cut-stage.talking .cut-talk { display: block; left: 4%; width: 58%; bottom: 60px; }
+
+.cont-num { font-family: var(--logo); font-style: italic; font-size: 150px; line-height: 1; color: var(--yellow); -webkit-text-stroke: 4px #7a2a00; text-shadow: 8px 8px 0 #000; margin: 6px 0 14px; }
+.cont-num.pop { animation: comboPop .25s ease-out; }

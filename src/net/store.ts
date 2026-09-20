@@ -23,6 +23,7 @@ export function rankKey(name: string, fallback: string) {
 export function mergeRanking(rows: RankRow[], top = 8): RankRow[] {
   const by = new Map<string, RankRow>();
   for (const r of rows) {
+    if (/^\s*testes?\s*$/i.test(r.name)) continue;
     const k = rankKey(r.name, r.id), cur = by.get(k);
     if (cur) { cur.wins += r.wins; cur.losses += r.losses; cur.points += r.points; }
     else by.set(k, { id: k, name: r.name, wins: r.wins, losses: r.losses, points: r.points }); // nome exibido: o mais recente
@@ -117,14 +118,15 @@ export async function submitScore(player_id: string, row: ScoreRow) {
   if (ONLINE) await db().from('scores').insert({ player_id, ...row });
 }
 /** A mesma partida gravada mais de uma vez (Enter repetido, na versão antiga do jogo) aparece uma vez só. */
+const isTest = (name: string) => /^\s*testes?\s*$/i.test(name);      // nome usado nos testes: não aparece no ranking
 export function uniqueScores(rows: (ScoreRow & { player_id?: string | null })[], top = 10): ScoreRow[] {
   const seen = new Set<string>();
-  return rows.filter((r) => { const k = `${r.player_id ?? r.name}|${r.fighter}|${r.score}`; return !seen.has(k) && !!seen.add(k); })
+  return rows.filter((r) => !isTest(r.name)).filter((r) => { const k = `${r.player_id ?? r.name}|${r.fighter}|${r.score}`; return !seen.has(k) && !!seen.add(k); })
     .slice(0, top).map(({ name, fighter, score }) => ({ name, fighter, score }));
 }
 export async function topScores(): Promise<ScoreRow[]> {
   if (ONLINE) {
-    const { data, error } = await db().from('scores').select('player_id,name,fighter,score').order('score', { ascending: false }).limit(40);
+    const { data, error } = await db().from('scores').select('player_id,name,fighter,score').order('score', { ascending: false }).limit(80);
     if (!error && data) return uniqueScores(data as ScoreRow[]);
   }
   return uniqueScores(localScores());

@@ -124,7 +124,14 @@ function startFight() {
       arcadeScore = match?.score[0] ?? arcadeScore;
       audio.sfx(won ? 'win' : 'lose'); audio.voice(won ? 'ann-you-win' : 'ann-you-lose', 'ann');
       screens.result(won, perfect, isLast, () => {
-        if (!won) { continues++; tries++; showVersus(); return; }
+        if (!won) {                                   // continue: escolhe o lutador de novo e volta pra mesma luta, com os pontos
+          continues++; tries++;
+          setMode('select');
+          screens.select(roster, secret, (i) => {
+            playerIdx = i; campaign = campaign.map((c) => ({ idx: c.idx, hue: c.idx === i ? 150 : 0 })); showVersus();
+          }, () => finishArcade());
+          return;
+        }
         fightNo++; tries = 0;
         if (fightNo < campaign.length) { showVersus(); return; }
         // zerou sem perder nenhuma luta: o elevador sobe mais um andar

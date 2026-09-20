@@ -208,6 +208,22 @@ export class Screens {
     };
   }
 
+  /** Perdeu: contagem regressiva estilo fliperama. G/ENTER continua (escolhe lutador de novo e volta pra mesma luta); zerou ou V = fim. */
+  private continueCount(onContinue: () => void, onQuit: () => void) {
+    this.set('result', `<div class="center"><div class="title-big lose">GAME OVER</div>
+        <div class="title-sm">CONTINUAR?</div><div class="cont-num">9</div>
+        <div class="pix small">G / ENTER OU TOQUE: ESCOLHE O LUTADOR E VOLTA PRA MESMA LUTA</div><div class="pix tiny">V DESISTE</div></div>`);
+    const num = this.root.querySelector<HTMLElement>('.cont-num')!; let n = 9, t = 0, done = false;
+    const go = (f: () => void) => { if (!done) { done = true; f(); } };
+    this.onConfirm = () => go(onContinue); this.onBack = () => go(onQuit); this.root.onclick = () => go(onContinue);
+    this.onTick = () => {
+      if (done || ++t < 60) return;
+      t = 0; n--;
+      if (n < 0) { go(onQuit); return; }
+      num.textContent = String(n); num.classList.remove('pop'); void num.offsetWidth; num.classList.add('pop'); audio.sfx(n <= 3 ? 'tick' : 'menuMove');
+    };
+  }
+
   /** Cena final: o Mundim levanta da mesa e vem até a frente (10 quadros), legendas por cima, depois o destaque dele
    *  com um diálogo rápido e corta pra luta. Passa sozinha; G/ENTER adianta, V pula. */
   finalScene(player: FighterAssets, boss: FighterAssets, script: Line[], onGo: () => void) {
@@ -262,6 +278,7 @@ export class Screens {
   }
 
   result(won: boolean, perfect: boolean, isLast: boolean, onNext: () => void, onQuit: () => void) {
+    if (!won) { this.continueCount(onNext, onQuit); return; }
     this.set('result', `
       <div class="center">
         <div class="title-big ${won ? 'win' : 'lose'}">${won ? (perfect ? 'PERFECT!' : 'VITÓRIA') : 'GAME OVER'}</div>

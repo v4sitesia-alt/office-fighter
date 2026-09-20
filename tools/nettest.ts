@@ -266,7 +266,7 @@ function rankingTest() {
   const row = (id: string, name: string, wins: number, losses: number): RankRow => ({ id, name, wins, losses, points: wins * 3 + losses });
   const merged = mergeRanking([
     row('nome:EDGARD', 'EDGARD', 2, 1), row('k1', 'Edgard', 1, 0), row('k2', 'EDGARD', 0, 2), row('k3', 'GRAÚDA', 3, 0),
-    row('k4', 'GRAUDA', 1, 1), row('k5', 'TESTE', 0, 1),
+    row('k4', 'GRAUDA', 1, 1), row('k5', 'FULANO', 0, 1),
   ]);
   const ed = merged.find((r) => r.id === 'nome:EDGARD'), gr = merged.find((r) => r.id === 'nome:GRAUDA');
   check('visitas da mesma pessoa somam numa linha', merged.length === 3 && !!ed && ed.wins === 3 && ed.losses === 3 && ed.points === 12 && !!gr && gr.wins === 4 && gr.losses === 1 && gr.points === 13, merged);
@@ -275,9 +275,10 @@ function rankingTest() {
   const args = resultArgs({ id: 'a1', name: 'Graúda' }, { id: 'b2', name: 'EDGARD' });
   check('vitória grava na linha do nome, não na da visita', args?.w_id === 'nome:GRAUDA' && args?.l_id === 'nome:EDGARD' && args?.w_name === 'Graúda', args);
   check('mesmo nome dos dois lados não conta', resultArgs({ id: 'a1', name: 'EDGARD' }, { id: 'b2', name: 'edgard' }) === null, null);
-  const dup = { player_id: 'fb2q3gmv', name: 'TESTE', fighter: 'van', score: 11974 };
-  const top = uniqueScores([dup, { ...dup }, { ...dup }, { player_id: 'zz', name: 'TESTE', fighter: 'van', score: 11974 }, { player_id: 'fb2q3gmv', name: 'TESTE', fighter: 'kevin', score: 9000 }]);
+  const dup = { player_id: 'fb2q3gmv', name: 'FULANO', fighter: 'van', score: 11974 };
+  const top = uniqueScores([dup, { ...dup }, { ...dup }, { player_id: 'zz', name: 'FULANO', fighter: 'van', score: 11974 }, { player_id: 'fb2q3gmv', name: 'FULANO', fighter: 'kevin', score: 9000 }]);
   check('pontuação do arcade gravada repetida aparece uma vez', top.length === 3 && top.filter((r) => r.score === 11974).length === 2, top);
+  check('nome TESTE não aparece em nenhum ranking', mergeRanking([row('t1', 'TESTE', 5, 0), row('t2', 'Ana', 1, 0)]).length === 1 && uniqueScores([{ name: 'teste', fighter: 'van', score: 99999 }, { name: 'ANA', fighter: 'van', score: 10 }]).length === 1, null);
   for (const [n, ok, info] of results) log({ caso: n, passou: ok, detalhe: info });
   process.exitCode = results.every((r) => r[1]) ? 0 : 1;
 }
