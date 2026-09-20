@@ -160,7 +160,7 @@
    "startup": 5,
    "active": 3,
    "recovery": 7,
-   "damage": 9.0,
+   "damage": 9.1,
    "hitstun": 15,
    "blockstun": 10,
    "hitbox": {
@@ -188,7 +188,7 @@
    "startup": 8,
    "active": 4,
    "recovery": 13,
-   "damage": 14.2,
+   "damage": 14.3,
    "hitstun": 24,
    "blockstun": 14,
    "hitbox": {
@@ -219,7 +219,7 @@
    "startup": 12,
    "active": 8,
    "recovery": 18,
-   "damage": 11.6,
+   "damage": 11.7,
    "hitstun": 20,
    "blockstun": 14,
    "hitbox": {
@@ -246,47 +246,6 @@
    "hitstop": 8
   },
   "special": {
-   "phases": {
-    "startup": [
-     15
-    ],
-    "active": [
-     16
-    ],
-    "recovery": [
-     11
-    ]
-   },
-   "startup": 10,
-   "active": 4,
-   "recovery": 16,
-   "damage": 12,
-   "hitstun": 22,
-   "blockstun": 14,
-   "hitbox": {
-    "x": 0,
-    "y": 0,
-    "w": 0,
-    "h": 0
-   },
-   "knockback": 10,
-   "meterCost": 50,
-   "hitstop": 7,
-   "name": "ONDA VERDE",
-   "projectile": {
-    "x": 120,
-    "y": -115,
-    "speed": 8,
-    "lifetime": 28,
-    "hitbox": {
-     "x": -15,
-     "y": -70,
-     "w": 30,
-     "h": 140
-    }
-   }
-  },
-  "super": {
    "kind": "throw",
    "phases": {
     "startup": [
@@ -311,7 +270,7 @@
    "startup": 10,
    "active": 6,
    "recovery": 24,
-   "damage": 0,
+   "damage": 20,
    "hitstun": 0,
    "blockstun": 0,
    "hitbox": {
@@ -321,7 +280,7 @@
     "h": 170
    },
    "knockback": 0,
-   "meterCost": 100,
+   "meterCost": 50,
    "name": "ARREMESSO FAIXA-PRETA",
    "throw": {
     "speed": 9,
@@ -340,10 +299,64 @@
      "y": -110
     },
     "release": {
-     "damage": 26,
-     "knockback": 32,
-     "launch": -13,
+     "damage": 20,
+     "knockback": 24,
+     "launch": -11,
      "hitstop": 10
+    }
+   }
+  },
+  "super": {
+   "name": "TSUNAMI DE TUBARÕES",
+   "phases": {
+    "startup": [
+     45,
+     46
+    ],
+    "active": [
+     47
+    ],
+    "recovery": [
+     49,
+     49
+    ]
+   },
+   "startup": 18,
+   "active": 12,
+   "recovery": 20,
+   "damage": 36,
+   "hitstun": 30,
+   "blockstun": 18,
+   "hitbox": {
+    "x": 0,
+    "y": 0,
+    "w": 0,
+    "h": 0
+   },
+   "knockback": 22,
+   "knockdown": true,
+   "launch": -10,
+   "meterCost": 100,
+   "hitstop": 11,
+   "projectile": {
+    "x": 170,
+    "y": 0,
+    "speed": 13,
+    "lifetime": 130,
+    "ground": true,
+    "pierce": true,
+    "grow": 0.2,
+    "anim": {
+     "frames": [
+      48
+     ],
+     "fps": 1
+    },
+    "hitbox": {
+     "x": -150,
+     "y": -290,
+     "w": 300,
+     "h": 290
     }
    }
   },
@@ -363,7 +376,7 @@
    "startup": 3,
    "active": 8,
    "recovery": 3,
-   "damage": 6.4,
+   "damage": 6.5,
    "hitstun": 14,
    "blockstun": 10,
    "overhead": true,
@@ -393,7 +406,7 @@
    "startup": 4,
    "active": 10,
    "recovery": 3,
-   "damage": 10.3,
+   "damage": 10.4,
    "hitstun": 16,
    "blockstun": 12,
    "overhead": true,
@@ -423,7 +436,7 @@
    "startup": 6,
    "active": 8,
    "recovery": 5,
-   "damage": 14.2,
+   "damage": 14.3,
    "hitstun": 22,
    "blockstun": 14,
    "overhead": true,
@@ -485,7 +498,7 @@
    "startup": 5,
    "active": 6,
    "recovery": 10,
-   "damage": 7.7,
+   "damage": 7.8,
    "hitstun": 18,
    "blockstun": 12,
    "low": true,
@@ -516,7 +529,7 @@
    "startup": 7,
    "active": 4,
    "recovery": 12,
-   "damage": 11.6,
+   "damage": 11.7,
    "hitstun": 22,
    "blockstun": 14,
    "low": true,

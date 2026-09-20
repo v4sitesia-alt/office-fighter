@@ -9,12 +9,12 @@ F = {i: json.load(open(f'public/fighters/{i}/fighter.json')) for i in ROSTER}
 SUPER = {
  'edgard': 'Carrega as mãos com chamas roxas, bate no chão e invoca o portal sob o adversário, onde quer que ele esteja: um pilar de luz roxa sobe até o topo da tela, com morcegos e criaturas subindo por dentro. Quatro acertos; o último derruba.',
  'santana': 'Salta sobre o adversário, desce com o punho e a explosão atinge uma área larga ao redor do impacto.',
- 'kevin': 'Saca a pistola e dispara três tiros rápidos em sequência, de qualquer distância.',
- 'laura': 'Arranca, agarra, levanta e arremessa. Ignora a defesa: só escapa quem estiver no ar.',
- 'dede': 'Gira as boleadeiras e arremessa. Projétil largo que derruba.',
- 'dias': 'Vira uma bola, rola por cima do adversário e estoura numa chuva de notas e moedas.',
+ 'kevin': 'Arsenal completo: puxa o canhão de dezesseis canos e dispara o raio duplo que cruza a tela. Três acertos seguidos.',
+ 'laura': 'Tsunami de tubarões: levanta uma onda enorme, cheia de tubarões, que corre até o fim da tela.',
+ 'dede': 'Invoca o cavalo mágico: o redemoinho de fogo sobe do chão, vira um cavalo e ele atravessa a tela a galope, derrubando o que estiver na frente.',
+ 'dias': 'Escudo de moedas: quatro moedas giram em volta dele. Cada uma que encosta no adversário bate e cai; cada magia que chega é engolida por uma moeda. Apertando ESPECIAL de novo, ele lança as que sobraram.',
  'michael': 'Carrega a aura vermelha e avança com um direto que vira um touro em investida.',
- 'eneias': 'Vira a caneca de chopp, explode em energia e soca o chão: uma onda de pedras corre até o adversário e derruba.',
+ 'eneias': 'Vira a caneca de chopp, explode em energia e soca o chão: a onda de pedras nasce pequena, vai crescendo e rolando em curva até o fim da cena.',
  'van': 'Carrega energia por quase 2 segundos: nesse tempo nada a atinge e a aura machuca quem chegar perto. Depois solta um raio contínuo de corações que cruza a tela.',
  'landim': 'Arremessa a claquete, que vai e volta como bumerangue: até 4 acertos.',
  'xablau': 'Língua com punho que alcança quase a tela inteira.',
@@ -22,6 +22,10 @@ SUPER = {
  'crm': 'O canhão aponta pro alto, o foguete some no céu e volta em três bombas que caem em fila em cima do adversário, fechando a fuga. Junto com o do Edgard, o especial que mais tira.',
  'leo': 'Chama os drones dourados e manda os três em fila contra o adversário.'}
 MAGIC = {   # magia que não é projétil comum
+ 'dede': 'Boleadeiras: gira e arremessa as três bolas. Projétil largo.',
+ 'kevin': 'Dois tiros rápidos de pistola, de qualquer distância.',
+ 'dias': 'Juros compostos: vira uma bola e rola por cima do adversário.',
+ 'laura': 'Arremesso faixa-preta: arranca, agarra e arremessa. Ignora a defesa.',
  'edgard': 'Bola maligna: junta a energia roxa no peito e empurra uma bola com um morcego dentro, que cruza a tela com a revoada atrás.',
  'leo': 'Raio contínuo do olho biônico: cruza a tela na hora e para onde encostar.'}
 LONG = {
@@ -127,6 +131,7 @@ footer{{text-align:center;color:var(--mut);font-size:13px;margin-top:70px}}
 <div class="box"><h4>DEFESA ALTA E BAIXA</h4><p>Defesa em pé não segura golpe rasteiro. Defesa agachada não segura golpe aéreo. Golpe defendido causa 25% do dano. Agarrão ignora defesa.</p></div>
 <div class="box"><h4>ATRIBUTOS</h4><p><b>Força</b> multiplica golpes comuns. <b>Poder</b> multiplica tudo que gasta barra. <b>Agilidade</b> é a velocidade de andar. <b>Peso</b> reduz o quanto você é empurrado.</p></div>
 <div class="box"><h4>DUPLAS (2x2)</h4><p>Cada lado tem dois lutadores e a luta é uma só. <kbd>T</kbd> (botão <b>TROCA</b>) chama o parceiro: ele entra num pulo por trás e você sai pra descansar, recuperando um pouco de vida no banco. Dá pra trocar de novo depois de 3 segundos. Quem for nocauteado dá lugar ao parceiro; a dupla perde quando os dois caem.</p></div>
+<div class="box"><h4>A METAMORFOSE</h4><p>O Mundim fez a última experiência nele mesmo e achou que ia controlar o que cresceu lá dentro. No <b>2º round</b> o bicho sai pela cabeça, ergue o corpo dele como marionete e assume a luta: <b>A COISA</b> é maior, mais pesada, bate mais forte, cospe ácido e dá o bote com o pescoço de longe. Acontece sempre, inclusive quando é você jogando de Mundim.</p></div>
 <div class="box"><h4>ROUNDS</h4><p>Melhor de 3, 60 segundos por round. No tempo esgotado vence quem tiver mais vida. Vencer sem levar dano no round final rende PERFECT.</p></div></div>
 
 <h2 id="lutadores">OS LUTADORES</h2>{sections}

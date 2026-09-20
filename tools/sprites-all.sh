@@ -25,23 +25,27 @@ run santana $M/santana-2.png --fx 388,646,463,822 \
   --white-drop 765,654 --white-drop 774,712 --white-drop 1057,693   # vãos: tronco/punho, linhas de velocidade, braço/vapor (3 poses)
 run kevin   $M/kevin.png \
   --extra $M/kevin-golpelongo-vitoria.png --extra-scale 0.56,0.55 --white-fx 175-209 --white-core 1440,110,1660,330 \
-  --white-drop 1797,539 --white-drop 265,598   # escala: o board novo é mais cabeçudo (cabeça pede 0,56, altura 0,645) · miolo do estouro · vãos braço/tronco e mão/rosto
+  --white-drop 1797,539 --white-drop 265,598 \
+  --extra $M/kevin-golpenovo.png --extra-rows 1 --extra-scale 0.64 --extra-cuts 280,695,1090,1612 --white-fx 175-215 --white-erase 0,440,1983,793 --white-erase 1320,100,1620,440   # escala: o board novo é mais cabeçudo (cabeça pede 0,56, altura 0,645) · miolo do estouro · vãos braço/tronco e mão/rosto
 run laura   $M/laura.png --fx 397,646,429,815 \
   --extra $M/laura-golpelongo-vitoria.png --extra-scale 0.69 --white-fx 125-190 \
   --white-fx-keep 1000,150,1175,345 --white-fx-keep 1430,150,1695,350 \
   --white-drop 954,280 --white-drop 1358,314 --white-drop 1404,296 --white-drop 1401,294 \
-  --white-erase 228,598,252,620     # cabeça dos tubarões: branco é dente/brilho · vãos entre a mão e o tubarão · tracinho verde solto
+  --white-erase 228,598,252,620 \
+  --extra $M/laura-golpenovo.png --extra-rows 1 --extra-scale 0.80 --extra-cuts 300,774,1332,1812 --white-fx 160-205 --white-erase 299,100,302,680 --white-erase 773,100,776,680 --white-erase 1331,100,1334,680     # cabeça dos tubarões: branco é dente/brilho · vãos entre a mão e o tubarão · tracinho verde solto
 # o board extra do Dedê chegou com o nome trocado (leo-golpelongo-vitoria.png); o usuário renomeou em 2026-09-20.
 # O dourado do efeito tem o mesmo matiz da roupa marrom: o brilho mínimo (v0.74) separa os dois.
 run dede    $M/dede.png --export 33:bolas.png \
   --extra $M/dede-golpelongo-vitoria.png --extra-scale 0.60,0.63 --white-fx 29-50:v0.74 \
   --white-drop 25,120,95,215 --white-drop 350,150,440,235 --white-drop 1730,125,1812,232 --white-drop 1758,258 \
-  --white-drop 1181,176 --white-drop 1169,189 --white-drop 1654,209 --white-drop 1641,241 --white-drop 123,624 --white-drop 482,639   # frestas dentro do laço enrolado · entre as duas cordas · entre o punho e o cinto
+  --white-drop 1181,176 --white-drop 1169,189 --white-drop 1654,209 --white-drop 1641,241 --white-drop 123,624 --white-drop 482,639 \
+  --extra $M/dede-golpe-novo.png --extra-scale 0.69 --extra-cuts 330,650,1030,1525 --white-fx 18-50:v0.74   # frestas dentro do laço enrolado · entre as duas cordas · entre o punho e o cinto
 # Dias: short, meia e punho são BRANCOS de verdade, então a regra se inverte: todo branco preso fica (--white-keep no board inteiro)
 # e só saem, por ponto, os dois vãos debaixo do redemoinho da bola.
 run dias    $M/dias.png \
   --extra $M/dias-golpelongo-vitoria.png --extra-scale 0.645 --white-fx 95-135:v0.6:s0.08 --white-fx 45-70:v0.85:s0.08 \
-  --white-keep 0,0,1448,1086 --white-drop 337,434 --white-drop 348,452
+  --white-keep 0,0,1448,1086 --white-drop 337,434 --white-drop 348,452 \
+  --extra $M/dias-golpenovo.png --extra-rows 1 --extra-scale 0.65 --extra-cuts 310,676,1028,1417 --white-fx 95-135:v0.6:s0.08 --white-fx 45-70:v0.85:s0.08 --white-keep 0,0,1774,887 --white-erase 0,500,1774,887
 # Michael: roupa e efeito são do MESMO vermelho, então a cor não separa os dois. Nas poses sem chama em volta do corpo (0 e 4
 # do golpe e a linha da vitória inteira) todo branco cercado de vermelho é roupa (cós, punho da luva, listra): --white-fx-keep.
 # Nas poses com aura/riscos/touro o branco entre as chamas sai, e o cós do calção fica por ponto. Escala: a cabeça pede 0,84 e a
@@ -107,3 +111,15 @@ run mundim  $M/mundim.png --export 33:garrafas.png --white-fx 318-354:v0.7:s0.08
 # Juiz (robô das bandeiras): 4 linhas x 5 poses, fundo branco. Os vãos entre o braço levantado e o corpo são fundo.
 python3 tools/sprites.py $M/juiz-sprite.png public/referee --cols 5 --rows 4 ${D:+--debug $D/juiz.png} \
   --white-drop 933,393 --white-drop 1198,393 --white-drop 1001,665 --white-drop 649,935 --white-drop 744,934 --white-drop 1200,937 --white-drop 1275,938 --white-drop 1269,671 --white-drop 1274,664
+
+# Monstro do Mundim (metamorfose, 2º round): board completo de 35 poses + a sequência da transformação como extra (frames 35-44, 10 quadros).
+# A transformação é desenhada pelo jogo com altura por quadro (src/game/morph.ts), então o extra entra numa escala só.
+run monstro $M/mundim-metamorfose-movimentos.png \
+  --white-drop 618,267 --white-drop 158,336 --white-drop 723,482 --white-drop 445,518 --white-drop 823,611 --white-drop 842,606 --white-drop 960,800 --white-drop 898,941 --white-drop 262,1153 --white-drop 273,1138 --white-drop 372,1121 --white-drop 717,1147 --white-drop 735,1136 --white-drop 650,1255 --white-drop 690,1280 --white-drop 893,1255 \
+  --extra $M/mundim-metamorfose.png --extra-scale 0.6 \
+  --white-drop 61,924 --white-drop 283,941 --white-drop 510,949 --white-drop 709,919 --white-drop 803,958 --white-drop 839,1087 --white-drop 25,1185 --white-drop 490,1110 --white-drop 1093,1178   # vãos brancos presos entre garras, pernas e cabos (o monstro não tem branco de verdade)
+
+# Peças dos especiais novos (2026-09-20): raio duplo do canhão do Kevin (início, trecho que se repete, estouro) e a moeda do escudo do Dias.
+python3 tools/pieces.py $M/kevin-golpenovo.png public/fighters/kevin --scale 0.64 --fx-hue 175-215 --wall 835,500,720 --wall 1175,500,720 \
+  --piece canhao-inicio.png:498,470,790,750:fadeR=10 --piece canhao-meio.png:836,470,1174,750:tile --piece canhao-fim.png:1635,470,1965,750
+python3 tools/pieces.py $M/dias-golpenovo.png public/fighters/dias --scale 0.65 --keep 0,500,1774,887 --piece moeda.png:138,522,208,612:trim

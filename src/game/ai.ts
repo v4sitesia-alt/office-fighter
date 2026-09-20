@@ -100,11 +100,13 @@ export class Ai {
       this.debug = 'pune';
       this.set([this.rng.chance(0.5) ? 'heavy' : 'kick'], 2); return;
     }
+    // escudo de moedas ativo e o adversário longe: lança as moedas
+    if (me.shield && M.release && dx > 240 && this.rng.chance(p.specialChance * 0.25)) { this.debug = 'lança moedas'; this.set(['special'], 2); return; }
     // super com barra cheia
     if (me.meter >= 100 && M.super && this.superCd <= 0) {
-      const kind = M.super.kind ?? (M.super.projectile || M.super.beam ? 'shot' : 'ground');
+      const kind = M.super.kind ?? (M.super.shield ? 'portal' : M.super.projectile || M.super.beam ? 'shot' : 'ground');
       if ((kind === 'portal' && this.rng.chance(p.specialChance * 0.6)) || (kind === 'dive' && dx < 430 && this.rng.chance(p.specialChance))
-        || (kind === 'shot' && dx > 220 && this.rng.chance(p.specialChance * 0.7))
+        || (kind === 'shot' && dx > (M.super.projectile?.pierce ? 110 : 220) && this.rng.chance(p.specialChance * 0.7))     // o que atravessa a tela (cavalo, tsunami) serve de perto também
         || (kind === 'ground' && dx < 260 && this.rng.chance(p.specialChance))
         || (kind === 'throw' && dx < 200 && ot.grounded && this.rng.chance(p.specialChance))) {
         this.debug = 'super'; this.superCd = 260; this.set(['special'], 2); return;
@@ -134,7 +136,11 @@ export class Ai {
       this.debug = 'golpe longo'; this.set([fwd, 'heavy'], 2); return;
     }
     // longe
-    if (me.meter >= 50 && me.meter < 100 && dx > 300 && M.special && this.rng.chance(p.specialChance * 0.45)) {
+    const magicNear = M.special && (M.special.kind === 'throw' || (!M.special.projectile && !M.special.beam));   // magia que é agarrão ou investida: de perto
+    if (me.meter >= 50 && me.meter < 100 && magicNear && !me.shield && dx < (M.special!.kind === 'throw' ? 190 : 300) && ot.grounded && this.rng.chance(p.specialChance * 0.5)) {
+      this.debug = 'magia de perto'; this.set(['special'], 2); return;
+    }
+    if (me.meter >= 50 && me.meter < 100 && dx > 300 && M.special && !magicNear && !me.shield && this.rng.chance(p.specialChance * 0.45)) {
       this.debug = 'especial'; this.set(['special'], 2); return;
     }
     if (dx < 330 && this.rng.chance(p.jumpChance)) {

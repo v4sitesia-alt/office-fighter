@@ -127,7 +127,7 @@
    "startup": 3,
    "active": 3,
    "recovery": 6,
-   "damage": 5.3,
+   "damage": 6.0,
    "hitstun": 12,
    "blockstun": 8,
    "hitbox": {
@@ -155,7 +155,7 @@
    "startup": 6,
    "active": 3,
    "recovery": 9,
-   "damage": 8.5,
+   "damage": 9.6,
    "hitstun": 15,
    "blockstun": 10,
    "hitbox": {
@@ -183,7 +183,7 @@
    "startup": 10,
    "active": 4,
    "recovery": 16,
-   "damage": 14.9,
+   "damage": 16.8,
    "hitstun": 24,
    "blockstun": 14,
    "hitbox": {
@@ -211,7 +211,7 @@
    "startup": 4,
    "active": 8,
    "recovery": 4,
-   "damage": 6.4,
+   "damage": 7.2,
    "hitstun": 14,
    "blockstun": 10,
    "overhead": true,
@@ -241,7 +241,7 @@
    "startup": 5,
    "active": 10,
    "recovery": 4,
-   "damage": 9.5,
+   "damage": 10.8,
    "hitstun": 16,
    "blockstun": 12,
    "overhead": true,
@@ -271,7 +271,7 @@
    "startup": 7,
    "active": 8,
    "recovery": 6,
-   "damage": 12.7,
+   "damage": 14.4,
    "hitstun": 22,
    "blockstun": 14,
    "overhead": true,
@@ -394,7 +394,7 @@
    "startup": 4,
    "active": 3,
    "recovery": 7,
-   "damage": 4.2,
+   "damage": 4.8,
    "hitstun": 11,
    "blockstun": 8,
    "low": true,
@@ -423,7 +423,7 @@
    "startup": 6,
    "active": 6,
    "recovery": 12,
-   "damage": 7.4,
+   "damage": 8.4,
    "hitstun": 18,
    "blockstun": 12,
    "low": true,
@@ -454,7 +454,7 @@
    "startup": 8,
    "active": 4,
    "recovery": 14,
-   "damage": 10.6,
+   "damage": 12.0,
    "hitstun": 20,
    "blockstun": 14,
    "low": true,
@@ -469,5 +469,6 @@
    "knockdown": true,
    "launch": -5
   }
- }
+ },
+ "morph": "monstro"
 }

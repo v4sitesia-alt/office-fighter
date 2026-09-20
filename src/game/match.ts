@@ -30,6 +30,14 @@ export interface MatchOptions {
   owners?: [string[], string[]];   // nome de quem controla cada lutador (aparece no placar)
 }
 
+/** Metamorfose (Mundim -> A COISA, sempre no 2º round): quadro do atlas do monstro, até que frame da cena ele fica, altura na tela
+ *  e quanto sobe do chão (ele é erguido pelo bicho). Os sons vêm da pasta `cena`: grito de dor, o bicho saindo da cabeça e o rugido final. */
+export const MORPH: { frame: number; until: number; h: number; lift?: number }[] = [
+  { frame: 35, until: 50, h: 232 }, { frame: 36, until: 110, h: 236 }, { frame: 37, until: 180, h: 400 }, { frame: 38, until: 245, h: 400, lift: 26 }, { frame: 39, until: 305, h: 440, lift: 14 },
+  { frame: 40, until: 345, h: 420 }, { frame: 41, until: 385, h: 390 }, { frame: 42, until: 425, h: 360 }, { frame: 43, until: 465, h: 330 }, { frame: 44, until: 520, h: 310 },
+];
+const MORPH_SOUNDS: [number, string][] = [[12, 'morph-1'], [108, 'morph-2'], [462, 'morph-3']];
+
 export const TAG = { COOL: 180, REGEN: 0.02, REGEN_CAP: 25, ENTER_Y: -300, KO_WAIT: 45 };
 
 export interface MatchEvents {
@@ -71,6 +79,8 @@ export class Match {
   /** Quem saiu de campo: pulando pra fora (troca) ou caído (nocaute), só desenho. */
   leaving: { f: Fighter; ko: boolean; t: number }[] = [];
   private koWait: [number, number] = [0, 0];
+  /** Cena da metamorfose em andamento: de que lado e em que frame. */
+  morphing: { side: 0 | 1; t: number } | null = null;
   private tagBuf: [number, number] = [0, 0];       // o pedido de troca fica guardado uns frames, esperando o lutador ficar livre
   private regenCap = new Map<Fighter, number>();
 
@@ -145,13 +155,33 @@ export class Match {
   startRound() {
     this.fighters.forEach((f, i) => {
       f.x = START_X[i]; f.y = 0; f.vx = 0; f.vy = 0; f.facing = i === 0 ? 1 : -1;
-      f.life = 100; f.knockdownAir = false; f.flash = 0; f.spawns.length = 0;
+      f.life = 100; f.knockdownAir = false; f.flash = 0; f.spawns.length = 0; f.shield = null;
       f.setState('idle');
     });
     this.projectiles = []; this.zones = [];
     this.timer = ROUND_SECONDS * 60;
     this.prevLife = [100, 100]; this.tally = null; this.koLanded = true;
     this.phase = 'intro'; this.phaseFrame = 0; this.slowmo = 0; this.hitstop = 0; this.roundWinner = -1;
+    if (this.round === 2 && !this.tagMode) { const i = this.fighters.findIndex((f) => f.assets.morph); if (i >= 0) this.morphing = { side: i as 0 | 1, t: 0 }; }
+  }
+
+  /** Um passo da cena da metamorfose; no fim, o lutador é trocado pelo monstro (vida cheia, a barra de especial continua). */
+  private stepMorph() {
+    const mo = this.morphing!, f = this.fighters[mo.side], next = f.assets.morph!, t = ++mo.t;
+    for (const [at, snd] of MORPH_SOUNDS) if (t === at) audio.voice(snd, 'fx');
+    if (t === 20) this.ev.message('ALGO ESTÁ ERRADO COM O MUNDIM…', 120, 'small');
+    if (t === 190) this.ev.message('A EXPERIÊNCIA ERA NELE MESMO', 120, 'small');
+    if (t === 350) this.ev.message('O BICHO USA ELE DE MARIONETE', 120, 'small');
+    if (t > 100 && t % 9 === 0) { this.fx.shake = 8; this.fx.shakeMag = t > 300 ? 6 : 3; }
+    if (t > 110 && t % 6 === 0) this.fx.blood(f.x, GROUND_Y - 200, t % 12 ? 1 : -1, 5);
+    const step = MORPH.find((m) => t <= m.until);
+    if (step) { f.override = { assets: next, frame: step.frame, height: step.h, lift: step.lift ?? 0 }; this.fighters[1 - mo.side].update(nullCtrl, f, false); this.fx.update(); return; }
+    const nf = new Fighter(next, f.x, f.facing, mo.side); nf.owner = f.owner; nf.meter = f.meter; nf.hue = f.hue;
+    this.fighters[mo.side] = nf; this.teams[mo.side][this.active[mo.side]] = nf; this.prevLife[mo.side] = 100;
+    if (this.ai) this.ai = new Ai(this.fighters[1], this.fighters[0], this.opts.cpu!, (this.opts.seed ?? 1) + 77);
+    const again = this.fighters.findIndex((x) => x.assets.morph);                     // espelho (Mundim x Mundim): o outro também vira
+    this.morphing = again >= 0 ? { side: again as 0 | 1, t: 0 } : null; this.phaseFrame = 0; this.fx.shake = 20; this.fx.shakeMag = 9;
+    this.ev.message(next.def.name, 90, 'big');
   }
 
   update(input: Ports, paused: boolean) {
@@ -163,6 +193,7 @@ export class Match {
     const [p1, p2] = this.fighters;
 
     if (this.phase === 'intro') {
+      if (this.morphing) { this.stepMorph(); return; }
       if (this.phaseFrame === 1) { this.ev.message(this.tagMode ? 'DUPLAS' : `ROUND ${this.round}`, 70, 'big'); audio.voice(`ann-round-${Math.min(3, this.round)}`, 'ann'); }
       if (this.phaseFrame === 75) { this.ev.message('FIGHT!', 45, 'big'); audio.voice('ann-fight', 'ann'); this.fighters.forEach((f) => (audio.hasVoice(`${f.def.id}-taunt`) ? audio.voice(`${f.def.id}-taunt`, f.voiceChannel) : audio.voiceRandom(`${f.def.id}-laugh`, f.voiceChannel))); }
       if (this.phaseFrame >= 100) { this.phase = 'fight'; this.phaseFrame = 0; }

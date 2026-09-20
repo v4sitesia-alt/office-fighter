@@ -5,6 +5,7 @@ import type { Fighter } from './fighter';
 export class Projectile {
   x: number; y: number; vx: number; life: number; dead = false; age = 0;
   vy = 0; target: Fighter | null = null;
+  spent = false;               // já acertou (projétil que atravessa): segue só de enfeite
   hitsLeft: number; cool = 0; private returning = false; private dir: 1 | -1;
   hitbox: Box;
   img: HTMLImageElement | undefined;
@@ -42,7 +43,25 @@ export class Projectile {
     this.x += this.vx; this.age++;
     if (--this.life <= 0 || this.x < -100 || this.x > W + 100) this.dead = true;
   }
-  get worldBox(): Box { return { x: this.x + this.hitbox.x, y: this.y + this.hitbox.y, w: this.hitbox.w, h: this.hitbox.h }; }
+  /** Onda de pedras rolando: uma crista curva (baixa atrás, alta na frente, quebrando pra frente) feita de pedras que giram;
+   *  nasce pequena e vai crescendo. `sprite` = pedra grande, `trail` = pedra pequena. */
+  private drawRocks(ctx: CanvasRenderingContext2D, s: number, grown: number) {
+    const big = this.img!, small = this.owner.assets.fx[this.move.projectile!.trail ?? ''] ?? big;
+    const N = 9, t = this.age, born = Math.min(1, t / 14), len = 250 * s * grown * born, top = 150 * s * grown * born;
+    for (let k = 0; k < N; k++) {
+      const u = k / (N - 1);                                    // 0 = rabo da onda, 1 = crista
+      const px = -len + len * u + Math.sin(u * 2.6) * 26 * s * grown * u, py = -top * Math.pow(u, 1.7) * (0.9 + 0.1 * Math.sin(t * 0.3 + k));
+      const curl = u > 0.8 ? (u - 0.8) * 5 : 0;                 // a ponta dobra pra frente e pra baixo, como onda quebrando
+      const img = k % 2 ? small : big, sc = s * grown * (0.35 + 0.75 * u) * (0.9 + 0.1 * Math.sin(t * 0.5 + k * 2));
+      ctx.save(); ctx.translate(px + curl * 34 * s * grown, py + curl * curl * 46 * s * grown - img.height * sc * 0.3); ctx.rotate((t * 0.16 + k * 1.3) * (k % 2 ? 1 : 0.7));
+      ctx.drawImage(img, -img.width * sc / 2, -img.height * sc / 2, img.width * sc, img.height * sc); ctx.restore();
+    }
+    ctx.fillStyle = 'rgba(120,90,60,.5)';                        // poeira rente ao chão
+    for (let k = 0; k < 6; k++) { const a = (t * 7 + k * 53) % 100 / 100; ctx.globalAlpha = (1 - a) * 0.6 * born; ctx.beginPath(); ctx.ellipse(-len * a, -4 * s - a * 30 * s, (10 + 22 * a) * s * grown, (6 + 10 * a) * s * grown, 0, 0, Math.PI * 2); ctx.fill(); }
+    ctx.globalAlpha = 1;
+  }
+  get worldBox(): Box {
+    const g = this.move.projectile?.grow; if (g) { const k = 1 + g * Math.min(1, this.age / 70); return { x: this.x + this.hitbox.x * k, y: this.y + this.hitbox.y * k, w: this.hitbox.w * k, h: this.hitbox.h * k }; } return { x: this.x + this.hitbox.x, y: this.y + this.hitbox.y, w: this.hitbox.w, h: this.hitbox.h }; }
   draw(ctx: CanvasRenderingContext2D, debug = false) {
     const s = this.owner.scale * (this.move.projectile?.scale ?? 1);
     ctx.save();
@@ -50,11 +69,18 @@ export class Projectile {
     ctx.scale(this.dir, 1);
     if (this.move.projectile?.homing) ctx.rotate(Math.atan2(this.vy, Math.abs(this.vx) + 0.001) * (this.vx * this.dir < 0 ? -1 : 1) + (this.vx * this.dir < 0 ? Math.PI : 0));
     if (this.move.projectile?.spin) ctx.rotate(this.age * this.move.projectile.spin);
-    const pulse = this.move.projectile?.ground ? 1 : 1 + 0.08 * Math.sin(this.age * 0.6);
+    const pulse = this.move.projectile?.ground || this.move.projectile?.anim ? 1 : 1 + 0.08 * Math.sin(this.age * 0.6);
     ctx.scale(pulse, pulse);
     if (this.owner.hue) ctx.filter = `hue-rotate(${this.owner.hue}deg)`;
-    const st = this.move.projectile?.style;
-    if (st) {
+    const st = this.move.projectile?.style, pd = this.move.projectile!;
+    const grown = 1 + (pd.grow ?? 0) * Math.min(1, this.age / 70);
+    if (pd.anim) {                                              // quadros do atlas, apoiados no chão
+      const F = this.owner.assets.frames.frames, fr = F[pd.anim.frames[Math.floor(this.age * pd.anim.fps / 60) % pd.anim.frames.length]], k = s * grown;
+      if (this.spent) ctx.globalAlpha = 0.8;
+      ctx.drawImage(this.owner.assets.sheet, fr.sx, fr.sy, fr.sw, fr.sh, -fr.ax * k, (pd.ground ? GROUND_Y - this.y : 0) - fr.ay * k, fr.sw * k, fr.sh * k);
+    } else if (pd.rocks && this.img) {
+      this.drawRocks(ctx, s, grown);
+    } else if (st) {
       drawMagic(ctx, st, this.move.projectile?.color ?? this.owner.def.colors.primary, (this.move.projectile?.size ?? 34) * this.owner.def.scale, this.age);
     } else if (this.img && this.move.projectile?.ground) {     // onda de pedras: brota do chão, sobe e desce enquanto avança
       const tr = this.owner.assets.fx[this.move.projectile.trail ?? ''];

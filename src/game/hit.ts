@@ -63,12 +63,30 @@ export function resolveHits(fighters: [Fighter, Fighter], projectiles: Projectil
       hitstop = Math.max(hitstop, blocked ? 3 : (m.hitstop ?? 5));
     }
   }
+  // escudo de moedas: cada moeda que encosta no adversário bate e cai; cada magia que chega é engolida por uma moeda
+  for (let i = 0; i < 2; i++) {
+    const atk = fighters[i], def = fighters[1 - i], sh = atk.shield, box = atk.shieldBox;
+    if (!sh || !box) continue;
+    for (const p of projectiles) if (!p.dead && !p.spent && p.owner.playerIndex !== atk.playerIndex && overlaps(p.worldBox, box) && sh.coins > 0) {
+      p.dead = true; sh.coins--; pending.push(() => { fx.hit(p.x, p.y, '#ffd23f', false); audio.sfx('block'); });
+    }
+    const hurt = def.hurtbox;
+    if (sh.coins > 0 && sh.cool === 0 && hurt && overlaps(box, hurt)) {
+      sh.coins--; sh.cool = sh.def.every;
+      const blocked = isBlocked(def), d = sh.def;
+      pending.push(() => {
+        def.takeHit({ damage: d.damage, hitstun: d.hitstun, blockstun: d.blockstun, knockback: d.knockback }, atk, blocked, atk.x, true);
+        fx.hit((atk.x + def.x) / 2, hurt.y + hurt.h * 0.4, blocked ? '#9ec5ff' : '#ffd23f', !blocked); audio.sfx(blocked ? 'block' : 'hitMed');
+      });
+      hitstop = Math.max(hitstop, 5);
+    }
+  }
   for (const p of projectiles) {
-    if (p.dead) continue;
+    if (p.dead || p.spent) continue;
     const def = other(p.owner);
     const hurt = def.hurtbox;
     if (hurt && p.cool === 0 && overlaps(p.worldBox, hurt)) {
-      if (--p.hitsLeft <= 0) p.dead = true; else p.cool = p.move.projectile?.rehit ?? 10;      // bumerangue: o mesmo projétil acerta várias vezes
+      if (--p.hitsLeft <= 0) { if (p.move.projectile?.pierce) p.spent = true; else p.dead = true; } else p.cool = p.move.projectile?.rehit ?? 10;      // bumerangue: o mesmo projétil acerta várias vezes
       const blocked = isBlocked(def);
       const owner = p.owner;
       pending.push(() => {

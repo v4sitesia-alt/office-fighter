@@ -29,9 +29,9 @@ FICHA = [
     ('edgard',   0.90,  1.10,  1.35,  1.00, 'normal',   15,    (10, 16)),   # portal dos morcegos: dois acertos (o segundo derruba)
     ('santana',  1.12,  0.90,  1.05,  1.20, 'firme',    15,    (10, 16)),   # mergulho + explosão
     ('kevin',    0.90,  0.95,  1.20,  1.05, 'normal',    8,    8),          # x3 tiros
-    ('laura',    0.85,  1.35,  0.90,  0.85, 'rapido',   12,    26),         # agarrão (release)
+    ('laura',    0.85,  1.35,  0.90,  0.85, 'rapido',   20,    36),         # magia = agarrão (release) · super = tsunami
     ('dede',     1.00,  1.00,  1.00,  1.00, 'normal',   13,    26),
-    ('dias',     0.88,  1.30,  0.95,  1.05, 'rapido',   12,    25),
+    ('dias',     0.88,  1.30,  0.95,  1.05, 'rapido',   12,    5),          # escudo: 4 moedas de 5 (batendo ou lançadas)
     ('michael',  1.10,  1.05,  0.95,  1.00, 'normal',   13,    27),
     ('eneias',   1.18,  0.85,  1.00,  1.30, 'firme',    13,    28),
     ('van',      0.92,  1.20,  1.10,  0.95, 'normal',   13,    6),           # raio contínuo: até 5 acertos + aura
@@ -87,6 +87,7 @@ def main(quiet=False):
             m.pop('chain', None); m.pop('chainMax', None)
             if name in CHAIN.get(fid, {}): m['chain'] = CHAIN[fid][name]; m['chainMax'] = 3
         M['special']['damage'] = special
+        if 'throw' in M['special']: M['special']['throw']['release']['damage'] = special   # magia que é agarrão: o dano sai no arremesso
         su = M['super']
         if isinstance(sup, tuple):                       # acerto do golpe + zona, ou zona com dois acertos
             hits = su['zone']['hits']
@@ -94,6 +95,7 @@ def main(quiet=False):
                 for h, v in zip(hits, sup): h['damage'] = v
             else: su['damage'], hits[0]['damage'] = sup
         elif 'throw' in su: su['throw']['release']['damage'] = sup
+        elif 'shield' in su: su['shield']['damage'] = sup; M['release']['damage'] = sup
         else: su['damage'] = sup
         open(p, 'w').write(json.dumps(d, ensure_ascii=False, indent=1))
         total = sum(sup) if isinstance(sup, tuple) else sup * su.get('projectile', {}).get('count', 1)

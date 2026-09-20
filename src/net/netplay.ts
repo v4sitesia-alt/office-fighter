@@ -53,6 +53,7 @@ export function hashMatch(m: Match): number {
   const mix = (n: number) => { h ^= n | 0; h = Math.imul(h, 16777619); };
   for (const f of m.fighters) { mix(Math.round(f.x * 100)); mix(Math.round(f.y * 100)); mix(Math.round(f.life * 100)); mix(Math.round(f.meter * 100)); mix(f.stateFrame); mix(f.facing); for (const c of f.state) mix(c.charCodeAt(0)); }
   if (m.tagMode) { mix(m.active[0]); mix(m.active[1]); for (const t of m.teams) for (const f of t) mix(Math.round(f.life * 100)); }
+  if (m.morphing) mix(m.morphing.t);
   mix(m.timer); mix(m.round); mix(m.wins[0]); mix(m.wins[1]); mix(m.projectiles.length); mix(m.phaseFrame);
   return h >>> 0;
 }

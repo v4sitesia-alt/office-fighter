@@ -51,6 +51,10 @@ export interface ProjectileDef {
   hits?: number;               // quantos acertos o mesmo projétil pode dar (padrão 1); entre um e outro espera `rehit` frames
   rehit?: number;
   spin?: number;               // giro do sprite (rad/frame)
+  anim?: { frames: number[]; fps: number };   // projétil animado com quadros do atlas do lutador (cavalo de fogo galopando, onda de tubarões)
+  pierce?: boolean;            // acerta uma vez e segue em frente até sair da tela (não some no impacto)
+  grow?: number;               // cresce enquanto avança: escala final = 1 + grow (a onda de pedras vai aumentando)
+  rocks?: boolean;             // onda de pedras que ROLA: pedras girando numa crista curva, montada com `sprite` e `trail`
   hitVoice?: string;           // som gravado ao acertar ou bater na defesa (míssil explodindo, garrafa quebrando)
   style?: 'ball' | 'slash' | 'cloud' | 'bat' | 'coin' | 'heart' | 'wave';   // magia desenhada por código (sem sprite)
   color?: string; size?: number;
@@ -118,10 +122,13 @@ export interface MoveDef extends HitDef {
   aura?: { box: Box; damage: number; hitstun: number; blockstun: number; knockback: number; every: number };
   zone?: ZoneDef;
   throw?: ThrowDef;
+  /** Escudo de moedas (Dias): `coins` moedas giram em volta do corpo. Cada moeda que encosta no adversário bate e cai; cada magia
+   *  que chega é engolida por uma moeda; apertando ESPECIAL de novo, as que sobraram são lançadas (golpe `release`). */
+  shield?: { coins: number; life: number; radius: number; sprite: string; damage: number; hitstun: number; blockstun: number; knockback: number; every: number };
 }
 
 export type MoveName =
-  | 'punch' | 'kick' | 'heavy' | 'long' | 'special' | 'super'
+  | 'punch' | 'kick' | 'heavy' | 'long' | 'special' | 'super' | 'release'
   | 'airPunch' | 'airKick' | 'airHeavy'
   | 'lowPunch' | 'lowKick' | 'lowHeavy';
 
@@ -131,6 +138,7 @@ export interface FighterDef {
   colors: { primary: string; secondary: string };
   origin?: { region: string; city: string; lon: number; lat: number; label?: 'left' | 'right' | 'above' | 'below' };
   stage?: string;               // public/stages/<stage>.png (cenário do lutador)
+  morph?: string;               // metamorfose: no 2º round vira este outro lutador (public/fighters/<morph>), com a cena da transformação
   scale: number;
   stats: { speed: number; power: number; weight: number; magic?: number; jump?: number; inertia?: number }   // inertia = frames pra máquina pesada pegar a velocidade cheia ao andar;   // força = power, agilidade = speed, poder = magic
   hurtbox: Box; crouchHurtbox: Box;
@@ -145,6 +153,7 @@ export interface FighterAssets {
   frames: FramesFile;
   sheet: HTMLImageElement;
   fx: Record<string, HTMLImageElement>;   // sprites de projétil por arquivo
+  morph?: FighterAssets;                  // em quem ele se transforma no 2º round (def.morph)
   secretPortrait?: HTMLImageElement;      // thumb do slot enquanto o lutador está travado
   portrait?: HTMLImageElement;
 }

@@ -1,0 +1,480 @@
+{
+ "id": "monstro",
+ "name": "A COISA",
+ "role": "O que saiu do Mundim",
+ "side": "vilao",
+ "secret": true,
+ "gender": "m",
+ "colors": {
+  "primary": "#ff3b2f",
+  "secondary": "#2a1a14"
+ },
+ "stage": "mundim",
+ "scale": 1.42,
+ "stats": {
+  "power": 1.25,
+  "speed": 0.95,
+  "magic": 1.2,
+  "weight": 1.4
+ },
+ "hurtbox": {
+  "x": -52,
+  "y": -190,
+  "w": 104,
+  "h": 190
+ },
+ "crouchHurtbox": {
+  "x": -58,
+  "y": -140,
+  "w": 116,
+  "h": 140
+ },
+ "pushbox": {
+  "x": -40,
+  "w": 80
+ },
+ "anims": {
+  "idle": {
+   "frames": [
+    0,
+    1
+   ],
+   "fps": 3,
+   "loop": true
+  },
+  "walk": {
+   "frames": [
+    1,
+    2,
+    3,
+    2
+   ],
+   "fps": 8,
+   "loop": true
+  },
+  "jump": {
+   "frames": [
+    6,
+    7
+   ],
+   "anchor": "center"
+  },
+  "crouch": {
+   "frames": [
+    5
+   ]
+  },
+  "block": {
+   "frames": [
+    8
+   ]
+  },
+  "crouchBlock": {
+   "frames": [
+    9
+   ]
+  },
+  "hit": {
+   "frames": [
+    16
+   ]
+  },
+  "fall": {
+   "frames": [
+    18
+   ],
+   "anchor": "center"
+  },
+  "down": {
+   "frames": [
+    19
+   ],
+   "anchor": "center"
+  },
+  "getup": {
+   "frames": [
+    17
+   ]
+  },
+  "win": {
+   "frames": [
+    15,
+    14
+   ],
+   "fps": 3,
+   "loop": true
+  }
+ },
+ "moves": {
+  "punch": {
+   "phases": {
+    "startup": [
+     0
+    ],
+    "active": [
+     10
+    ],
+    "recovery": [
+     11,
+     0
+    ]
+   },
+   "startup": 5,
+   "active": 4,
+   "recovery": 9,
+   "damage": 7,
+   "hitstun": 16,
+   "blockstun": 11,
+   "hitbox": {
+    "x": 40,
+    "y": -150,
+    "w": 108,
+    "h": 50
+   },
+   "knockback": 8,
+   "hitstop": 5
+  },
+  "kick": {
+   "phases": {
+    "startup": [
+     0
+    ],
+    "active": [
+     12
+    ],
+    "recovery": [
+     12,
+     0
+    ]
+   },
+   "startup": 8,
+   "active": 4,
+   "recovery": 12,
+   "damage": 10,
+   "hitstun": 16,
+   "blockstun": 11,
+   "hitbox": {
+    "x": 35,
+    "y": -120,
+    "w": 90,
+    "h": 80
+   },
+   "knockback": 10,
+   "hitstop": 6
+  },
+  "heavy": {
+   "phases": {
+    "startup": [
+     14
+    ],
+    "active": [
+     13
+    ],
+    "recovery": [
+     13,
+     0
+    ]
+   },
+   "startup": 13,
+   "active": 5,
+   "recovery": 20,
+   "damage": 17,
+   "hitstun": 24,
+   "blockstun": 16,
+   "hitbox": {
+    "x": 30,
+    "y": -110,
+    "w": 105,
+    "h": 110
+   },
+   "knockback": 15,
+   "hitstop": 9,
+   "overhead": false
+  },
+  "long": {
+   "phases": {
+    "startup": [
+     30,
+     31
+    ],
+    "active": [
+     32
+    ],
+    "recovery": [
+     31,
+     34
+    ]
+   },
+   "startup": 16,
+   "active": 8,
+   "recovery": 22,
+   "damage": 11,
+   "hitstun": 22,
+   "blockstun": 16,
+   "hitbox": {
+    "x": 60,
+    "y": -165,
+    "w": 118,
+    "h": 70
+   },
+   "knockback": 15,
+   "hitstop": 8,
+   "name": "BOTE DO VERME"
+  },
+  "airPunch": {
+   "phases": {
+    "startup": [
+     20
+    ],
+    "active": [
+     21
+    ],
+    "recovery": [
+     21
+    ]
+   },
+   "startup": 4,
+   "active": 8,
+   "recovery": 4,
+   "damage": 7,
+   "hitstun": 16,
+   "blockstun": 11,
+   "hitbox": {
+    "x": 10,
+    "y": -120,
+    "w": 75,
+    "h": 100
+   },
+   "knockback": 8,
+   "kind": "air"
+  },
+  "airKick": {
+   "phases": {
+    "startup": [
+     20
+    ],
+    "active": [
+     22
+    ],
+    "recovery": [
+     22
+    ]
+   },
+   "startup": 5,
+   "active": 10,
+   "recovery": 4,
+   "damage": 10,
+   "hitstun": 16,
+   "blockstun": 11,
+   "hitbox": {
+    "x": -10,
+    "y": -100,
+    "w": 90,
+    "h": 70
+   },
+   "knockback": 8,
+   "kind": "air"
+  },
+  "airHeavy": {
+   "phases": {
+    "startup": [
+     23
+    ],
+    "active": [
+     24
+    ],
+    "recovery": [
+     24
+    ]
+   },
+   "startup": 7,
+   "active": 10,
+   "recovery": 6,
+   "damage": 14,
+   "hitstun": 22,
+   "blockstun": 11,
+   "hitbox": {
+    "x": -20,
+    "y": -150,
+    "w": 120,
+    "h": 150
+   },
+   "knockback": 13,
+   "kind": "air",
+   "hitstop": 8
+  },
+  "lowPunch": {
+   "phases": {
+    "startup": [
+     25
+    ],
+    "active": [
+     26
+    ],
+    "recovery": [
+     26
+    ]
+   },
+   "startup": 5,
+   "active": 4,
+   "recovery": 9,
+   "damage": 6,
+   "hitstun": 16,
+   "blockstun": 11,
+   "hitbox": {
+    "x": 35,
+    "y": -70,
+    "w": 75,
+    "h": 55
+   },
+   "knockback": 8,
+   "kind": "low"
+  },
+  "lowKick": {
+   "phases": {
+    "startup": [
+     25
+    ],
+    "active": [
+     27
+    ],
+    "recovery": [
+     27
+    ]
+   },
+   "startup": 8,
+   "active": 6,
+   "recovery": 13,
+   "damage": 9,
+   "hitstun": 16,
+   "blockstun": 11,
+   "hitbox": {
+    "x": 30,
+    "y": -55,
+    "w": 80,
+    "h": 55
+   },
+   "knockback": 8,
+   "kind": "low",
+   "low": true
+  },
+  "lowHeavy": {
+   "phases": {
+    "startup": [
+     25
+    ],
+    "active": [
+     28
+    ],
+    "recovery": [
+     29
+    ]
+   },
+   "startup": 11,
+   "active": 5,
+   "recovery": 18,
+   "damage": 14,
+   "hitstun": 24,
+   "blockstun": 11,
+   "hitbox": {
+    "x": 20,
+    "y": -60,
+    "w": 105,
+    "h": 60
+   },
+   "knockback": 8,
+   "kind": "low",
+   "low": true,
+   "knockdown": true,
+   "launch": -6,
+   "hitstop": 8
+  },
+  "special": {
+   "phases": {
+    "startup": [
+     30
+    ],
+    "active": [
+     31
+    ],
+    "recovery": [
+     31,
+     34
+    ]
+   },
+   "startup": 13,
+   "active": 4,
+   "recovery": 18,
+   "damage": 14,
+   "hitstun": 24,
+   "blockstun": 14,
+   "hitbox": {
+    "x": 0,
+    "y": 0,
+    "w": 0,
+    "h": 0
+   },
+   "knockback": 12,
+   "meterCost": 50,
+   "hitstop": 8,
+   "name": "CUSPE ÁCIDO",
+   "projectile": {
+    "x": 150,
+    "y": -150,
+    "speed": 10,
+    "lifetime": 100,
+    "style": "ball",
+    "color": "#8dff2a",
+    "size": 30,
+    "hitbox": {
+     "x": -30,
+     "y": -30,
+     "w": 60,
+     "h": 60
+    }
+   }
+  },
+  "super": {
+   "phases": {
+    "startup": [
+     30,
+     31,
+     32
+    ],
+    "active": [
+     33
+    ],
+    "recovery": [
+     32,
+     34
+    ]
+   },
+   "startup": 24,
+   "active": 10,
+   "recovery": 28,
+   "damage": 28,
+   "hitstun": 32,
+   "blockstun": 20,
+   "hitbox": {
+    "x": 60,
+    "y": -160,
+    "w": 190,
+    "h": 110
+   },
+   "knockback": 22,
+   "knockdown": true,
+   "launch": -10,
+   "meterCost": 100,
+   "hitstop": 13,
+   "name": "MORDIDA ÁCIDA",
+   "hitboxes": [
+    {
+     "x": 60,
+     "y": -160,
+     "w": 190,
+     "h": 110
+    }
+   ]
+  }
+ }
+}

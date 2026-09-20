@@ -1,7 +1,7 @@
 {
  "sheet": "sheet.png",
  "cols": 5,
- "rows": 9,
+ "rows": 10,
  "source": "dias.png",
  "extra": {
   "source": "dias-golpelongo-vitoria.png",
@@ -12,6 +12,26 @@
   "rows": 2,
   "first": 35
  },
+ "extras": [
+  {
+   "source": "dias-golpelongo-vitoria.png",
+   "scale": 0.645,
+   "rowScales": [
+    0.645
+   ],
+   "rows": 2,
+   "first": 35
+  },
+  {
+   "source": "dias-golpenovo.png",
+   "scale": 0.65,
+   "rowScales": [
+    0.65
+   ],
+   "rows": 1,
+   "first": 45
+  }
+ ],
  "width": 2048,
  "height": 1116,
  "frames": [
@@ -833,6 +853,101 @@
    ],
    "extra": true,
    "sx": 411,
+   "sy": 852
+  },
+  {
+   "i": 45,
+   "cell": [
+    9,
+    0
+   ],
+   "sw": 159,
+   "sh": 176,
+   "ax": 78.2,
+   "cx": 79.2,
+   "ay": 176,
+   "src": [
+    21,
+    119
+   ],
+   "extra": true,
+   "sx": 574,
+   "sy": 852
+  },
+  {
+   "i": 46,
+   "cell": [
+    9,
+    1
+   ],
+   "sw": 205,
+   "sh": 176,
+   "ax": 97.5,
+   "cx": 99.1,
+   "ay": 176,
+   "src": [
+    224,
+    119
+   ],
+   "extra": true,
+   "sx": 739,
+   "sy": 852
+  },
+  {
+   "i": 47,
+   "cell": [
+    9,
+    2
+   ],
+   "sw": 207,
+   "sh": 197,
+   "ax": 100.7,
+   "cx": 101.5,
+   "ay": 197,
+   "src": [
+    451,
+    98
+   ],
+   "extra": true,
+   "sx": 950,
+   "sy": 852
+  },
+  {
+   "i": 48,
+   "cell": [
+    9,
+    3
+   ],
+   "sw": 234,
+   "sh": 258,
+   "ax": 115.6,
+   "cx": 112.1,
+   "ay": 258,
+   "src": [
+    679,
+    39
+   ],
+   "extra": true,
+   "sx": 1163,
+   "sy": 852
+  },
+  {
+   "i": 49,
+   "cell": [
+    9,
+    4
+   ],
+   "sw": 217,
+   "sh": 222,
+   "ax": 107.3,
+   "cx": 105.8,
+   "ay": 221,
+   "src": [
+    930,
+    75
+   ],
+   "extra": true,
+   "sx": 1403,
    "sy": 852
   }
  ]

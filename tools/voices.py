@@ -145,12 +145,14 @@ def process(cid, x, pitch):
     return fade(normalize(x))
 
 
-def level(src, dst, peak=0.85):
+def level(src, dst, peak=0.85, cut=None):
     """Copia um WAV do usuário nivelando o pico (os arquivos chegam com volumes bem diferentes). Mantém canais e taxa."""
     with wave.open(src, 'rb') as w:
         nch, sw, sr, n = w.getnchannels(), w.getsampwidth(), w.getframerate(), w.getnframes(); raw = w.readframes(n)
     if sw != 2: shutil.copy(src, dst); return
     x = np.frombuffer(raw, np.int16).astype(np.float32) / 32768
+    if cut and len(x) > int(cut * sr) * nch:                       # corta no tempo pedido, com meio segundo de fade no fim
+        x = x[:int(cut * sr) * nch].copy(); n_f = int(0.5 * sr) * nch; x[-n_f:] *= np.repeat(np.linspace(1, 0, n_f // nch), nch)
     m = float(np.abs(x).max()) or 1.0
     y = (np.clip(x * (peak / m), -1, 1) * 32767).astype(np.int16)
     with wave.open(dst, 'wb') as o:
@@ -184,19 +186,25 @@ def main():
     #   <id>-taunt / <id>-win       provocação no FIGHT! / risada ao vencer o round
     #   <id>-down-N                 sorteado toda vez que o lutador DERRUBA o adversário (Mundim provoca ou ri, Dener ri)
     #   sfx-<nome>                  troca o efeito sintetizado (hit, hitBig, jump, land, knockdown)
-    SONS = {'barrigada.wav': ['dias-special', 'dias-long'], 'dede-especial.mp3': ['dede-special'], 'landim-especial.wav': ['landim-special'],
+    # 2026-09-20: nas trocas de golpe o som acompanha o GOLPE: o especial antigo que virou magia leva o som junto (Dedê, Laura); a barrigada do Dias é só do golpe longo.
+    SONS = {'barrigada.wav': ['dias-long'], 'dede-especial.mp3': ['dede-magic'], 'landim-especial.wav': ['landim-special'],
             'mundin-especial.wav': ['mundim-special'], 'xablau-especial.wav': ['xablau-special'],
             'edgard-magia-leve.wav': ['edgard-magic'], 'magia-leve-dias.mp3': ['dias-magic'], 'xablau-magia-leve.wav': ['xablau-magic'],
             'eneias-especial.wav': ['eneias-special'], 'michael-especial.wav': ['michael-special'], 'van-especial.wav': ['van-special'],
-            'santana-especial.wav': ['santana-special'], 'laura-especial.wav': ['laura-special'], 'laura-especial2.wav': ['laura-magic'],
+            'santana-especial.wav': ['santana-special'], 'laura-especial.wav': ['laura-magic'], 'laura-especial-novo.wav': ['laura-special'], 'edgard-especial-novo.wav': ['edgard-special'],
             'raio-leo.wav': ['leo-magic'], 'missel-saida.wav': ['crm-special'], 'missel-explosao.wav': ['crm-boom'], 'garrafa-quebrando.wav': ['mundim-glass'],
-            'chicote-dede.wav': ['dede-magic', 'dede-long'],
-            'golpe-eneias.wav': ['eneias-hit'], 'golpe-santana.wav': ['santana-hit'], 'kevin-golpe.wav': ['kevin-hit'], 'landim-golpe.wav': ['landim-hit'],
+            'chicote-dede.wav': ['dede-long'],
+            'golpe-eneias.wav': ['eneias-hit'], 'eneias-golpelongo.wav': ['eneias-long'], 'golpe-santana.wav': ['santana-hit'], 'kevin-golpe.wav': ['kevin-hit'], 'landim-golpe.wav': ['landim-hit'],
             'van-golpe.wav': ['van-hit'], 'yah-laura.wav': ['laura-hit'],
-            'grito-final-homem.wav': ['ko-m'], 'golpe-final-female.wav': ['ko-f'], 'enaias-dias-golpe-final-grito.wav': ['ko-eneias', 'ko-dias'],
+            'grito-final-homem.wav': ['ko-m'], 'golpe-final-female.wav': ['ko-f'], 'eneias-dias-golpe-final-grito.wav': ['ko-eneias', 'ko-dias'],
             'mundim-provocação.wav': ['mundim-taunt', 'mundim-down-1'], 'risada-mundim.wav': ['mundim-win', 'mundim-down-2'],
             'V01.wav': ['sfx-hit'], 'V02.wav': ['sfx-hitMed'], 'V03.wav': ['sfx-hitBig'], 'V26.wav': ['sfx-hitHuge'], 'van-longo.mp3': ['van-long'], 'pulo.wav': ['sfx-jump'], 'pulo-chao.wav': ['sfx-land'],
-            'quando-leva-golpe-cai-chao.wav': ['sfx-knockdown']}
+            'quando-leva-golpe-cai-chao.wav': ['sfx-knockdown'],
+            # metamorfose do Mundim: a pasta `cena` é a transformação (grito -> bicho saindo da cabeça -> rugido final); o resto são os sons do monstro lutando
+            'metamorfose/cena/mundim-grito-dor.mp3': ['morph-1'], 'metamorfose/cena/monstro-saindo-cabeça.wav': ['morph-2'], 'metamorfose/cena/final-transformação.wav': ['morph-3'],
+            'metamorfose/Monster Getting Angry.wav': ['monstro-taunt', 'monstro-special', 'monstro-win'], 'metamorfose/Monster Says Aaah.wav': ['monstro-hit', 'monstro-long'],
+            'metamorfose/Monster Hurt.wav': ['monstro-hurt'], 'metamorfose/Monster-dead.wav': ['ko-monstro']}
+    TRIM = {'morph-2': 7.2}                                        # segundos: a cena dura menos que a gravação (corta com fade)
     for fn, targets in SONS.items():
         src = os.path.join('Personagens/sons', fn)
         if not os.path.exists(src): continue
@@ -207,7 +215,7 @@ def main():
                 old = os.path.join(OUT, target + e)
                 if e != ext and os.path.exists(old): os.remove(old)
             ids[:] = [i for i in ids if os.path.splitext(i)[0] != target]
-            if ext == '.wav': level(src, os.path.join(OUT, dst))
+            if ext == '.wav': level(src, os.path.join(OUT, dst), cut=TRIM.get(target))
             else: shutil.copy(src, os.path.join(OUT, dst))
             ids.append(dst); print(f'{dst:20s} <- {src}')
     files = [i if '.' in i else i + '.wav' for i in ids]

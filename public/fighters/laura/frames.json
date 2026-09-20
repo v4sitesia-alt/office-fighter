@@ -1,7 +1,7 @@
 {
  "sheet": "sheet.png",
  "cols": 5,
- "rows": 9,
+ "rows": 10,
  "source": "laura.png",
  "fx": {
   "file": "special_fx.png",
@@ -17,8 +17,28 @@
   "rows": 2,
   "first": 35
  },
+ "extras": [
+  {
+   "source": "laura-golpelongo-vitoria.png",
+   "scale": 0.69,
+   "rowScales": [
+    0.69
+   ],
+   "rows": 2,
+   "first": 35
+  },
+  {
+   "source": "laura-golpenovo.png",
+   "scale": 0.8,
+   "rowScales": [
+    0.8
+   ],
+   "rows": 1,
+   "first": 45
+  }
+ ],
  "width": 2048,
- "height": 998,
+ "height": 1220,
  "frames": [
   {
    "i": 0,
@@ -838,6 +858,101 @@
    ],
    "extra": true,
    "sx": 6,
+   "sy": 811
+  },
+  {
+   "i": 45,
+   "cell": [
+    9,
+    0
+   ],
+   "sw": 225,
+   "sh": 206,
+   "ax": 90.4,
+   "cx": 99.6,
+   "ay": 206,
+   "src": [
+    12,
+    285
+   ],
+   "extra": true,
+   "sx": 242,
+   "sy": 811
+  },
+  {
+   "i": 46,
+   "cell": [
+    9,
+    1
+   ],
+   "sw": 375,
+   "sh": 292,
+   "ax": 132.5,
+   "cx": 178.6,
+   "ay": 292,
+   "src": [
+    241,
+    199
+   ],
+   "extra": true,
+   "sx": 473,
+   "sy": 811
+  },
+  {
+   "i": 47,
+   "cell": [
+    9,
+    2
+   ],
+   "sw": 443,
+   "sh": 403,
+   "ax": 173.5,
+   "cx": 196.8,
+   "ay": 403,
+   "src": [
+    621,
+    91
+   ],
+   "extra": true,
+   "sx": 854,
+   "sy": 811
+  },
+  {
+   "i": 48,
+   "cell": [
+    9,
+    3
+   ],
+   "sw": 376,
+   "sh": 344,
+   "ax": 215.6,
+   "cx": 179.4,
+   "ay": 344,
+   "src": [
+    1069,
+    152
+   ],
+   "extra": true,
+   "sx": 1303,
+   "sy": 811
+  },
+  {
+   "i": 49,
+   "cell": [
+    9,
+    4
+   ],
+   "sw": 268,
+   "sh": 205,
+   "ax": 122.2,
+   "cx": 127.3,
+   "ay": 205,
+   "src": [
+    1456,
+    287
+   ],
+   "extra": true,
+   "sx": 1685,
    "sy": 811
   }
  ]

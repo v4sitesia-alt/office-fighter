@@ -55,6 +55,11 @@ export class Fighter {
   comboTaken = 0;              // acertos seguidos que estou levando sem voltar ao neutro (escala o dano do combo)
   chainCount = 0;              // quantos golpes já encadeei nesta sequência
   beamStop: number | null = null;
+  /** Escudo de moedas girando em volta do corpo (Dias). */
+  shield: { coins: number; life: number; cool: number; def: NonNullable<MoveDef['shield']> } | null = null;
+  private releaseCount = 0;
+  /** Cena da metamorfose: em vez do quadro normal, desenha este quadro (do atlas de quem ele vai virar) com a altura pedida. */
+  override: { assets: FighterAssets; frame: number; height: number; lift: number } | null = null;
   owner = '';                  // quem controla (arena online): aparece no placar
   private ramp = 0;            // máquina pesada: quantos frames já está andando (pega velocidade aos poucos)   // raio: x (de tela) onde ele parou ao encostar no adversário
   private buffered: { btn: AttackBtn; frame: number } | null = null;
@@ -110,6 +115,7 @@ export class Fighter {
     this.animTime++;
     if (this.def.meterRegen && this.state !== 'attacking' && this.state !== 'ko') this.meter = Math.min(100, this.meter + this.def.meterRegen);
     this.readBuffer(ctrl);
+    if (this.shield) { const sh = this.shield; if (sh.cool > 0) sh.cool--; if (--sh.life <= 0 || sh.coins <= 0 || this.state === 'ko') this.shield = null; }
     if (this.actionable || this.state === 'jumping') this.comboTaken = 0;
     if (this.state !== 'attacking') this.chainCount = 0;
 
@@ -242,9 +248,10 @@ export class Fighter {
     if (m.kind === 'portal' && this.stateFrame === m.startup) this.spawns.push({ kind: 'zone', move: m, x: other.x });
     if (m.aura && this.stateFrame <= m.startup && this.stateFrame % m.aura.every === 0) this.hasHit = false;          // a aura volta a acertar
     if (m.beam?.every && this.phase === 'active' && (this.stateFrame - m.startup) % m.beam.every === 0) this.hasHit = false;   // raio contínuo
+    if (m.shield && this.stateFrame === m.startup) { this.shield = { coins: m.shield.coins, life: m.shield.life, cool: 0, def: m.shield }; this.spawns.push({ kind: 'beam', move: m, x: this.x }); }
     if (m.beam && this.stateFrame === m.startup) this.spawns.push({ kind: 'beam', move: m, x: this.x });   // som + nome do golpe
     if (m.projectile) {
-      const count = m.projectile.count ?? 1, every = m.projectile.every ?? 0;
+      const count = this.moveName === 'release' ? this.releaseCount : m.projectile.count ?? 1, every = m.projectile.every ?? 0;
       for (let k = 0; k < count; k++) if (this.stateFrame === m.startup + 1 + k * every) this.spawns.push({ kind: 'projectile', move: m, x: this.x });
     }
     if (this.stateFrame >= total) this.setState('idle');
@@ -279,6 +286,7 @@ export class Fighter {
   private groundMove(btn: AttackBtn, crouched: boolean, forward = false): MoveName | null {
     const M = this.def.moves;
     if (btn === 'special') {
+      if (this.shield && M.release) return 'release';                    // escudo de moedas ativo: o botão lança as que sobraram
       if (crouched && M.special && this.meter >= (M.special.meterCost ?? 50)) return 'special';   // ↓ + B: magia, mesmo com a barra cheia
       if (M.super && this.meter >= (M.super.meterCost ?? 100)) return 'super';
       if (M.special && this.meter >= (M.special.meterCost ?? 50)) return 'special';
@@ -333,6 +341,7 @@ export class Fighter {
     if (m.meterCost) this.meter -= m.meterCost;
     const wasAir = this.state === 'jumping';
     const crouched = this.state === 'crouching' || (this.state === 'blocking' && this.crouchBlock);
+    if (name === 'release') { this.releaseCount = this.shield?.coins ?? 0; this.shield = null; if (!this.releaseCount) return false; }
     this.setState('attacking'); this.stateFrame = 0;     // encadeado: já estava atacando, o relógio do golpe recomeça
     this.move = m; this.moveName = name; this.hasHit = false; this.beamStop = null;
     this.air = wasAir || m.kind === 'air';
@@ -374,6 +383,7 @@ export class Fighter {
       this.setState('ko'); this.knockdownAir = true; this.vy = -8; this.vx = 4 * dir; this.y = Math.min(this.y, -0.01);
       this.flash = 8; return;
     }
+    if (!blocked && h.damage >= 9 && audio.hasVoice(`${this.def.id}-hurt`) && !audio.channelBusy(this.voiceChannel)) audio.voice(`${this.def.id}-hurt`, this.voiceChannel, 0.9);   // grito de dor próprio (o monstro)
     if (blocked) {
       this.setState('blockstun'); this.stun = h.blockstun; return;
     }
@@ -414,6 +424,25 @@ export class Fighter {
     return this.toWorld(hb);
   }
   /** Está no preparo de um golpe com aura (carregando energia)? */
+  /** Área das moedas em órbita (pra bater em quem encosta e engolir magia). */
+  get shieldBox(): Box | null {
+    if (!this.shield) return null;
+    const r = this.shield.def.radius * this.scale, cy = GROUND_Y + this.y - 95 * this.scale;
+    return { x: this.x - r, y: cy - r * 0.85, w: r * 2, h: r * 1.7 };
+  }
+  /** Moedas do escudo: as de trás (front = false) são desenhadas antes do corpo, as da frente depois. */
+  private drawShield(ctx: CanvasRenderingContext2D, front: boolean) {
+    const sh = this.shield; if (!sh) return;
+    const img = this.assets.fx[sh.def.sprite], s = this.scale, R0 = sh.def.radius * s, cy = -95 * s, t = this.animTime;
+    for (let k = 0; k < sh.coins; k++) {
+      const a = t * 0.085 + k * Math.PI * 2 / sh.coins, depth = Math.sin(a); if ((depth >= 0) !== front) continue;
+      const x = Math.cos(a) * R0, y = cy + depth * R0 * 0.34 + Math.sin(t * 0.15 + k) * 4, sc = s * (0.85 + 0.2 * depth);
+      ctx.strokeStyle = `rgba(90,255,130,${front ? 0.55 : 0.3})`; ctx.lineWidth = 5 * s; ctx.lineCap = 'round';   // rastro verde atrás de cada moeda
+      ctx.beginPath(); ctx.ellipse(0, cy, R0, R0 * 0.34, 0, a - 0.7, a - 0.12); ctx.stroke();
+      if (img) { ctx.save(); ctx.translate(x, y); ctx.scale(Math.cos(t * 0.2 + k) > 0 ? 1 : -1, 1); ctx.drawImage(img, -img.width * sc / 2, -img.height * sc / 2, img.width * sc, img.height * sc); ctx.restore(); }
+    }
+  }
+
   get charging() { return this.state === 'attacking' && !!this.move?.aura && this.phase === 'startup'; }
   /** Comprimento atual do raio, em unidades do sprite (0 fora da fase ativa). */
   beamLength() {
@@ -482,6 +511,13 @@ export class Fighter {
   }
 
   draw(ctx: CanvasRenderingContext2D, debug = false) {
+    if (this.override) {
+      const o = this.override, fr = o.assets.frames.frames[o.frame], k = o.height / fr.sh;
+      ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.beginPath(); ctx.ellipse(this.x, GROUND_Y + 4, 38, 7, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.save(); ctx.translate(this.x + (Math.random() - 0.5) * 3, GROUND_Y - o.lift); ctx.scale(this.facing, 1);
+      ctx.drawImage(o.assets.sheet, fr.sx, fr.sy, fr.sw, fr.sh, -fr.ax * k, -fr.ay * k, fr.sw * k, fr.sh * k); ctx.restore();
+      return;
+    }
     const { frame, anchor } = this.currentFrame();
     const s = this.scale;
     const ax = anchor === 'center' ? frame.cx : frame.ax;
@@ -502,6 +538,7 @@ export class Fighter {
     // Passada: os boards trazem 3 quadros de perna aberta quase iguais. O passo de verdade sai por código: perna ABERTA (quadro 2),
     // pernas JUNTAS na passagem (quadro 3), perna aberta de novo (quadro 4)... As pernas fecham e abrem em direção ao eixo do corpo
     // (a largura vai afinando do quadril até os pés), o corpo sobe na passagem e desce na pisada, e inclina pro lado que anda.
+    this.drawShield(ctx, false);
     let spread = 1;
     if (this.state === 'walking' && !this.def.stats.inertia) {
       const a = this.def.anims.walk, fps = (a.fps ?? 8) * Math.max(0.75, Math.min(1.35, this.def.stats.speed));
@@ -522,6 +559,7 @@ export class Fighter {
       }
     } else ctx.drawImage(src[0], src[1], src[2], frame.sw, frame.sh, -ax * s, -frame.ay * s, dw, dh);
     this.drawBeam(ctx, s);
+    ctx.filter = 'none'; ctx.setTransform(ctx.getTransform()); this.drawShield(ctx, true);
     ctx.restore();
 
     if (debug) this.drawDebug(ctx, frame);

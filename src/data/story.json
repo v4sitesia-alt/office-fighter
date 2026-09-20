@@ -20,7 +20,7 @@
   ],
   [
    "O TORNEIO",
-   "A torre anunciou o torneio <b>Trouble Work</b>, com prêmio milionário. Nas letras miúdas: cada golpe dado na arena treina as máquinas. Da fábrica saíram três resultados. <b>Leo</b>, o cyborg dourado, é o que deu certo: duas IAs em fusão, ligadas direto ao Mundim via MCP. <b>Sant'Anna</b> deu certo só no hardware: a mente não foi tomada por inteiro, e ele briga por dentro. E o que as IAs criaram sozinhas deu errado: <i>Xablau</i>."
+   "A torre anunciou o torneio <b>Trouble Work</b>, com prêmio milionário. Nas letras miúdas: cada golpe dado na arena treina as máquinas. Da fábrica saíram três resultados. <b>Leo</b>, o cyborg dourado, é o que deu certo: duas IAs em fusão, ligadas direto ao Mundim via MCP. <b>Sant'Anna</b> deu certo só no hardware: a mente não foi tomada por inteiro, e ele briga por dentro. E o que as IAs criaram sozinhas deu errado: <i>Xablau</i>. O que ninguém sabe: a última experiência o Mundim fez <i>nele mesmo</i>. Achou que ia controlar o que cresceu lá dentro."
   ],
   [
    "GENTE COMUM",
@@ -28,7 +28,7 @@
   ],
   [
    "OS NEUTROS",
-   "<b>Edgard</b>, o bruxo, não tem lado: entrou pra resgatar o amigo Sant'Anna. <b>Kevin</b> atira pra quem pagar, e o Dias está devendo três notas. Todos os caminhos sobem pelo mesmo elevador. No último andar, alguém vai ter que desligar as máquinas. <i>Ou o chefe.</i>"
+   "<b>Edgard</b>, o bruxo, não tem lado: entrou pra resgatar o amigo Sant'Anna. <b>Kevin</b> atira pra quem pagar, e o Dias está devendo três notas. Todos os caminhos sobem pelo mesmo elevador. No último andar, alguém vai ter que desligar as máquinas. <i>Ou o chefe. Ou o que estiver usando o chefe de marionete.</i>"
   ]
  ],
  "crawl": [
@@ -253,7 +253,7 @@
     "Que comece a reunião.",
     "Anote aí: isso é uma aula."
    ],
-   "ending": "Mundim venceu o próprio torneio e discursou duas horas citando filósofos. As IAs aprenderam tudo. Inclusive a pedir aumento. No 51º andar, um olho biônico piscou: Leo já calculava a sucessão.",
+   "ending": "Mundim venceu o próprio torneio e discursou duas horas citando filósofos. No meio da frase, a voz engrossou: a coisa que ele criou em si mesmo aprendeu a falar primeiro. No 51º andar, um olho biônico piscou: Leo já calculava a sucessão.",
    "nick": "Mundim"
   },
   "dener": {

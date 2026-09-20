@@ -30,6 +30,7 @@ export async function loadFighter(id: string, onProgress?: () => void): Promise<
     if (m?.projectile?.sprite) fxFiles.add(m.projectile.sprite);
     if (m?.projectile?.trail) fxFiles.add(m.projectile.trail);
     if (m?.beam) [m.beam.start, m.beam.mid, m.beam.end].forEach((f) => fxFiles.add(f));
+    if (m?.shield) fxFiles.add(m.shield.sprite);
     if (m?.zone?.pillar) { const p = m.zone.pillar; [p.base, p.tile, p.top, p.swarm].forEach((f) => fxFiles.add(f)); }
     if (m?.zone?.rain) [m.zone.rain.bomb, m.zone.rain.boom, m.zone.rain.up ?? ''].forEach((f) => f && fxFiles.add(f));
   }
@@ -37,7 +38,8 @@ export async function loadFighter(id: string, onProgress?: () => void): Promise<
   await Promise.all([...fxFiles].map((f) => loadImage(dir + f).then((img) => { fx[f] = img; }).catch(() => undefined))); tick();
   const portrait = await loadImage(dir + 'portrait.png').catch(() => undefined); tick();
   const secretPortrait = def.secret ? await loadImage(dir + 'secret.png').catch(() => undefined) : undefined;
-  return { def, frames, sheet, fx, portrait, secretPortrait };
+  const morph = def.morph ? await loadFighter(def.morph).catch(() => undefined) : undefined;
+  return { def, frames, sheet, fx, portrait, secretPortrait, morph };
 }
 
 /** Juiz (robô das bandeiras): atlas próprio em public/referee/. Se faltar, o jogo segue sem juiz. */
