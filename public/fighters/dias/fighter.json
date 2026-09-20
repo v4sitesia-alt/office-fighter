@@ -227,10 +227,10 @@
      34
     ]
    },
-   "startup": 14,
-   "active": 8,
-   "recovery": 20,
-   "dash": 5,
+   "startup": 12,
+   "active": 14,
+   "recovery": 22,
+   "dash": 13,
    "damage": 10.8,
    "hitstun": 22,
    "blockstun": 16,

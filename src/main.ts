@@ -170,6 +170,12 @@ function showRanking(mine = -1) {
 function showVersus() {
   const opp = campaign[fightNo];
   setMode('versus');
+  // última luta: em vez da tela VS, a cena do escritório (o Mundim levanta da mesa e vem até a frente) e corta pra batalha
+  if (roster[opp.idx].def.id === 'mundim' && !opp.hue && !secretFight && tries === 0) {
+    audio.preload('fighter-mundim');
+    screens.finalScene(roster[playerIdx], roster[opp.idx], scriptFor(roster[playerIdx].def.id, 'mundim', false, 0), startFight);
+    return;
+  }
   audio.preload(`fighter-${(opp.hue ? roster[playerIdx] : roster[opp.idx]).def.id}`);
   screens.versus(roster[playerIdx], roster[opp.idx], secretFight ? 'LUTA SECRETA · 53º ANDAR' : fightNo === campaign.length - 1 ? 'LUTA FINAL' : `LUTA ${fightNo + 1} DE ${campaign.length}`, opp.hue, scriptFor(roster[playerIdx].def.id, roster[opp.idx].def.id, !!opp.hue, tries), startFight);
 }
@@ -301,7 +307,13 @@ function debugFight(a: string, b: string, cpu: Difficulty | null = 'normal') {
   return true;
 }
 // acesso de debug no console: __of().match.fighters[0] · __of().fight('edgard', 'landim')
-(window as unknown as { __of: () => unknown }).__of = () => ({ mode, match, debug, input, audio, fight: debugFight, get session() { return session; }, get watchSession() { return watchSession; }, get lobby() { return lobby; } });
+/** Debug: mostra a cena final com o lutador dado e volta pro título. */
+function debugScene(a: string) {
+  const fa = roster.find((f) => f.def.id === a), boss = roster.find((f) => f.def.id === 'mundim');
+  if (!fa || !boss) return false;
+  setMode('versus'); screens.finalScene(fa, boss, scriptFor(a, 'mundim', false, 0), goTitle); return true;
+}
+(window as unknown as { __of: () => unknown }).__of = () => ({ mode, match, debug, input, audio, fight: debugFight, scene: debugScene, get session() { return session; }, get watchSession() { return watchSession; }, get lobby() { return lobby; } });
 
 // ---------- loop
 const loop = startLoop({

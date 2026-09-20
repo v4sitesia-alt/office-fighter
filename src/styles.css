@@ -393,3 +393,15 @@ html, body { overscroll-behavior: none; touch-action: manipulation; -webkit-touc
 .hud-combo.show { opacity: 1; } .hud-combo.big b { color: #ff5a2a; }
 .hud-combo.pop b { animation: comboPop .18s ease-out; }
 @keyframes comboPop { from { transform: scale(1.7); } to { transform: scale(1); } }
+
+/* cena final: escritório do Mundim */
+.cut-stage { position: absolute; inset: 0; overflow: hidden; background: #000; }
+.cut-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .28s linear; image-rendering: pixelated; }
+.cut-img.on { opacity: 1; }
+.cut-bars { position: absolute; inset: 0; box-shadow: inset 0 46px 0 #000, inset 0 -46px 0 #000; pointer-events: none; }
+.cut-cap { position: absolute; left: 0; right: 0; top: 66px; text-align: center; font-family: var(--logo); font-style: italic; font-size: 40px; letter-spacing: 4px; color: var(--yellow); -webkit-text-stroke: 2px #5a0010; text-shadow: 4px 4px 0 #000; }
+.cut-cap.pop { animation: talkPop .3s var(--ease); }
+.cut-face { position: absolute; right: -6%; bottom: 0; height: 96%; transform: translateX(110%); transition: transform .45s var(--ease); filter: drop-shadow(-10px 0 0 rgba(0,0,0,.55)); }
+.cut-stage.face .cut-face { transform: none; } .cut-stage.face .cut-cap { opacity: 0; transition: opacity .3s; }
+.cut-stage.face .cut-img.on { filter: brightness(.45) saturate(.8); transition: filter .4s, opacity .28s linear; }
+.cut-stage.talking .cut-talk { display: block; left: 4%; width: 58%; bottom: 60px; }

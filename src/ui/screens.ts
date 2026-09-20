@@ -194,17 +194,70 @@ export class Screens {
     this.onConfirm = next;
     this.onBack = onGo;
     this.root.onclick = () => next();
-    // ritmo de arcade: ninguém precisa apertar nada. Os dois aparecem (0,9 s), cada fala é digitada rápido (3 letras por frame),
+    // ritmo de arcade: ninguém precisa apertar nada. Os dois aparecem (2,2 s), cada fala é digitada (2 letras por frame),
     // fica na tela o tempo de ler e passa sozinha. G/ENTER ou toque adianta, V pula tudo.
-    let wait = 54;
+    let wait = 130;                                  // ~2,2 s só com os dois frente a frente
     this.onTick = () => {
       if (idx >= 0 && shown < full.length) {
-        shown = Math.min(full.length, shown + 3); textEl.textContent = full.slice(0, shown);
+        shown = Math.min(full.length, shown + 2); textEl.textContent = full.slice(0, shown);
         if (full[shown - 1] !== ' ') audio.sfx(script[idx].who === 0 ? 'talkA' : 'talkB');
-        if (shown >= full.length) wait = Math.min(150, 45 + Math.round(full.length * 1.1));
+        if (shown >= full.length) wait = Math.min(220, 85 + Math.round(full.length * 1.7));
         return;
       }
       if (--wait <= 0) next();
+    };
+  }
+
+  /** Cena final: o Mundim levanta da mesa e vem até a frente (10 quadros), legendas por cima, depois o destaque dele
+   *  com um diálogo rápido e corta pra luta. Passa sozinha; G/ENTER adianta, V pula. */
+  finalScene(player: FighterAssets, boss: FighterAssets, script: Line[], onGo: () => void) {
+    const base = import.meta.env.BASE_URL, N = 10, HOLD = 40;          // 40 frames por quadro = ~6,7 s de caminhada
+    const src = (i: number) => `${base}cutscene/mundim-${String(i + 1).padStart(2, '0')}.jpg`;
+    for (let i = 0; i < N; i++) new Image().src = src(i);
+    const CAPS: [number, string][] = [[0, '52º ANDAR · ÚLTIMO ANDAR'], [3, 'SALA DA DIRETORIA'], [6, 'MUNDIM · O CHEFÃO']];
+    this.set('versus', `<div class="cut-stage" style="--c:${boss.def.colors.primary}">
+        <img class="cut-img a" src="${src(0)}" alt=""><img class="cut-img b" src="${src(0)}" alt="">
+        <div class="cut-bars"></div><div class="cut-cap"></div>
+        <img class="cut-face" src="${base}versus/${boss.def.id}.png" alt="">
+        <div class="vs-talk cut-talk"><div class="vs-who"></div><div class="vs-text"></div></div>
+        <div class="pix tiny vs-hint">G / ENTER ADIANTA · V PULA</div></div>`);
+    const stage = this.root.querySelector<HTMLElement>('.cut-stage')!, imgs = Array.from(stage.querySelectorAll<HTMLImageElement>('.cut-img'));
+    const cap = stage.querySelector<HTMLElement>('.cut-cap')!, talk = stage.querySelector<HTMLElement>('.cut-talk')!;
+    const whoEl = talk.querySelector<HTMLElement>('.vs-who')!, textEl = talk.querySelector<HTMLElement>('.vs-text')!;
+    let t = 0, frame = 0, top = 0, idx = -1, shown = 0, full = '', wait = 0;
+    const showFrame = (i: number) => { top = 1 - top; imgs[top].src = src(i); imgs[top].classList.add('on'); imgs[1 - top].classList.remove('on'); };
+    imgs[0].classList.add('on');
+    const say = () => {
+      if (++idx >= script.length) { onGo(); return; }
+      const ln = script[idx], f = ln.who === 0 ? player : boss;
+      stage.classList.add('talking'); stage.dataset.speaker = ln.who === 0 ? 'l' : 'r';
+      talk.style.setProperty('--c', f.def.colors.primary); whoEl.textContent = f.def.name;
+      full = ln.text; shown = 0; textEl.textContent = '';
+      textEl.style.fontSize = `${full.length < 28 ? 44 : full.length < 55 ? 34 : full.length < 85 ? 28 : 23}px`;
+      talk.classList.remove('pop'); void talk.offsetWidth; talk.classList.add('pop');
+    };
+    const skipAhead = () => {
+      if (idx < 0) { t = N * HOLD; return; }                                  // pula a caminhada
+      if (shown < full.length) { shown = full.length; textEl.textContent = full; wait = 60; return; }
+      say();
+    };
+    this.onConfirm = skipAhead; this.onBack = onGo; this.root.onclick = skipAhead;
+    this.onTick = () => {
+      if (idx < 0) {
+        const f = Math.min(N - 1, Math.floor(++t / HOLD));
+        if (f !== frame) { frame = f; showFrame(f); if (f >= 5) audio.sfx('land'); }
+        const c = [...CAPS].reverse().find(([at]) => frame >= at)!;
+        if (cap.textContent !== c[1]) { cap.textContent = c[1]; cap.classList.remove('pop'); void cap.offsetWidth; cap.classList.add('pop'); }
+        if (t >= N * HOLD + 30) { stage.classList.add('face'); audio.voice(`ann-${boss.def.id}`, 'ann'); say(); }
+        return;
+      }
+      if (shown < full.length) {
+        shown = Math.min(full.length, shown + 2); textEl.textContent = full.slice(0, shown);
+        if (full[shown - 1] !== ' ') audio.sfx(script[idx].who === 0 ? 'talkA' : 'talkB');
+        if (shown >= full.length) wait = Math.min(210, 80 + Math.round(full.length * 1.6));
+        return;
+      }
+      if (--wait <= 0) say();
     };
   }
 
