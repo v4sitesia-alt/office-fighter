@@ -94,7 +94,6 @@ export class Lobby {
 
   open(fighterId: string) {
     this.me.fighter = fighterId; this.me.status = this.squad ? 'dupla' : 'livre'; this.me.matchId = undefined; this.me.vs = undefined; this.me.mc = undefined;
-    if (this.squad?.solo) { this.squad.leave(); this.squad = null; this.me.status = 'livre'; }        // duelo acabou: a sala de escolha era só dele
     if (this.squad) { this.squad.resume(); this.view = 'duplas'; }
     this.pick ||= fighterId;
     this.root.className = 'screens show lobby';
@@ -482,7 +481,7 @@ export class Lobby {
     if (!st) return `<div class="center"><div class="title-sm">SENTANDO NA MESA…</div><div class="lb-btn ghost" data-act="sq-leave">CANCELAR</div></div>`;
     const host = st.members.find((m) => m.id === st.host), meId = this.me.id;
     const tag = (m: { id: string }) => `${m.id === st.host ? '<i class="crown">★ ANFITRIÃO</i>' : ''}${m.id === meId ? '<i class="you">VOCÊ</i>' : ''}`;
-    if (sq.solo && (st.phase === 'mesa' || st.phase === 'luta')) return `<div class="center"><div class="title-sm">DUELO</div><div class="wait">ABRINDO A TELA DE ESCOLHA COM O ADVERSÁRIO…</div><div class="lb-btn ghost" data-act="sq-leave">CANCELAR</div></div>`;
+    if (sq.solo && (st.phase === 'mesa' || st.phase === 'luta')) return `<div class="center"><div class="title-sm">DUELO</div><div class="wait">${st.members.length < 2 && st.note ? 'O ADVERSÁRIO SAIU' : 'ABRINDO A TELA DE ESCOLHA COM O ADVERSÁRIO…'}</div><div class="lb-btn ghost" data-act="sq-leave">SAIR</div></div>`;
     if (st.phase === 'mesa' || st.phase === 'luta') {
       const side = (t: 0 | 1) => { const ms = st.members.filter((m) => m.team === t), mine = sq.mine?.team === t;
         return `<div class="team t${t}"><h3>${t === 0 ? 'DUPLA AZUL' : 'DUPLA VERMELHA'}</h3>${[0, 1].map((k) => ms[k]
@@ -511,7 +510,7 @@ export class Lobby {
     const show = mySeat >= 0 ? this.pick : (st.seats.find((x) => x.owner === meId)?.fighter ?? this.pick);
     const pickName = this.F(this.pick)?.def.name ?? '';
     return `<div class="draft">${team(0)}
-      <div class="dmid"><div class="dhead"><h2>${go ? 'TUDO PRONTO!' : mySeat >= 0 ? (st.seats.filter((x) => x.owner === meId).length > 1 ? `ESCOLHA O ${st.seats.findIndex((x) => x.owner === meId) === mySeat ? '1º' : '2º'} LUTADOR` : 'ESCOLHA SEU LUTADOR') : 'ESPERANDO OS OUTROS'}</h2><div class="count sm" data-until="${sq.until}" data-fmt="n"></div></div>
+      <div class="dmid"><div class="dhead">${go ? '' : `<span class="mini ghost" data-act="sq-leave">‹ SAIR</span>`}<h2>${go ? 'TUDO PRONTO!' : mySeat >= 0 ? (st.seats.filter((x) => x.owner === meId).length > 1 ? `ESCOLHA O ${st.seats.findIndex((x) => x.owner === meId) === mySeat ? '1º' : '2º'} LUTADOR` : 'ESCOLHA SEU LUTADOR') : 'ESPERANDO OS OUTROS'}</h2><div class="count sm" data-until="${sq.until}" data-fmt="n"></div></div>
         ${this.showcase(show, sq.mine?.team === 1)}
         ${this.grid('sq-pick', taken, 8)}
         <div class="dfoot"><div class="stagebox"><small>CENÁRIO${sq.isHost ? ' (VOCÊ ESCOLHE)' : ` · ${esc(host?.name ?? '')} ESCOLHE`}</small>${stageStrip}</div>
