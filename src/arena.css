@@ -128,13 +128,46 @@
 .cr-left .fgrid { overflow: auto; padding: 3px; } .cr-mid { display: flex; flex-direction: column; gap: 10px; min-height: 0; min-width: 0; } .cr-mid .hero { flex: 1; } .cr-act { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; }
 .cr-right .cta { margin-top: 8px; } .hint { display: block; margin-top: 8px; text-align: center; }
 .champ { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-align: center; } .champ h2 { font-size: 44px; color: var(--yellow); text-shadow: 4px 4px 0 #000; } .cup { font-size: 90px; filter: drop-shadow(0 8px 0 rgba(0,0,0,.4)); animation: bob 2.4s ease-in-out infinite; }
-.bracket { flex: 1; min-height: 0; display: flex; gap: 14px; padding: 4px 18px 14px; overflow-x: auto; }
-.bcol { flex: 1; min-width: 170px; display: flex; flex-direction: column; } .bcol h4 { text-align: center; color: var(--yellow); } .bms { flex: 1; display: flex; flex-direction: column; justify-content: space-around; gap: 6px; }
-.bm { position: relative; border-radius: 10px; padding: 5px; background: rgba(6,10,32,.8); box-shadow: inset 0 0 0 2px rgba(120,150,255,.25); display: flex; flex-direction: column; gap: 3px; }
-.bm.live { box-shadow: inset 0 0 0 2px var(--yellow), 0 0 16px rgba(255,210,63,.55); } .bm.mine { background: rgba(60,40,0,.75); }
-.bp { display: flex; align-items: center; gap: 7px; font-size: 7px; padding: 2px; border-radius: 6px; } .bp b { flex: 1; font-weight: normal; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .bp i { font-style: normal; color: #8ff0b6; }
-.bp.win { background: rgba(61,220,132,.2); } .bp.lost { opacity: .4; } .bm .cta { margin-top: 2px; } .bst { font-size: 6px; color: var(--yellow); text-align: center; animation: pulse .8s infinite; } .wo { display: flex; justify-content: space-between; font-size: 5px; }
-.cupcol { flex: none; min-width: 110px; } .cupcol .bms { align-items: center; justify-content: center; }
+/* chave em organograma */
+.bracket { flex: 1; min-height: 0; display: flex; padding: 2px 18px 12px; overflow-x: auto; }
+.bcol { flex: 1; min-width: 176px; display: flex; flex-direction: column; } .bcol h4 { text-align: center; color: var(--yellow); margin-bottom: 4px; } .bms { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.bslot { flex: 1; position: relative; display: flex; align-items: center; padding: 3px 22px 3px 0; min-height: 0; }
+.bcol + .bcol .bslot { padding-left: 22px; }
+.bslot::after { content: ''; position: absolute; right: 0; width: 22px; border: 0 solid rgba(140,170,255,.55); border-right-width: 2px; }        /* braço que sai da luta e desce/sobe até a seguinte */
+.bslot:nth-child(odd)::after { top: 50%; bottom: 0; border-top-width: 2px; border-top-right-radius: 8px; } .bslot:nth-child(even)::after { top: 0; bottom: 50%; border-bottom-width: 2px; border-bottom-right-radius: 8px; }
+.bcol + .bcol .bslot::before { content: ''; position: absolute; left: 0; top: 50%; width: 22px; border-top: 2px solid rgba(140,170,255,.55); }
+.bcol.last .bslot::after { top: 50%; bottom: auto; border-right-width: 0; border-top-width: 2px; border-radius: 0; }
+.bm { position: relative; flex: 1; border-radius: 10px; padding: 4px 5px; background: rgba(6,10,32,.86); box-shadow: inset 0 0 0 2px rgba(120,150,255,.28), 0 3px 0 rgba(0,0,0,.5); display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.bm.void { visibility: hidden; } .bm.live { box-shadow: inset 0 0 0 2px var(--yellow), 0 0 18px rgba(255,210,63,.6); } .bm.mine { background: rgba(70,46,0,.85); }
+.bp { display: flex; align-items: center; gap: 7px; font-size: 7px; padding: 2px; border-radius: 7px; min-width: 0; } .bp b { flex: 1; font-weight: normal; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .bp i { font-style: normal; color: #8ff0b6; font-size: 9px; }
+.bp .av { width: 30px; height: 30px; border-radius: 7px; } .bp.win { background: linear-gradient(90deg, color-mix(in srgb, var(--c) 45%, transparent), rgba(61,220,132,.18)); } .bp.lost { opacity: .38; filter: grayscale(.8); }
+.bvs { font-style: normal; font-size: 5px; letter-spacing: 1px; color: #6f83b8; padding-left: 38px; line-height: 1; } .bm.live .bvs { color: var(--yellow); animation: pulse .8s infinite; }
+.bm .cta { margin-top: 2px; } .wo { display: flex; justify-content: space-between; font-size: 5px; margin-top: 2px; }
+.cupcol { flex: none; min-width: 120px; } .cupcol .bms { align-items: center; justify-content: center; }
+.bchamp { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; font-size: 8px; } .bchamp b { font-family: var(--logo); font-style: italic; font-weight: normal; font-size: 20px; letter-spacing: 1px; color: #5f6f9c; }
+.bchamp.on b { color: var(--yellow); text-shadow: 2px 2px 0 #000; } .bchamp.on .av { border-color: var(--yellow); box-shadow: 0 0 22px var(--yellow); animation: bob 2.4s ease-in-out infinite; }
+/* minha luta foi chamada: confirmar a batalha */
+.bcall { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 12; display: flex; flex-direction: column; align-items: center; gap: 7px; padding: 12px 22px 10px; border-radius: 16px; text-align: center;
+  background: linear-gradient(rgba(10,14,40,.97), rgba(30,10,30,.97)); box-shadow: 0 0 0 3px var(--yellow), 0 0 40px rgba(255,210,63,.55), 0 10px 30px #000; animation: callIn .35s cubic-bezier(.2,1.4,.4,1); }
+.bcall-vs { display: flex; align-items: center; gap: 10px; } .bcall-vs b { font-family: var(--logo); font-style: italic; font-weight: normal; font-size: 22px; letter-spacing: 1px; } .bcall-vs i { font-family: var(--logo); font-size: 30px; color: var(--yellow); -webkit-text-stroke: 1px #5a1500; }
+.bcall-vs .av.xl { width: 58px; height: 58px; } @keyframes callIn { from { transform: translateX(-50%) translateY(40px) scale(.8); opacity: 0; } }
+/* sala do campeonato: quem confirmou brilha, quem ainda escolhe fica apagado */
+.prow.glow { background: linear-gradient(90deg, color-mix(in srgb, var(--c) 55%, transparent), rgba(255,255,255,.08)); box-shadow: inset 0 0 0 2px var(--c), 0 0 14px color-mix(in srgb, var(--c) 70%, transparent); animation: rowGlow 1.6s ease-in-out infinite; }
+.prow.glow .av { box-shadow: 0 0 10px var(--c); } .prow.look { opacity: .62; border: 1px dashed rgba(140,170,255,.35); } .prow.look small { animation: pulse 1.2s infinite; } .prow.off { opacity: .4; filter: grayscale(.7); }
+@keyframes rowGlow { 50% { box-shadow: inset 0 0 0 2px var(--c), 0 0 22px var(--c); } }
+.fcell.taken em { font-size: 5px; }
 
 /* convite por cima de tudo */
 .ar .lb-modal { z-index: 20; } .ar .lb-sent { position: absolute; left: 50%; bottom: 40px; transform: translateX(-50%); z-index: 15; background: rgba(4,6,20,.95); border: 2px dashed var(--yellow); padding: 10px 16px; text-align: center; border-radius: 10px; }
+
+/* chat da sala (painel lateral) */
+.room { display: none; } body.online.room-open .room { display: flex; flex-direction: column; }
+/* ao lado da tela (computador): o painel tem a altura da tela do jogo, nunca o contrário; a lista rola por dentro */
+@media (min-width: 721px) and (min-height: 521px) { body.online.room-open .room { position: relative; padding: 0; } .room > .rm-dyn { position: absolute; inset: 12px 12px 218px; } .room > .rm-chat { position: absolute; left: 12px; right: 12px; bottom: 12px; height: 198px; } }
+.rm-dyn { flex: 1 1 auto; min-height: 0; overflow: auto; } .rm-chat { flex: 0 0 auto; display: flex; flex-direction: column; margin-top: 8px; border-top: 2px solid #1a2130; padding-top: 2px; }
+.rm-log { height: 150px; overflow: auto; display: flex; flex-direction: column; gap: 4px; padding: 2px; } .rm-msg { font-size: 7px; line-height: 1.7; color: #dbe5ff; word-break: break-word; } .rm-msg b { font-weight: normal; color: var(--c); }
+.rm-msg.me { color: #fff; } .rm-msg.none { color: #6f83b8; font-size: 6px; text-align: center; padding: 18px 6px; }
+.rm-chat form { display: flex; gap: 4px; margin-top: 6px; } .rm-chat input { flex: 1; min-width: 0; font-family: var(--pix); font-size: 8px; padding: 9px 8px; background: #0b1030; color: #fff; border: 2px solid #2a3a60; outline: none; border-radius: 6px; text-transform: none; -webkit-user-select: text; user-select: text; }
+.rm-chat input:focus { border-color: var(--yellow); } .rm-chat button { font-family: var(--pix); font-size: 9px; padding: 0 11px; border: 0; border-radius: 6px; background: var(--yellow); color: #222; box-shadow: 0 3px 0 #a86b00; cursor: pointer; }
+#room-toggle.bump { animation: gpop .4s; background: #ff5468; color: #fff; }
+.mini.kick { background: #7a1c2c; color: #fff; box-shadow: none; margin-left: 3px; }

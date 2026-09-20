@@ -48,6 +48,10 @@ export class Lobby {
   private tab: 'gente' | 'ranking' = 'gente';
   private squad: Squad | null = null;
   private pick = '';                // draft / sala do campeonato: lutador em destaque
+  private chat: { n: string; f: string; x: string; me?: boolean }[] = [];
+  private sideDyn: HTMLElement | null = null; private chatLog: HTMLElement | null = null;
+  private liveTourney: store.TMatch | null = null;      // a luta do campeonato que estou jogando
+  private autoWatched = new Set<string>(); private creating = false; private rang = '';
   private clock = 0; private raf = 0;
   private invites: Invites;
   private timer: ReturnType<typeof setInterval>;
@@ -107,9 +111,22 @@ export class Lobby {
   close() {
     this.invites.cancel(); this.squad?.leave(); this.squad = null; this.view = 'hub';
     this.room?.leave(); this.room = null; this.unwatch?.(); this.unwatch = null; this.peers = []; this.peersSeen = false;
-    document.body.classList.remove('online'); document.getElementById('room-toggle')!.hidden = true; this.side.innerHTML = '';
+    document.body.classList.remove('online'); document.getElementById('room-toggle')!.hidden = true; this.side.innerHTML = ''; this.sideDyn = null; this.chatLog = null;
     window.dispatchEvent(new Event('resize'));
   }
+
+  /** Quem eu sou no campeonato: pelo NOME (igual ao ranking), pra inscrição e organização não se perderem quando a pessoa
+   *  fecha a aba e volta (o id da visita muda a cada vez). */
+  private get tid() { return store.rankKey(this.me.name, this.me.id); }
+  private tidOf(p: Peer) { return store.rankKey(p.name, p.id); }
+  private isOnline(playerId: string | null) { return !!playerId && this.peers.some((p) => this.tidOf(p) === playerId); }
+  /** Quem toca o campeonato agora: o organizador; se ele não está na sala, o primeiro inscrito que estiver. */
+  private get runnerId() {
+    const t = this.tour; if (!t) return '';
+    if (this.isOnline(t.owner)) return t.owner;
+    return this.tEntries.map((e) => e.player_id).filter((id) => this.isOnline(id)).sort()[0] ?? t.owner;
+  }
+  private get runsTourney() { return !!this.tour && this.runnerId === this.tid; }
 
   /** Avisa o saguão do estado atual (lutando/assistindo) sem sair dele. */
   setStatus(status: Peer['status'], matchId?: string, vs?: string, mc?: string) {
@@ -117,7 +134,11 @@ export class Lobby {
     this.paint();
   }
   /** A luta conectou: quem aceitou para de reenviar o aceite. */
-  connected(matchId: string) { this.invites.connected(matchId); }
+  connected(matchId: string) {
+    this.invites.connected(matchId);
+    const m = this.liveTourney;                            // campeonato: a luta só vira "lutando" (e a plateia entra) quando os dois conectaram
+    if (m && m.id === matchId && m.p1 === this.tid) void store.patchMatch(m.id, { status: 'lutando' });
+  }
   note(text: string) { this.feed.unshift(text); this.feed.length = Math.min(this.feed.length, 6); this.paint(); }
 
   report(cfg: NetMatchCfg, winner: 0 | 1) {
@@ -145,6 +166,7 @@ export class Lobby {
 
   private onMsg(m: Msg) {
     if (m.t === 'result') { this.addResult(m.winner as string, m.loser as string); return; }
+    if (m.t === 'chat') { this.pushChat({ n: String(m.n ?? '?').slice(0, 14), f: String(m.f ?? ''), x: String(m.x ?? '').slice(0, 140) }); if (!document.body.classList.contains('room-open')) this.bumpToggle(); return; }
     this.invites.onMsg(m);
   }
 
@@ -184,7 +206,7 @@ export class Lobby {
         if (navigator.clipboard) navigator.clipboard.writeText(link).then(done, () => window.prompt('Copie o link:', link)); else window.prompt('Copie o link:', link);
         break;
       }
-      case 'view': this.view = arg as View; this.pick = this.me.fighter; this.paint(); break;
+      case 'view': this.view = arg as View; this.pick = this.me.fighter; if (this.view === 'copa') this.ensureTournament(); this.paint(); break;
       case 'tab': this.tab = arg as 'gente' | 'ranking'; this.paint(); break;
       // ----- duplas
       case 'sq-new': this.sit(this.me.id); break;
@@ -197,7 +219,7 @@ export class Lobby {
       case 'sq-lock': if (this.squad && this.pick && this.squad.lock(this.pick)) { audio.sfx('selectChar'); audio.voice(`ann-${this.pick}`, 'ann'); this.paint(); } break;
       case 'sq-stage': this.squad?.setStage(arg); break;
       // ----- campeonato: escolher na sala
-      case 'tpick': if (!this.hooks.locked(arg)) { this.pick = arg; this.clock = 0; this.paint(); } break;
+      case 'tpick': if (!this.hooks.locked(arg)) { this.pick = arg; this.clock = 0; this.me.fighter = arg; this.room?.setPresence(this.me); this.paint(); } break;   // os outros veem quem estou olhando
       default: this.tourAct(a, arg);
     }
   }
@@ -246,31 +268,51 @@ export class Lobby {
       this.tour = await store.currentTournament();
       if (this.tour) {
         [this.tEntries, this.tMatches] = await Promise.all([store.entries(this.tour.id), store.matches(this.tour.id)]);
-        // uma luta por vez: o organizador chama a próxima quando não há nenhuma em andamento
-        if (this.tour.status === 'andamento' && this.tour.owner === this.me.id && !this.tMatches.some((m) => m.status === 'chamando' || m.status === 'lutando')) {
+        // uma luta por vez: quem toca o campeonato chama a próxima quando não há nenhuma em andamento
+        if (this.tour.status === 'andamento' && this.runsTourney && !this.tMatches.some((m) => m.status === 'chamando' || m.status === 'lutando')) {
           const next = this.tMatches.find((m) => m.status === 'pendente' && m.p1 && m.p2);
           if (next) await store.patchMatch(next.id, { status: 'chamando' });
         }
+        this.tourneyEvents();
       } else { this.tEntries = []; this.tMatches = []; }
     } catch (e) { console.warn('supabase', e); }
     this.refreshing = false;
     this.paint();
   }
 
+  /** Minha luta foi chamada: toca o aviso e abre a tela do campeonato. Luta dos outros começou: quem está na tela do campeonato assiste. */
+  private tourneyEvents() {
+    if (!this.root.classList.contains('lobby') || this.squad || this.me.status !== 'livre') return;
+    const mineCalled = this.tMatches.find((m) => m.status === 'chamando' && (m.p1 === this.tid || m.p2 === this.tid));
+    if (mineCalled && this.rang !== mineCalled.id) { this.rang = mineCalled.id; this.view = 'copa'; audio.sfx('meter2'); audio.voice('ann-fight', 'ann'); }
+    const live = this.tMatches.find((m) => m.status === 'lutando' && m.p1 !== this.tid && m.p2 !== this.tid);
+    if (live && this.view === 'copa' && !this.autoWatched.has(live.id)) { this.autoWatched.add(live.id); this.tourAct('twatch', live.id); }
+  }
+  /** Abrir o CAMPEONATO já cai na sala de escolha: se não tem nenhum aberto, quem entrou primeiro abre um. */
+  private ensureTournament() {
+    if (!store.storeReady || this.creating || (this.tour && this.tour.status !== 'fim')) return;
+    if (this.tour?.status === 'fim' && !this.wantNew) return;          // acabou: fica o pódio até alguém pedir outro
+    this.creating = true; this.wantNew = false;
+    void store.createTournament(`COPA V4 ${new Date().toLocaleDateString('pt-BR')}`, this.tid).then(() => this.refresh()).finally(() => { this.creating = false; });
+  }
+  private wantNew = false;
+
   private tourAct(a: string, arg: string) {
     const t = this.tour;
     const fighterOf = (id: string | null) => this.tEntries.find((e) => e.player_id === id)?.fighter ?? this.roster[0].def.id;
     const cfgOf = (m: store.TMatch, local: 0 | 1 | -1): NetMatchCfg => ({ matchId: m.id, f: [fighterOf(m.p1), fighterOf(m.p2)], names: [m.p1_name ?? '?', m.p2_name ?? '?'], ids: [m.p1!, m.p2!], local, tourney: { t: t!, m }, connectMs: 90000 });
     const m = this.tMatches.find((x) => x.id === arg.split(':')[0]);
-    if (a === 'tnew') void store.createTournament(`COPA V4 ${new Date().toLocaleDateString('pt-BR')}`, this.me.id).then(() => this.refresh());
+    if (a === 'tnew') { this.wantNew = true; this.ensureTournament(); }
     else if (a === 'tjoin' && t && arg) {                              // entra (ou troca) com o lutador em destaque; o banco recusa lutador repetido
       this.me.fighter = arg; this.room?.setPresence(this.me);
-      void store.joinTournament(t.id, this.me.id, this.me.name, arg).then(() => this.refresh());
-    } else if (a === 'tleave' && t) void store.leaveTournament(t.id, this.me.id).then(() => this.refresh()); else if (a === 'tstart' && t) void store.startTournament(t, this.tEntries).then(() => this.refresh());
+      audio.sfx('selectChar'); audio.voice(`ann-${arg}`, 'ann');
+      void store.joinTournament(t.id, this.tid, this.me.name, arg).then(() => this.refresh());
+    } else if (a === 'tkick' && t && this.runsTourney && !this.isOnline(arg)) void store.leaveTournament(t.id, arg).then(() => this.refresh());   // libera o lutador de quem saiu da sala
+    else if (a === 'tleave' && t) void store.leaveTournament(t.id, this.tid).then(() => this.refresh()); else if (a === 'tstart' && t) void store.startTournament(t, this.tEntries.filter((e) => this.isOnline(e.player_id))).then(() => this.refresh());
     else if (a === 'tplay' && m) {
-      if (m.p1 === this.me.id) void store.patchMatch(m.id, { status: 'lutando' });
+      this.liveTourney = m;
       this.invites.cancel();
-      this.hooks.start(cfgOf(m, m.p1 === this.me.id ? 0 : 1));
+      this.hooks.start(cfgOf(m, m.p1 === this.tid ? 0 : 1));
     } else if (a === 'twatch' && m) this.hooks.start(cfgOf(m, -1));
     else if (a === 'two' && m && t) {
       const who = arg.split(':')[1];
@@ -370,7 +412,7 @@ export class Lobby {
     const free = others.filter((p) => p.status === 'livre' || p.status === 'procurando').length;
     const tables = others.filter((p) => p.table?.open), t = this.tour;
     const copaBadge = !store.storeReady ? 'SEM BANCO' : !t || t.status === 'fim' ? (t?.champion ? `CAMPEÃO: ${esc(t.champion)}` : 'NENHUM ABERTO') : t.status === 'inscricoes' ? `INSCRIÇÕES ABERTAS · ${this.tEntries.length}` : 'EM ANDAMENTO';
-    const myTurn = this.tMatches.some((m) => (m.status === 'chamando' || m.status === 'lutando') && (m.p1 === this.me.id || m.p2 === this.me.id));
+    const myTurn = this.tMatches.some((m) => (m.status === 'chamando' || m.status === 'lutando') && (m.p1 === this.tid || m.p2 === this.tid));
     const art = (ids: string[]) => `<div class="mc-art">${ids.map((id, i) => `<img src="${BASE}fighters/${id}/face.png" style="--i:${i}" alt="">`).join('')}</div>`;
     const pool = this.roster.filter((f) => !f.def.secret).map((f) => f.def.id), k = pool.indexOf(this.me.fighter), rot = (n: number) => pool[(k + n + pool.length) % pool.length];
     const cards = `
@@ -452,39 +494,67 @@ export class Lobby {
       ${team(1)}</div>`;
   }
 
-  // ---------- campeonato: sala de inscrição, chave e campeão
+  // ---------- campeonato: sala de escolha (todo mundo escolhe junto), chave em organograma e campeão
   private copaHtml() {
     const t = this.tour, top = (sub: string) => this.topBar('CAMPEONATO', sub, 'hub');
     if (!store.storeReady) return `${top('PRECISA DO SUPABASE CONFIGURADO')}<div class="ar-main"><div class="pempty">SEM BANCO DE DADOS NESTE AMBIENTE.</div></div>`;
-    if (!t || t.status === 'fim') return `${top('MATA-MATA · UM LUTADOR POR PESSOA')}
-      <div class="champ">${t?.champion ? `<div class="cup">🏆</div><small>ÚLTIMO CAMPEÃO</small><h2>${esc(t.champion)}</h2>` : '<div class="cup">🏆</div><h2>NENHUM CAMPEONATO ABERTO</h2>'}
-        <div class="cta big" data-act="tnew">CRIAR CAMPEONATO</div><small>QUEM CRIA VIRA O ORGANIZADOR: ABRE AS INSCRIÇÕES E SORTEIA A CHAVE.</small></div>`;
-    const owner = t.owner === this.me.id, mine = this.tEntries.find((e) => e.player_id === this.me.id);
+    if (!t || this.creating) return `${top('MATA-MATA · UM LUTADOR POR PESSOA')}<div class="champ"><div class="wait">ABRINDO A SALA DO CAMPEONATO…</div></div>`;
+    const me = this.tid, mine = this.tEntries.find((e) => e.player_id === me), runs = this.runsTourney;
     if (t.status === 'inscricoes') {
-      const takenBy = (id: string) => this.tEntries.find((e) => e.fighter === id && e.player_id !== this.me.id)?.name ?? '';
-      const pick = this.pick && !takenBy(this.pick) ? this.pick : '';
-      const enrolled = this.tEntries.map((e) => `<div class="prow in" style="--c:${this.F(e.fighter)?.def.colors.primary ?? '#3d4a63'}">${this.face(e.fighter)}<div class="pn"><b>${esc(e.name)}${e.player_id === this.me.id ? ' (VOCÊ)' : ''}</b><small>🔒 ${esc(this.F(e.fighter)?.def.name ?? e.fighter)}</small></div><span class="mini ok">INSCRITO</span></div>`).join('');
-      const looking = this.peers.filter((p) => !this.tEntries.some((e) => e.player_id === p.id) && p.id !== this.me.id).map((p) => `<div class="prow" style="--c:#3d4a63">${this.face(p.fighter)}<div class="pn"><b>${esc(p.name)}</b><small>ESCOLHENDO…</small></div></div>`).join('');
-      const btn = !pick ? '<div class="cta big off">ESCOLHA UM LUTADOR LIVRE</div>' : !mine ? `<div class="cta big" data-act="tjoin" data-arg="${pick}">🔒 ENTRAR COM ${esc(this.F(pick)?.def.name ?? '')}</div>`
-        : mine.fighter !== pick ? `<div class="cta big" data-act="tjoin" data-arg="${pick}">TROCAR PARA ${esc(this.F(pick)?.def.name ?? '')}</div>` : '<div class="wait">INSCRITO ✔ · ESPERANDO O SORTEIO</div>';
-      return `${top(`${esc(t.name)} · INSCRIÇÕES ABERTAS`)}
+      const takenBy = (id: string) => { const e = this.tEntries.find((x) => x.fighter === id); return e ? (e.player_id === me ? 'VOCÊ' : e.name) : ''; };
+      const free = (id: string) => !this.tEntries.some((x) => x.fighter === id && x.player_id !== me);
+      const pick = this.pick && free(this.pick) ? this.pick : '';
+      const ready = this.tEntries.filter((e) => this.isOnline(e.player_id));
+      const enrolled = this.tEntries.map((e) => { const on = this.isOnline(e.player_id);
+        return `<div class="prow in ${on ? 'glow' : 'off'}" style="--c:${this.F(e.fighter)?.def.colors.primary ?? '#3d4a63'}">${this.face(e.fighter)}<div class="pn"><b>${esc(e.name)}${e.player_id === me ? ' (VOCÊ)' : ''}</b><small>🔒 ${esc(this.F(e.fighter)?.def.name ?? e.fighter)}</small></div><span class="mini ${on ? 'ok' : 'ghost'}">${on ? '✔ CONFIRMADO' : 'FORA DA SALA'}</span>${!on && runs ? `<span class="mini kick" data-act="tkick" data-arg="${esc(e.player_id)}" title="tirar da chave">✕</span>` : ''}</div>`; }).join('');
+      const looking = this.peers.filter((p) => !this.tEntries.some((e) => e.player_id === this.tidOf(p))).map((p) => `<div class="prow look" style="--c:#3d4a63">${this.face(p.fighter)}<div class="pn"><b>${esc(p.name)}${p.id === this.me.id ? ' (VOCÊ)' : ''}</b><small>ESCOLHENDO… ${esc(this.F(p.fighter)?.def.name ?? '')}</small></div></div>`).join('');
+      const btn = !pick ? '<div class="cta big off">ESCOLHA UM LUTADOR LIVRE</div>' : !mine ? `<div class="cta big" data-act="tjoin" data-arg="${pick}">🔒 CONFIRMAR ${esc(this.F(pick)?.def.name ?? '')}</div>`
+        : mine.fighter !== pick ? `<div class="cta big" data-act="tjoin" data-arg="${pick}">TROCAR PARA ${esc(this.F(pick)?.def.name ?? '')}</div>` : '<div class="wait">CONFIRMADO ✔ · ESPERANDO FECHAR AS CHAVES</div>';
+      return `${top(`${esc(t.name)} · ESCOLHA O SEU LUTADOR`)}
         <div class="copa-room"><div class="cr-left"><h4>LUTADORES</h4>${this.grid('tpick', takenBy, 3)}</div>
           <div class="cr-mid">${this.showcase(pick || mine?.fighter || '')}<div class="cr-act">${btn}${mine ? '<span class="mini ghost" data-act="tleave">SAIR DA CHAVE</span>' : ''}</div></div>
-          <div class="cr-right"><h4>NA SALA · ${this.tEntries.length} INSCRITO${this.tEntries.length === 1 ? '' : 'S'}</h4><div class="ar-list">${enrolled}${looking || (enrolled ? '' : '<div class="pempty">NINGUÉM AINDA</div>')}</div>
-            ${owner ? `<div class="cta ${this.tEntries.length >= 2 ? '' : 'off'}" data-act="tstart">SORTEAR E INICIAR</div>` : `<small class="hint">O ORGANIZADOR SORTEIA A CHAVE QUANDO TODOS ENTRAREM</small>`}</div></div>`;
+          <div class="cr-right"><h4>NA SALA · ${ready.length} CONFIRMADO${ready.length === 1 ? '' : 'S'}</h4><div class="ar-list">${enrolled}${looking}</div>
+            ${runs ? `<div class="cta ${ready.length >= 2 ? '' : 'off'}" data-act="tstart">⚔ FECHAR AS CHAVES · ${ready.length}</div><small class="hint">${ready.length >= 2 ? 'SORTEIA QUEM ESTÁ CONFIRMADO E NA SALA' : 'PRECISA DE 2 CONFIRMADOS NA SALA'}</small>` : `<small class="hint">${esc(this.tEntries.find((e) => e.player_id === this.runnerId)?.name ?? 'O ORGANIZADOR')} FECHA AS CHAVES QUANDO TODOS CONFIRMAREM</small>`}</div></div>`;
     }
-    // chave
-    const rounds = Math.max(...this.tMatches.map((m) => m.round)) + 1, fOf = (id: string | null) => this.tEntries.find((e) => e.player_id === id)?.fighter ?? '';
+    // chave em organograma: cada coluna é uma fase; as linhas ligam cada luta à seguinte
+    const rounds = Math.max(0, ...this.tMatches.map((m) => m.round)) + 1, fOf = (id: string | null) => this.tEntries.find((e) => e.player_id === id)?.fighter ?? '';
     const label = (r: number) => (r === rounds - 1 ? 'FINAL' : r === rounds - 2 ? 'SEMIFINAL' : r === rounds - 3 ? 'QUARTAS' : `FASE ${r + 1}`);
-    const cols = Array.from({ length: rounds }, (_, r) => `<div class="bcol"><h4>${label(r)}</h4><div class="bms">${this.tMatches.filter((m) => m.round === r && (r > 0 || m.p1 || m.p2)).map((m) => {
-      const live = m.status === 'chamando' || m.status === 'lutando', mineM = m.p1 === this.me.id || m.p2 === this.me.id;
-      const pl = (id: string | null, nm: string | null) => `<div class="bp ${m.winner && m.winner === id ? 'win' : m.winner ? 'lost' : ''}">${this.face(fOf(id), 'sm')}<b>${esc(nm ?? (r === 0 ? 'FOLGA' : '—'))}</b>${m.winner && m.winner === id ? '<i>✔</i>' : ''}</div>`;
-      return `<div class="bm ${live ? 'live' : ''} ${mineM ? 'mine' : ''}">${pl(m.p1, m.p1_name)}${pl(m.p2, m.p2_name)}
-        ${live && mineM ? `<span class="cta sm" data-act="tplay" data-arg="${m.id}">É SUA VEZ · LUTAR</span>` : m.status === 'lutando' ? `<span class="cta sm ghost" data-act="twatch" data-arg="${m.id}">● ASSISTIR</span>` : live ? '<span class="bst">CHAMANDO…</span>' : ''}
-        ${live && owner && !mineM ? `<span class="wo"><u data-act="two" data-arg="${m.id}:1">W.O. ${esc(m.p1_name ?? '')}</u><u data-act="two" data-arg="${m.id}:2">W.O. ${esc(m.p2_name ?? '')}</u></span>` : ''}</div>`;
+    const cols = Array.from({ length: rounds }, (_, r) => `<div class="bcol ${r === rounds - 1 ? 'last' : ''}"><h4>${label(r)}</h4><div class="bms">${this.tMatches.filter((m) => m.round === r).map((m) => {
+      const live = m.status === 'chamando' || m.status === 'lutando', mineM = m.p1 === me || m.p2 === me, bye = r === 0 && (!m.p1 || !m.p2);
+      const pl = (id: string | null, nm: string | null) => `<div class="bp ${m.winner && m.winner === id ? 'win' : m.winner ? 'lost' : ''}" style="--c:${this.F(fOf(id))?.def.colors.primary ?? '#3d4a63'}">${this.face(fOf(id))}<b>${esc(nm ?? (bye ? 'FOLGA' : 'A DEFINIR'))}</b>${m.winner && m.winner === id ? '<i>✔</i>' : ''}</div>`;
+      return `<div class="bslot"><div class="bm ${live ? 'live' : ''} ${mineM ? 'mine' : ''} ${r === 0 && !m.p1 && !m.p2 ? 'void' : ''}">${pl(m.p1, m.p1_name)}<em class="bvs">${m.status === 'lutando' ? '● AO VIVO' : m.status === 'chamando' ? 'CHAMANDO…' : 'VS'}</em>${pl(m.p2, m.p2_name)}
+        ${m.status === 'lutando' && !mineM ? `<span class="cta sm ghost" data-act="twatch" data-arg="${m.id}">ASSISTIR</span>` : ''}
+        ${live && runs && !mineM ? `<span class="wo"><u data-act="two" data-arg="${m.id}:1">W.O. ${esc(m.p1_name ?? '')}</u><u data-act="two" data-arg="${m.id}:2">W.O. ${esc(m.p2_name ?? '')}</u></span>` : ''}</div></div>`;
     }).join('')}</div></div>`).join('');
-    return `${top(`${esc(t.name)} · EM ANDAMENTO`)}<div class="bracket">${cols}<div class="bcol cupcol"><h4>CAMPEÃO</h4><div class="bms"><div class="cup">🏆</div></div></div></div>`;
+    const champ = t.status === 'fim' ? this.tEntries.find((e) => e.name === t.champion) : null;
+    const call = this.tMatches.find((m) => (m.status === 'chamando' || m.status === 'lutando') && (m.p1 === me || m.p2 === me));
+    const callHtml = call ? `<div class="bcall"><small>${label(call.round)} · É A SUA VEZ</small><div class="bcall-vs">${this.face(fOf(call.p1), 'xl')}<b>${esc(call.p1_name ?? '')}</b><i>VS</i><b>${esc(call.p2_name ?? '')}</b>${this.face(fOf(call.p2), 'xl')}</div>
+      <div class="cta big" data-act="tplay" data-arg="${call.id}">⚔ CONFIRMAR BATALHA</div><small>A LUTA COMEÇA QUANDO OS DOIS CONFIRMAREM. O RESTO DA SALA ASSISTE.</small></div>` : '';
+    return `${top(`${esc(t.name)} · ${t.status === 'fim' ? 'ENCERRADO' : 'DOIS LUTAM, O RESTO ASSISTE'}`)}<div class="bracket">${cols}
+      <div class="bcol cupcol"><h4>CAMPEÃO</h4><div class="bms"><div class="bchamp ${champ ? 'on' : ''}">${champ ? this.face(champ.fighter, 'xl') : '<div class="cup">🏆</div>'}<b>${esc(t.champion ?? '?')}</b>${t.status === 'fim' ? '<span class="cta sm" data-act="tnew">NOVO CAMPEONATO</span>' : ''}</div></div></div></div>${callHtml}`;
   }
+
+  /** O painel lateral tem duas partes: a lista (redesenhada quando muda) e o chat, que fica fixo pra não perder o que está sendo digitado. */
+  private sideBox() {
+    if (this.sideDyn && this.side.contains(this.sideDyn)) return this.sideDyn;
+    this.side.innerHTML = '<div class="rm-dyn"></div><div class="rm-chat"><div class="rm-sec">CHAT DA SALA</div><div class="rm-log"></div><form><input maxlength="120" placeholder="ESCREVA AQUI…" autocomplete="off"><button type="submit">▶</button></form></div>';
+    this.sideDyn = this.side.querySelector<HTMLElement>('.rm-dyn')!; this.chatLog = this.side.querySelector<HTMLElement>('.rm-log')!;
+    const form = this.side.querySelector('form')!, inp = form.querySelector('input')!;
+    for (const ev of ['keydown', 'keyup', 'keypress'] as const) inp.addEventListener(ev, (e) => e.stopPropagation());     // digitar não pode mexer no jogo
+    form.addEventListener('submit', (e) => {
+      e.preventDefault(); const x = inp.value.trim().slice(0, 120); if (!x) return; inp.value = '';
+      this.room?.send({ t: 'chat', n: this.me.name, f: this.me.fighter, x }); this.pushChat({ n: this.me.name, f: this.me.fighter, x, me: true });
+    });
+    this.paintChat();
+    return this.sideDyn;
+  }
+  private pushChat(m: { n: string; f: string; x: string; me?: boolean }) { this.chat.push(m); if (this.chat.length > 40) this.chat.shift(); if (!m.me) audio.sfx('menuMove'); this.paintChat(); }
+  private paintChat() {
+    if (!this.chatLog) return;
+    this.chatLog.innerHTML = this.chat.map((m) => `<div class="rm-msg ${m.me ? 'me' : ''}" style="--c:${this.F(m.f)?.def.colors.primary ?? '#8fa5c8'}"><b>${esc(m.n)}</b> ${esc(m.x)}</div>`).join('') || '<div class="rm-msg none">NINGUÉM FALOU NADA AINDA. PROVOQUE ALGUÉM.</div>';
+    this.chatLog.scrollTop = this.chatLog.scrollHeight;
+  }
+  private bumpToggle() { const tg = document.getElementById('room-toggle'); tg?.classList.remove('bump'); void tg?.offsetWidth; tg?.classList.add('bump'); }
 
   /** Painel "SALA" ao lado da tela: quem está online, o que cada um está fazendo, desafios e lutas pra assistir. */
   private paintSide() {
@@ -506,7 +576,7 @@ export class Lobby {
         : !me && !busy && p.status === 'lutando' && p.matchId ? `<button class="rm-btn ghost" data-act="watch" data-arg="${p.matchId}">ASSISTIR</button>` : `<span class="rm-st ${p.status}">${label[p.status]}</span>`}</div>`;
     const others = this.peers.filter((p) => p.id !== this.me.id);
     const watchers = busy ? this.peers.filter((p) => p.status === 'assistindo' && p.matchId === this.me.matchId) : [];
-    this.put(this.side, `<div class="rm-wrap"><div class="rm-head"><span>SALA ${this.peers.length}/${MAX_PEERS}</span><i class="${ONLINE ? '' : 'off'}">● ${ONLINE ? 'ONLINE' : 'LOCAL'}</i></div>
+    this.put(this.sideBox(), `<div class="rm-wrap"><div class="rm-head"><span>SALA ${this.peers.length}/${MAX_PEERS}</span><i class="${ONLINE ? '' : 'off'}">● ${ONLINE ? 'ONLINE' : 'LOCAL'}</i></div>
       ${this.inviteHtml(false)}
       ${row(this.me, true)}
       <div class="rm-sec">NA SALA</div>${others.map((p) => row(p)).join('') || '<div class="rm-empty">SÓ VOCÊ POR ENQUANTO.<br>MANDE O LINK DE CONVITE.</div>'}
