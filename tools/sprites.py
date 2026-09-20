@@ -19,7 +19,8 @@ carrega pedaço da pose vizinha, mesmo quando os desenhos se encostam ou um efei
                 drone, raio. Com :erase o pedaço some do board, pra não entrar em nenhum frame; :rot=graus endireita um
                 projétil desenhado inclinado (anti-horário positivo). Pode repetir.
   Board principal com FUNDO BRANCO (sem transparência) também vale: o recorte é o do tools/whiteboard.py, com as mesmas
-  opções --white-* (se houver --extra, elas valem pro extra e o principal usa só o padrão).
+  opções --white-*: antes do primeiro --extra valem pro board principal; depois de um --extra, valem praquele board extra
+  (dá pra ter vários --extra: os frames vão sendo anexados na ordem).
   --extra       segundo board do mesmo lutador (golpe longo + vitória: 2 linhas de 5 poses), anexado ao MESMO atlas
                 como linhas 8 e 9 (frames 35..44). Se vier com fundo branco, o recorte é do tools/whiteboard.py
                 (--white-fx matiz do efeito; --white-keep/--white-drop/--white-fx-keep/--white-fx-drop corrigem
@@ -349,10 +350,21 @@ def main():
     ap.add_argument('--extra-cuts', default=None, help='divisórias verticais do board extra, em px do original (ex.: 290,510,784,1104)')
     ap.add_argument('--extra-rows', type=int, default=2); ap.add_argument('--extra-scale', default='1.0', help='escala do board extra; "0.84,0.75" = uma por linha (as linhas nem sempre vêm no mesmo tamanho)'); ap.add_argument('--extra-grow', type=int, default=6)
     for k in ('fx', 'keep', 'drop', 'fx-keep', 'fx-drop', 'core', 'erase'): ap.add_argument(f'--white-{k}', action='append', default=[])
-    args = ap.parse_args()
+    # Opções ANTES do primeiro --extra são do board principal; cada --extra abre um grupo com as opções --extra-* e --white-* DELE.
+    argv = sys.argv[1:]
+    dbg = [argv[i + 1] for i in range(len(argv) - 1) if argv[i] == '--debug']       # o --debug vale pra todos os boards, venha onde vier
+    for d in dbg: k = argv.index('--debug'); del argv[k:k + 2]
+    marks = [i for i, a in enumerate(argv) if a == '--extra']
+    args = ap.parse_args(argv[:marks[0]] if marks else argv)
+    if dbg: args.debug = dbg[0]
+    xp = argparse.ArgumentParser()
+    xp.add_argument('--extra'); xp.add_argument('--extra-cuts', default=None); xp.add_argument('--extra-rows', type=int, default=2)
+    xp.add_argument('--extra-scale', default='1.0'); xp.add_argument('--extra-grow', type=int, default=6)
+    for k in ('fx', 'keep', 'drop', 'fx-keep', 'fx-drop', 'core', 'erase'): xp.add_argument(f'--white-{k}', action='append', default=[])
+    extras = [xp.parse_args(argv[a:b]) for a, b in zip(marks, marks[1:] + [len(argv)])]
     os.makedirs(args.outdir, exist_ok=True)
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-    arr, _ = load_board(args.src, 1.0, args, tuned=not args.extra, erase=False)      # no principal os --crop vêm antes de apagar
+    arr, _ = load_board(args.src, 1.0, args, erase=False)      # no principal os --crop vêm antes de apagar
     cols, rows = args.cols, args.rows
     for c in args.crop:                                          # pedaço avulso (projétil) tirado do board
         name, geom, *opt = c.split(':'); cx0, cy0, cx1, cy1 = (int(v) for v in geom.split(','))
@@ -363,7 +375,7 @@ def main():
             piece = piece.convert('RGBa').rotate(rot[0], resample=Image.BICUBIC, expand=True).convert('RGBA'); piece = piece.crop(piece.getchannel('A').point(lambda v: 255 if v > ALPHA_T else 0).getbbox())
         piece.save(os.path.join(args.outdir, name))
         if 'erase' in opt: arr[cy0:cy1, cx0:cx1] = 0
-    if not args.extra: apply_erases(arr, args)
+    apply_erases(arr, args)
     meta = {'sheet': 'sheet.png', 'cols': cols, 'rows': rows, 'source': os.path.basename(args.src)}
 
     if args.fx:
@@ -383,23 +395,29 @@ def main():
     frames, crops, own, xcuts, ycuts = extract(arr, cols, rows, wides, args.alpha, args.grow, fxm=mfx)
     if args.debug: debug_images(args.debug, arr, own, xcuts, ycuts, frames, crops, cols, rows)
 
-    if args.extra:
-        row_scales = [float(t) for t in str(args.extra_scale).split(',')]; args.extra_scale = max(row_scales)
-        earr, fxm = load_board(args.extra, args.extra_scale, args)
-        fixed = [round(int(t) * args.extra_scale) for t in args.extra_cuts.split(',')] if args.extra_cuts else None
-        ef, ec, eown, excuts, eycuts = extract(earr, cols, args.extra_rows, [], ALPHA_T, args.extra_grow, split_touching=False, fxm=fxm, xcuts_fixed=fixed)
+    # ---------- boards extras (cada --extra abre um grupo: as opções --extra-* e --white-* que vêm DEPOIS dele são dele)
+    first = rows * cols; grid_rows = rows; metas = []
+    for n, xa in enumerate(extras):
+        row_scales = [float(t) for t in str(xa.extra_scale).split(',')]; xa.extra_scale = max(row_scales)
+        xa.debug = args.debug.replace('.png', '-extra.png' if n == 0 else f'-extra{n + 1}.png') if args.debug else None
+        earr, fxm = load_board(xa.extra, xa.extra_scale, xa)
+        fixed = [round(int(t) * xa.extra_scale) for t in xa.extra_cuts.split(',')] if xa.extra_cuts else None
+        ef, ec, eown, excuts, eycuts = extract(earr, cols, xa.extra_rows, [], ALPHA_T, xa.extra_grow, split_touching=False, fxm=fxm, xcuts_fixed=fixed)
         lost = int(((earr[:, :, 3] > ALPHA_T) & (eown == 0)).sum())
         if lost: print(f'   atenção: {lost} px sólidos do board extra ficaram sem pose', file=sys.stderr)
-        if args.debug: debug_images(args.debug.replace('.png', '-extra.png'), earr, eown, excuts, eycuts, [dict(fr, i=fr['i'] + rows * cols) for fr in ef], ec, cols, args.extra_rows)
+        if xa.debug: debug_images(xa.debug, earr, eown, excuts, eycuts, [dict(fr, i=fr['i'] + first) for fr in ef], ec, cols, xa.extra_rows)
         for k, fr in enumerate(ef):                                # linha desenhada maior que a outra: encolhe só os quadros dela
-            rs = row_scales[min(len(row_scales) - 1, k // cols)] / args.extra_scale
+            rs = row_scales[min(len(row_scales) - 1, k // cols)] / xa.extra_scale
             if fr.get('empty') or abs(rs - 1) < 1e-3: continue
             im = Image.fromarray(ec[k]).convert('RGBa'); im = im.resize((max(1, round(im.width * rs)), max(1, round(im.height * rs))), Image.LANCZOS).convert('RGBA')
             ec[k] = np.array(im); fr.update({'sw': im.width, 'sh': im.height, 'ax': round(fr['ax'] * rs, 1), 'cx': round(fr['cx'] * rs, 1), 'ay': min(im.height, round(fr['ay'] * rs))})
-        for fr in ef: fr['i'] += rows * cols; fr['cell'][0] += rows; fr['extra'] = True
+        for fr in ef: fr['i'] += first; fr['cell'][0] += grid_rows; fr['extra'] = True
         frames += ef; crops += ec
-        meta['extra'] = {'source': os.path.basename(args.extra), 'scale': args.extra_scale, 'rowScales': row_scales, 'rows': args.extra_rows, 'first': rows * cols}
-        meta['rows'] = rows + args.extra_rows
+        metas.append({'source': os.path.basename(xa.extra), 'scale': xa.extra_scale, 'rowScales': row_scales, 'rows': xa.extra_rows, 'first': first})
+        first += xa.extra_rows * cols; grid_rows += xa.extra_rows
+    if metas:
+        meta['extra'] = metas[0]; meta['rows'] = grid_rows
+        if len(metas) > 1: meta['extras'] = metas
 
     # ---------- atlas
     total = len(frames)

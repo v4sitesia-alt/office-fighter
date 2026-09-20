@@ -65,6 +65,11 @@ export interface ZoneDef {
   hits: { at: number; damage: number; knockdown?: boolean; launch?: number }[];
   hitstun: number; blockstun: number; knockback: number; hitstop?: number;
   low?: boolean; overhead?: boolean;
+  /** Pilar de luz que sobe do chão até o topo da tela, montado por peças (tools/pieces.py): base no chão, trecho que se
+   *  repete pra cima, ponta que lidera a subida e um enxame (morcegos/criaturas) que sobe por dentro do feixe. */
+  pillar?: { base: string; tile: string; top: string; swarm: string; rise: number; delay: number };
+  /** Bombas que caem do céu uma depois da outra e estouram no chão (cada estouro é um dos `hits`, na ordem). */
+  rain?: { bomb: string; boom: string; fall: number; spread: number; up?: string; upX?: number; upY?: number };   // up = foguete que sobe do canhão antes da chuva
 }
 
 /** Raio contínuo (olho biônico): sai do lutador, cresce até o alcance ou até bater no adversário e termina num estouro.

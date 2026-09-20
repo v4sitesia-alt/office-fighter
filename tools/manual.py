@@ -7,7 +7,7 @@ STORY = json.load(open('src/data/story.json'))
 PLACES = json.load(open('src/data/places.json'))['places']
 F = {i: json.load(open(f'public/fighters/{i}/fighter.json')) for i in ROSTER}
 SUPER = {
- 'edgard': 'Bate a mão no chão e abre um portal de morcegos sob o adversário, onde quer que ele esteja. Dois acertos; o segundo derruba.',
+ 'edgard': 'Carrega as mãos com chamas roxas, bate no chão e invoca o portal sob o adversário, onde quer que ele esteja: um pilar de luz roxa sobe até o topo da tela, com morcegos e criaturas subindo por dentro. Quatro acertos; o último derruba.',
  'santana': 'Salta sobre o adversário, desce com o punho e a explosão atinge uma área larga ao redor do impacto.',
  'kevin': 'Saca a pistola e dispara três tiros rápidos em sequência, de qualquer distância.',
  'laura': 'Arranca, agarra, levanta e arremessa. Ignora a defesa: só escapa quem estiver no ar.',
@@ -19,11 +19,14 @@ SUPER = {
  'landim': 'Arremessa a claquete, que vai e volta como bumerangue: até 4 acertos.',
  'xablau': 'Língua com punho que alcança quase a tela inteira.',
  'mundim': 'Abre o paletó e arremessa as garrafas da diretoria.',
- 'crm': 'O João trava a mira e dispara o míssil teleguiado: sobe, faz a curva no céu e desce em cima do adversário. Junto com o do Edgard, o especial que mais tira.',
+ 'crm': 'O canhão aponta pro alto, o foguete some no céu e volta em três bombas que caem em fila em cima do adversário, fechando a fuga. Junto com o do Edgard, o especial que mais tira.',
  'leo': 'Chama os drones dourados e manda os três em fila contra o adversário.'}
 MAGIC = {   # magia que não é projétil comum
+ 'edgard': 'Bola maligna: junta a energia roxa no peito e empurra uma bola com um morcego dentro, que cruza a tela com a revoada atrás.',
  'leo': 'Raio contínuo do olho biônico: cruza a tela na hora e para onde encostar.'}
 LONG = {
+ 'crm': 'O míssil teleguiado do João: sobe, faz a curva no céu e desce em cima do adversário. Demora pra sair e deixa o tanque aberto.',
+ 'leo': 'Tiro de escopeta: mira e dispara. O estouro pega a uma boa distância do cano.',
  'edgard': 'Junta as mãos e solta uma revoada de morcegos à frente. Demora pra sair, mas alcança o dobro do golpe forte.',
  'santana': 'O braço mecânico se estica em três estágios e acerta de longe, de punho fechado.',
  'kevin': 'Saca o cassetete e estoca de longe. A ponta estoura em choque azul.',

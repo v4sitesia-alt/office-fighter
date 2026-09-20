@@ -30,6 +30,8 @@ export async function loadFighter(id: string, onProgress?: () => void): Promise<
     if (m?.projectile?.sprite) fxFiles.add(m.projectile.sprite);
     if (m?.projectile?.trail) fxFiles.add(m.projectile.trail);
     if (m?.beam) [m.beam.start, m.beam.mid, m.beam.end].forEach((f) => fxFiles.add(f));
+    if (m?.zone?.pillar) { const p = m.zone.pillar; [p.base, p.tile, p.top, p.swarm].forEach((f) => fxFiles.add(f)); }
+    if (m?.zone?.rain) [m.zone.rain.bomb, m.zone.rain.boom, m.zone.rain.up ?? ''].forEach((f) => f && fxFiles.add(f));
   }
   const fx: Record<string, HTMLImageElement> = {};
   await Promise.all([...fxFiles].map((f) => loadImage(dir + f).then((img) => { fx[f] = img; }).catch(() => undefined))); tick();

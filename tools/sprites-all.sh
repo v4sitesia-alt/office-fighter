@@ -8,7 +8,16 @@ run() { id=$1; src=$2; shift 2; python3 tools/sprites.py "$src" public/fighters/
 # --white-* são correções do recorte conferidas no zoom, em px do board original (ver tools/whiteboard.py).
 run edgard  $M/edgard-2.png \
   --extra $M/edgard-golpelongo-vitoria.png --extra-scale 0.71 --white-fx 250-335 \
-  --white-fx-drop 0,380,1983,722 --white-fx-keep 0,722,1983,793 --white-drop 524,604      # aura da vitória: branco é vão entre chamas; no anel do portal é brilho
+  --white-fx-drop 0,380,1983,722 --white-fx-keep 0,722,1983,793 --white-drop 524,604 \
+  --extra $M/edgard-invocacao-bolamaligna.png --extra-scale 0.86 --extra-cuts 245,515,805,1255 --white-fx 250-335 \
+  --white-erase 0,690,1536,1024 --white-erase 1003,0,1536,300 --white-erase 990,300,1536,400 --white-erase 880,0,1003,196 --white-erase 985,0,1003,226 --white-erase 980,296,1003,400 --white-erase 772,436,932,626 --white-erase 800,626,932,672
+# ^ 1º extra: aura da vitória (branco é vão entre chamas; no anel do portal é brilho). 2º extra (frames 45-54): linha 1 = invocação do portal
+#   (carrega as mãos, mãos no chão, agachado; o feixe com os morcegos foi APAGADO das poses 4 e 5: no jogo ele é montado por peças e nasce
+#   embaixo do adversário), linha 2 = bola maligna (a bola da pose 3 sai do quadro e a pose 4, a bola voando, vira o projétil). A 3ª linha são as peças:
+python3 tools/pieces.py $M/edgard-invocacao-bolamaligna.png public/fighters/edgard --scale 0.86 --fx-hue 250-335 \
+  --hwall 699,368,542 --hwall 990,368,542 --hwall 990,660,830 --keep 440,702,470,988 --keep 730,900,760,988 \
+  --piece portal-base.png:10,780,330,975:trim --piece feixe.png:362,702,548,988:tilev --piece feixe-topo.png:590,695,900,989:trim \
+  --piece criaturas.png:925,695,1210,1000:trim --piece bola-maligna.png:930,430,1255,672:trim
 run santana $M/santana-2.png --fx 388,646,463,822 \
   --extra $M/santana-golpelongo-vitoria.png --extra-scale 0.84,0.75 --white-fx 185-250 \
   --white-drop 133,342 --white-drop 1338,335 \
@@ -22,10 +31,10 @@ run laura   $M/laura.png --fx 397,646,429,815 \
   --white-fx-keep 1000,150,1175,345 --white-fx-keep 1430,150,1695,350 \
   --white-drop 954,280 --white-drop 1358,314 --white-drop 1404,296 --white-drop 1401,294 \
   --white-erase 228,598,252,620     # cabeça dos tubarões: branco é dente/brilho · vãos entre a mão e o tubarão · tracinho verde solto
-# o board extra do Dedê veio com o nome trocado (leo-golpelongo-vitoria.png): é o gaúcho das boleadeiras.
+# o board extra do Dedê chegou com o nome trocado (leo-golpelongo-vitoria.png); o usuário renomeou em 2026-09-20.
 # O dourado do efeito tem o mesmo matiz da roupa marrom: o brilho mínimo (v0.74) separa os dois.
 run dede    $M/dede.png --export 33:bolas.png \
-  --extra $M/leo-golpelongo-vitoria.png --extra-scale 0.60,0.63 --white-fx 29-50:v0.74 \
+  --extra $M/dede-golpelongo-vitoria.png --extra-scale 0.60,0.63 --white-fx 29-50:v0.74 \
   --white-drop 25,120,95,215 --white-drop 350,150,440,235 --white-drop 1730,125,1812,232 --white-drop 1758,258 \
   --white-drop 1181,176 --white-drop 1169,189 --white-drop 1654,209 --white-drop 1641,241 --white-drop 123,624 --white-drop 482,639   # frestas dentro do laço enrolado · entre as duas cordas · entre o punho e o cinto
 # Dias: short, meia e punho são BRANCOS de verdade, então a regra se inverte: todo branco preso fica (--white-keep no board inteiro)
@@ -66,9 +75,19 @@ python3 tools/pieces.py $M/landim-golpelongo-vitoria.png public/fighters/landim 
 run xablau  $M/xablau.png --wide 2,3 --wide 6,2
 run dener   $M/dener.png --alpha 150 --grow 22
 # CRM War Machine e Leo: boards principais com FUNDO BRANCO (recorte do whiteboard.py). Coordenadas em px do board.
-run crm     $M/CRM-warmachine.png --axis-ignore-smoke --crop missil.png:712,1200,860,1275:erase:rot=-8   # o tanque (pedido do usuário); o míssil vira projétil teleguiado
+run crm     $M/CRM-warmachine.png --axis-ignore-smoke --crop missil.png:712,1200,860,1275:erase:rot=-8 \
+  --extra $M/crm-golpeespecial-vitoria.png --extra-scale 0.75,0.70 --extra-cuts 250,548,795,1143 \
+  --white-erase 450,45,525,130 --white-erase 700,120,800,300 --white-erase 930,120,1110,335 --white-erase 1042,335,1110,405 --white-erase 1085,375,1448,570
+# ^ o tanque (pedido do usuário); o míssil do board principal vira projétil teleguiado. Extra (frames 35-44): linha 1 = CHUVA DE BOMBAS (mira pro alto,
+#   dispara, olha pra cima x2; o foguete, as bombas e os estouros saem dos quadros e viram peças), linha 2 = comemoração (o tanque se desmontando de tanto rir).
+python3 tools/pieces.py $M/crm-golpeespecial-vitoria.png public/fighters/crm --scale 0.75 \
+  --piece foguete.png:468,48,520,122:trim --piece bomba.png:728,216,792,296:trim --piece estouro.png:1098,384,1236,562:trim
 run leo     $M/leo.png --white-erase 358,598,540,688 --white-erase 343,598,358,652 --white-erase 500,688,530,702 \
-  --crop drone.png:602,1186,686,1250 --white-erase 618,1095,758,1262 --white-erase 575,1095,618,1143 --white-erase 575,1195,618,1262   # o raio do olho sai do frame (vira o raio contínuo abaixo) · o drone vira projétil
+  --crop drone.png:602,1186,686,1250 --white-erase 618,1095,758,1262 --white-erase 575,1095,618,1143 --white-erase 575,1195,618,1262 \
+  --extra $M/leo-golpenovo-vitoria.png --extra-scale 0.72,0.68 --extra-cuts 255,548,895,1172 --white-erase 895,225,1172,525
+# ^ o raio do olho sai do frame (vira o raio contínuo abaixo) · o drone vira projétil. Extra (frames 35-44): linha 1 = tiro de escopeta (o estouro da
+#   pose 4 sai do quadro e vira a peça do impacto), linha 2 = comemoração (engatilha a arma pro alto).
+python3 tools/pieces.py $M/leo-golpenovo-vitoria.png public/fighters/leo --scale 0.72 --piece estouro-tiro.png:895,225,1172,525:trim
 # Raio contínuo do Leo (extensao-raio-leo.png): início (cortado onde o cone tem a altura do trecho do meio e sumindo na emenda),
 # trecho do meio que se repete e estouro final. Escala 0,55 = a pose dessa folha casada com o frame 16 do board.
 # As paredes fecham as pontas cortadas retas, senão o miolo branco do raio vai embora com o fundo.

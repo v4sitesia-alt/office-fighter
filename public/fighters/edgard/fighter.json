@@ -134,7 +134,7 @@
    "startup": 3,
    "active": 3,
    "recovery": 6,
-   "damage": 6.0,
+   "damage": 6.5,
    "hitstun": 12,
    "blockstun": 8,
    "hitbox": {
@@ -161,7 +161,7 @@
    "startup": 6,
    "active": 3,
    "recovery": 9,
-   "damage": 9.6,
+   "damage": 10.4,
    "hitstun": 15,
    "blockstun": 10,
    "hitbox": {
@@ -190,7 +190,7 @@
    "startup": 10,
    "active": 4,
    "recovery": 16,
-   "damage": 16.8,
+   "damage": 18.2,
    "hitstun": 24,
    "blockstun": 14,
    "hitbox": {
@@ -223,7 +223,7 @@
    "startup": 16,
    "active": 8,
    "recovery": 20,
-   "damage": 12.0,
+   "damage": 13.0,
    "hitstun": 22,
    "blockstun": 16,
    "hitbox": {
@@ -252,18 +252,20 @@
   "special": {
    "phases": {
     "startup": [
-     15
+     50,
+     51
     ],
     "active": [
-     16
+     52
     ],
     "recovery": [
-     16
+     52,
+     54
     ]
    },
    "startup": 12,
-   "active": 4,
-   "recovery": 18,
+   "active": 6,
+   "recovery": 17,
    "damage": 15,
    "hitstun": 26,
    "blockstun": 16,
@@ -276,18 +278,19 @@
    "knockback": 12,
    "meterCost": 50,
    "hitstop": 8,
-   "name": "GRID SAGRADO",
+   "name": "BOLA MALIGNA",
    "projectile": {
-    "x": 125,
-    "y": -125,
-    "speed": 7,
+    "x": 130,
+    "y": -118,
+    "speed": 8.5,
     "lifetime": 110,
-    "scale": 0.75,
+    "sprite": "bola-maligna.png",
+    "scale": 0.82,
     "hitbox": {
-     "x": -30,
-     "y": -40,
-     "w": 60,
-     "h": 80
+     "x": -5,
+     "y": -50,
+     "w": 92,
+     "h": 100
     }
    }
   },
@@ -295,18 +298,20 @@
    "kind": "portal",
    "phases": {
     "startup": [
-     30,
-     31
+     45,
+     46,
+     47
     ],
     "active": [
-     31
+     47
     ],
     "recovery": [
-     34
+     48,
+     54
     ]
    },
    "startup": 16,
-   "active": 22,
+   "active": 26,
    "recovery": 14,
    "damage": 0,
    "hitstun": 0,
@@ -326,30 +331,38 @@
      33
     ],
     "fps": 8,
-    "lifetime": 30,
+    "lifetime": 70,
     "at": "target",
     "hitbox": {
-     "x": -70,
-     "y": -190,
-     "w": 140,
-     "h": 190
+     "x": -72,
+     "y": -600,
+     "w": 144,
+     "h": 600
     },
     "hits": [
      {
-      "at": 4,
+      "at": 5,
       "damage": 10
      },
      {
-      "at": 16,
+      "at": 19,
       "damage": 16,
       "knockdown": true,
-      "launch": -9
+      "launch": -11
      }
     ],
-    "hitstun": 14,
+    "hitstun": 18,
     "blockstun": 12,
     "knockback": 3,
-    "hitstop": 7
+    "hitstop": 7,
+    "pillar": {
+     "base": "portal-base.png",
+     "tile": "feixe.png",
+     "top": "feixe-topo.png",
+     "swarm": "criaturas.png",
+     "rise": 42,
+     "delay": 2
+    }
    }
   },
   "airPunch": {
@@ -368,7 +381,7 @@
    "startup": 4,
    "active": 8,
    "recovery": 4,
-   "damage": 7.2,
+   "damage": 7.8,
    "hitstun": 14,
    "blockstun": 10,
    "overhead": true,
@@ -398,7 +411,7 @@
    "startup": 5,
    "active": 10,
    "recovery": 4,
-   "damage": 10.8,
+   "damage": 11.7,
    "hitstun": 16,
    "blockstun": 12,
    "overhead": true,
@@ -428,7 +441,7 @@
    "startup": 7,
    "active": 8,
    "recovery": 6,
-   "damage": 14.4,
+   "damage": 15.6,
    "hitstun": 22,
    "blockstun": 14,
    "overhead": true,
@@ -460,7 +473,7 @@
    "startup": 4,
    "active": 3,
    "recovery": 7,
-   "damage": 4.8,
+   "damage": 5.2,
    "hitstun": 11,
    "blockstun": 8,
    "low": true,
@@ -490,7 +503,7 @@
    "startup": 6,
    "active": 6,
    "recovery": 12,
-   "damage": 8.4,
+   "damage": 9.1,
    "hitstun": 18,
    "blockstun": 12,
    "low": true,
@@ -521,7 +534,7 @@
    "startup": 8,
    "active": 4,
    "recovery": 14,
-   "damage": 12.0,
+   "damage": 13.0,
    "hitstun": 22,
    "blockstun": 14,
    "low": true,

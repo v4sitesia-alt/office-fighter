@@ -154,6 +154,10 @@ export class Ai {
   /** Até onde o golpe que o adversário está soltando AGORA alcança (px de tela, com folga): golpe longo também se defende. */
   private threat() {
     const m = this.other.move; if (!m) return 0;
+    if (m.projectile) {                                                   // golpe longo que é tiro: a escopeta pega até onde o estouro chega; o míssil teleguiado, de qualquer lugar
+      if (m.projectile.homing) return 560;
+      return (m.projectile.x + m.projectile.hitbox.x + m.projectile.hitbox.w + m.projectile.speed * m.projectile.lifetime * 0.5) * this.me.scale;
+    }
     const far = Math.max(...(m.hitboxes ?? [m.hitbox]).map((b) => b.x + b.w));
     return far > 0 ? far * this.other.scale + 45 : 0;
   }
@@ -161,6 +165,10 @@ export class Ai {
   /** Até onde o golpe longo alcança, em px de tela a partir dos meus pés (com folga: a caixa tem que entrar no alvo). */
   private longReach() {
     const m = this.me.def.moves.long!;
+    if (m.projectile) {                                                   // golpe longo que é tiro: a escopeta pega até onde o estouro chega; o míssil teleguiado, de qualquer lugar
+      if (m.projectile.homing) return 560;
+      return (m.projectile.x + m.projectile.hitbox.x + m.projectile.hitbox.w + m.projectile.speed * m.projectile.lifetime * 0.5) * this.me.scale;
+    }
     const far = Math.max(...(m.hitboxes ?? [m.hitbox]).map((b) => b.x + b.w));
     return far * this.me.scale + (m.dash ?? 0) * (m.startup + m.active * 0.5) + 15;      // golpe com avanço (direto, barrigada) alcança mais longe
   }

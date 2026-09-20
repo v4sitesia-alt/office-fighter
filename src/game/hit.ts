@@ -88,7 +88,8 @@ export function resolveHits(fighters: [Fighter, Fighter], projectiles: Projectil
     z.applied.add(idx);
     const def = other(z.owner);
     const hurt = def.hurtbox;
-    if (hurt && overlaps(z.worldBox, hurt)) {
+    if (z.def.rain) { audio.sfx('explosion'); fx.shake = Math.max(fx.shake, 9); fx.shakeMag = Math.max(fx.shakeMag, 5); }   // a bomba estoura mesmo que não pegue ninguém
+    if (hurt && overlaps(z.boxOfHit(idx), hurt)) {
       const h = z.def.hits[idx];
       const blocked = isBlocked(def, z.def.low, z.def.overhead);
       const owner = z.owner;

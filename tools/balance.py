@@ -26,7 +26,7 @@ ALVO = {'leo': 56, 'mundim': 56, 'crm': 52}          # % de vitórias desejada n
 
 #            id        FORÇA  AGIL.  PODER  PESO   ritmo      magia  super   (dano base, antes do PODER)
 FICHA = [
-    ('edgard',   0.90,  1.10,  1.35,  1.00, 'normal',   15,    (10, 16)),   # portal: dois acertos
+    ('edgard',   0.90,  1.10,  1.35,  1.00, 'normal',   15,    (10, 16)),   # portal dos morcegos: dois acertos (o segundo derruba)
     ('santana',  1.12,  0.90,  1.05,  1.20, 'firme',    15,    (10, 16)),   # mergulho + explosão
     ('kevin',    0.90,  0.95,  1.20,  1.05, 'normal',    8,    8),          # x3 tiros
     ('laura',    0.85,  1.35,  0.90,  0.85, 'rapido',   12,    26),         # agarrão (release)
@@ -36,7 +36,7 @@ FICHA = [
     ('eneias',   1.18,  0.85,  1.00,  1.30, 'firme',    13,    28),
     ('van',      0.92,  1.20,  1.10,  0.95, 'normal',   13,    6),           # raio contínuo: até 5 acertos + aura
     ('landim',   0.95,  1.05,  1.25,  0.95, 'normal',   13,    7),           # claquete bumerangue: até 4 acertos
-    ('crm',      1.30,  0.60,  1.30,  1.50, 'maquina',  15,    27),
+    ('crm',      1.30,  0.60,  1.30,  1.50, 'maquina',  15,    (8, 11, 10)),   # chuva de bombas: três estouros
     ('leo',      1.15,  1.15,  1.15,  1.10, 'normal',   13,    8),          # x3 drones
     ('xablau',   1.22,  0.75,  1.00,  1.40, 'lento',    13,    28),
     ('mundim',   1.10,  1.00,  1.25,  1.10, 'normal',   13,    25),
@@ -68,7 +68,7 @@ ALCANCE = {
  'mundim': {'heavy': (36, -192, 118, 134)},      # unidades do board novo (2026-09-19), escala 1,10
 }
 # Golpe longo (frente + forte): é um cutucão de longe, tira menos que o forte.
-LONGO = {'edgard': 10, 'santana': 11, 'kevin': 11, 'laura': 9, 'dede': 10, 'michael': 11, 'dias': 9, 'landim': 9, 'van': 9, 'eneias': 11}
+LONGO = {'edgard': 10, 'santana': 11, 'kevin': 11, 'laura': 9, 'dede': 10, 'michael': 11, 'dias': 9, 'landim': 9, 'van': 9, 'eneias': 11, 'crm': 10, 'leo': 10}
 # Dias: combo de porrada. O golpe que encostou pode ser cortado no seguinte (soco -> soco/chute -> forte), até 3 emendas.
 CHAIN = {'dias': {'punch': ['punch', 'kick'], 'kick': ['heavy'], 'lowPunch': ['punch', 'kick']}}
 
@@ -90,7 +90,8 @@ def main(quiet=False):
         su = M['super']
         if isinstance(sup, tuple):                       # acerto do golpe + zona, ou zona com dois acertos
             hits = su['zone']['hits']
-            if len(hits) == 2: hits[0]['damage'], hits[1]['damage'] = sup
+            if len(hits) == len(sup):
+                for h, v in zip(hits, sup): h['damage'] = v
             else: su['damage'], hits[0]['damage'] = sup
         elif 'throw' in su: su['throw']['release']['damage'] = sup
         else: su['damage'] = sup
@@ -111,7 +112,7 @@ def tune(rounds=10, n=12):
         errs = {f: ALVO.get(f, 50) - p for f, p in pct.items() if f != 'dener'}
         print(f'rodada {it + 1}: amplitude {max(pct[f] for f in errs) - min(pct[f] for f in errs):.0f}  ' + ' '.join(f'{f}:{pct[f]:.0f}' for f in sorted(errs, key=lambda f: -pct[f])))
         step = 0.006 if it < 6 else 0.003
-        for f, e in errs.items(): TUNE[f] = round(min(1.20, max(0.80, TUNE.get(f, 1.0) * math.exp(step * e))), 3)
+        for f, e in errs.items(): TUNE[f] = round(min(1.30, max(0.80, TUNE.get(f, 1.0) * math.exp(step * e))), 3)
         json.dump(TUNE, open(TUNE_FILE, 'w'), indent=1, sort_keys=True)
     main(quiet=True)
 

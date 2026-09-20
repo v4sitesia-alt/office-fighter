@@ -1,7 +1,7 @@
 {
  "sheet": "sheet.png",
  "cols": 5,
- "rows": 9,
+ "rows": 11,
  "source": "edgard-2.png",
  "extra": {
   "source": "edgard-golpelongo-vitoria.png",
@@ -12,8 +12,28 @@
   "rows": 2,
   "first": 35
  },
+ "extras": [
+  {
+   "source": "edgard-golpelongo-vitoria.png",
+   "scale": 0.71,
+   "rowScales": [
+    0.71
+   ],
+   "rows": 2,
+   "first": 35
+  },
+  {
+   "source": "edgard-invocacao-bolamaligna.png",
+   "scale": 0.86,
+   "rowScales": [
+    0.86
+   ],
+   "rows": 2,
+   "first": 45
+  }
+ ],
  "width": 2048,
- "height": 1154,
+ "height": 1368,
  "frames": [
   {
    "i": 0,
@@ -834,6 +854,193 @@
    "extra": true,
    "sx": 883,
    "sy": 874
+  },
+  {
+   "i": 45,
+   "cell": [
+    9,
+    0
+   ],
+   "sw": 188,
+   "sh": 212,
+   "ax": 97.3,
+   "cx": 95.1,
+   "ay": 212,
+   "src": [
+    11,
+    99
+   ],
+   "extra": true,
+   "sx": 1230,
+   "sy": 874
+  },
+  {
+   "i": 46,
+   "cell": [
+    9,
+    1
+   ],
+   "sw": 221,
+   "sh": 222,
+   "ax": 125.3,
+   "cx": 110.0,
+   "ay": 221,
+   "src": [
+    226,
+    91
+   ],
+   "extra": true,
+   "sx": 1424,
+   "sy": 874
+  },
+  {
+   "i": 47,
+   "cell": [
+    9,
+    2
+   ],
+   "sw": 241,
+   "sh": 176,
+   "ax": 133.8,
+   "cx": 118.6,
+   "ay": 176,
+   "src": [
+    445,
+    154
+   ],
+   "extra": true,
+   "sx": 1651,
+   "sy": 874
+  },
+  {
+   "i": 48,
+   "cell": [
+    9,
+    3
+   ],
+   "sw": 164,
+   "sh": 148,
+   "ax": 75.4,
+   "cx": 79.1,
+   "ay": 148,
+   "src": [
+    699,
+    174
+   ],
+   "extra": true,
+   "sx": 6,
+   "sy": 1154
+  },
+  {
+   "i": 49,
+   "cell": [
+    9,
+    4
+   ],
+   "sx": 0,
+   "sy": 0,
+   "sw": 1,
+   "sh": 1,
+   "ax": 0,
+   "cx": 0,
+   "ay": 1,
+   "empty": true,
+   "extra": true
+  },
+  {
+   "i": 50,
+   "cell": [
+    10,
+    0
+   ],
+   "sw": 177,
+   "sh": 203,
+   "ax": 88.5,
+   "cx": 83.1,
+   "ay": 202,
+   "src": [
+    15,
+    369
+   ],
+   "extra": true,
+   "sx": 176,
+   "sy": 1154
+  },
+  {
+   "i": 51,
+   "cell": [
+    10,
+    1
+   ],
+   "sw": 223,
+   "sh": 208,
+   "ax": 87.7,
+   "cx": 84.8,
+   "ay": 208,
+   "src": [
+    232,
+    365
+   ],
+   "extra": true,
+   "sx": 359,
+   "sy": 1154
+  },
+  {
+   "i": 52,
+   "cell": [
+    10,
+    2
+   ],
+   "sw": 203,
+   "sh": 189,
+   "ax": 96.2,
+   "cx": 98.4,
+   "ay": 189,
+   "src": [
+    461,
+    385
+   ],
+   "extra": true,
+   "sx": 588,
+   "sy": 1154
+  },
+  {
+   "i": 53,
+   "cell": [
+    10,
+    3
+   ],
+   "sw": 267,
+   "sh": 178,
+   "ax": 167.7,
+   "cx": 168.6,
+   "ay": 178,
+   "src": [
+    804,
+    394
+   ],
+   "extra": true,
+   "sx": 797,
+   "sy": 1154
+  },
+  {
+   "i": 54,
+   "cell": [
+    10,
+    4
+   ],
+   "sw": 208,
+   "sh": 208,
+   "ax": 108.6,
+   "cx": 98.3,
+   "ay": 208,
+   "src": [
+    1093,
+    369
+   ],
+   "extra": true,
+   "sx": 1070,
+   "sy": 1154
   }
  ]
 }
