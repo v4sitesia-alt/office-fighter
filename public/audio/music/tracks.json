@@ -19,9 +19,17 @@
   "path": "audio/music/fighter-kevin.m4a",
   "vol": 0.844
  },
+ "fighter-landim": {
+  "path": "audio/music/fighter-landim.m4a",
+  "vol": 0.85
+ },
  "fighter-laura": {
   "path": "audio/music/fighter-laura.m4a",
   "vol": 0.709
+ },
+ "fighter-leo": {
+  "path": "audio/music/fighter-leo.m4a",
+  "vol": 0.533
  },
  "fighter-michael": {
   "path": "audio/music/fighter-michael.m4a",
@@ -42,5 +50,13 @@
  "fighter-van": {
   "path": "audio/music/fighter-van.m4a",
   "vol": 0.79
+ },
+ "fighter-xablau": {
+  "path": "audio/music/fighter-xablau.m4a",
+  "vol": 0.796
+ },
+ "fighter-crm": {
+  "path": "audio/music/fighter-crm.m4a",
+  "vol": 0.642
  }
 }

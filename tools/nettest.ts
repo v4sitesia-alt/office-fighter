@@ -20,6 +20,7 @@ import type { StageAssets } from '../src/core/assets';
 import { Rng } from '../src/core/rng';
 import { NetSession, WatchSession, hashMatch } from '../src/net/netplay';
 import { Invites } from '../src/net/invites';
+import { Squad, SQUAD, duoConfig, type SquadState } from '../src/net/squad';
 import { joinRoom, type Msg, type Peer, type Room } from '../src/net/transport';
 import { mergeRanking, rankKey, resultArgs, uniqueScores, type RankRow } from '../src/net/store';
 
@@ -99,6 +100,105 @@ function sim() {
     log({ caso: c.name, passou: pass, frames: [sa.frame, sb.frame, sw?.frame], terminou: ended, maiorTravadaTicks: longest, ticksTravados: stalls, atraso: [sa.delay, sb.delay], framesComparados: compared, diferencas: diff, placar: ma.wins });
   }
   process.exitCode = ok ? 0 : 1;
+}
+
+// ---------------------------------------------------------------- duplas: 4 jogadores na mesma luta + plateia
+/** Quem controla cada lado agora: dono do lutador que está em campo. */
+export const seatsOf = (m: Match, owner: [number[], number[]]) => (): [number, number] => [owner[0][m.active[0]], owner[1][m.active[1]]];
+function simDuo() {
+  const cases = [
+    { name: 'duplas, 4 pessoas, rede boa', lat: [2, 4], drop: 0, owner: [[0, 1], [2, 3]] as [number[], number[]] },
+    { name: 'duplas, 4 pessoas, rede ruim (15% de perda)', lat: [3, 14], drop: 0.15, owner: [[0, 1], [2, 3]] as [number[], number[]] },
+    { name: 'duplas, 3 pessoas (um controla os dois do lado B), 30% de perda', lat: [5, 30], drop: 0.3, owner: [[0, 1], [2, 2]] as [number[], number[]] },
+  ];
+  let ok = true;
+  for (const c of cases) {
+    const rng = new Rng(11), n = Math.max(...c.owner.flat()) + 1;
+    type Sub = { on: (m: Msg) => void };
+    const q: { at: number; to: Sub; m: Msg }[] = []; let now = 0, sent = 0;
+    const net = (subs: Sub[], count = false) => (self: Sub): Room => ({
+      send: (m) => { if (count) sent++; for (const s of subs) if (s !== self && !(rng.chance(c.drop))) q.push({ at: now + c.lat[0] + Math.floor(rng.next() * (c.lat[1] - c.lat[0] + 1)), to: s, m: JSON.parse(JSON.stringify(m)) }); },
+      setPresence() {}, leave() {}, ready: () => true,
+    });
+    const F = ['edgard', 'laura', 'santana', 'kevin'].map(load);
+    const mk = () => { const m = new Match(F[0], F[2], STAGE, { cpu: null, partners: [F[1], F[3]] }, { message() {}, end() {} }); m.teams.flat().forEach((f) => { f.life = 14; }); return m; };   // pouca vida: a luta tem que passar pelo nocaute com entrada do companheiro
+    const ms = Array.from({ length: n + 1 }, mk), play: Sub[] = [], watch: Sub[] = [];
+    const ss: NetSession[] = []; let sw: WatchSession | null = null;
+    for (let i = 0; i < n; i++) play.push({ on: (m) => ss[i].onMsg(m) });
+    const wA: Sub = { on: (m) => ss[0].onWatchMsg(m) }, wS: Sub = { on: (m) => sw?.onMsg(m) }; watch.push(wA, wS);
+    for (let i = 0; i < n; i++) { const s = new NetSession(ms[i], net(play, true)(play[i]), i, i === 0 ? net(watch)(wA) : null, n); s.seats = seatsOf(ms[i], c.owner); ss.push(s); }
+    const hands = ss.map((_, i) => { const p = player(20 + i), r = new Rng(90 + i); return () => p() | (r.chance(0.004) ? 1 << 9 : 0); });   // de vez em quando aperta TROCA
+    const hashes = ms.map(() => new Map<number, number>()), ended = ms.map(() => false);
+    let tags = 0, lastActive = '00';
+    for (now = 0; now < 40000 && !ended.every(Boolean); now++) {
+      for (let i = q.length - 1; i >= 0; i--) if (q[i].at <= now) { const x = q.splice(i, 1)[0]; x.to.on(x.m); }
+      ss.forEach((s, i) => s.tick(hands[i]()));
+      if (now === 1500) sw = new WatchSession(ms[n], net(watch)(wS));
+      sw?.tick();
+      [...ss, sw].forEach((s, k) => { if (!s) return; if (!hashes[k].has(s.frame)) hashes[k].set(s.frame, hashMatch(ms[k])); if (ms[k].phase === 'over' && ms[k].phaseFrame > 130) ended[k] = true; });
+      const act = ms[0].active.join(''); if (act !== lastActive) { tags++; lastActive = act; }
+      if (now % 900 === 0) ss[0].flushFeed();
+    }
+    ss[0].flushFeed();
+    for (let t = 0; t < 2000 && sw && !ended[n]; t++, now++) { for (let i = q.length - 1; i >= 0; i--) if (q[i].at <= now) { const x = q.splice(i, 1)[0]; x.to.on(x.m); } sw.tick(); if (ms[n].phase === 'over' && ms[n].phaseFrame > 130) ended[n] = true; if (!hashes[n].has(sw.frame)) hashes[n].set(sw.frame, hashMatch(ms[n])); }
+    let diff = 0, compared = 0;
+    for (const [f, h] of hashes[0]) for (let k = 1; k <= n; k++) { const o = hashes[k].get(f); if (o !== undefined) { compared++; if (o !== h) diff++; } }
+    const pass = ended.every(Boolean) && diff === 0 && ss.every((s) => !s.desync) && tags > 0;
+    ok &&= pass;
+    log({ caso: c.name, passou: pass, frames: [...ss.map((s) => s.frame), sw?.frame], trocas: tags, fim: ms[0].timer > 0 ? 'nocaute' : 'tempo', vencedor: ms[0].winner, vidas: ms[0].teams.map((t) => t.map((f) => Math.round(f.life))), mensagensPorSegundo: Math.round(sent / (ss[0].frame / 60)), framesComparados: compared, diferencas: diff });
+  }
+  if (!ok) process.exitCode = 1;
+}
+
+// ---------------------------------------------------------------- mesa de duplas (rede simulada com perda, relógio real)
+async function squadTest() {
+  const rng = new Rng(5), DROP = 0.25;
+  type Sub = { on: (m: Msg) => void; dead?: boolean };
+  const rooms = new Map<string, Sub[]>();
+  const join = (name: string, h: { onMsg(m: Msg): void }): Room => {
+    const subs = rooms.get(name) ?? (rooms.set(name, []), rooms.get(name)!); const self: Sub = { on: (m) => h.onMsg(m) }; subs.push(self);
+    return { send: (m) => { for (const s of subs) if (s !== self && !s.dead && !rng.chance(DROP)) setTimeout(() => s.on(JSON.parse(JSON.stringify(m))), 20 + rng.next() * 120); }, setPresence() {}, leave() { self.dead = true; }, ready: () => true };
+  };
+  SQUAD.CONFIRM_MS = 4000; SQUAD.DRAFT_MS = 5000; SQUAD.GO_MS = 600; SQUAD.SILENT_MS = 2500; SQUAD.BEAT_MS = 300; SQUAD.RETRY_MS = 150;
+  const F = ['edgard', 'laura', 'kevin', 'dede', 'van', 'dias'], names = ['ANA', 'BIA', 'CAIO', 'DUDA'];
+  const started: (SquadState | null)[] = [null, null, null, null], closed: string[] = ['', '', '', ''];
+  const mk = (i: number) => new Squad('p0', () => ({ id: `p${i}`, name: names[i], fighter: F[i] }), join, { change() {}, start: (s) => { started[i] = s; }, closed: (w) => { closed[i] = w; } }, () => F, () => ['office', 'alley']);
+  const sq = [0, 1, 2, 3].map(mk);
+  const timer = setInterval(() => sq.forEach((s) => s.tick()), 50);
+  const wait = async (ok: () => boolean, ms = 6000) => { const t0 = Date.now(); while (!ok() && Date.now() - t0 < ms) await new Promise((r) => setTimeout(r, 25)); return ok(); };
+  const out: Record<string, unknown> = {};
+  out.sentaram = await wait(() => sq.every((s) => s.state?.members.length === 4));
+  out.ladosCheios = sq[0].state!.members.filter((m) => m.team === 0).length === 2;
+  const mover = sq.findIndex((s, i) => i > 0 && s.mine?.team === 0), outro = sq.findIndex((s) => s.mine?.team === 1);
+  sq[mover].setTeam(1);                                           // lado cheio: o anfitrião recusa e nada muda
+  await new Promise((r) => setTimeout(r, 700));
+  out.ladoCheioRecusado = sq[0].state!.members.find((m) => m.id === `p${mover}`)!.team === 0;
+  sq[0].start();
+  out.pediuConfirmacao = await wait(() => sq.every((s) => s.state?.phase === 'confirma'));
+  sq.slice(1).forEach((s) => s.confirm());
+  out.draftAbriu = await wait(() => sq.every((s) => s.state?.phase === 'draft'));
+  sq[mover].lock('van'); sq[outro].lock('van');                   // dois travam o mesmo lutador ao mesmo tempo: só um leva
+  await wait(() => sq.every((s) => s.state!.seats.filter((x) => x.locked).length >= 1));
+  await new Promise((r) => setTimeout(r, 600));
+  const vans = sq[0].state!.seats.filter((x) => x.fighter === 'van' && x.locked);
+  out.semRepetir = vans.length === 1 && sq.every((s) => s.state!.seats.filter((x) => x.fighter === 'van').length === 1);
+  sq.forEach((s, i) => { if (s.mySeat >= 0) s.lock(F.filter((f) => f !== 'van')[i]); });
+  sq[0].setStage('alley');
+  out.comecou = await wait(() => started.every(Boolean));
+  const cfgs = started.map((s, i) => s && duoConfig(s, `p${i}`));
+  out.mesmaLuta = new Set(cfgs.map((c) => JSON.stringify([c?.matchId, c?.duo.f, c?.duo.owner, c?.stage]))).size === 1 && cfgs[0]?.stage === 'alley';
+  out.cadaUmNoSeuLugar = cfgs.every((c, i) => c!.duo.players[c!.duo.me] === names[i] && c!.duo.owner[c!.local as 0 | 1].includes(c!.duo.me)) && new Set(cfgs[0]!.duo.f.flat()).size === 4;
+  sq.forEach((s) => s.resume());
+  out.voltouPraMesa = await wait(() => sq.every((s) => s.state?.phase === 'mesa'));
+  sq[3].leave();
+  out.saidaAvisada = await wait(() => sq[0].state!.members.length === 3);
+  sq[0].leave();
+  out.mesaFechou = await wait(() => !!closed[1] && !!closed[2]);
+  clearInterval(timer);
+  const pass = Object.values(out).every((v) => v === true);
+  log({ teste: 'mesa de duplas', passou: pass, ...out, fechou: closed });
+  if (!pass) process.exitCode = 1;
+  setTimeout(() => process.exit(), 300);
 }
 
 // ---------------------------------------------------------------- protocolo de convite (rede simulada, relógio real)
@@ -286,5 +386,5 @@ function rankingTest() {
 const [mode, ...rest] = process.argv.slice(2);
 const args: Record<string, string> = {};
 for (let i = 0; i < rest.length; i++) if (rest[i].startsWith('--')) args[rest[i].slice(2)] = rest[i + 1]?.startsWith('--') || rest[i + 1] === undefined ? 'yes' : rest[++i];
-if (mode === 'sim') sim(); else if (mode === 'invites') void invitesTest(); else if (mode === 'ranking') rankingTest(); else if (mode === 'real') void real(); else if (mode === 'bot') bot(args);
+if (mode === 'sim') { sim(); simDuo(); } else if (mode === 'duo') simDuo(); else if (mode === 'squad') void squadTest(); else if (mode === 'invites') void invitesTest(); else if (mode === 'ranking') rankingTest(); else if (mode === 'real') void real(); else if (mode === 'bot') bot(args);
 else console.log('uso: nettest sim | invites | ranking | real | bot [--name N] [--fighter id] [--challenge NOME]');

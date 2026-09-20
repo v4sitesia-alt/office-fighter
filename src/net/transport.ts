@@ -3,7 +3,12 @@
 // sem as chaves cai no BroadcastChannel, que só liga abas do mesmo navegador (serve pra testar).
 import { createClient, type RealtimeChannel, type SupabaseClient } from '@supabase/supabase-js';
 
-export interface Peer { id: string; name: string; fighter: string; status: 'livre' | 'procurando' | 'lutando' | 'assistindo'; matchId?: string; vs?: string }
+export interface Peer {
+  id: string; name: string; fighter: string; status: 'livre' | 'procurando' | 'lutando' | 'assistindo' | 'dupla'; matchId?: string; vs?: string;
+  table?: { n: number; open: boolean };   // anfitrião de uma mesa de duplas: quantos sentaram e se ainda dá pra entrar
+  at?: string;                            // sentado na mesa deste anfitrião
+  mc?: string;                            // luta de duplas em andamento (JSON), pra quem quiser assistir
+}
 export type Msg = { t: string; [k: string]: unknown };
 
 export interface Room {
@@ -16,7 +21,9 @@ export interface RoomHandlers { onMsg(m: Msg): void; onPeers?(peers: Peer[]): vo
 
 const URL_ = (import.meta.env.VITE_SUPABASE_URL as string | undefined) ?? 'https://rijffrhwuwouogurovkz.supabase.co';
 const KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
-export const ONLINE = !!(URL_ && KEY);
+/** `?local` na URL força o modo local (só abas deste navegador): dá pra testar a arena sem tocar no Supabase. */
+const FORCE_LOCAL = typeof location !== 'undefined' && new URLSearchParams(location.search).has('local');
+export const ONLINE = !!(URL_ && KEY) && !FORCE_LOCAL;
 let client: SupabaseClient | null = null;
 export const supa = () => (client ??= createClient(URL_!, KEY!));
 

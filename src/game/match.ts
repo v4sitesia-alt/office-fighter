@@ -5,7 +5,7 @@ import type { Controller } from '../core/input';
 /** Qualquer fonte de controles: teclado/toque (Input) ou botões vindos da rede. */
 export interface Ports { ports: Controller[] }
 import { Ai } from './ai';
-import { ARENA_MAX, ARENA_MIN, GROUND_Y, H, ROUND_SECONDS, W } from './consts';
+import { ARENA_MAX, ARENA_MIN, GRAVITY, GROUND_Y, H, ROUND_SECONDS, W } from './consts';
 import { Fighter } from './fighter';
 import { Fx } from './fx';
 import { resolveHits, separate } from './hit';
@@ -24,7 +24,13 @@ export interface MatchOptions {
   label?: string;           // "LUTA 1", "FINAL"...
   roundsToWin?: number;     // melhor de 3 = 2
   baseScore?: number;       // arcade: pontos acumulados das lutas anteriores (P1)
+  /** Duplas (2x2): o companheiro de cada lado. Luta única; quem está em campo chama o outro com o botão TROCA e,
+   *  se cair, o companheiro entra sozinho. A dupla perde quando os dois caem. */
+  partners?: [FighterAssets | null, FighterAssets | null];
+  owners?: [string[], string[]];   // nome de quem controla cada lutador (aparece no placar)
 }
+
+export const TAG = { COOL: 180, REGEN: 0.02, REGEN_CAP: 25, ENTER_Y: -300, KO_WAIT: 45 };
 
 export interface MatchEvents {
   message(text: string, frames: number, kind?: 'big' | 'small'): void;
@@ -58,13 +64,78 @@ export class Match {
   /** Bônus do fim do round (o HUD mostra a contagem). */
   tally: { who: 0 | 1; items: [string, number][]; total: number } | null = null;
   private roundsToWin: number;
+  /** Duplas: os lutadores de cada lado (em campo ou no banco), quem está em campo e o tempo até poder trocar de novo. */
+  teams: [Fighter[], Fighter[]];
+  active: [number, number] = [0, 0];
+  tagCool: [number, number] = [0, 0];
+  /** Quem saiu de campo: pulando pra fora (troca) ou caído (nocaute), só desenho. */
+  leaving: { f: Fighter; ko: boolean; t: number }[] = [];
+  private koWait: [number, number] = [0, 0];
+  private tagBuf: [number, number] = [0, 0];       // o pedido de troca fica guardado uns frames, esperando o lutador ficar livre
+  private regenCap = new Map<Fighter, number>();
 
   constructor(public a: FighterAssets, public b: FighterAssets, public stage: StageAssets, public opts: MatchOptions, private ev: MatchEvents) {
     this.fighters = [new Fighter(a, START_X[0], 1, 0), new Fighter(b, START_X[1], -1, 1)];
     if (opts.hueP2) this.fighters[1].hue = opts.hueP2;
+    this.teams = [[this.fighters[0]], [this.fighters[1]]];
+    opts.partners?.forEach((p, i) => { if (p) this.teams[i].push(new Fighter(p, START_X[i], i === 0 ? 1 : -1, i)); });
+    this.teams.forEach((t, i) => t.forEach((f, k) => { f.owner = opts.owners?.[i]?.[k] ?? ''; }));
     if (opts.cpu) this.ai = new Ai(this.fighters[1], this.fighters[0], opts.cpu, opts.seed);
-    this.roundsToWin = opts.roundsToWin ?? 2;
+    this.roundsToWin = opts.roundsToWin ?? (this.tagMode ? 1 : 2);
+    if (this.tagMode) this.timer = ROUND_SECONDS * 60 * 1.65;
     this.score[0] = opts.baseScore ?? 0;
+  }
+
+  get tagMode() { return this.teams[0].length > 1 || this.teams[1].length > 1; }
+  /** Companheiro do lado i que ainda pode entrar (null se não tem ou já caiu). */
+  partnerOf(i: number): Fighter | null { const p = this.teams[i][1 - this.active[i]]; return p && p.life > 0 ? p : null; }
+  private teamLife(i: number) { return this.teams[i].reduce((s, f) => s + Math.max(0, f.life), 0); }
+
+  /** Troca quem está em campo no lado i: o de fora entra num pulo por trás; o de dentro pula pra fora (ou fica caído). */
+  private swap(i: 0 | 1, ko: boolean) {
+    const out = this.fighters[i], inc = this.partnerOf(i); if (!inc) return;
+    this.active[i] = 1 - this.active[i]; this.tagCool[i] = TAG.COOL; this.koWait[i] = 0;
+    inc.facing = out.facing; inc.x = Math.max(ARENA_MIN, Math.min(ARENA_MAX, out.x - out.facing * 230)); inc.y = TAG.ENTER_Y; inc.vx = out.facing * 5.5; inc.vy = 1;
+    inc.knockdownAir = false; inc.flash = 10; inc.spawns.length = 0; inc.setState('jumping'); inc.comboTaken = 0;
+    if (!ko) { out.setState('jumping'); out.vx = -out.facing * 9; out.vy = -11; out.y = Math.min(out.y, -0.01); this.regenCap.set(out, Math.min(100, out.life + TAG.REGEN_CAP)); }
+    this.leaving.push({ f: out, ko, t: 0 });
+    this.fighters[i] = inc; this.prevLife[i] = inc.life;
+    for (const p of this.projectiles) if (p.owner.playerIndex !== i) p.target = inc;
+    if (this.ai) this.ai = new Ai(this.fighters[1], this.fighters[0], this.opts.cpu!, (this.opts.seed ?? 1) + this.phaseFrame);
+    this.ev.message(ko ? `${out.def.name} FORA! ENTRA ${inc.def.name}` : `ENTRA ${inc.def.name}!`, 60, 'small');
+    audio.sfx('jump'); audio.voice(`ann-${inc.def.id}`, 'ann');
+  }
+
+  /** Banco e saídas de campo: quem espera recupera um pouco de vida; quem saiu termina o pulo e some. */
+  private updateBench() {
+    for (let i = 0; i < 2; i++) {
+      if (this.tagCool[i] > 0) this.tagCool[i]--;
+      const b = this.teams[i][1 - this.active[i]];
+      if (b && b.life > 0 && b.life < (this.regenCap.get(b) ?? b.life)) b.life = Math.min(this.regenCap.get(b)!, b.life + TAG.REGEN);
+    }
+    for (const l of this.leaving) {
+      l.t++; l.f.animTime++;
+      if (!l.ko) { l.f.vy += GRAVITY; l.f.y += l.f.vy; l.f.x += l.f.vx; if (l.f.y >= 0) { l.f.y = 0; l.f.vy = 0; } }
+    }
+    this.leaving = this.leaving.filter((l) => l.t < (l.ko ? 150 : 46));
+  }
+
+  /** Pedidos de troca (botão TROCA, ou a CPU quando está apanhando) e entrada do companheiro de quem caiu. */
+  private updateTags(ctrls: [Controller, Controller]) {
+    for (const i of [0, 1] as const) {
+      const f = this.fighters[i], other = this.fighters[1 - i];
+      if (f.life <= 0) {                                   // caiu com companheiro de pé: espera encostar no chão e troca
+        if (f.knockdownAir || other.victim === f) continue;
+        if (this.koWait[i] === 0) { const own = `ko-${f.def.id}`; audio.voice(audio.hasVoice(own) ? own : f.def.gender === 'f' ? 'ko-f' : 'ko-m', f.voiceChannel); }
+        if (++this.koWait[i] >= TAG.KO_WAIT) this.swap(i, true);
+        continue;
+      }
+      const cpu = i === 1 && this.ai;
+      if (!cpu && ctrls[i].pressed('tag')) this.tagBuf[i] = 18; else if (this.tagBuf[i] > 0) this.tagBuf[i]--;
+      if (this.tagCool[i] > 0 || !this.partnerOf(i) || !f.actionable || !f.grounded) continue;
+      const want = cpu ? f.life < 35 && this.partnerOf(i)!.life > f.life + 15 && Math.abs(f.x - other.x) > 220 && (this.phaseFrame + i) % 30 === 0 : this.tagBuf[i] > 0;
+      if (want) { this.tagBuf[i] = 0; this.swap(i, false); }
+    }
   }
 
   get midX() { return (this.fighters[0].x + this.fighters[1].x) / 2; }
@@ -92,7 +163,7 @@ export class Match {
     const [p1, p2] = this.fighters;
 
     if (this.phase === 'intro') {
-      if (this.phaseFrame === 1) { this.ev.message(`ROUND ${this.round}`, 70, 'big'); audio.voice(`ann-round-${Math.min(3, this.round)}`, 'ann'); }
+      if (this.phaseFrame === 1) { this.ev.message(this.tagMode ? 'DUPLAS' : `ROUND ${this.round}`, 70, 'big'); audio.voice(`ann-round-${Math.min(3, this.round)}`, 'ann'); }
       if (this.phaseFrame === 75) { this.ev.message('FIGHT!', 45, 'big'); audio.voice('ann-fight', 'ann'); this.fighters.forEach((f) => (audio.hasVoice(`${f.def.id}-taunt`) ? audio.voice(`${f.def.id}-taunt`, f.voiceChannel) : audio.voiceRandom(`${f.def.id}-laugh`, f.voiceChannel))); }
       if (this.phaseFrame >= 100) { this.phase = 'fight'; this.phaseFrame = 0; }
       this.idleUpdate();
@@ -109,6 +180,7 @@ export class Match {
       p2.update(c2, p1, frozen);
       separate(p1, p2);
       if (!frozen) {
+        if (this.tagMode) { this.updateBench(); this.updateTags([c1, c2]); }
         this.drainSpawns();
         this.projectiles.forEach((p) => p.update());
         this.projectiles = this.projectiles.filter((p) => !p.dead);
@@ -124,14 +196,15 @@ export class Match {
       this.fx.update();
 
       this.fighters.forEach((f, i) => { const d = this.prevLife[i] - f.life; if (d > 0) this.score[1 - i] += Math.round(d * 10); this.prevLife[i] = f.life; });   // 10 pontos por ponto de dano
-      const dead = this.fighters.findIndex((f) => f.life <= 0);
+      const dead = this.fighters.findIndex((f, i) => f.life <= 0 && !this.partnerOf(i));   // nas duplas, só acaba quando cai o último
       if (dead >= 0) {
         this.roundWinner = dead === 0 ? 1 : 0;
         this.phase = 'ko'; this.phaseFrame = 0; this.slowmo = 4; this.koLanded = false;   // último golpe em câmera lenta
         const ko = this.fighters[dead], own = `ko-${ko.def.id}`;                          // o grito é de quem levou o golpe final
         audio.voice(audio.hasVoice(own) ? own : ko.def.gender === 'f' ? 'ko-f' : 'ko-m', ko.voiceChannel);
       } else if (this.timer <= 0) {
-        this.roundWinner = p1.life === p2.life ? -1 : p1.life > p2.life ? 0 : 1;
+        const l1 = this.teamLife(0), l2 = this.teamLife(1);
+        this.roundWinner = l1 === l2 ? -1 : l1 > l2 ? 0 : 1;
         this.phase = 'ko'; this.phaseFrame = 0;
         this.ev.message('TIME OVER', 90, 'big');
         audio.voice('ann-time', 'ann');
@@ -142,6 +215,7 @@ export class Match {
 
     if (this.phase === 'ko') {
       p1.update(nullCtrl, p2, false); p2.update(nullCtrl, p1, false);
+      if (this.tagMode) this.updateBench();
       this.drainSpawns();
       this.projectiles.forEach((p) => p.update());
       this.projectiles = this.projectiles.filter((p) => !p.dead);
@@ -220,6 +294,7 @@ export class Match {
     ctx.translate(ox, oy);
     drawStage(ctx, this.stage, this.midX);
     this.referee.draw(ctx);                       // atrás dos lutadores
+    for (const l of this.leaving) { ctx.save(); ctx.globalAlpha = l.ko ? Math.max(0, Math.min(1, (150 - l.t) / 40)) : Math.max(0, 1 - l.t / 46); l.f.draw(ctx, false); ctx.restore(); }
     const [f0, f1] = this.fighters;
     const throwing = (f: Fighter) => f.state === 'attacking' && f.move?.kind === 'throw' && (f.sub === 'hold' || f.sub === 'lift' || f.sub === 'throw');
     const order = throwing(f0) ? [1, 0] : throwing(f1) ? [0, 1]

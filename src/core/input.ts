@@ -5,16 +5,17 @@
 export type Button =
   | 'left' | 'right' | 'up' | 'down'
   | 'block' | 'punch' | 'kick' | 'heavy' | 'special'
-  | 'start' | 'pause';
+  | 'start' | 'pause'
+  | 'tag';                      // duplas (2x2): chama o companheiro
 
-export const BUTTONS: Button[] = ['left', 'right', 'up', 'down', 'block', 'punch', 'kick', 'heavy', 'special', 'start', 'pause'];
+export const BUTTONS: Button[] = ['left', 'right', 'up', 'down', 'block', 'punch', 'kick', 'heavy', 'special', 'start', 'pause', 'tag'];   // 'tag' no fim: os bits dos outros botões na rede não mudam
 
 /** Mapeamento de teclado, remapeável. Porta 1 já prevista pro multiplayer local. */
 export const KEYMAP: Record<number, Record<string, Button>> = {
   0: {
     ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'up', ArrowDown: 'down',
     KeyA: 'left', KeyD: 'right', KeyW: 'up', KeyS: 'down',
-    KeyG: 'punch', KeyH: 'kick', KeyJ: 'heavy', KeyV: 'block', KeyB: 'special', KeyZ: 'block',
+    KeyG: 'punch', KeyH: 'kick', KeyJ: 'heavy', KeyV: 'block', KeyB: 'special', KeyZ: 'block', KeyT: 'tag',
     Enter: 'start', Space: 'start', Escape: 'pause', KeyP: 'pause',
   },
   1: {

@@ -1,4 +1,5 @@
 import './styles.css';
+import './arena.css';
 import { loadFighter, loadReferee, loadStage, type StageAssets } from './core/assets';
 import { Referee } from './game/referee';
 import { audio, hasTrack } from './core/audio';
@@ -80,7 +81,7 @@ const cinematic = new Intro();
 let introClock = 0;
 audio.base = import.meta.env.BASE_URL;
 setupMobile();
-function setMode(m: Mode) { mode = m; document.body.dataset.mode = m; document.body.classList.toggle('in-fight', m === 'fight' || m === 'netfight'); audio.music(MUSIC[m]); }
+function setMode(m: Mode) { mode = m; if (m !== 'fight' && m !== 'netfight') document.body.classList.remove('tag-mode'); document.body.dataset.mode = m; document.body.classList.toggle('in-fight', m === 'fight' || m === 'netfight'); audio.music(MUSIC[m]); }
 
 // áudio só pode nascer depois de um gesto do usuário
 const unlock = () => audio.unlock();
@@ -226,14 +227,19 @@ function openLobby() {
     abort: (matchId, why) => { if (netCfg?.matchId === matchId && session && !session.connected) abortNetMatch(why); },
     exit: () => { lobby?.close(); lobby?.dispose(); lobby = null; goTitle(); },
     changeFighter: () => showSelect(),
+    locked: (id) => !!roster.find((f) => f.def.id === id)?.def.secret && secret.isLocked(id),
+    stages: () => [...new Set(roster.filter((f) => !f.def.secret).map((f) => f.def.stage ?? DEFAULT_STAGE))].filter((n) => stages.has(n)),
   });
   setMode('lobby');
   lobby.open(roster[playerIdx].def.id);
 }
 
-const otherName = () => (netCfg ? netCfg.names[netCfg.local === 1 ? 0 : 1] : '');
+const otherName = () => (!netCfg ? '' : netCfg.duo ? (session && session.lostWho >= 0 ? netCfg.duo.players[session.lostWho] : 'OS OUTROS') : netCfg.names[netCfg.local === 1 ? 0 : 1]);
+/** Duplas: de que lado joga o jogador de índice p. */
+const sideOfPlayer = (cfg: NetMatchCfg, p: number): 0 | 1 => (cfg.duo ? (cfg.duo.owner[0].includes(p) ? 0 : 1) : (p as 0 | 1));
 
 function closeNetRooms() {
+  document.body.classList.remove('tag-mode');
   netRoom?.leave(); watchRoom?.leave(); netRoom = null; watchRoom = null; session = null; watchSession = null;
   loop.setBackground(false);
   netStatus.className = 'net-status'; netPing.textContent = '';
@@ -242,37 +248,42 @@ function closeNetRooms() {
 function startNetMatch(cfg: NetMatchCfg) {
   if (session || watchSession) closeNetRooms();          // ex.: aceitou um desafio enquanto assistia
   paused = false;
-  const fa = roster.find((r) => r.def.id === cfg.f[0]) ?? roster[0], fb = roster.find((r) => r.def.id === cfg.f[1]) ?? roster[0];
+  const byId = (id: string) => roster.find((r) => r.def.id === id) ?? roster[0];
+  const fa = byId(cfg.f[0]), fb = byId(cfg.f[1]), duo = cfg.duo;
+  const stage = (cfg.stage && stages.get(cfg.stage)) || stageOf(fb);
+  const owners: [string[], string[]] = duo ? [duo.owner[0].map((p) => duo.players[p]), duo.owner[1].map((p) => duo.players[p])] : [[cfg.names[0]], [cfg.names[1]]];
   const vs = `${cfg.names[0]} x ${cfg.names[1]}`;
   let over = false;
   netCfg = cfg; netMenuOpen = false; netOver = false;
-  const m = new Match(fa, fb, stageOf(fb), { cpu: null }, {
+  const m = new Match(fa, fb, stage, { cpu: null, owners, partners: duo ? [byId(duo.f[0][1]), byId(duo.f[1][1])] : undefined }, {
     message: (t, f, k) => hud.message(t, f, k),
     end: (winner) => {
       if (over || netOver) return; over = true; netOver = true;
       session?.flushFeed();
-      if (cfg.local === 0 && winner >= 0) lobby?.report(cfg, winner as 0 | 1);
+      if ((duo ? duo.me : cfg.local) === 0 && winner >= 0) lobby?.report(cfg, winner as 0 | 1);
       hud.message(winner >= 0 ? `${cfg.names[winner as 0 | 1]} VENCEU` : 'EMPATE', 200, 'small');
       setTimeout(leaveNetMatch, 3500);
     },
   });
   match = m; hud.localIndex = cfg.local; hud.bind(m);
-  m.fighters.forEach((f, i) => { (document.querySelectorAll('#hud .name')[i] as HTMLElement).textContent = `${cfg.names[i]} · ${f.def.name}`; });
+  document.body.classList.toggle('tag-mode', !!duo && cfg.local >= 0);
+  if (!document.body.classList.contains('room-docked')) document.body.classList.remove('room-open');   // no celular a SALA abre por cima do console: fecha ao começar a luta
   if (cfg.local < 0) {
     watchRoom = joinRoom(`watch-${cfg.matchId}`, null, { onMsg: (msg) => watchSession?.onMsg(msg) });
     watchSession = new WatchSession(m, watchRoom);
   } else {
     netRoom = joinRoom(`match-${cfg.matchId}`, null, { onMsg: (msg) => session?.onMsg(msg) });
-    if (cfg.local === 0) watchRoom = joinRoom(`watch-${cfg.matchId}`, null, { onMsg: (msg) => session?.onWatchMsg(msg) });
-    const s = new NetSession(m, netRoom, cfg.local as 0 | 1, watchRoom);
+    if ((duo ? duo.me : cfg.local) === 0) watchRoom = joinRoom(`watch-${cfg.matchId}`, null, { onMsg: (msg) => session?.onWatchMsg(msg) });
+    const s = new NetSession(m, netRoom, duo ? duo.me : cfg.local, watchRoom, duo ? duo.players.length : 2);
+    if (duo) s.seats = () => [duo.owner[0][m.active[0]], duo.owner[1][m.active[1]]];
     s.onConnect = () => { lobby?.connected(cfg.matchId); audio.sfx('menuConfirm'); };
     session = s;
   }
-  lobby?.setStatus(cfg.local < 0 ? 'assistindo' : 'lutando', cfg.matchId, vs);
+  lobby?.setStatus(cfg.local < 0 ? 'assistindo' : 'lutando', cfg.matchId, vs, cfg.duo && cfg.local >= 0 ? lobby.takeMc() : undefined);
   screens.hide();
   setMode('netfight');
   loop.setBackground(true);
-  { const tr = trackOf(fb); if (tr) audio.music(tr); }
+  { const own = roster.find((r) => (r.def.stage ?? DEFAULT_STAGE) === stage.name && trackOf(r)) ?? fb; const tr = trackOf(own); if (tr) audio.music(tr); }
 }
 
 function leaveNetMatch() {
@@ -320,6 +331,15 @@ function debugFight(a: string, b: string, cpu: Difficulty | null = 'normal') {
   hud.localIndex = 0; hud.bind(match); paused = false; screens.hide(); setMode('fight');
   return true;
 }
+/** Debug: luta de duplas contra a CPU. __of().duo(['edgard','laura'], ['kevin','dede']) */
+function debugDuo(a: [string, string], b: [string, string], cpu: Difficulty | null = 'normal') {
+  const g = (id: string) => roster.find((f) => f.def.id === id);
+  if (![...a, ...b].every(g)) return false;
+  match = new Match(g(a[0])!, g(b[0])!, stageOf(g(b[0])!), { cpu, partners: [g(a[1])!, g(b[1])!], label: 'TESTE' }, { message: (t, f, k) => hud.message(t, f, k), end: () => goTitle() });
+  document.body.classList.add('tag-mode');
+  hud.localIndex = 0; hud.bind(match); paused = false; screens.hide(); setMode('fight');
+  return true;
+}
 // acesso de debug no console: __of().match.fighters[0] · __of().fight('edgard', 'landim')
 /** Debug: mostra a cena final com o lutador dado e volta pro título. */
 function debugScene(a: string) {
@@ -327,7 +347,7 @@ function debugScene(a: string) {
   if (!fa || !boss) return false;
   setMode('versus'); screens.finalScene(fa, boss, scriptFor(a, 'mundim', false, 0), goTitle); return true;
 }
-(window as unknown as { __of: () => unknown }).__of = () => ({ mode, match, debug, input, audio, fight: debugFight, scene: debugScene, get session() { return session; }, get watchSession() { return watchSession; }, get lobby() { return lobby; } });
+(window as unknown as { __of: () => unknown }).__of = () => ({ mode, match, debug, input, audio, fight: debugFight, duo: debugDuo, scene: debugScene, arena: (id = 'edgard') => { online = true; playerIdx = Math.max(0, roster.findIndex((f) => f.def.id === id)); openLobby(); loop.setBackground(true); return true; }, get session() { return session; }, get watchSession() { return watchSession; }, get lobby() { return lobby; } });
 
 // ---------- loop
 const loop = startLoop({
@@ -358,9 +378,10 @@ const loop = startLoop({
       if (watchSession?.lost) { abortNetMatch('A transmissão da luta caiu.'); return; }
       if (s && s.quitBy !== null && !netOver) {                 // o outro desistiu: quem ficou leva a vitória e registra
         netOver = true; netMenuOpen = false; screens.hide();
-        const w = (1 - s.quitBy) as 0 | 1;
-        if (s.local === w && netCfg && s.frame > 100) lobby?.report(netCfg, w);
-        hud.message(s.frame > 100 ? `${otherName()} DESISTIU` : `${otherName()} SAIU`, 200, 'small');
+        const w = (1 - sideOfPlayer(netCfg!, s.quitBy)) as 0 | 1, who = netCfg!.duo ? netCfg!.duo.players[s.quitBy] : otherName();
+        const reporter = netCfg!.duo ? netCfg!.duo.owner[w][0] : w;                      // um só registra: o primeiro do lado que ficou
+        if (s.local === reporter && netCfg && s.frame > 100) lobby?.report(netCfg, w);
+        hud.message(s.frame > 100 ? `${who} DESISTIU` : `${who} SAIU`, 200, 'small');
         setTimeout(leaveNetMatch, 2500);
       } else if (netMenuOpen) screens.update(input);
       else if (s && !s.connected && (p.pressed('pause') || p.pressed('start') || p.pressed('block'))) { abortNetMatch('Desafio cancelado.'); return; }

@@ -437,3 +437,16 @@ html, body { overscroll-behavior: none; touch-action: manipulation; -webkit-touc
 .sf2-anim { width: 210px; height: 210px; margin-top: -40px; }
 .sf2-side .sf2-name { font-size: 34px; }
 .sf2-q { animation: none; display: block; line-height: 96px; text-align: center; width: 100%; }
+
+/* ---------- duplas (2x2): companheiro no placar e botão TROCA no console */
+.mate { display: none; align-items: center; gap: 6px; margin-top: 5px; font-size: 6px; color: #cfe0ff; }
+.hud.tag .mate { display: flex; } .hud.tag .rounds { display: none; } .p2 .mate { flex-direction: row-reverse; }
+.mate .mini { width: 26px; height: 26px; border: 2px solid #fff; overflow: hidden; background: #123; flex: none; box-shadow: 0 2px 0 #000; } .mate .mini img { width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; }
+.mate .mbar { width: 150px; } .mate small { display: block; font-size: 6px; margin-bottom: 3px; text-shadow: 1px 1px 0 #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mate .mlife { height: 7px; background: #2a0a0a; border: 2px solid #fff; } .mate .mlife i { display: block; height: 100%; background: linear-gradient(#9fe8a8, #2bb673); } .p2 .mate .mlife i { margin-left: auto; }
+.mate kbd, .mate em { display: none; font-style: normal; } .mate.ready kbd { display: inline-block; font-family: var(--pix); font-size: 7px; padding: 3px 5px; background: #fff; color: #111; box-shadow: 0 2px 0 #000; animation: pulse .8s infinite; } .mate.ready em { display: inline; color: var(--yellow); text-shadow: 1px 1px 0 #000; }
+.mate.out { opacity: .45; filter: grayscale(1); } .mate.out .mlife i { width: 0 !important; }
+.btn.white { --c: #e9eef7; --hi: #ffffff; --lo: #7b8597; } .btn.white b { color: #1a2233; text-shadow: none; }
+.tagbtn { display: none; } body.tag-mode .tagbtn { display: block; grid-column: 3; transform: translate(30%, 8px); }
+/* celular deitado, em luta: só som e SALA ficam por cima do placar */
+@media (max-height: 520px) and (orientation: landscape) { body.in-fight #install, body.in-fight #fs, body.in-fight .marquee a.chip { display: none; } }

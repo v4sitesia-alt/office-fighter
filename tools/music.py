@@ -10,7 +10,7 @@ os.makedirs(OUT, exist_ok=True)
 tracks = {}
 for src in sorted(glob.glob(f'{SRC}/*.mp3')):
     base = os.path.basename(src)[:-4]
-    name = base if base in ('intro', 'select') else 'fighter-' + base.replace('-song', '')
+    name = base if base in ('intro', 'select') else 'fighter-' + base.replace('-song', '').lower()   # CRM-song.mp3 -> fighter-crm
     dst = f'{OUT}/{name}.m4a'
     subprocess.run(['afconvert', '-f', 'm4af', '-d', 'aac', '-b', '128000', src, dst], check=True)
     tmp = tempfile.mktemp(suffix='.wav')

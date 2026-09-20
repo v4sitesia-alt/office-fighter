@@ -55,6 +55,7 @@ export class Fighter {
   comboTaken = 0;              // acertos seguidos que estou levando sem voltar ao neutro (escala o dano do combo)
   chainCount = 0;              // quantos golpes já encadeei nesta sequência
   beamStop: number | null = null;
+  owner = '';                  // quem controla (arena online): aparece no placar
   private ramp = 0;            // máquina pesada: quantos frames já está andando (pega velocidade aos poucos)   // raio: x (de tela) onde ele parou ao encostar no adversário
   private buffered: { btn: AttackBtn; frame: number } | null = null;
   private frameCounter = 0;

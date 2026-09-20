@@ -23,7 +23,7 @@ export interface HitResult { hitstop: number }
 export function resolveHits(fighters: [Fighter, Fighter], projectiles: Projectile[], zones: Zone[], fx: Fx): HitResult {
   let hitstop = 0;
   const pending: Array<() => void> = [];
-  const other = (f: Fighter) => (f === fighters[0] ? fighters[1] : fighters[0]);
+  const other = (f: Fighter) => fighters[1 - f.playerIndex];   // pelo lado, não pela referência: nas duplas quem soltou o projétil pode já ter saído
 
   // agarrões: ignoram defesa; só pegam quem está no chão e de pé
   for (let i = 0; i < 2; i++) {
