@@ -25,8 +25,11 @@ export function scriptFor(a: string, b: string, mirror: boolean, attempt = 0): L
 /** Quem não fala: o Xablau só grunhe. Qualquer fala dele, em qualquer conversa (par, banco genérico, revanche, espelho), vira grunhido. */
 const G = story as unknown as { grunts?: Record<string, string[]> };
 const MUTE: Record<string, string[]> = { xablau: G.grunts?.xablau ?? ['GRRRRRR...', 'HNNNNGH!', 'RRRAAAAAH!', 'GRRH. HNGH. GRRRH.', 'UUUURGH...', 'KHHHHHH...'] };
+/** Grunhido que já vem escrito no roteiro do par fica (ex.: o gemido de medo diante do Dener); só fala com palavra é sorteada.
+ *  Mesma regra do tools/story-check.py. */
+const GRUNT = /^[GRHNAUKOEIYM\s!.\-…,?]+$/;
 function muted(lines: Line[], a: string, b: string): Line[] {
-  return lines.map((l) => { const g = MUTE[l.who === 0 ? a : b]; return g ? { ...l, text: rnd(g) } : l; });
+  return lines.map((l) => { const g = MUTE[l.who === 0 ? a : b]; return g && !GRUNT.test(l.text) ? { ...l, text: rnd(g) } : l; });
 }
 function fullScript(a: string, b: string, mirror: boolean, attempt = 0): Line[] {
   if (mirror || a === b) return S.mirror.map(([w, t]) => ({ who: w === 'A' ? 0 : 1, text: t }));

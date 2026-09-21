@@ -2,8 +2,8 @@
  "id": "kevin",
  "name": "KEVIN",
  "role": "O Mercenário",
- "tagline": "Atira primeiro. Fatura depois.",
- "bio": "Atirador de Colombo, vizinho da torre. Topa qualquer serviço, desde que tenha nota fiscal. O Dias ainda deve três.",
+ "tagline": "Atira pra quem paga. Assa pra quem chega.",
+ "bio": "Atirador de Colombo, vizinho da torre e churrasqueiro de mão cheia. Estava de plantão no subsolo na noite do incidente: batizou o Xablau pelo rádio e o empurrou de volta com o bastão de choque. Cobrou três turnos extras; o Dias jura que acidente não tem nota fiscal.",
  "side": "neutro",
  "colors": {
   "primary": "#3d8bff",

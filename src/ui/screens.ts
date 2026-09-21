@@ -71,7 +71,7 @@ export class Screens {
         <div class="logo"><span class="l1">V4</span><span class="l2">FIGHTERS</span><span class="l3">TROUBLE WORK</span></div>
         <div class="pix small tag">O DEADLINE É HOJE. O NOCAUTE TAMBÉM.</div>
         <div class="pix press">PRESS START</div>
-        <div class="pix tiny">${fighters} LUTADORES · CAMPANHA · UM ESCRITÓRIO</div>
+        <div class="pix tiny">${fighters} LUTADORES · CAMPANHA · UMA TORRE</div>
       </div>`);
     this.onConfirm = onStart;
   }

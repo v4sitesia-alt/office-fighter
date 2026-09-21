@@ -1,9 +1,9 @@
 {
  "id": "xablau",
  "name": "XABLAU",
- "role": "O Capanga",
- "tagline": "Treinado com os dados errados.",
- "bio": "Experiência criada pelas próprias IAs da Mundim Corp, sem nenhum humano no projeto. Deu errado. Virou capanga da diretoria e ninguém sabe desligar.",
+ "role": "O Espécime",
+ "tagline": "O erro que foi o início do acerto.",
+ "bio": "Espécime X, a primeira vida que as IAs criaram nos tanques do subsolo, batizado com o barulho do vidro estourando. Um erro genético: não fala, só resmunga, e só quer matar. Mas foi estudando esse erro que as IAs chegaram ao acerto.",
  "side": "vilao",
  "colors": {
   "primary": "#b5c22a",
