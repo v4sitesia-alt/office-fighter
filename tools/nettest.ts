@@ -24,11 +24,11 @@ import { Squad, SQUAD, duoConfig, type SquadState } from '../src/net/squad';
 import { joinRoom, type Msg, type Peer, type Room } from '../src/net/transport';
 import { mergeRanking, rankKey, resultArgs, uniqueScores, type RankRow } from '../src/net/store';
 
-const load = (id: string): FighterAssets => ({
-  def: JSON.parse(fs.readFileSync(`public/fighters/${id}/fighter.json`, 'utf8')),
-  frames: JSON.parse(fs.readFileSync(`public/fighters/${id}/frames.json`, 'utf8')),
-  sheet: {} as HTMLImageElement, fx: {},
-});
+const load = (id: string): FighterAssets => {                      // `morph` junto: no 2º round o Mundim vira o monstro, e isso conta na medição
+  const def = JSON.parse(fs.readFileSync(`public/fighters/${id}/fighter.json`, 'utf8'));
+  return { def, frames: JSON.parse(fs.readFileSync(`public/fighters/${id}/frames.json`, 'utf8')),
+    sheet: {} as HTMLImageElement, fx: {}, morph: def.morph ? load(def.morph) : undefined };
+};
 const STAGE = { name: 'teste', img: {} as HTMLImageElement } as StageAssets;
 const log = (o: object) => console.log(JSON.stringify(o));
 

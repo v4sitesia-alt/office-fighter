@@ -15,11 +15,11 @@ import type { Difficulty, FighterAssets } from '../src/game/types';
 import type { StageAssets } from '../src/core/assets';
 import type { Controller } from '../src/core/input';
 
-const load = (id: string): FighterAssets => ({
-  def: JSON.parse(fs.readFileSync(`public/fighters/${id}/fighter.json`, 'utf8')),
-  frames: JSON.parse(fs.readFileSync(`public/fighters/${id}/frames.json`, 'utf8')),
-  sheet: {} as HTMLImageElement, fx: {},
-});
+const load = (id: string): FighterAssets => {                      // `morph` junto: no 2º round o Mundim vira o monstro, e isso conta na medição
+  const def = JSON.parse(fs.readFileSync(`public/fighters/${id}/fighter.json`, 'utf8'));
+  return { def, frames: JSON.parse(fs.readFileSync(`public/fighters/${id}/frames.json`, 'utf8')),
+    sheet: {} as HTMLImageElement, fx: {}, morph: def.morph ? load(def.morph) : undefined };
+};
 const STAGE = { name: 'teste', img: {} as HTMLImageElement } as StageAssets;
 const nullCtrl: Controller = { held: () => false, pressed: () => false };
 

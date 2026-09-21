@@ -33,8 +33,8 @@ export interface MatchOptions {
 /** Metamorfose (Mundim -> A COISA, sempre no 2º round): quadro do atlas do monstro, até que frame da cena ele fica, altura na tela
  *  e quanto sobe do chão (ele é erguido pelo bicho). Os sons vêm da pasta `cena`: grito de dor, o bicho saindo da cabeça e o rugido final. */
 export const MORPH: { frame: number; until: number; h: number; lift?: number }[] = [
-  { frame: 35, until: 50, h: 232 }, { frame: 36, until: 110, h: 236 }, { frame: 37, until: 180, h: 400 }, { frame: 38, until: 245, h: 400, lift: 26 }, { frame: 39, until: 305, h: 440, lift: 14 },
-  { frame: 40, until: 345, h: 420 }, { frame: 41, until: 385, h: 390 }, { frame: 42, until: 425, h: 360 }, { frame: 43, until: 465, h: 316 }, { frame: 44, until: 520, h: 291 },
+  { frame: 35, until: 50, h: 240 }, { frame: 36, until: 110, h: 255 }, { frame: 37, until: 180, h: 325 }, { frame: 38, until: 245, h: 330, lift: 26 }, { frame: 39, until: 305, h: 410, lift: 14 },
+  { frame: 40, until: 345, h: 437 }, { frame: 41, until: 385, h: 435 }, { frame: 42, until: 425, h: 425 }, { frame: 43, until: 465, h: 400 }, { frame: 44, until: 520, h: 430 },
 ];
 const MORPH_SOUNDS: [number, string][] = [[12, 'morph-1'], [108, 'morph-2'], [462, 'morph-3']];
 
@@ -328,7 +328,10 @@ export class Match {
     for (const l of this.leaving) { ctx.save(); ctx.globalAlpha = l.ko ? Math.max(0, Math.min(1, (150 - l.t) / 40)) : Math.max(0, 1 - l.t / 46); l.f.draw(ctx, false); ctx.restore(); }
     const [f0, f1] = this.fighters;
     const throwing = (f: Fighter) => f.state === 'attacking' && f.move?.kind === 'throw' && (f.sub === 'hold' || f.sub === 'lift' || f.sub === 'throw');
-    const order = throwing(f0) ? [1, 0] : throwing(f1) ? [0, 1]
+    // quem agarra fica na frente pra os braços envolverem a vítima; se o agarrador é bem maior (o monstro), a vítima é que
+    // vai na frente, senão ela some atrás do corpo dele
+    const big = (a: Fighter, b: Fighter) => a.scale > b.scale * 1.25;
+    const order = throwing(f0) ? (big(f0, f1) ? [0, 1] : [1, 0]) : throwing(f1) ? (big(f1, f0) ? [1, 0] : [0, 1])
       : f0.state === 'hitstun' || f0.state === 'knockdown' || (f0.state === 'attacking' && f0.sub === 'dive') ? [1, 0] : [0, 1];
     for (const i of order) this.fighters[i].draw(ctx, debug);
     this.projectiles.forEach((p) => p.draw(ctx, debug));
