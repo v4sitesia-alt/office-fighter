@@ -5,7 +5,7 @@ import { Referee } from './game/referee';
 import { audio, hasTrack } from './core/audio';
 import { Input } from './core/input';
 import { startLoop } from './core/loop';
-import { DEFAULT_STAGE, ROSTER, SECRET } from './data/roster';
+import { DEFAULT_STAGE, LOCKED, ROSTER, SECRET } from './data/roster';
 import { scriptFor } from './data/dialogue';
 import { setupMobile } from './core/mobile';
 import { H, W } from './game/consts';
@@ -92,12 +92,17 @@ const paintMute = () => { muteBtn.textContent = audio.muted ? '🔇' : '🔊'; m
 muteBtn.addEventListener('click', () => { audio.unlock(); audio.toggleMute(); paintMute(); });
 paintMute();
 
-// ---------- lutador secreto: destrava com o código na seleção ou vencendo a luta secreta do arcade
-const unlockedIds = new Set<string>((() => { try { return JSON.parse(localStorage.getItem('v4f-unlocked') ?? '[]') as string[]; } catch { return []; } })());
+// ---------- lutadores travados (LOCKED em roster.ts): código na seleção; Xablau e Mundim também saem zerando o arcade.
+// A chave do armazenamento mudou no lançamento: quem já tinha destravado o Dener antes começa travado de novo.
+const UNLOCK_KEY = 'v4f-unlocked-lancamento';
+const unlockedIds = new Set<string>((() => { try { return JSON.parse(localStorage.getItem(UNLOCK_KEY) ?? '[]') as string[]; } catch { return []; } })());
 const secret = {
-  isLocked: (id: string) => !unlockedIds.has(id),
-  unlock: (id: string) => { unlockedIds.add(id); try { localStorage.setItem('v4f-unlocked', JSON.stringify([...unlockedIds])); } catch { /* sem storage */ } },
+  isLocked: (id: string) => id in LOCKED && !unlockedIds.has(id),
+  unlock: (id: string) => { unlockedIds.add(id); try { localStorage.setItem(UNLOCK_KEY, JSON.stringify([...unlockedIds])); } catch { /* sem storage */ } },
 };
+/** Zerou o arcade: destrava quem sai assim (Xablau e Mundim) e devolve os nomes que acabaram de sair. */
+const unlockByArcade = () => roster.filter((f) => LOCKED[f.def.id]?.byArcade && secret.isLocked(f.def.id)).map((f) => { secret.unlock(f.def.id); return f.def.name; });
+let arcadeUnlocks: string[] = [];
 let continues = 0, secretFight = false, tries = 0, arcadeScore = 0;
 
 /** Primeiro adversário do arcade pra quem escolher o lutador i (a mesma conta do buildCampaign). */
@@ -108,7 +113,7 @@ function firstRival(i: number) {
 }
 
 function buildCampaign() {
-  continues = 0; secretFight = false; tries = 0; arcadeScore = 0;
+  continues = 0; secretFight = false; tries = 0; arcadeScore = 0; arcadeUnlocks = [];
   // 4 rivais do elenco (a partir da posição do jogador), depois Dias, Leo (no elevador), Xablau e o chefão
   const bosses = ['dias', 'leo', 'xablau', 'mundim']   // subchefe, o elevador com o Leo, a parada no andar do Xablau e o último andar
     .map((id) => roster.findIndex((f) => f.def.id === id)).filter((i) => i >= 0);
@@ -142,14 +147,14 @@ function startFight() {
         }
         fightNo++; tries = 0;
         if (fightNo < campaign.length) { showVersus(); return; }
+        if (!secretFight) arcadeUnlocks = unlockByArcade();          // venceu o Mundim: Xablau e Mundim liberados
         // zerou sem perder nenhuma luta: o elevador sobe mais um andar
         const boss = roster.findIndex((f) => f.def.secret);
         if (!secretFight && continues === 0 && boss >= 0 && boss !== playerIdx) {
           secretFight = true; campaign.push({ idx: boss, hue: 0 });
           audio.voice('ann-secret', 'ann'); showVersus(); return;
         }
-        let note = '';
-        if (secretFight && secret.isLocked(roster[boss].def.id)) { secret.unlock(roster[boss].def.id); note = `${roster[boss].def.name} DESBLOQUEADO`; }
+        const note = arcadeUnlocks.length ? `${arcadeUnlocks.join(' E ')} ${arcadeUnlocks.length > 1 ? 'DESBLOQUEADOS' : 'DESBLOQUEADO'}` : '';   // o Dener não sai por vitória: só no código
         setMode('ending'); screens.ending(roster[playerIdx], () => finishArcade(), note);
       }, () => finishArcade());
     },
@@ -227,7 +232,7 @@ function openLobby() {
     abort: (matchId, why) => { if (netCfg?.matchId === matchId && session && !session.connected) abortNetMatch(why); },
     exit: () => { lobby?.close(); lobby?.dispose(); lobby = null; goTitle(); },
     changeFighter: () => showSelect(),
-    locked: (id) => !!roster.find((f) => f.def.id === id)?.def.secret && secret.isLocked(id),
+    locked: (id) => secret.isLocked(id),
     stages: () => [...new Set(roster.filter((f) => !f.def.secret).map((f) => f.def.stage ?? DEFAULT_STAGE))].filter((n) => stages.has(n)),
   });
   setMode('lobby');

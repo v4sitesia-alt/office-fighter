@@ -20,7 +20,14 @@ function fromBank(bank: Exchange[], a: string, b: string, aIs: 0 | 1): Line[] {
 
 /** attempt = quantas vezes o jogador já perdeu esta luta: na revanche a conversa muda. */
 /** Conversa curta: provocação, resposta e tréplica. Nada além disso, pra não esfriar a luta. */
-export function scriptFor(a: string, b: string, mirror: boolean, attempt = 0): Line[] { return fullScript(a, b, mirror, attempt).slice(0, 3); }
+export function scriptFor(a: string, b: string, mirror: boolean, attempt = 0): Line[] { return muted(fullScript(a, b, mirror, attempt).slice(0, 3), a, b); }
+
+/** Quem não fala: o Xablau só grunhe. Qualquer fala dele, em qualquer conversa (par, banco genérico, revanche, espelho), vira grunhido. */
+const G = story as unknown as { grunts?: Record<string, string[]> };
+const MUTE: Record<string, string[]> = { xablau: G.grunts?.xablau ?? ['GRRRRRR...', 'HNNNNGH!', 'RRRAAAAAH!', 'GRRH. HNGH. GRRRH.', 'UUUURGH...', 'KHHHHHH...'] };
+function muted(lines: Line[], a: string, b: string): Line[] {
+  return lines.map((l) => { const g = MUTE[l.who === 0 ? a : b]; return g ? { ...l, text: rnd(g) } : l; });
+}
 function fullScript(a: string, b: string, mirror: boolean, attempt = 0): Line[] {
   if (mirror || a === b) return S.mirror.map(([w, t]) => ({ who: w === 'A' ? 0 : 1, text: t }));
   if (attempt > 0) return fromBank(B.rematch, a, b, 1);                         // A = o adversário, que ganhou a anterior

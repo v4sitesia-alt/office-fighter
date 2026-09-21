@@ -9,6 +9,13 @@ export interface TMatch { id: string; tournament_id: string; round: number; slot
 const db = () => supa();
 export const storeReady = ONLINE;
 
+/** Temporadas do ranking. Nada é apagado do banco: cada temporada grava em linhas novas (prefixo no id) e o ranking, o recorde do
+ *  arcade e o campeonato só leem o que é da temporada atual. 't0' = testes na véspera do lançamento; 's1' = lançamento, que começa
+ *  zerado à meia-noite de 22/09/2026 (Brasília). */
+const SEASONS: [string, string][] = [['t0', '2026-09-21T17:40:00Z'], ['s1', '2026-09-22T03:00:00Z']];
+export function season(now = Date.now()) { let cur = SEASONS[0]; for (const s of SEASONS) if (now >= Date.parse(s[1])) cur = s; return { id: cur[0], start: cur[1] }; }
+const seasonId = (key: string) => `${season().id}:${key}`;
+
 // ---------- ranking da arena
 // Quem entra na arena ganha um id novo a cada visita (é por aba, pra duas abas serem dois jogadores). Se o ranking
 // usasse esse id, a mesma pessoa virava uma linha por visita e as vitórias ficavam espalhadas. Por isso o ranking
@@ -38,23 +45,23 @@ export function resultArgs(w: { id: string; name: string }, l: { id: string; nam
 
 export async function upsertPlayer(id: string, name: string, fighter: string) {
   if (!ONLINE) return;
-  await db().from('players').upsert({ id: rankKey(name, id), name, fighter, updated_at: new Date().toISOString() }, { onConflict: 'id', ignoreDuplicates: false });
+  await db().from('players').upsert({ id: seasonId(rankKey(name, id)), name, fighter, updated_at: new Date().toISOString() }, { onConflict: 'id', ignoreDuplicates: false });
 }
 export async function ranking(): Promise<RankRow[]> {
   if (!ONLINE) return [];
-  const { data } = await db().from('players').select('id,name,wins,losses,points').gt('points', 0).order('updated_at', { ascending: false }).limit(1000);
+  const { data } = await db().from('players').select('id,name,wins,losses,points').like('id', `${season().id}:%`).gt('points', 0).order('updated_at', { ascending: false }).limit(1000);
   return mergeRanking((data ?? []) as RankRow[]);
 }
 export async function recordResult(w: { id: string; name: string }, l: { id: string; name: string }) {
   const args = resultArgs(w, l);
   if (!ONLINE || !args) return;
-  await db().rpc('record_result', args);
+  await db().rpc('record_result', { ...args, w_id: seasonId(args.w_id), l_id: seasonId(args.l_id) });
 }
 
 // ---------- campeonato
 export async function currentTournament(): Promise<Tournament | null> {
   if (!ONLINE) return null;
-  const { data } = await db().from('tournaments').select('*').order('created_at', { ascending: false }).limit(1);
+  const { data } = await db().from('tournaments').select('*').gte('created_at', season().start).order('created_at', { ascending: false }).limit(1);
   return ((data ?? [])[0] as Tournament) ?? null;
 }
 export async function createTournament(name: string, owner: string) { await db().from('tournaments').insert({ name, owner }); }
@@ -111,10 +118,11 @@ export function watch(onChange: () => void) {
 
 // ---------- ranking do arcade (tabela `scores`; sem rede ou sem a tabela, fica só neste navegador)
 export interface ScoreRow { name: string; fighter: string; score: number }
-const localScores = (): ScoreRow[] => { try { return JSON.parse(localStorage.getItem('v4f-scores') ?? '[]') as ScoreRow[]; } catch { return []; } };
+const scoresKey = () => `v4f-scores-${season().id}`;
+const localScores = (): ScoreRow[] => { try { return JSON.parse(localStorage.getItem(scoresKey()) ?? '[]') as ScoreRow[]; } catch { return []; } };
 export async function submitScore(player_id: string, row: ScoreRow) {
   const all = [...localScores(), row].sort((a, b) => b.score - a.score).slice(0, 20);
-  try { localStorage.setItem('v4f-scores', JSON.stringify(all)); } catch { /* sem storage */ }
+  try { localStorage.setItem(scoresKey(), JSON.stringify(all)); } catch { /* sem storage */ }
   if (ONLINE) await db().from('scores').insert({ player_id, ...row });
 }
 /** A mesma partida gravada mais de uma vez (Enter repetido, na versão antiga do jogo) aparece uma vez só. */
@@ -126,7 +134,7 @@ export function uniqueScores(rows: (ScoreRow & { player_id?: string | null })[],
 }
 export async function topScores(): Promise<ScoreRow[]> {
   if (ONLINE) {
-    const { data, error } = await db().from('scores').select('player_id,name,fighter,score').order('score', { ascending: false }).limit(80);
+    const { data, error } = await db().from('scores').select('player_id,name,fighter,score').gte('created_at', season().start).order('score', { ascending: false }).limit(80);
     if (!error && data) return uniqueScores(data as ScoreRow[]);
   }
   return uniqueScores(localScores());

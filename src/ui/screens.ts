@@ -4,6 +4,7 @@ import type { Difficulty, FighterAssets } from '../game/types';
 import { audio } from '../core/audio';
 import { placeOf, valeMapSvg } from './valemap';
 import { endingOf, type Line } from '../data/dialogue';
+import { LOCKED } from '../data/roster';
 
 export class Screens {
   root: HTMLElement;
@@ -66,7 +67,7 @@ export class Screens {
   title(onStart: () => void, fighters: number) {
     this.set('title', `
       <div class="center">
-        <div class="pix small">ESCRITÓRIO · 199X</div>
+        <div class="pix small">MUNDIM CORP · 2026</div>
         <div class="logo"><span class="l1">V4</span><span class="l2">FIGHTERS</span><span class="l3">TROUBLE WORK</span></div>
         <div class="pix small tag">O DEADLINE É HOJE. O NOCAUTE TAMBÉM.</div>
         <div class="pix press">PRESS START</div>
@@ -111,7 +112,7 @@ export class Screens {
   select(roster: FighterAssets[], secret: { isLocked(id: string): boolean; unlock(id: string): void }, onPick: (i: number) => void, onBack: () => void, focus = 0, rival: ((i: number) => number | null) | null = null) {
     const base = import.meta.env.BASE_URL;
     const img = (f: FighterAssets) => (f.portrait ? `<img src="${f.portrait.src}" alt="">` : '');
-    const locked = (f: FighterAssets) => !!f.def.secret && secret.isLocked(f.def.id);
+    const locked = (f: FighterAssets) => secret.isLocked(f.def.id);
     const slots = roster.map((f, i) => locked(f)
       ? (f.secretPortrait ? `<div class="sf2-slot secret hidden art" style="--c:${f.def.colors.primary}"><img src="${f.secretPortrait.src}" alt=""></div>` : `<div class="sf2-slot secret hidden" style="--c:${f.def.colors.primary}">${img(f)}<b>?</b></div>`)
       : `<div class="sf2-slot${f.def.secret ? ' secret' : ''}" data-item data-i="${i}" style="--c:${f.def.colors.primary}">${img(f)}<span>${f.def.name}</span></div>`).join('')
@@ -188,21 +189,22 @@ export class Screens {
       }
       if (t === 175) { spinning = 0; onPick(spinPick); }
     };
-    // código secreto: os botões H, J e B não fazem nada nos menus, então dá pra digitar sem sair da tela
-    const CODE: Button[] = ['up', 'up', 'down', 'down', 'left', 'right', 'left', 'right', 'special', 'heavy'];
+    // códigos secretos (LOCKED em roster.ts): os botões H, J e B não fazem nada nos menus, então dá pra digitar sem sair da tela
     const WATCH: Button[] = ['up', 'down', 'left', 'right', 'punch', 'kick', 'heavy', 'block', 'special'];
     const typed: Button[] = [];
-    const target = roster.find(locked);
+    const codes = roster.filter(locked).map((f) => ({ f, code: (LOCKED[f.def.id]?.code ?? []) as Button[] })).filter((c) => c.code.length);
+    const longest = Math.max(0, ...codes.map((c) => c.code.length));
     this.onTick = (input) => {
       clock++; drawAnim('p1'); drawAnim('cpu'); spinTick();
-      if (!target || spinning) return;
+      if (!codes.length || spinning) return;
       for (const b of WATCH) if (input.ports[0].pressed(b)) typed.push(b);
-      if (typed.length > CODE.length) typed.splice(0, typed.length - CODE.length);
-      if (typed.length === CODE.length && CODE.every((b, k) => typed[k] === b)) {
-        secret.unlock(target.def.id);
+      if (typed.length > longest) typed.splice(0, typed.length - longest);
+      const hit = codes.find((c) => typed.length >= c.code.length && c.code.every((b, k) => typed[typed.length - c.code.length + k] === b));
+      if (hit) {
+        secret.unlock(hit.f.def.id);
         audio.sfx('explosion'); audio.sfx('meter2'); audio.voice('ann-secret', 'ann');
-        this.select(roster, secret, onPick, onBack, roster.indexOf(target), rival);
-        this.root.querySelector('.sf2-slot.secret')?.classList.add('reveal');
+        this.select(roster, secret, onPick, onBack, roster.indexOf(hit.f), rival);
+        this.root.querySelector(`.sf2-slot[data-i="${roster.indexOf(hit.f)}"]`)?.classList.add('reveal');
         this.root.querySelector('.sf2')?.classList.add('flash');
       }
     };
