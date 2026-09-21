@@ -265,7 +265,7 @@
    "startup": 12,
    "active": 22,
    "recovery": 16,
-   "damage": 8,
+   "damage": 6,
    "hitstun": 14,
    "blockstun": 10,
    "hitbox": {
@@ -284,7 +284,7 @@
     "speed": 14,
     "lifetime": 70,
     "scale": 1.5,
-    "count": 2,
+    "count": 3,
     "every": 7,
     "hitbox": {
      "x": -20,

@@ -104,6 +104,7 @@ const secret = {
 const unlockByArcade = () => roster.filter((f) => LOCKED[f.def.id]?.byArcade && secret.isLocked(f.def.id)).map((f) => { secret.unlock(f.def.id); return f.def.name; });
 let arcadeUnlocks: string[] = [];
 let continues = 0, secretFight = false, tries = 0, arcadeScore = 0;
+let practiced = false;             // usou treino (F3) ou câmera lenta (F2) no arcade: a pontuação não vai pro ranking
 
 /** Primeiro adversário do arcade pra quem escolher o lutador i (a mesma conta do buildCampaign). */
 function firstRival(i: number) {
@@ -113,7 +114,7 @@ function firstRival(i: number) {
 }
 
 function buildCampaign() {
-  continues = 0; secretFight = false; tries = 0; arcadeScore = 0; arcadeUnlocks = [];
+  continues = 0; secretFight = false; tries = 0; arcadeScore = 0; arcadeUnlocks = []; practiced = false;
   // 4 rivais do elenco (a partir da posição do jogador), depois Dias, Leo (no elevador), Xablau e o chefão
   const bosses = ['dias', 'leo', 'xablau', 'mundim']   // subchefe, o elevador com o Leo, a parada no andar do Xablau e o último andar
     .map((id) => roster.findIndex((f) => f.def.id === id)).filter((i) => i >= 0);
@@ -169,7 +170,7 @@ function startFight() {
 /** Fim do arcade (zerou ou desistiu no game over): grava a pontuação e mostra o ranking. */
 function finishArcade() {
   const score = arcadeScore; arcadeScore = 0;
-  if (score <= 0) { goTitle(); return; }
+  if (score <= 0 || practiced) { goTitle(); return; }                     // partida de treino não grava pontuação
   let saved = false;
   const save = (name: string) => {
     if (saved) return;            // Enter repetido / vários cliques em GRAVAR gravavam a mesma pontuação várias vezes
@@ -325,12 +326,17 @@ function paintNetStatus() {
 // ---------- teclas de debug
 window.addEventListener('keydown', (e) => {
   if (e.code === 'F1') { debug = !debug; e.preventDefault(); }
-  if (e.code === 'F2' && match) { match.slowmo = match.slowmo ? 0 : 4; e.preventDefault(); }
-  if (e.code === 'F3' && match) { match.training = !match.training; e.preventDefault(); }
+  // F2/F3 mexem na simulação: online dessincronizaria os dois lados, então não valem lá; no arcade, quem usa não entra no ranking
+  if ((e.code === 'F2' || e.code === 'F3') && match && mode !== 'netfight') {
+    if (e.code === 'F2') match.slowmo = match.slowmo ? 0 : 4; else match.training = !match.training;
+    if (mode === 'fight' && campaign.length) { practiced = true; hud.message('TREINO: ESTA PARTIDA NÃO VALE RANKING', 120, 'small'); }
+    e.preventDefault();
+  }
 });
 
 /** Debug: começa uma luta avulsa entre dois lutadores, no cenário do segundo. Não conta pro arcade nem pro ranking. */
 function debugFight(a: string, b: string, cpu: Difficulty | null = 'normal') {
+  campaign = [];
   const fa = roster.find((f) => f.def.id === a), fb = roster.find((f) => f.def.id === b);
   if (!fa || !fb) return false;
   match = new Match(fa, fb, stageOf(fb), { cpu, hueP2: a === b ? 150 : 0, label: 'TESTE' }, { message: (t, f, k) => hud.message(t, f, k), end: () => goTitle() });

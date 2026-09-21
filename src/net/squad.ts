@@ -6,6 +6,7 @@
 //  - quem fica 7 s sem dar sinal sai da mesa; se for o anfitrião, a mesa fecha.
 // Um lado com uma pessoa só: ela escolhe e controla os dois lutadores da dupla.
 import type { Msg, Room, RoomHandlers } from './transport';
+import { LOCKED } from '../data/roster';
 
 export type SquadPhase = 'mesa' | 'confirma' | 'draft' | 'vai' | 'luta';
 export interface SquadMember { id: string; name: string; fighter: string; team: 0 | 1; ok: boolean }
@@ -173,7 +174,9 @@ export class Squad {
   private go() {
     const s = this.state!, all = this.fighters();
     for (const x of s.seats) if (!x.locked) {                              // tempo esgotado: fica o que estava olhando, ou um livre qualquer
-      const free = all.filter((f) => !this.taken(f)); const f = x.hover && free.includes(x.hover) ? x.hover : free[Math.floor(Math.random() * free.length)];
+      // fica o que a pessoa estava olhando (ela só consegue olhar quem tem destravado); o sorteio nunca entrega um lutador travado
+      const free = all.filter((f) => !this.taken(f)), pool = free.filter((f) => !(f in LOCKED));
+      const f = x.hover && free.includes(x.hover) ? x.hover : pool[Math.floor(Math.random() * pool.length)] ?? free[0];
       x.fighter = f; x.locked = true;
     }
     if (s.stage === 'random') { const st = this.stages(); s.stage = st[Math.floor(Math.random() * st.length)]; }

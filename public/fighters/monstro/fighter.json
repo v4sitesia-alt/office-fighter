@@ -245,7 +245,8 @@
     "h": 110
    },
    "knockback": 8,
-   "kind": "air"
+   "kind": "air",
+   "overhead": true
   },
   "airKick": {
    "phases": {
@@ -272,7 +273,8 @@
     "h": 70
    },
    "knockback": 8,
-   "kind": "air"
+   "kind": "air",
+   "overhead": true
   },
   "airHeavy": {
    "phases": {
@@ -300,7 +302,8 @@
    },
    "knockback": 13,
    "kind": "air",
-   "hitstop": 8
+   "hitstop": 8,
+   "overhead": true
   },
   "lowPunch": {
    "phases": {
@@ -327,7 +330,8 @@
     "h": 60
    },
    "knockback": 8,
-   "kind": "low"
+   "kind": "low",
+   "low": true
   },
   "lowKick": {
    "phases": {
@@ -419,7 +423,7 @@
    "name": "CUSPE ÁCIDO",
    "projectile": {
     "x": 130,
-    "y": -170,
+    "y": -120,
     "speed": 10,
     "lifetime": 100,
     "style": "ball",

@@ -395,7 +395,7 @@ export class Screens {
           <div class="item" data-item><b>CONTINUAR</b></div>
           <div class="item" data-item><b>SAIR DA LUTA</b></div>
         </div>
-        <div class="pix tiny">START OU PAUSE ABREM ESTE MENU · F1 HITBOXES · F2 CÂMERA LENTA · F3 TREINO</div>
+        <div class="pix tiny">START OU PAUSE ABREM ESTE MENU · F1 HITBOXES · F2 CÂMERA LENTA · F3 TREINO (F2 E F3 NÃO VALEM RANKING)</div>
       </div>`);
     this.onConfirm = (i) => (i === 0 ? onResume() : onQuit());
     this.onBack = onResume;

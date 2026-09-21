@@ -28,7 +28,7 @@ ALVO = {'leo': 56, 'mundim': 56, 'crm': 52}          # % de vitórias desejada n
 FICHA = [
     ('edgard',   0.90,  1.10,  1.35,  1.00, 'normal',   15,    (7, 7, 7, 7, 12)),   # portal dos morcegos: 5 acertos (pedido do usuário); a soma é maior porque o dano do combo escala pra baixo
     ('santana',  1.12,  0.90,  1.05,  1.20, 'firme',    15,    (10, 16)),   # mergulho + explosão
-    ('kevin',    0.90,  0.95,  1.20,  1.05, 'normal',    8,    8),          # x3 tiros
+    ('kevin',    0.90,  0.95,  1.20,  1.05, 'normal',    6,    8),          # magia RAJADA TRIPLA: 3 tiros de 6 · super: raio do canhão
     ('laura',    0.85,  1.35,  0.90,  0.85, 'rapido',   20,    36),         # magia = agarrão (release) · super = tsunami
     ('dede',     1.00,  1.00,  1.00,  1.00, 'normal',   13,    26),
     ('dias',     0.88,  1.30,  0.95,  1.05, 'rapido',   12,    5),          # escudo: 4 moedas de 5 (batendo ou lançadas)
