@@ -39,7 +39,7 @@ FICHA = [
     ('crm',      1.30,  0.60,  1.30,  1.50, 'maquina',  15,    (8, 11, 10)),   # chuva de bombas: três estouros
     ('leo',      1.15,  1.15,  1.15,  1.10, 'normal',   13,    8),          # x3 drones
     ('xablau',   1.22,  0.75,  1.00,  1.40, 'lento',    13,    28),
-    ('mundim',   1.10,  1.00,  1.25,  1.10, 'normal',   13,    25),
+    ('mundim',   1.10,  1.00,  1.25,  1.10, 'normal',   13,    8),          # o hóspede: 3 mordidas de 4 + soltura de 8
     # dener (secreto) fica de fora: é apelão de propósito
 ]
 #                 (dano, preparo, ativo, recuperação)

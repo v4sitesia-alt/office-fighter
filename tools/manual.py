@@ -18,7 +18,7 @@ SUPER = {
  'van': 'Carrega energia por quase 2 segundos: nesse tempo nada a atinge e a aura machuca quem chegar perto. Depois solta um raio contínuo de corações que cruza a tela.',
  'landim': 'Arremessa a claquete, que vai e volta como bumerangue: até 4 acertos.',
  'xablau': 'Língua com punho que alcança quase a tela inteira.',
- 'mundim': 'O hóspede: ele se curva de dor e o parasita rasga as costas do paletó, estica o pescoço e morde lá na frente. Um aviso do que vem no 2º round.',
+ 'mundim': 'O hóspede: ele se curva de dor e o parasita rasga as costas do paletó, estica o pescoço, gruda no adversário lá na frente e morde três vezes antes de soltar. Ignora a defesa. Um aviso do que vem no 2º round.',
  'crm': 'O canhão aponta pro alto, o foguete some no céu e volta em três bombas que caem em fila em cima do adversário, fechando a fuga. Junto com o do Edgard, o especial que mais tira.',
  'leo': 'Chama os drones dourados e manda os três em fila contra o adversário.'}
 MAGIC = {   # magia que não é projétil comum
@@ -132,7 +132,7 @@ footer{{text-align:center;color:var(--mut);font-size:13px;margin-top:70px}}
 <div class="box"><h4>DEFESA ALTA E BAIXA</h4><p>Defesa em pé não segura golpe rasteiro. Defesa agachada não segura golpe aéreo. Golpe defendido causa 25% do dano. Agarrão ignora defesa.</p></div>
 <div class="box"><h4>ATRIBUTOS</h4><p><b>Força</b> multiplica golpes comuns. <b>Poder</b> multiplica tudo que gasta barra. <b>Agilidade</b> é a velocidade de andar. <b>Peso</b> reduz o quanto você é empurrado.</p></div>
 <div class="box"><h4>DUPLAS (2x2)</h4><p>Cada lado tem dois lutadores e a luta é uma só. <kbd>T</kbd> (botão <b>TROCA</b>) chama o parceiro: ele entra num pulo por trás e você sai pra descansar, recuperando um pouco de vida no banco. Dá pra trocar de novo depois de 3 segundos. Quem for nocauteado dá lugar ao parceiro; a dupla perde quando os dois caem.</p></div>
-<div class="box"><h4>A METAMORFOSE</h4><p>O Mundim fez a última experiência nele mesmo e achou que ia controlar o que cresceu lá dentro. No <b>2º round</b> o bicho sai pela cabeça, ergue o corpo dele como marionete e assume a luta: <b>A COISA</b> é maior, mais pesada, bate mais forte, cospe ácido e dá o bote com o pescoço de longe. Acontece sempre, inclusive quando é você jogando de Mundim.</p></div>
+<div class="box"><h4>A METAMORFOSE</h4><p>O Mundim fez a última experiência nele mesmo e achou que ia controlar o que cresceu lá dentro. No <b>2º round</b> o bicho sai pela cabeça, ergue o corpo dele como marionete e assume a luta: <b>A COISA</b> é maior, mais pesada, bate mais forte, cospe ácido, dá o bote com o pescoço de longe e, no especial, agarra, morde três vezes e arremessa. Acontece sempre, inclusive quando é você jogando de Mundim.</p></div>
 <div class="box"><h4>ROUNDS</h4><p>Melhor de 3, 60 segundos por round. No tempo esgotado vence quem tiver mais vida. Vencer sem levar dano no round final rende PERFECT.</p></div></div>
 
 <h2 id="lutadores">OS LUTADORES</h2>{sections}

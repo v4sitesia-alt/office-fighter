@@ -213,6 +213,7 @@ export class Fighter {
           const v = this.victim;
           if (v && T.ticks && this.stateFrame % Math.max(1, Math.floor(T.lift / T.ticks)) === 0) {
             v.life = Math.max(1, v.life - (T.tickDamage ?? 2) * (this.def.stats.magic ?? 1)); v.flash = 4;
+            v.comboTaken++; audio.sfx('hitBig'); if (audio.hasVoice(`${this.def.id}-hit`)) audio.voice(`${this.def.id}-hit`, this.voiceChannel, 0.9);   // cada mordida conta no placar de hits
             this.spawns.push({ kind: 'fx', move: m, x: v.x, y: GROUND_Y + v.y - 70 * this.scale });
           }
           if (this.stateFrame >= T.lift) { this.sub = 'throw'; this.stateFrame = 0; this.vy = 0; this.release(T); }
@@ -491,7 +492,7 @@ export class Fighter {
           const P = m.phases;
           const list = this.sub === 'dash' ? P.startup : this.sub === 'grab' ? P.active : this.sub === 'hold' ? (P.hold ?? P.active)
             : this.sub === 'lift' ? (P.lift ?? P.active) : this.sub === 'throw' ? (P.throw ?? P.recovery) : P.recovery;
-          return { frame: F[list[0]], anchor: 'feet' };
+          return { frame: F[list[this.sub === 'lift' ? Math.floor(this.stateFrame / 6) % list.length : 0]], anchor: 'feet' };   // no 'lift' os quadros alternam (mordidas)
         }
         if (m.kind === 'dive') {
           if (ph === 'startup') return { frame: F[m.phases.startup[0]], anchor: 'center' };

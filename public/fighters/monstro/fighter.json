@@ -434,52 +434,68 @@
    }
   },
   "super": {
+   "kind": "throw",
+   "name": "FÚRIA DO VERME",
    "phases": {
     "startup": [
-     30,
-     31
+     30
     ],
     "active": [
+     31
+    ],
+    "hold": [
+     32
+    ],
+    "lift": [
      32,
      33
     ],
+    "throw": [
+     34
+    ],
     "recovery": [
-     34,
-     0
+     30
     ]
    },
-   "startup": 22,
-   "active": 16,
-   "recovery": 26,
-   "damage": 28,
-   "hitstun": 32,
-   "blockstun": 20,
+   "startup": 10,
+   "active": 8,
+   "recovery": 24,
+   "damage": 0,
+   "hitstun": 0,
+   "blockstun": 0,
    "hitbox": {
-    "x": -70,
-    "y": -230,
-    "w": 250,
-    "h": 230
+    "x": 30,
+    "y": -210,
+    "w": 125,
+    "h": 210
    },
-   "knockback": 22,
-   "knockdown": true,
-   "launch": -10,
+   "knockback": 0,
    "meterCost": 100,
-   "hitstop": 13,
-   "name": "FÚRIA DO VERME",
-   "hitboxes": [
-    {
-     "x": 30,
-     "y": -220,
-     "w": 130,
-     "h": 150
+   "throw": {
+    "speed": 8,
+    "dash": 12,
+    "grab": 8,
+    "hold": 10,
+    "lift": 42,
+    "throw": 22,
+    "whiff": 26,
+    "holdOffset": {
+     "x": 100,
+     "y": 0
     },
-    {
-     "x": -90,
-     "y": -235,
-     "w": 260,
-     "h": 235
+    "liftOffset": {
+     "x": 85,
+     "y": -70
+    },
+    "ticks": 3,
+    "tickDamage": 5,
+    "release": {
+     "damage": 14,
+     "knockback": 32,
+     "launch": -13,
+     "hitstop": 12
     }
-   ]
+   }
   }
  }
 }
