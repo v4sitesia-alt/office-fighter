@@ -238,7 +238,7 @@ function openLobby() {
   });
   setMode('lobby');
   let last = ''; try { last = localStorage.getItem('v4f-fighter') ?? ''; } catch { /* sem storage */ }   // na arena o lutador é escolhido DEPOIS do modo; aqui vai só o último usado, pro avatar
-  lobby.open(netCfg && netCfg.local >= 0 ? netCfg.f[netCfg.local === 1 ? 1 : 0] : roster.some((f) => f.def.id === last) ? last : roster[playerIdx].def.id);
+  lobby.open(netCfg && netCfg.local >= 0 ? netCfg.f[netCfg.local === 1 ? 1 : 0] : roster.some((f) => f.def.id === last) && !secret.isLocked(last) ? last : roster[playerIdx].def.id);
 }
 
 const otherName = () => (!netCfg ? '' : netCfg.duo ? (session && session.lostWho >= 0 ? netCfg.duo.players[session.lostWho] : 'OS OUTROS') : netCfg.names[netCfg.local === 1 ? 0 : 1]);

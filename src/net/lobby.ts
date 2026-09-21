@@ -205,7 +205,7 @@ export class Lobby {
         if (navigator.clipboard) navigator.clipboard.writeText(link).then(done, () => window.prompt('Copie o link:', link)); else window.prompt('Copie o link:', link);
         break;
       }
-      case 'view': this.view = arg as View; this.pick = this.me.fighter; if (this.view === 'copa') this.ensureTournament(); this.paint(); break;
+      case 'view': this.view = arg as View; this.pick = this.hooks.locked(this.me.fighter) ? '' : this.me.fighter; if (this.view === 'copa') this.ensureTournament(); this.paint(); break;
       case 'tab': this.tab = arg as 'gente' | 'ranking'; this.paint(); break;
       // ----- duplas
       case 'sq-new': this.sit(this.me.id); break;
@@ -215,7 +215,7 @@ export class Lobby {
       case 'sq-start': this.squad?.start(); break;
       case 'sq-ok': this.squad?.confirm(); this.paint(); break;
       case 'sq-pick': if (this.squad && !this.squad.taken(arg) && !this.hooks.locked(arg)) { this.pick = arg; this.clock = 0; this.squad.hover(arg); this.paint(); } break;
-      case 'sq-lock': if (this.squad && this.pick && this.squad.lock(this.pick)) { audio.sfx('selectChar'); audio.voice(`ann-${this.pick}`, 'ann'); this.paint(); } break;
+      case 'sq-lock': if (this.squad && this.pick && !this.hooks.locked(this.pick) && this.squad.lock(this.pick)) { audio.sfx('selectChar'); audio.voice(`ann-${this.pick}`, 'ann'); this.paint(); } break;
       case 'sq-stage': this.squad?.setStage(arg); break;
       // ----- campeonato: escolher na sala
       case 'tpick': if (!this.hooks.locked(arg)) { this.pick = arg; this.clock = 0; this.me.fighter = arg; this.room?.setPresence(this.me); this.paint(); } break;   // os outros veem quem estou olhando
@@ -234,7 +234,7 @@ export class Lobby {
       start: (st) => this.squadStart(st),
       closed: (why) => { this.squad = null; this.me.table = undefined; this.me.at = undefined; this.setStatus('livre'); this.note(why); },
     }, () => this.roster.filter((f) => !f.def.secret).map((f) => f.def.id).concat(this.roster.filter((f) => f.def.secret).map((f) => f.def.id)), () => this.hooks.stages(), solo);
-    this.me.at = solo ? undefined : hostId; this.view = 'duplas'; this.pick = this.me.fighter;
+    this.me.at = solo ? undefined : hostId; this.view = 'duplas'; this.pick = this.hooks.locked(this.me.fighter) ? '' : this.me.fighter;
     this.setStatus('dupla'); this.squadChanged();
   }
   private lastPhase = '';
@@ -244,7 +244,7 @@ export class Lobby {
     if (sq.isHost && st && !sq.solo) { const t = { n: st.members.length, open: st.phase === 'mesa' && st.members.length < 4 }; if (t.n !== this.me.table?.n || t.open !== this.me.table?.open) { this.me.table = t; this.room?.setPresence(this.me); } }
     if (st && st.phase !== this.lastPhase) {                                  // mudou de fase: som e foco
       if (st.phase === 'confirma') { audio.sfx('meter2'); document.body.classList.add('room-open'); }
-      if (st.phase === 'draft') { audio.sfx('selectChar'); this.pick = this.me.fighter; if (sq.taken(this.pick)) this.pick = ''; }
+      if (st.phase === 'draft') { audio.sfx('selectChar'); this.pick = this.me.fighter; if (sq.taken(this.pick) || this.hooks.locked(this.pick)) this.pick = ''; }
       this.lastPhase = st.phase;
     }
     this.paint();
@@ -324,7 +324,7 @@ export class Lobby {
     const cfgOf = (m: store.TMatch, local: 0 | 1 | -1): NetMatchCfg => ({ matchId: m.id, f: [fighterOf(m.p1), fighterOf(m.p2)], names: [m.p1_name ?? '?', m.p2_name ?? '?'], ids: [m.p1!, m.p2!], local, tourney: { t: t!, m }, connectMs: 90000 });
     const m = this.tMatches.find((x) => x.id === arg.split(':')[0]);
     if (a === 'tnew') { this.wantNew = true; this.ensureTournament(); }
-    else if (a === 'tjoin' && t && arg) {                              // entra (ou troca) com o lutador em destaque; o banco recusa lutador repetido
+    else if (a === 'tjoin' && t && arg && !this.hooks.locked(arg)) {                              // entra (ou troca) com o lutador em destaque; o banco recusa lutador repetido
       this.me.fighter = arg; this.room?.setPresence(this.me);
       audio.sfx('selectChar'); audio.voice(`ann-${arg}`, 'ann');
       void store.joinTournament(t.id, this.tid, this.me.name, arg).then(() => this.refresh());
@@ -514,7 +514,7 @@ export class Lobby {
         ${this.showcase(show, sq.mine?.team === 1)}
         ${this.grid('sq-pick', taken, 8)}
         <div class="dfoot"><div class="stagebox"><small>CENÁRIO${sq.isHost ? ' (VOCÊ ESCOLHE)' : ` · ${esc(host?.name ?? '')} ESCOLHE`}</small>${stageStrip}</div>
-          ${go ? `<div class="wait">A LUTA COMEÇA EM <b data-until="${sq.until}" data-fmt="n"></b></div>` : mySeat >= 0 ? `<div class="cta big ${this.pick && !sq.taken(this.pick) ? '' : 'off'}" data-act="sq-lock">🔒 TRAVAR ${esc(pickName)}</div>` : '<div class="wait">TRAVADO ✔</div>'}</div></div>
+          ${go ? `<div class="wait">A LUTA COMEÇA EM <b data-until="${sq.until}" data-fmt="n"></b></div>` : mySeat >= 0 ? `<div class="cta big ${this.pick && !sq.taken(this.pick) && !this.hooks.locked(this.pick) ? '' : 'off'}" data-act="sq-lock">🔒 TRAVAR ${esc(pickName)}</div>` : '<div class="wait">TRAVADO ✔</div>'}</div></div>
       ${team(1)}</div>`;
   }
 
@@ -527,7 +527,7 @@ export class Lobby {
     if (t.status === 'inscricoes') {
       const takenBy = (id: string) => { const e = this.tEntries.find((x) => x.fighter === id); return e ? (e.player_id === me ? 'VOCÊ' : e.name) : ''; };
       const free = (id: string) => !this.tEntries.some((x) => x.fighter === id && x.player_id !== me);
-      const pick = this.pick && free(this.pick) ? this.pick : '';
+      const pick = this.pick && free(this.pick) && !this.hooks.locked(this.pick) ? this.pick : '';
       const ready = this.cupReady, full = ready.length >= CUP.MAX && !mine, counting = this.tCount > 0;
       const enrolled = this.tEntries.map((e) => { const on = this.isOnline(e.player_id), inCup = ready.includes(e);
         return `<div class="prow in ${on && inCup ? 'glow' : 'off'}" style="--c:${this.F(e.fighter)?.def.colors.primary ?? '#3d4a63'}">${this.face(e.fighter)}<div class="pn"><b>${esc(e.name)}${e.player_id === me ? ' (VOCÊ)' : ''}</b><small>🔒 ${esc(this.F(e.fighter)?.def.name ?? e.fighter)}</small></div><span class="mini ${on && inCup ? 'ok' : 'ghost'}">${!on ? 'FORA DA SALA' : inCup ? '✔ CONFIRMADO' : 'SEM VAGA'}</span>${!on && runs ? `<span class="mini kick" data-act="tkick" data-arg="${esc(e.player_id)}" title="tirar da chave">✕</span>` : ''}</div>`; }).join('');

@@ -571,7 +571,7 @@ SUPER = {
 MAGIC = {
     'mundim': 'Brinde da diretoria: abre o paletó e arremessa as garrafas.',
     'dede': 'Gira e arremessa as três bolas das boleadeiras. Projétil largo.',
-    'kevin': 'Dois tiros rápidos de pistola, de qualquer distância.',
+    'kevin': 'Três tiros rápidos de pistola, de qualquer distância.',
     'dias': 'Juros compostos: vira uma bola e rola por cima do adversário.',
     'laura': 'Arranca, agarra e arremessa.',
     'edgard': 'Junta a energia roxa no peito e empurra uma bola com um morcego dentro, que cruza a tela com a revoada atrás.',
@@ -589,7 +589,7 @@ LONG = {
     'leo': 'Tiro de escopeta: mira e dispara. O estouro pega a uma boa distância do cano.',
     'edgard': 'Junta as mãos e solta uma revoada de morcegos à frente. Demora pra sair, mas alcança o dobro do golpe forte.',
     'santana': 'O braço mecânico se estica em três estágios e acerta de longe, de punho fechado.',
-    'kevin': 'Saca o cassetete e estoca de longe. A ponta estoura em choque azul.',
+    'kevin': 'Acerta de longe com o bastão de choque, num estalo de eletricidade azul.',
     'dias': 'A velha barrigada em corrida: entra de longe e empurra.',
     'landim': 'O feixe da câmera com a lente na ponta: acerta de muito longe.',
     'van': 'Aponta a bebê e solta a nuvem tóxica: área grande à frente.',
@@ -1293,7 +1293,7 @@ def s_barra():
     table = (f'<table class="btab"><thead><tr><th>A SUA BARRA</th><th>{BT("B")}<br>faz</th><th>{cmd(ST("d"), PLUS, BT("B"))}<br>faz</th></tr></thead><tbody>'
              f'<tr><td>{MT("q", "AINDA ENCHENDO")}</td><td>{no} nada</td><td>{no} nada</td></tr>'
              f'<tr><td>{MT("h")}</td><td>{ok} <b>MAGIA</b><small>gasta a azul</small></td><td>{ok} <b>MAGIA</b><small>gasta a azul</small></td></tr>'
-             f'<tr><td>{MT("f")}</td><td>{ok} <b>SUPER</b><small>gasta tudo</small></td><td>{ok} <b>MAGIA</b><small>e guarda a amarela</small></td></tr>'
+             f'<tr><td>{MT("f")}</td><td>{ok} <b>SUPER</b><small>gasta tudo</small></td><td>{ok} <b>MAGIA</b><small>gasta só a amarela</small></td></tr>'
              f'<tr><td>{AIR()}</td><td>{no} nada</td><td>{no} nada</td></tr></tbody></table>')
     extra = []
     if 'crm' in F and F['crm']['moves'].get('long', {}).get('meterCost'):
@@ -1369,7 +1369,7 @@ def s_dicas():
             ('NÃO PULE À TOA', cmd(ST('u')), f'No ar não dá pra defender, e quem pula demais vira alvo. Pule ({ST("u")}) pra fugir de magia e de golpe baixo.', 'michael'),
             (f'COMECE PELO {fname(STARTER)}', '<span class="d-avg">1,00</span>', f'{"Ele" if F[STARTER].get("gender") != "f" else "Ela"} tem tudo na média (1,00): nem lento, nem frágil. Bom pra aprender o jogo.', STARTER),
             ('OLHE O PÉ', '<span class="d-feet"><span class="foot b"></span><span class="foot g"></span></span>', 'Brilho azul no chão: ele tem magia. Dourado: tem SUPER. Prepare a defesa.', 'van'),
-            ('GUARDE O SUPER', cmd(COND(MT('f')), ST('d'), PLUS, BT('B')), f'Com a barra cheia, {cmd(ST("d"), PLUS, BT("B"))} solta só a magia e guarda a outra metade pro super.', 'kevin'),
+            ('MAGIA SEM GASTAR TUDO', cmd(COND(MT('f')), ST('d'), PLUS, BT('B')), f'Com a barra cheia, {cmd(ST("d"), PLUS, BT("B"))} solta só a magia e gasta só a amarela: a azul continua cheia e dá outra magia. Pro SUPER, encha a amarela de novo.', 'kevin'),
             ('DISTÂNCIA É ARMA', cmd(ST('r', 'FRENTE'), PLUS, BT('J')), 'O golpe longo acerta de longe e não gasta barra (menos o do CRM, que gasta 1/4). Ótimo contra quem só vem batendo.', 'landim'),
             ('AGARRÃO? PULE!', cmd(ST('u')), f'Viu alguém vindo pra agarrar? Agarrão atravessa a defesa: a saída é pular ({ST("u")}).', 'laura'),
             ('APANHAR ENCHE A BARRA', cmd(MT('h', '')), 'Tomou uma surra? A sua barra encheu. Devolva com a magia ou o super.', 'eneias'),
@@ -1496,7 +1496,7 @@ def s_comandos():
         ('ESPECIAIS DO BOTÃO B · GASTAM BARRA', '#9257e6', 'só no chão', [
             (cmd(COND(MT('h')), BT('B')), 'MAGIA', 'Com a azul cheia, o B solta a magia. Gasta a azul.', kb('B'), 'special'),
             (cmd(COND(MT('f')), BT('B')), 'SUPER', 'Com as duas cheias, o B solta o golpe mais forte do lutador. Gasta tudo.', kb('B'), 'super'),
-            (cmd(COND(MT('f')), ST('d'), PLUS, BT('B')), 'MAGIA GUARDANDO O SUPER', 'Com as duas cheias, abaixado: solta só a magia e guarda a amarela.', kb('S', 'B'), None)]),
+            (cmd(COND(MT('f')), ST('d'), PLUS, BT('B')), 'MAGIA SEM GASTAR TUDO', 'Com as duas cheias, abaixado: solta só a magia e gasta só a amarela. A azul continua cheia (dá outra magia); pro SUPER, encha a amarela de novo.', kb('S', 'B'), None)]),
         ('SÓ NAS DUPLAS', '#e9eef7', '', [
             (cmd(BT('T')), 'TROCA', f'Aperte com o seu lutador livre, no chão, e o parceiro de pé. No ar, apanhando ou no meio de um golpe, não troca. O parceiro entra num pulo e você vai pro banco recuperar até {TAG_CAP} de vida. Depois espere {TAG_COOL} s pra trocar de novo.', kb('T'), None)]),
     ]

@@ -50,7 +50,7 @@
  "timeline": [
   {
    "when": "ANTES",
-   "event": "A <b>Mundim Corp</b> põe IA em tudo no Vale Quatro: no caixa do shopping, no cinema, na churrasqueira, até no setor de CRM do <b>Thiago</b> e do <b>João</b>. Do 52º andar, o <b>Mundim</b> quer mais: ligar gente direto nas máquinas."
+   "event": "A <b>Mundim Corp</b> põe IA em tudo no Vale Quatro: no caixa do shopping, no cinema, na churrasqueira, até no setor de CRM do <b>Thiago</b> e do <b>João</b>. Na Fábrica 7, o boxeador <b>Michael</b> ensina os droides a lutar, pago por hora. Do 52º andar, o <b>Mundim</b> quer mais: ligar gente direto nas máquinas."
   },
   {
    "when": "JAN 2026 · INTEGRAÇÃO 01",
@@ -58,7 +58,7 @@
   },
   {
    "when": "MAR 2026 · INTEGRAÇÃO 02",
-   "event": "O <b>Leo</b> se oferece e dá certo: duas IAs em fusão, Claude e ChatGPT, ligadas direto ao Mundim. Pra ensinar os droides a lutar, a Fábrica 7 contrata um sparring: o boxeador <b>Michael</b>."
+   "event": "O <b>Leo</b> se oferece e dá certo: duas IAs em fusão, Claude e ChatGPT, ligadas direto ao Mundim."
   },
   {
    "when": "ABR 2026 · O EXÉRCITO",
@@ -1668,7 +1668,7 @@
   "edgard|santana": [
    [
     "santana",
-    "BUSHCANDO 'EDGARD'... UM RESHULTADO: ALVO PRIORITÁRIO."
+    "BUSHCANDO 'EDGARD'... UM RESHULTADO: ALVO PRIORITÁRIO. ORDEM DO 52º ANDAR: NÃO DEIXAR SUBIR."
    ],
    [
     "edgard",
@@ -1732,7 +1732,7 @@
    ],
    [
     "landim",
-    "Nossa, que presença! Isso a gente não corta. Levanta de novo que eu tô gravando. Ação!"
+    "Nossa, que atitude! Isso a gente não corta. Repete a cena que eu tô gravando. Ação!"
    ]
   ],
   "eneias|laura": [

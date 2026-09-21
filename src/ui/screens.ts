@@ -343,7 +343,7 @@ export class Screens {
     this.set('ending', `
       <div class="center">
         <div class="thumb big">${winner.portrait ? `<img src="${winner.portrait.src}" alt="">` : ''}</div>
-        <div class="title-big win">CAMPEÃO</div>
+        <div class="title-big win">${winner.def.gender === 'f' ? 'CAMPEÃ' : 'CAMPEÃO'}</div>
         <div class="end-text">${endingOf(winner.def.id)}</div>${note ? `<div class="pix small" style="color:#ff5468">${note}</div>` : ''}
         <div class="pix tiny">G / ENTER PARA VOLTAR</div>
       </div>`);
