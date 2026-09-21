@@ -24,10 +24,6 @@
   "ann-dener.wav",
   "ann-crm.wav",
   "ann-leo.wav",
-  "dener-down-1.wav",
-  "dener-down-2.wav",
-  "dener-down-3.wav",
-  "dener-down-4.wav",
   "ann-secret.wav",
   "kevin-special.wav",
   "dias-long.wav",
@@ -82,6 +78,11 @@
   "monstro-hit.wav",
   "monstro-long.wav",
   "monstro-hurt.wav",
-  "ko-monstro.wav"
+  "ko-monstro.wav",
+  "dener-taunt.wav",
+  "dener-win.wav",
+  "dener-down-1.wav",
+  "dener-down-2.wav",
+  "dener-down-3.wav"
  ]
 }

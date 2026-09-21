@@ -44,10 +44,6 @@ CLIPS = [
     ('ann-crm',     'Daniel', 'C R M. War machine!', 160, 0.84),
     ('ann-leo',     'Daniel', 'Leh-oh!', 155, 0.84),
     # risadas do Dener: tocam quando ele DERRUBA o adversário (gatilho <id>-down-N), não a cada golpe
-    ('dener-down-1', 'Eddy (Português (Brasil))', 'Ha ha ha ha ha ha ha!', 240, 1.12),
-    ('dener-down-2', 'Eddy (Português (Brasil))', 'Hi hi hi hi hi hi hi!', 260, 1.2),
-    ('dener-down-3', 'Eddy (Português (Brasil))', 'He he he. Ha ha ha ha ha ha!', 230, 1.08),
-    ('dener-down-4', 'Eddy (Português (Brasil))', 'Mua ha ha ha ha ha ha ha!', 220, 1.15),
     ('ann-secret',  'Daniel', 'Here comes a new challenger!', 165, 0.84),
 ]
 
@@ -178,6 +174,7 @@ def main():
     for src in sorted(glob.glob('Personagens/Mais-movimentos/especial-*.*') + glob.glob('Personagens/Mais-movimentos/*-especial.*')):
         fid = os.path.basename(src).split('.')[0].replace('especial-', '').replace('-especial', '')
         ext = os.path.splitext(src)[1].lower()
+        if ext not in ('.mp3', '.wav', '.m4a', '.ogg'): continue          # board de sprite com nome parecido (mundim-golpe-novo-especial.png) não é som
         dst = f'{fid}-special{ext}'
         shutil.copy(src, os.path.join(OUT, dst)); ids.append(dst); print(f'{dst:20s} <- {src}')
     # Sons enviados pelo usuário em Personagens/sons/. Um arquivo pode virar mais de um som do jogo.
@@ -218,6 +215,23 @@ def main():
             if ext == '.wav': level(src, os.path.join(OUT, dst), cut=TRIM.get(target))
             else: shutil.copy(src, os.path.join(OUT, dst))
             ids.append(dst); print(f'{dst:20s} <- {src}')
+    # Risada do Dener: a MESMA risada do Mundim, só que mais fina e trêmula (pedido do usuário: "mais medonha").
+    LAUGH, DENER = 'Personagens/sons/risada-mundim.wav', [('dener-taunt', 1.20), ('dener-win', 1.26), ('dener-down-1', 1.22), ('dener-down-2', 1.30), ('dener-down-3', 1.26)]
+    if os.path.exists(LAUGH):
+        with wave.open(LAUGH) as w:
+            nch, sr = w.getnchannels(), w.getframerate()
+            src = np.frombuffer(w.readframes(w.getnframes()), np.int16).astype(np.float32) / 32768
+        if nch > 1: src = src.reshape(-1, nch).mean(axis=1)
+        if sr != SR: src = resample(src, sr / SR)
+        src = trim(src)
+        for cid, p in DENER:
+            y = resample(src, p)                                                       # > 1 = mais fina (e mais curta)
+            y = y * (1 + 0.22 * np.sin(np.arange(len(y)) * 2 * np.pi * 6.0 / SR))      # tremor
+            y = reverb(normalize(y), 0.42, tail=0.45)                                  # eco do 53º andar
+            write(os.path.join(OUT, cid + '.wav'), fade(normalize(y)))
+            ids[:] = [i for i in ids if os.path.splitext(i)[0] != cid]
+            ids.append(cid); print(f'{cid:20s} <- risada do Mundim, tom {p:.2f}')
+
     files = [i if '.' in i else i + '.wav' for i in ids]
     with open(os.path.join(OUT, 'manifest.json'), 'w') as f:
         json.dump({'files': files}, f, indent=1)

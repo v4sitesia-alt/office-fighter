@@ -33,8 +33,8 @@ export interface MatchOptions {
 /** Metamorfose (Mundim -> A COISA, sempre no 2º round): quadro do atlas do monstro, até que frame da cena ele fica, altura na tela
  *  e quanto sobe do chão (ele é erguido pelo bicho). Os sons vêm da pasta `cena`: grito de dor, o bicho saindo da cabeça e o rugido final. */
 export const MORPH: { frame: number; until: number; h: number; lift?: number }[] = [
-  { frame: 35, until: 50, h: 240 }, { frame: 36, until: 110, h: 255 }, { frame: 37, until: 180, h: 325 }, { frame: 38, until: 245, h: 330, lift: 26 }, { frame: 39, until: 305, h: 410, lift: 14 },
-  { frame: 40, until: 345, h: 437 }, { frame: 41, until: 385, h: 435 }, { frame: 42, until: 425, h: 425 }, { frame: 43, until: 465, h: 400 }, { frame: 44, until: 520, h: 430 },
+  { frame: 35, until: 50, h: 240 }, { frame: 36, until: 110, h: 258 }, { frame: 37, until: 180, h: 415 }, { frame: 38, until: 245, h: 425, lift: 26 }, { frame: 39, until: 305, h: 425, lift: 14 },
+  { frame: 40, until: 345, h: 437 }, { frame: 41, until: 385, h: 435 }, { frame: 42, until: 425, h: 432 }, { frame: 43, until: 465, h: 428 }, { frame: 44, until: 520, h: 432 },
 ];
 const MORPH_SOUNDS: [number, string][] = [[12, 'morph-1'], [108, 'morph-2'], [462, 'morph-3']];
 
