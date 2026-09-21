@@ -34,7 +34,7 @@ export interface MatchOptions {
  *  e quanto sobe do chão (ele é erguido pelo bicho). Os sons vêm da pasta `cena`: grito de dor, o bicho saindo da cabeça e o rugido final. */
 export const MORPH: { frame: number; until: number; h: number; lift?: number }[] = [
   { frame: 35, until: 50, h: 232 }, { frame: 36, until: 110, h: 236 }, { frame: 37, until: 180, h: 400 }, { frame: 38, until: 245, h: 400, lift: 26 }, { frame: 39, until: 305, h: 440, lift: 14 },
-  { frame: 40, until: 345, h: 420 }, { frame: 41, until: 385, h: 390 }, { frame: 42, until: 425, h: 360 }, { frame: 43, until: 465, h: 330 }, { frame: 44, until: 520, h: 310 },
+  { frame: 40, until: 345, h: 420 }, { frame: 41, until: 385, h: 390 }, { frame: 42, until: 425, h: 360 }, { frame: 43, until: 465, h: 316 }, { frame: 44, until: 520, h: 291 },
 ];
 const MORPH_SOUNDS: [number, string][] = [[12, 'morph-1'], [108, 'morph-2'], [462, 'morph-3']];
 

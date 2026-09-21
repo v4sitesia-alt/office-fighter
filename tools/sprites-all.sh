@@ -107,15 +107,17 @@ run mundim  $M/mundim.png --export 33:garrafas.png --white-fx 318-354:v0.7:s0.08
   --white-drop 906,929 --white-drop 930,946 --white-drop 969,945 --white-drop 1050,902 --white-drop 1063,887 \
   --white-drop 300,99 --white-drop 502,100 --white-drop 708,100 --white-drop 958,103 --white-drop 116,388 --white-drop 549,723 \
   --white-drop 751,834 --white-drop 96,1080 --white-drop 452,1226 --white-drop 769,1056 --white-drop 1049,1070 --white-drop 1081,1064 \
-  --white-drop 992,1070 --white-drop 554,950
+  --white-drop 992,1070 --white-drop 554,950 \
+  --extra $M/mundim-golpe-novo-especial.png --extra-rows 1 --extra-scale 0.70 --extra-cuts 250,563,950,1493
 # Juiz (robô das bandeiras): 4 linhas x 5 poses, fundo branco. Os vãos entre o braço levantado e o corpo são fundo.
 python3 tools/sprites.py $M/juiz-sprite.png public/referee --cols 5 --rows 4 ${D:+--debug $D/juiz.png} \
   --white-drop 933,393 --white-drop 1198,393 --white-drop 1001,665 --white-drop 649,935 --white-drop 744,934 --white-drop 1200,937 --white-drop 1275,938 --white-drop 1269,671 --white-drop 1274,664
 
 # Monstro do Mundim (metamorfose, 2º round): board completo de 35 poses + a sequência da transformação como extra (frames 35-44, 10 quadros).
 # A transformação é desenhada pelo jogo com altura por quadro (src/game/morph.ts), então o extra entra numa escala só.
-run monstro $M/mundim-metamorfose-movimentos.png \
-  --white-drop 618,267 --white-drop 158,336 --white-drop 723,482 --white-drop 445,518 --white-drop 823,611 --white-drop 842,606 --white-drop 960,800 --white-drop 898,941 --white-drop 262,1153 --white-drop 273,1138 --white-drop 372,1121 --white-drop 717,1147 --white-drop 735,1136 --white-drop 650,1255 --white-drop 690,1280 --white-drop 893,1255 \
+python3 tools/monstro-board.py >/dev/null   # junta as 7 tiras de Mais-movimentos/metamorfose/ num board 7x5
+run monstro $M/monstro-board.png \
+  --white-drop 1865,641 --white-drop 242,699 --white-drop 267,704 --white-drop 1841,1138 --white-drop 1767,1813 --white-drop 913,2311 --white-drop 926,2311 --white-drop 937,2302 --white-drop 1083,2360 --white-drop 993,2642 \
   --extra $M/mundim-metamorfose.png --extra-scale 0.6 \
   --white-drop 61,924 --white-drop 283,941 --white-drop 510,949 --white-drop 709,919 --white-drop 803,958 --white-drop 839,1087 --white-drop 25,1185 --white-drop 490,1110 --white-drop 1093,1178   # vãos brancos presos entre garras, pernas e cabos (o monstro não tem branco de verdade)
 

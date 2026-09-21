@@ -7,7 +7,7 @@ STORY = json.load(open('src/data/story.json'))
 PLACES = json.load(open('src/data/places.json'))['places']
 F = {i: json.load(open(f'public/fighters/{i}/fighter.json')) for i in ROSTER}
 SUPER = {
- 'edgard': 'Carrega as mãos com chamas roxas, bate no chão e invoca o portal sob o adversário, onde quer que ele esteja: um pilar de luz roxa sobe até o topo da tela, com morcegos e criaturas subindo por dentro. Quatro acertos; o último derruba.',
+ 'edgard': 'Carrega as mãos com chamas roxas, bate no chão e invoca o portal sob o adversário, onde quer que ele esteja: um pilar de luz roxa sobe até o topo da tela, com morcegos e criaturas subindo por dentro. Cinco acertos; o último derruba.',
  'santana': 'Salta sobre o adversário, desce com o punho e a explosão atinge uma área larga ao redor do impacto.',
  'kevin': 'Arsenal completo: puxa o canhão de dezesseis canos e dispara o raio duplo que cruza a tela. Três acertos seguidos.',
  'laura': 'Tsunami de tubarões: levanta uma onda enorme, cheia de tubarões, que corre até o fim da tela.',
@@ -18,10 +18,11 @@ SUPER = {
  'van': 'Carrega energia por quase 2 segundos: nesse tempo nada a atinge e a aura machuca quem chegar perto. Depois solta um raio contínuo de corações que cruza a tela.',
  'landim': 'Arremessa a claquete, que vai e volta como bumerangue: até 4 acertos.',
  'xablau': 'Língua com punho que alcança quase a tela inteira.',
- 'mundim': 'Abre o paletó e arremessa as garrafas da diretoria.',
+ 'mundim': 'O hóspede: ele se curva de dor e o parasita rasga as costas do paletó, estica o pescoço e morde lá na frente. Um aviso do que vem no 2º round.',
  'crm': 'O canhão aponta pro alto, o foguete some no céu e volta em três bombas que caem em fila em cima do adversário, fechando a fuga. Junto com o do Edgard, o especial que mais tira.',
  'leo': 'Chama os drones dourados e manda os três em fila contra o adversário.'}
 MAGIC = {   # magia que não é projétil comum
+ 'mundim': 'Brinde da diretoria: abre o paletó e arremessa as garrafas.',
  'dede': 'Boleadeiras: gira e arremessa as três bolas. Projétil largo.',
  'kevin': 'Dois tiros rápidos de pistola, de qualquer distância.',
  'dias': 'Juros compostos: vira uma bola e rola por cima do adversário.',

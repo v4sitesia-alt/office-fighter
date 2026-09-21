@@ -43,21 +43,19 @@ export class Projectile {
     this.x += this.vx; this.age++;
     if (--this.life <= 0 || this.x < -100 || this.x > W + 100) this.dead = true;
   }
-  /** Onda de pedras rolando: uma crista curva (baixa atrás, alta na frente, quebrando pra frente) feita de pedras que giram;
-   *  nasce pequena e vai crescendo. `sprite` = pedra grande, `trail` = pedra pequena. */
+  /** Onda sísmica: o chão se levanta numa rampa de pedras que corre pra frente (baixa atrás, alta na frente), sem girar.
+   *  Cada pedra sobe e desce na sua vez, como uma ondulação passando; nasce pequena e vai crescendo. `sprite` = pedra grande, `trail` = pequena. */
   private drawRocks(ctx: CanvasRenderingContext2D, s: number, grown: number) {
     const big = this.img!, small = this.owner.assets.fx[this.move.projectile!.trail ?? ''] ?? big;
-    const N = 9, t = this.age, born = Math.min(1, t / 14), len = 250 * s * grown * born, top = 150 * s * grown * born;
+    const N = 7, t = this.age, born = Math.min(1, t / 12), len = 270 * s * grown * born;
     for (let k = 0; k < N; k++) {
-      const u = k / (N - 1);                                    // 0 = rabo da onda, 1 = crista
-      const px = -len + len * u + Math.sin(u * 2.6) * 26 * s * grown * u, py = -top * Math.pow(u, 1.7) * (0.9 + 0.1 * Math.sin(t * 0.3 + k));
-      const curl = u > 0.8 ? (u - 0.8) * 5 : 0;                 // a ponta dobra pra frente e pra baixo, como onda quebrando
-      const img = k % 2 ? small : big, sc = s * grown * (0.35 + 0.75 * u) * (0.9 + 0.1 * Math.sin(t * 0.5 + k * 2));
-      ctx.save(); ctx.translate(px + curl * 34 * s * grown, py + curl * curl * 46 * s * grown - img.height * sc * 0.3); ctx.rotate((t * 0.16 + k * 1.3) * (k % 2 ? 1 : 0.7));
-      ctx.drawImage(img, -img.width * sc / 2, -img.height * sc / 2, img.width * sc, img.height * sc); ctx.restore();
+      const u = k / (N - 1);                                    // 0 = rabo, 1 = frente da onda
+      const img = k >= N - 2 ? big : k % 2 ? small : big, ripple = 0.5 + 0.5 * Math.sin(t * 0.35 - k * 1.1);
+      const sc = s * grown * born * (0.3 + 0.9 * u * u) * (0.88 + 0.12 * ripple), w = img.width * sc, h = img.height * sc;
+      ctx.drawImage(img, -len + len * u - w / 2, -h * (0.78 + 0.22 * ripple) + 6 * s, w, h);      // apoiada no chão: só a altura pulsa
     }
-    ctx.fillStyle = 'rgba(120,90,60,.5)';                        // poeira rente ao chão
-    for (let k = 0; k < 6; k++) { const a = (t * 7 + k * 53) % 100 / 100; ctx.globalAlpha = (1 - a) * 0.6 * born; ctx.beginPath(); ctx.ellipse(-len * a, -4 * s - a * 30 * s, (10 + 22 * a) * s * grown, (6 + 10 * a) * s * grown, 0, 0, Math.PI * 2); ctx.fill(); }
+    ctx.fillStyle = 'rgba(190,170,140,.55)';                     // poeira e estilhaços rente ao chão
+    for (let k = 0; k < 8; k++) { const a = (t * 6 + k * 41) % 100 / 100; ctx.globalAlpha = (1 - a) * 0.6 * born; ctx.beginPath(); ctx.ellipse(-len * (0.2 + a), -3 * s - a * 22 * s, (9 + 20 * a) * s * grown, (5 + 8 * a) * s * grown, 0, 0, Math.PI * 2); ctx.fill(); }
     ctx.globalAlpha = 1;
   }
   get worldBox(): Box {

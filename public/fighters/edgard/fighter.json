@@ -311,7 +311,7 @@
     ]
    },
    "startup": 16,
-   "active": 26,
+   "active": 34,
    "recovery": 14,
    "damage": 0,
    "hitstun": 0,
@@ -342,19 +342,31 @@
     "hits": [
      {
       "at": 5,
-      "damage": 10
+      "damage": 7
+     },
+     {
+      "at": 12,
+      "damage": 7
      },
      {
       "at": 19,
-      "damage": 16,
+      "damage": 7
+     },
+     {
+      "at": 26,
+      "damage": 7
+     },
+     {
+      "at": 33,
+      "damage": 12,
       "knockdown": true,
       "launch": -11
      }
     ],
     "hitstun": 18,
     "blockstun": 12,
-    "knockback": 3,
-    "hitstop": 7,
+    "knockback": 1,
+    "hitstop": 4,
     "pillar": {
      "base": "portal-base.png",
      "tile": "feixe.png",

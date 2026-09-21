@@ -127,7 +127,7 @@
    "startup": 3,
    "active": 3,
    "recovery": 6,
-   "damage": 6.0,
+   "damage": 6.2,
    "hitstun": 12,
    "blockstun": 8,
    "hitbox": {
@@ -155,7 +155,7 @@
    "startup": 6,
    "active": 3,
    "recovery": 9,
-   "damage": 9.6,
+   "damage": 10.0,
    "hitstun": 15,
    "blockstun": 10,
    "hitbox": {
@@ -183,7 +183,7 @@
    "startup": 10,
    "active": 4,
    "recovery": 16,
-   "damage": 16.8,
+   "damage": 17.4,
    "hitstun": 24,
    "blockstun": 14,
    "hitbox": {
@@ -211,7 +211,7 @@
    "startup": 4,
    "active": 8,
    "recovery": 4,
-   "damage": 7.2,
+   "damage": 7.5,
    "hitstun": 14,
    "blockstun": 10,
    "overhead": true,
@@ -241,7 +241,7 @@
    "startup": 5,
    "active": 10,
    "recovery": 4,
-   "damage": 10.8,
+   "damage": 11.2,
    "hitstun": 16,
    "blockstun": 12,
    "overhead": true,
@@ -271,7 +271,7 @@
    "startup": 7,
    "active": 8,
    "recovery": 6,
-   "damage": 14.4,
+   "damage": 15.0,
    "hitstun": 22,
    "blockstun": 14,
    "overhead": true,
@@ -290,51 +290,6 @@
   "special": {
    "phases": {
     "startup": [
-     8
-    ],
-    "active": [
-     13
-    ],
-    "recovery": [
-     13,
-     0
-    ]
-   },
-   "startup": 11,
-   "active": 4,
-   "recovery": 17,
-   "damage": 13,
-   "hitstun": 22,
-   "blockstun": 14,
-   "hitbox": {
-    "x": 0,
-    "y": 0,
-    "w": 0,
-    "h": 0
-   },
-   "knockback": 11,
-   "meterCost": 50,
-   "hitstop": 7,
-   "name": "PULSO CARMESIM",
-   "projectile": {
-    "x": 88,
-    "y": -135,
-    "speed": 9,
-    "lifetime": 100,
-    "style": "ball",
-    "color": "#e0183c",
-    "size": 34,
-    "hitbox": {
-     "x": -32,
-     "y": -34,
-     "w": 64,
-     "h": 68
-    }
-   }
-  },
-  "super": {
-   "phases": {
-    "startup": [
      30,
      31
     ],
@@ -348,7 +303,7 @@
    "startup": 18,
    "active": 6,
    "recovery": 18,
-   "damage": 25,
+   "damage": 13,
    "hitstun": 30,
    "blockstun": 18,
    "hitbox": {
@@ -358,9 +313,7 @@
     "h": 0
    },
    "knockback": 18,
-   "knockdown": true,
-   "launch": -8,
-   "meterCost": 100,
+   "meterCost": 50,
    "hitstop": 10,
    "name": "BRINDE DA DIRETORIA",
    "projectile": {
@@ -378,6 +331,54 @@
     "hitVoice": "mundim-glass"
    }
   },
+  "super": {
+   "name": "O HÓSPEDE",
+   "phases": {
+    "startup": [
+     35,
+     36
+    ],
+    "active": [
+     37,
+     38
+    ],
+    "recovery": [
+     39,
+     35
+    ]
+   },
+   "startup": 20,
+   "active": 12,
+   "recovery": 26,
+   "damage": 25,
+   "hitstun": 30,
+   "blockstun": 18,
+   "hitbox": {
+    "x": 40,
+    "y": -190,
+    "w": 250,
+    "h": 120
+   },
+   "hitboxes": [
+    {
+     "x": 40,
+     "y": -185,
+     "w": 150,
+     "h": 110
+    },
+    {
+     "x": 40,
+     "y": -205,
+     "w": 255,
+     "h": 130
+    }
+   ],
+   "knockback": 20,
+   "knockdown": true,
+   "launch": -9,
+   "meterCost": 100,
+   "hitstop": 12
+  },
   "lowPunch": {
    "kind": "low",
    "phases": {
@@ -394,7 +395,7 @@
    "startup": 4,
    "active": 3,
    "recovery": 7,
-   "damage": 4.8,
+   "damage": 5.0,
    "hitstun": 11,
    "blockstun": 8,
    "low": true,
@@ -423,7 +424,7 @@
    "startup": 6,
    "active": 6,
    "recovery": 12,
-   "damage": 8.4,
+   "damage": 8.7,
    "hitstun": 18,
    "blockstun": 12,
    "low": true,
@@ -454,7 +455,7 @@
    "startup": 8,
    "active": 4,
    "recovery": 14,
-   "damage": 12.0,
+   "damage": 12.5,
    "hitstun": 20,
    "blockstun": 14,
    "low": true,

@@ -10,7 +10,7 @@
   "secondary": "#2a1a14"
  },
  "stage": "mundim",
- "scale": 1.42,
+ "scale": 1.0,
  "stats": {
   "power": 1.25,
   "speed": 0.95,
@@ -18,26 +18,26 @@
   "weight": 1.4
  },
  "hurtbox": {
-  "x": -52,
-  "y": -190,
-  "w": 104,
-  "h": 190
+  "x": -62,
+  "y": -215,
+  "w": 124,
+  "h": 215
  },
  "crouchHurtbox": {
-  "x": -58,
-  "y": -140,
-  "w": 116,
-  "h": 140
+  "x": -70,
+  "y": -150,
+  "w": 140,
+  "h": 150
  },
  "pushbox": {
-  "x": -40,
-  "w": 80
+  "x": -48,
+  "w": 96
  },
  "anims": {
   "idle": {
    "frames": [
     0,
-    1
+    4
    ],
    "fps": 3,
    "loop": true
@@ -99,7 +99,7 @@
   "win": {
    "frames": [
     15,
-    14
+    13
    ],
    "fps": 3,
    "loop": true
@@ -126,10 +126,10 @@
    "hitstun": 16,
    "blockstun": 11,
    "hitbox": {
-    "x": 40,
-    "y": -150,
-    "w": 108,
-    "h": 50
+    "x": 50,
+    "y": -160,
+    "w": 100,
+    "h": 55
    },
    "knockback": 8,
    "hitstop": 5
@@ -154,10 +154,10 @@
    "hitstun": 16,
    "blockstun": 11,
    "hitbox": {
-    "x": 35,
-    "y": -120,
-    "w": 90,
-    "h": 80
+    "x": 45,
+    "y": -125,
+    "w": 95,
+    "h": 85
    },
    "knockback": 10,
    "hitstop": 6
@@ -165,13 +165,13 @@
   "heavy": {
    "phases": {
     "startup": [
-     14
-    ],
-    "active": [
      13
     ],
+    "active": [
+     14
+    ],
     "recovery": [
-     13,
+     14,
      0
     ]
    },
@@ -182,10 +182,10 @@
    "hitstun": 24,
    "blockstun": 16,
    "hitbox": {
-    "x": 30,
-    "y": -110,
-    "w": 105,
-    "h": 110
+    "x": 20,
+    "y": -120,
+    "w": 95,
+    "h": 120
    },
    "knockback": 15,
    "hitstop": 9,
@@ -194,15 +194,14 @@
   "long": {
    "phases": {
     "startup": [
-     30,
-     31
+     30
     ],
     "active": [
-     32
+     31
     ],
     "recovery": [
      31,
-     34
+     30
     ]
    },
    "startup": 16,
@@ -212,10 +211,10 @@
    "hitstun": 22,
    "blockstun": 16,
    "hitbox": {
-    "x": 60,
-    "y": -165,
-    "w": 118,
-    "h": 70
+    "x": 50,
+    "y": -185,
+    "w": 95,
+    "h": 90
    },
    "knockback": 15,
    "hitstop": 8,
@@ -227,10 +226,10 @@
      20
     ],
     "active": [
-     21
+     20
     ],
     "recovery": [
-     21
+     20
     ]
    },
    "startup": 4,
@@ -240,10 +239,10 @@
    "hitstun": 16,
    "blockstun": 11,
    "hitbox": {
-    "x": 10,
-    "y": -120,
-    "w": 75,
-    "h": 100
+    "x": 30,
+    "y": -140,
+    "w": 105,
+    "h": 110
    },
    "knockback": 8,
    "kind": "air"
@@ -254,10 +253,10 @@
      20
     ],
     "active": [
-     22
+     23
     ],
     "recovery": [
-     22
+     23
     ]
    },
    "startup": 5,
@@ -267,9 +266,9 @@
    "hitstun": 16,
    "blockstun": 11,
    "hitbox": {
-    "x": -10,
-    "y": -100,
-    "w": 90,
+    "x": 40,
+    "y": -90,
+    "w": 115,
     "h": 70
    },
    "knockback": 8,
@@ -278,7 +277,7 @@
   "airHeavy": {
    "phases": {
     "startup": [
-     23
+     20
     ],
     "active": [
      24
@@ -294,10 +293,10 @@
    "hitstun": 22,
    "blockstun": 11,
    "hitbox": {
-    "x": -20,
-    "y": -150,
-    "w": 120,
-    "h": 150
+    "x": -40,
+    "y": -200,
+    "w": 200,
+    "h": 190
    },
    "knockback": 13,
    "kind": "air",
@@ -322,10 +321,10 @@
    "hitstun": 16,
    "blockstun": 11,
    "hitbox": {
-    "x": 35,
+    "x": 40,
     "y": -70,
     "w": 75,
-    "h": 55
+    "h": 60
    },
    "knockback": 8,
    "kind": "low"
@@ -349,8 +348,8 @@
    "hitstun": 16,
    "blockstun": 11,
    "hitbox": {
-    "x": 30,
-    "y": -55,
+    "x": 45,
+    "y": -60,
     "w": 80,
     "h": 55
    },
@@ -378,9 +377,9 @@
    "blockstun": 11,
    "hitbox": {
     "x": 20,
-    "y": -60,
-    "w": 105,
-    "h": 60
+    "y": -70,
+    "w": 115,
+    "h": 70
    },
    "knockback": 8,
    "kind": "low",
@@ -399,7 +398,7 @@
     ],
     "recovery": [
      31,
-     34
+     30
     ]
    },
    "startup": 13,
@@ -419,8 +418,8 @@
    "hitstop": 8,
    "name": "CUSPE ÁCIDO",
    "projectile": {
-    "x": 150,
-    "y": -150,
+    "x": 130,
+    "y": -170,
     "speed": 10,
     "lifetime": 100,
     "style": "ball",
@@ -438,41 +437,47 @@
    "phases": {
     "startup": [
      30,
-     31,
-     32
+     31
     ],
     "active": [
+     32,
      33
     ],
     "recovery": [
-     32,
-     34
+     34,
+     0
     ]
    },
-   "startup": 24,
-   "active": 10,
-   "recovery": 28,
+   "startup": 22,
+   "active": 16,
+   "recovery": 26,
    "damage": 28,
    "hitstun": 32,
    "blockstun": 20,
    "hitbox": {
-    "x": 60,
-    "y": -160,
-    "w": 190,
-    "h": 110
+    "x": -70,
+    "y": -230,
+    "w": 250,
+    "h": 230
    },
    "knockback": 22,
    "knockdown": true,
    "launch": -10,
    "meterCost": 100,
    "hitstop": 13,
-   "name": "MORDIDA ÁCIDA",
+   "name": "FÚRIA DO VERME",
    "hitboxes": [
     {
-     "x": 60,
-     "y": -160,
-     "w": 190,
-     "h": 110
+     "x": 30,
+     "y": -220,
+     "w": 130,
+     "h": 150
+    },
+    {
+     "x": -90,
+     "y": -235,
+     "w": 260,
+     "h": 235
     }
    ]
   }

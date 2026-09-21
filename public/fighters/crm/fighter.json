@@ -402,7 +402,7 @@
    "startup": 10,
    "active": 10,
    "recovery": 8,
-   "damage": 14.5,
+   "damage": 14.4,
    "hitstun": 24,
    "blockstun": 15,
    "hitbox": {
