@@ -396,11 +396,11 @@ export class Lobby {
   private F(fid: string) { return this.roster.find((r) => r.def.id === fid); }
   private face(fid: string, cls = '') { return `<span class="av ${cls}" style="--c:${this.F(fid)?.def.colors.primary ?? '#3d4a63'}">${fid && this.F(fid) ? `<img src="${BASE}fighters/${fid}/face.png" alt="">` : '<b>?</b>'}</span>`; }
   private stageOf(fid: string) { return this.F(fid)?.def.stage ?? 'office'; }
-  /** Destaque do centro: cenário ao fundo, o lutador comemorando, nome, papel e níveis. */
+  /** Destaque do centro, como a ficha do manual: cenário escuro ao fundo, a arte de destaque, o lutador comemorando na frente, nome, papel e níveis. */
   private showcase(fid: string, flip = false) {
     const f = this.F(fid); if (!f) return '<div class="hero empty"><b>?</b><small>ESCOLHA UM LUTADOR</small></div>';
     const st = f.def.stats, bar = (l: string, v: number) => `<div class="stat"><span>${l}</span><div><i style="width:${Math.round(Math.max(0.05, Math.min(1, (v - 0.7) / 0.65)) * 100)}%"></i></div></div>`;
-    return `<div class="hero" style="--c:${f.def.colors.primary};background-image:url(${BASE}stages/${this.stageOf(fid)}.png)"><canvas data-anim="${fid}" data-flip="${flip ? 1 : 0}" width="300" height="250"></canvas>
+    return `<div class="hero" style="--c:${f.def.colors.primary};background-image:url(${BASE}stages/${this.stageOf(fid)}.png)"><img class="hero-art${flip ? ' flip' : ''}" src="${BASE}versus/${fid}.png" alt=""><canvas data-anim="${fid}" data-flip="${flip ? 1 : 0}" width="300" height="250"></canvas>
       <div class="hero-info"><h2>${esc(f.def.name)}</h2><small>${esc(f.def.role.toUpperCase())} · ${esc(placeOf(fid).toUpperCase())}</small><div class="hero-stats">${bar('FORÇA', st.power ?? 1)}${bar('AGILIDADE', st.speed ?? 1)}${bar('PODER', st.magic ?? 1)}</div></div></div>`;
   }
   /** Grade de rostos. taken(id) devolve quem já ficou com o lutador ('' = livre). */

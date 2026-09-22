@@ -117,9 +117,11 @@ export class Screens {
       ? (f.secretPortrait ? `<div class="sf2-slot secret hidden art" style="--c:${f.def.colors.primary}"><img src="${f.secretPortrait.src}" alt=""></div>` : `<div class="sf2-slot secret hidden" style="--c:${f.def.colors.primary}">${img(f)}<b>?</b></div>`)
       : `<div class="sf2-slot${f.def.secret ? ' secret' : ''}" data-item data-i="${i}" style="--c:${f.def.colors.primary}">${img(f)}<span>${f.def.name}</span></div>`).join('')
       + Array.from({ length: Math.max(0, 15 - roster.length) }, () => '<div class="sf2-slot locked">?</div>').join('');
+    // cada lado como a ficha do manual: cenário escuro ao fundo, a arte de destaque, o lutador comemorando na frente e os níveis embaixo
     const side = (k: string, tag: string) => `<div class="sf2-side ${k === 'p1' ? 'left' : 'right'}"><div class="sf2-bg ${k}"></div>
-        <div class="sf2-tag ${k}">${tag}</div><div class="sf2-portrait ${k}"></div><canvas class="sf2-anim ${k}" width="230" height="230"></canvas>
-        <div class="sf2-name ${k}"></div><div class="sf2-region ${k}"></div><div class="sf2-stats ${k}"></div></div>`;
+        <div class="sf2-hero ${k} empty"><img class="sf2-art ${k}" alt="" hidden><b class="sf2-q">?</b></div>
+        <div class="sf2-tag ${k}">${tag}</div><canvas class="sf2-anim ${k}" width="230" height="230"></canvas>
+        <div class="sf2-info"><div class="sf2-name ${k}"></div><div class="sf2-region ${k}"></div><div class="sf2-stats ${k}"></div></div></div>`;
     this.set('select', `
       <div class="sf2">
         ${side('p1', '1P')}
@@ -132,11 +134,20 @@ export class Screens {
     const marks = Array.from(this.root.querySelectorAll<SVGGElement>('.mark'));
     const idxOf = (menu: number) => Number(this.menuItems[menu].dataset.i);
     const shown: Record<string, FighterAssets | null> = { p1: null, cpu: null };
+    for (const f of roster) { const im = new Image(); im.src = `${base}versus/${f.def.id}.png`; }
     const fill = (sd: 'p1' | 'cpu', f: FighterAssets | null) => {
       shown[sd] = f;
       q(`.sf2-side.${sd === 'p1' ? 'left' : 'right'}`).style.setProperty('--c', f?.def.colors.primary ?? '#4ab3ff');
       q(`.sf2-bg.${sd}`).style.backgroundImage = f ? `url(${base}stages/${f.def.stage ?? 'office'}.png)` : 'none';
-      q(`.sf2-portrait.${sd}`).innerHTML = f ? img(f) : '<b class="sf2-q">?</b>';
+      const hero = q(`.sf2-hero.${sd}`), art = hero.querySelector('img') as HTMLImageElement;
+      if (f) {
+        const src = `${base}versus/${f.def.id}.png`;
+        if (art.dataset.id !== f.def.id) {                                   // trocou de lutador: a arte entra deslizando
+          art.dataset.id = f.def.id; art.onerror = () => { art.onerror = null; if (f.portrait) art.src = f.portrait.src; }; art.src = src;
+          hero.classList.remove('pop'); void hero.offsetWidth; hero.classList.add('pop');
+        }
+        art.hidden = false; hero.classList.remove('empty');
+      } else { art.hidden = true; art.removeAttribute('src'); delete art.dataset.id; hero.classList.add('empty'); }
       q(`.sf2-name.${sd}`).textContent = f ? f.def.name : '???';
       q(`.sf2-region.${sd}`).textContent = f ? `${f.def.role} · ${placeOf(f.def.id)}`.toUpperCase() : (rival ? 'A CPU AINDA NÃO ESCOLHEU' : 'QUEM ESTIVER NA SALA');
       const st = f?.def.stats;

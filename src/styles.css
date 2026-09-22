@@ -450,3 +450,29 @@ html, body { overscroll-behavior: none; touch-action: manipulation; -webkit-touc
 .tagbtn { display: none; } body.tag-mode .tagbtn { display: block; grid-column: 3; transform: translate(30%, 8px); }
 /* celular deitado, em luta: só som e SALA ficam por cima do placar */
 @media (max-height: 520px) and (orientation: landscape) { body.in-fight #install, body.in-fight #fs, body.in-fight .marquee a.chip { display: none; } }
+
+/* ---------- seleção v4 (2026-09-22): cada lado como a ficha do manual — cenário escuro ao fundo, a arte de destaque,
+   o lutador comemorando na frente dela e os níveis embaixo. Seletores com .sf2-side na frente: precisam vencer o
+   ".sf2-side > :not(.sf2-bg) { position: relative }" da v3. */
+.sf2-side { display: block; padding: 0; }
+.sf2-bg { filter: brightness(.3) saturate(1.1); }
+.sf2-bg::after { background: radial-gradient(ellipse at 50% 34%, color-mix(in srgb, var(--c, #4ab3ff) 42%, transparent) 0%, transparent 60%),
+  linear-gradient(180deg, rgba(4,6,20,.3) 0%, rgba(4,6,20,0) 22%, rgba(4,6,20,.1) 52%, rgba(4,6,20,.96) 76%); }
+.sf2-side .sf2-hero { position: absolute; left: -30px; right: -30px; top: 14px; height: 322px; z-index: 1; display: flex; justify-content: center; pointer-events: none; }
+.sf2-art { height: 100%; width: auto; max-width: none; flex: none; image-rendering: auto;
+  filter: drop-shadow(0 0 3px #000) drop-shadow(0 0 16px color-mix(in srgb, var(--c, #4ab3ff) 55%, transparent));
+  -webkit-mask-image: linear-gradient(#000 58%, transparent 97%); mask-image: linear-gradient(#000 58%, transparent 97%); }
+.sf2-side.right .sf2-art { transform: scaleX(-1); }
+.sf2-hero.pop .sf2-art { animation: heroIn .3s cubic-bezier(.2,.9,.3,1); }
+.sf2-side.right .sf2-hero.pop .sf2-art { animation-name: heroInR; }
+@keyframes heroIn { from { transform: translateX(-26px); opacity: .15; } }
+@keyframes heroInR { from { transform: scaleX(-1) translateX(-26px); opacity: .15; } }
+.sf2-hero .sf2-q { display: none; }
+.sf2-hero.empty .sf2-q { display: grid; place-items: center; width: 100%; height: 100%; font-size: 130px; line-height: 1; color: #4ab3ff; text-shadow: 6px 6px 0 #000; animation: blink .6s steps(1) infinite; }
+.sf2-side .sf2-anim { position: absolute; left: 50%; top: 176px; width: 200px; height: 200px; margin: 0; transform: translateX(-50%); z-index: 2;
+  filter: drop-shadow(0 0 1px #000) drop-shadow(0 0 1px #000) drop-shadow(0 8px 0 rgba(0,0,0,.55)); }
+.sf2-side .sf2-info { position: absolute; left: 0; right: 0; bottom: 8px; z-index: 3; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.sf2-side .sf2-name { font-size: 32px; margin: 0; }
+.sf2-side .sf2-region { min-height: 20px; }
+.sf2-side .sf2-stats { width: 184px; margin-top: 1px; }
+.sf2-side .sf2-tag { z-index: 4; }
