@@ -4,7 +4,8 @@
   python3 tools/story-check.py          # tudo
 Regras: ano 2026 (nada de 199X); crawl curto; falas de par com 3 linhas dos dois lutadores do par; tamanho das falas;
 o Xablau só grunhe; o Michael sem casamento; a Van fala da FILHA; o Kevin e o churrasco (com o sarro do Edgard);
-o Dener fora do manual; bios e frases de efeito no tamanho que cabe nas telas."""
+o Dener fora do manual; o laboratório do Xablau no 51º andar, logo abaixo do Mundim (nada de subsolo);
+bios e frases de efeito no tamanho que cabe nas telas."""
 import itertools, json, re, sys, os
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -70,6 +71,13 @@ for sect in ('acts', 'factions'):
     if re.search(r'dener', json.dumps(S[sect], ensure_ascii=False), re.I): err(f'{sect}: cita o Dener (vai pro manual; é proibido)')
 man = os.path.join(ROOT, 'public/manual.html')
 if os.path.exists(man) and re.search(r'dener', open(man, encoding='utf-8').read(), re.I): err('public/manual.html: cita o Dener (proibido no manual)')
+# o laboratório do Xablau fica em cima, no 51º andar, logo abaixo do Mundim: no arcade o elevador do Leo sobe e para no caos
+for path in ['src/data/story.json', 'src/data/places.json', 'tools/manual.py', 'public/manual.html', *[f'public/fighters/{i}/fighter.json' for i in IDS]]:
+    p = os.path.join(ROOT, path)
+    if os.path.exists(p) and re.search(r'subsolo|porão', open(p, encoding='utf-8').read(), re.I): err(f'{path}: fala em subsolo (o laboratório do Xablau é no 51º andar, logo abaixo do Mundim)')
+PL = json.load(open(os.path.join(ROOT, 'src/data/places.json')))['places']
+if '51' not in PL['xablau']['name']: err(f"places.json: o lugar do Xablau deveria ser o 51º andar (está '{PL['xablau']['name']}')")
+if not PL['leo']['y'] > PL['xablau']['y'] > PL['mundim']['y']: err('places.json: no mapa, o Xablau fica na torre entre o elevador (Leo) e o Mundim')
 
 # ---------- bios e frases de efeito (fighter.json)
 for fid in IDS:

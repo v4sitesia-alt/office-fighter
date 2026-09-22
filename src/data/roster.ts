@@ -10,7 +10,7 @@ export const SECRET = ['dener'];
  *  Xablau e Mundim: zerando o arcade (vencendo o Mundim) ou com o código. Dener: só com o código.
  *  Código = sequência digitada na tela de seleção. Só direções, H (chute), J (forte) e B (especial): G confirma e V volta. */
 export const LOCKED: Record<string, { code: string[]; byArcade: boolean }> = {
-  xablau: { code: ['down', 'down', 'down', 'kick', 'kick', 'kick'], byArcade: true },                       // ↓ ↓ ↓ H H H   (desce pro subsolo e chuta)
+  xablau: { code: ['down', 'down', 'down', 'kick', 'kick', 'kick'], byArcade: true },                       // ↓ ↓ ↓ H H H   (pisa, pisa, pisa e chuta)
   mundim: { code: ['up', 'up', 'up', 'up', 'up', 'special', 'heavy'], byArcade: true },                    // ↑ ↑ ↑ ↑ ↑ B J (sobe a torre e solta o especial)
   dener: { code: ['up', 'up', 'down', 'down', 'left', 'right', 'left', 'right', 'special', 'heavy'], byArcade: false },  // ↑ ↑ ↓ ↓ ← → ← → B J
 };

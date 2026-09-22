@@ -1450,7 +1450,7 @@ def s_arcade():
              f'</div><div class="fl-t"><h4>{RIVALS} RIVAIS DO ELENCO</h4><p>{RIVALS} lutadores diferentes, cada um no seu cenário{" e com a sua música" if music else ""}. Quem são depende do lutador que você escolher.</p></div></li>')
     boss_txt = {'dias': 'No cassino. Rápido, emenda combos (soco, soco, chute, forte) e se protege com o escudo de moedas.',
                 'leo': 'Dentro do elevador, subindo a torre.',
-                'xablau': 'Antes do topo, o elevador desce ao subsolo, onde o Xablau nasceu. Lento, enorme e bate muito. Não fala: só grunhe.',
+                'xablau': 'O elevador sobe e para no caos do 51º andar, logo abaixo do Mundim: o laboratório onde o Xablau nasceu. Lento, enorme e bate muito. Não fala: só grunhe.',
                 'mundim': f'O último andar. Na primeira vez, em vez da tela VS, uma cena: ele levanta da mesa e vem até você. No 2º round, vira {fname(MORPH.get("mundim", "mundim"))}.'}
     for k, b in enumerate(BOSSES, RIVALS + 1):
         extra = ''
@@ -1845,7 +1845,7 @@ def s_celular():
 
 
 # ---------------------------------------------------------------- FASE 13: enredo (só o story.json)
-TL_STRONG = [(r'laborat|tanque|espécime|genétic|criar(am)? vida|criam vida|subsolo', 'xablau')]
+TL_STRONG = [(r'laborat|tanque|espécime|genétic|criar(am)? vida|criam vida|51º', 'xablau')]
 TL_WEAK = [(r'torneio|arena', 'intro'), (r'elevador', 'elevator')]
 
 
@@ -1864,7 +1864,7 @@ def tl_stage(text, ids):
     return ''
 
 
-ACT_ART = [(r'subsolo|tanque|laborat', 'xablau'), (r'modo automático|hóspede', 'mundim'), (r'andares|torneio|elevador', 'elevator')]
+ACT_ART = [(r'51º|tanque|laborat', 'xablau'), (r'modo automático|hóspede', 'mundim'), (r'andares|torneio|elevador', 'elevator')]
 
 
 def act_art(k, title, text):

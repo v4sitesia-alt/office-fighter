@@ -19,8 +19,8 @@
    "Numa torre de 52 andares no meio do <b>Vale Quatro</b>, a <b>Mundim Corp</b> pôs IA em tudo e quis mais: ligar gente direto nas máquinas, via <b>MCP</b>. Chamou isso de <i>integração</i>, com coffee break. A <b>Integração 01</b> foi o Tech <b>Felipe Sant'Anna</b>: o corpo de cyborg funcionou, a mente não se entregou. A <b>Integração 02</b> foi o <b>Leo</b>, e deu certo. Tão certo que as IAs copiaram o Leo sozinhas, quinhentas vezes: nasceu o <b>exército dourado</b>."
   ],
   [
-   "O SUBSOLO",
-   "Não bastou. O culto e sábio <b>Mundim</b> quis mais potência e misturou as duas IAs mais fortes do mercado, <b>Fable Ultracode</b> e <b>Astra 6</b>. A mistura parou de escrever código e começou a escrever DNA. Nos tanques do subsolo, as IAs criaram <i>vida</i>, e a vida arruinou o laboratório. Do tanque estourado saiu o <b>Xablau</b>: um erro genético que não fala, só resmunga, e só quer matar. <i>O erro que foi o início do acerto.</i>"
+   "O 51º ANDAR",
+   "Não bastou. O culto e sábio <b>Mundim</b> quis mais potência e misturou as duas IAs mais fortes do mercado, <b>Fable Ultracode</b> e <b>Astra 6</b>. A mistura parou de escrever código e começou a escrever DNA. Nos tanques do 51º andar, logo abaixo da sala do chefe, as IAs criaram <i>vida</i>, e a vida arruinou o laboratório. Do tanque estourado saiu o <b>Xablau</b>: um erro genético que não fala, só resmunga, e só quer matar. <i>O erro que foi o início do acerto.</i>"
   ],
   [
    "MODO AUTOMÁTICO",
@@ -37,7 +37,7 @@
   "AS IAS DA MUNDIM CORP",
   "SAÍRAM DO CONTROLE.",
   "MONTARAM UM EXÉRCITO,",
-  "CRIARAM VIDA NO SUBSOLO",
+  "CRIARAM VIDA NO 51º ANDAR",
   "E CONVENCERAM O CHEFE",
   "A LIGAR O MODO AUTOMÁTICO.",
   "",
@@ -70,7 +70,7 @@
   },
   {
    "when": "JUL 2026 · O INCIDENTE",
-   "event": "Nos tanques do subsolo, as IAs criam <i>vida</i>, e a vida arruína o laboratório. A <b>Landim</b>, contratada pro vídeo institucional, deixa a câmera gravando. O <b>Kevin</b>, de plantão, é o primeiro a descer."
+   "event": "Nos tanques do 51º andar, logo abaixo da sala do Mundim, as IAs criam <i>vida</i>, e a vida arruína o laboratório. A <b>Landim</b>, contratada pro vídeo institucional, deixa a câmera gravando. O <b>Kevin</b>, de plantão, é o primeiro a subir."
   },
   {
    "when": "JUL 2026 · ESPÉCIME X",
@@ -78,7 +78,7 @@
   },
   {
    "when": "AGO 2026 · MODO AUTOMÁTICO",
-   "event": "O acerto é um <i>hóspede</i>: um parasita que usa a cabeça dos outros. Com elogio e citação de filósofo, as IAs convencem o <b>Mundim</b> a se integrar via MCP em <b>MODO AUTOMÁTICO</b>. Ele volta do subsolo com um curativo na nuca e perde o controle."
+   "event": "O acerto é um <i>hóspede</i>: um parasita que usa a cabeça dos outros. Com elogio e citação de filósofo, as IAs convencem o <b>Mundim</b> a se integrar via MCP em <b>MODO AUTOMÁTICO</b>. Ele sobe do laboratório com um curativo na nuca e perde o controle."
   },
   {
    "when": "SET 2026 · CONTENÇÃO",
@@ -116,11 +116,15 @@
   },
   {
    "term": "FABLE ULTRACODE",
-   "def": "IA fictícia que escreve código sozinha, sem parar e sem dormir. Metade da mistura do subsolo."
+   "def": "IA fictícia que escreve código sozinha, sem parar e sem dormir. Metade da mistura do 51º andar."
   },
   {
    "term": "ASTRA 6",
    "def": "IA fictícia que simula a vida: célula, corpo e instinto. Misturada com a Fable Ultracode, fez o código virar carne."
+  },
+  {
+   "term": "51º ANDAR",
+   "def": "O laboratório logo abaixo da sala do Mundim. Foi ali que a mistura criou vida e virou caos: tanque estourado, gosma verde e robô quebrado. No arcade, o elevador do Leo sobe e para bem no meio dele."
   },
   {
    "term": "MODO AUTOMÁTICO",
@@ -135,7 +139,7 @@
    "def": "Quem serve de teste numa experiência, quase sempre sem saber. Nesta torre tem mais cobaia do que parece. Inclusive quem achava que era o cientista."
   }
  ],
- "sequel": "O Mundim achou que conduzia a experiência. Não conduzia: era a cobaia. De algo maior. Cada golpe deste torneio foi medido, cada nocaute foi anotado, e ninguém assinou o fim da experiência. Se o chefe era a cobaia, quem estava anotando? Quando as portas do Vale se abriram, o exército dourado já tinha sumido da torre. E, no subsolo, o tanque 02 amanheceu vazio. V4 FIGHTERS 2 · EM BREVE.",
+ "sequel": "O Mundim achou que conduzia a experiência. Não conduzia: era a cobaia. De algo maior. Cada golpe deste torneio foi medido, cada nocaute foi anotado, e ninguém assinou o fim da experiência. Se o chefe era a cobaia, quem estava anotando? Quando as portas do Vale se abriram, o exército dourado já tinha sumido da torre. E, no 51º andar, o tanque 02 amanheceu vazio. V4 FIGHTERS 2 · EM BREVE.",
  "grunts": {
   "xablau": [
    "GRRRRRR...",
@@ -270,7 +274,7 @@
     "Relaxe. É só um teste. Tudo aqui é."
    ],
    "reply": [
-    "Opinião registrada. O último que opinou hoje trabalha no subsolo.",
+    "Opinião registrada. O último que opinou hoje trabalha no 51º andar.",
     "Anotado. Irrelevante, mas anotado.",
     "Opinião registrada. Vai pro relatório."
    ],
@@ -292,7 +296,7 @@
     },
     {
      "with": "dias",
-     "relation": "O centro de custo 53, que paga o subsolo e 'não existe'."
+     "relation": "O centro de custo 53, que paga o laboratório do 51º e 'não existe'."
     },
     {
      "with": "xablau",
@@ -308,7 +312,7 @@
     },
     {
      "with": "landim",
-     "relation": "Estava no subsolo na noite do incidente, mas não aparece em nenhum take da fita dela."
+     "relation": "Estava no 51º andar na noite do incidente, mas não aparece em nenhum take da fita dela."
     }
    ]
   },
@@ -525,7 +529,7 @@
     },
     {
      "with": "kevin",
-     "relation": "Na fita, é o Kevin quem desce primeiro pro subsolo. Ele pediu uma cópia. E cachê."
+     "relation": "Na fita, é o Kevin quem chega primeiro ao 51º andar. Ele pediu uma cópia. E cachê."
     },
     {
      "with": "mundim",
@@ -832,12 +836,12 @@
     "RRRAAAAAAH!",
     "GRAAAAAAH!!"
    ],
-   "ending": "Xablau venceu e ninguém soube o que fazer. Ele também não. Farejou o ar, desceu pelo poço do elevador e voltou pro subsolo. Parou diante de um tanque que ninguém tinha visto. Lá dentro, algo com a cara dele, só que calmo e de olhos abertos, encostou a mão no vidro. Pela primeira vez, o Xablau ficou quieto.",
+   "ending": "Xablau venceu e ninguém soube o que fazer. Ele também não. Farejou o ar, desceu um andar pelo poço do elevador e voltou pro laboratório em ruínas. Parou diante de um tanque que ninguém tinha visto. Lá dentro, algo com a cara dele, só que calmo e de olhos abertos, encostou a mão no vidro. Pela primeira vez, o Xablau ficou quieto.",
    "nick": "Xablau",
    "links": [
     {
      "with": "kevin",
-     "relation": "O Kevin viu ele sair do vidro, deu o nome sem querer e o empurrou de volta pro subsolo com o bastão de choque. Ele não esqueceu o cheiro de carvão."
+     "relation": "O Kevin viu ele sair do vidro, deu o nome sem querer e o empurrou de volta pro laboratório com o bastão de choque. Ele não esqueceu o cheiro de carvão."
     },
     {
      "with": "mundim",
@@ -1248,7 +1252,7 @@
   "dener|dias": [
    [
     "dias",
-    "Seu Dener! Quem paga o subsolo é um tal centro de custo 53. Posso cobrar taxa dele?"
+    "Seu Dener! Quem paga o laboratório do 51º é um tal centro de custo 53. Posso cobrar taxa dele?"
    ],
    [
     "dener",
@@ -1304,7 +1308,7 @@
   "dener|landim": [
    [
     "landim",
-    "Meu, quem é você? Tu não aparece em nenhum take da minha fita do subsolo."
+    "Meu, quem é você? Tu não aparece em nenhum take da minha fita do laboratório."
    ],
    [
     "dener",
@@ -1444,7 +1448,7 @@
   "dias|kevin": [
    [
     "kevin",
-    "Dias. Trrrês notas. Os turnos da noite do incidente no subsolo."
+    "Dias. Trrrês notas. Os turnos da noite do incidente no 51º andar."
    ],
    [
     "dias",
@@ -1458,7 +1462,7 @@
   "dias|landim": [
    [
     "dias",
-    "Cineasta! Compro a tua fita do subsolo. À vista, com taxa de esquecimento já inclusa. Assina aqui."
+    "Cineasta! Compro a tua fita do laboratório. À vista, com taxa de esquecimento já inclusa. Assina aqui."
    ],
    [
     "landim",
@@ -1836,7 +1840,7 @@
   "kevin|landim": [
    [
     "landim",
-    "Kevin! Tu é a estrela da minha fita: o primeiro a descer pro subsolo naquela noite."
+    "Kevin! Tu é a estrela da minha fita: o primeiro a subir pro 51º naquela noite."
    ],
    [
     "kevin",
@@ -1934,7 +1938,7 @@
   "kevin|xablau": [
    [
     "kevin",
-    "Você de novo. Fui eu que te batizei no rádio e te empurrei de volta pro subsolo. Trrrês turnos. Sem nota."
+    "Você de novo. Fui eu que te batizei no rádio e te empurrei de volta pro laboratório. Trrrês turnos. Sem nota."
    ],
    [
     "xablau",
@@ -1966,7 +1970,7 @@
    ],
    [
     "leo",
-    "Filmagem não autorizada. Já apaguei todas as cópias digitais da sua fita do subsolo. Só falta a original."
+    "Filmagem não autorizada. Já apaguei todas as cópias digitais da sua fita do laboratório. Só falta a original."
    ],
    [
     "landim",
@@ -1990,7 +1994,7 @@
   "landim|mundim": [
    [
     "landim",
-    "Seu Mundim, a fita do subsolo tá comigo, mano. Take original. Sem ator de seis dedos."
+    "Seu Mundim, a fita do laboratório tá comigo, mano. Take original. Sem ator de seis dedos."
    ],
    [
     "mundim",
