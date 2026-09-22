@@ -882,8 +882,12 @@ def group_timeline():
 
 
 # ================================================================ SEÇÕES
-# A trilha do novato (1 a 8) vem primeiro, na ordem em que ele precisa; depois, a parte de consulta (9 a 13).
-TOC = [('luta', 'LUTA', 'O QUE É UM <em>JOGO DE LUTA</em>', 'O básico em 4 quadrinhos'),
+# Ordem pedida pelo dono (2026-09-22): primeiro a história (enredo, lutadores, golpes), depois como jogar, depois o resto.
+# Os números das fases saem desta lista (NUM), então as referências entre fases (fase()) acompanham qualquer troca de ordem.
+TOC = [('enredo', 'ENREDO', 'O <em>ENREDO</em>', 'O que deu errado na Mundim Corp'),
+       ('lutadores', 'LUTADORES', 'OS <em>LUTADORES</em>', f'{len(ROSTER)} fichas completas'),
+       ('comandos', 'GOLPES', 'OS <em>GOLPES</em>', 'Todos os comandos: ícone + ícone = golpe'),
+       ('luta', 'LUTA', 'O QUE É UM <em>JOGO DE LUTA</em>', 'O básico em 4 quadrinhos'),
        ('controle', 'CONTROLE', 'SEU <em>CONTROLE</em>', 'Manche, botões, teclado e toque'),
        ('passos', 'PASSOS', 'PRIMEIROS <em>PASSOS</em>', 'Do INSERT COIN ao primeiro especial'),
        ('tela', 'TELA', 'A TELA <em>DA LUTA</em>', 'Vida, tempo, rounds e barra'),
@@ -891,15 +895,16 @@ TOC = [('luta', 'LUTA', 'O QUE É UM <em>JOGO DE LUTA</em>', 'O básico em 4 qua
        ('regras', 'REGRAS', 'AS <em>REGRAS</em>', 'Rounds, defesa, agarrão, K.O.'),
        ('dicas', 'DICAS', 'DICAS DO <em>MESTRE</em>', 'Pra ganhar a primeira luta'),
        ('arcade', 'ARCADE', 'MODO <em>ARCADE</em>', 'A subida até o 52º andar'),
-       ('comandos', 'COMANDOS', 'TODOS OS <em>COMANDOS</em>', 'Ícone + ícone = golpe'),
-       ('lutadores', 'LUTADORES', 'OS <em>LUTADORES</em>', f'{len(ROSTER)} fichas completas'),
        ('online', 'ONLINE', 'ARENA <em>ONLINE</em>', 'Duelo, duplas e campeonato'),
-       ('celular', 'CELULAR', 'NO <em>CELULAR</em>', 'App, tela cheia e som'),
-       ('enredo', 'ENREDO', 'O <em>ENREDO</em>', 'O que deu errado na Mundim Corp')]
-TRACK = 8
+       ('celular', 'CELULAR', 'NO <em>CELULAR</em>', 'App, tela cheia e som')]
+# Grupos do índice: (título, ids, 'tiles' = quadros grandes | 'rows' = lista de consulta)
+GROUPS = [('A HISTÓRIA', ['enredo', 'lutadores', 'comandos'], 'tiles'),
+          ('COMO JOGAR', ['luta', 'controle', 'passos', 'tela', 'barra', 'regras', 'dicas', 'arcade'], 'tiles'),
+          ('E MAIS', ['online', 'celular'], 'rows')]
 NUM = {t[0]: k for k, t in enumerate(TOC, 1)}
-SEC_COLOR = dict(zip([t[0] for t in TOC], ['#e5383b', '#ffd23f', '#2bb673', '#3f7ae0', '#29a3ff', '#ff7a1a', '#2bb673', '#ffd23f',
-                                           '#9257e6', '#e5383b', '#3f7ae0', '#ff4fa0', '#9be22a']))
+SEC_COLOR = {'enredo': '#9be22a', 'lutadores': '#e5383b', 'comandos': '#9257e6', 'luta': '#e5383b', 'controle': '#ffd23f', 'passos': '#2bb673',
+             'tela': '#3f7ae0', 'barra': '#29a3ff', 'regras': '#ff7a1a', 'dicas': '#2bb673', 'arcade': '#ffd23f', 'online': '#3f7ae0', 'celular': '#ff4fa0'}
+assert [t[0] for t in TOC] == [i for _, ids, _ in GROUPS for i in ids], 'GROUPS tem que cobrir o TOC na mesma ordem'
 
 
 def fase(sid, label=None):
@@ -1025,21 +1030,35 @@ def toc_nav():
 
 
 def index():
-    tiles = ''.join(f'<li><a href="#{sid}" style="--c:{SEC_COLOR[sid]}"><span class="n">FASE {n:02d}</span><b>{re.sub("<[^>]+>", "", title)}</b><small>{sub}</small><span class="ti">{toc_icon(sid)}</span></a></li>'
-                    for n, (sid, _, title, sub) in enumerate(TOC[:TRACK], 1))
-    rows = ''.join(f'<li><a href="#{sid}" style="--c:{SEC_COLOR[sid]}"><span class="ti">{toc_mini(sid)}</span><b>{re.sub("<[^>]+>", "", title)}</b><i></i><span class="pg">{n:02d}</span><small>{sub}</small></a></li>'
-                   for n, (sid, _, title, sub) in enumerate(TOC[TRACK:], TRACK + 1))
-    rows += '<li><a href="#continua" style="--c:#ff4d4d"><span class="ti"><b class="ti-q">?</b></span><b>CONTINUA…</b><i></i><span class="pg">FIM</span><small>A contracapa: V4 FIGHTERS 2</small></a></li>'
-    howto = (f'<div class="howto paper">{BURST("COMO<br>LER!", "#ff7a1a", "sm")}<p><b>Nunca jogou?</b> Leia as fases 1 a {TRACK - 1}, na ordem: uns 10 minutos, com o desenho de cada botão. '
-             f'Depois, vá pro {fase("arcade", "MODO ARCADE")} (fase {TRACK}) e jogue. <b>Já sabe jogar?</b> Vá direto pra {fase("comandos", "TODOS OS COMANDOS")} e pras {fase("lutadores", "fichas dos lutadores")}.</p></div>')
+    T = {t[0]: t for t in TOC}
+    def tile(sid):
+        _, _, title, sub = T[sid]
+        return (f'<li><a href="#{sid}" style="--c:{SEC_COLOR[sid]}"><span class="n">FASE {NUM[sid]:02d}</span><b>{re.sub("<[^>]+>", "", title)}</b>'
+                f'<small>{sub}</small><span class="ti">{toc_icon(sid)}</span></a></li>')
+    def row(sid):
+        _, _, title, sub = T[sid]
+        return (f'<li><a href="#{sid}" style="--c:{SEC_COLOR[sid]}"><span class="ti">{toc_mini(sid)}</span><b>{re.sub("<[^>]+>", "", title)}</b><i></i>'
+                f'<span class="pg">{NUM[sid]:02d}</span><small>{sub}</small></a></li>')
+    groups = ''
+    for k, (gt, ids, kind) in enumerate(GROUPS):
+        rng = f'FASE {NUM[ids[0]]}' if len(ids) == 1 else f'FASES {NUM[ids[0]]} A {NUM[ids[-1]]}'
+        groups += f'<h3 class="idx-g"><span>{rng}</span>{gt}</h3>'
+        items = ''.join((tile if kind == 'tiles' else row)(i) for i in ids)
+        if k == len(GROUPS) - 1:
+            items += ('<li><a href="#continua" style="--c:#ff4d4d"><span class="ti"><b class="ti-q">?</b></span><b>CONTINUA…</b><i></i>'
+                      '<span class="pg">FIM</span><small>A contracapa: V4 FIGHTERS 2</small></a></li>') if kind == 'rows' else ''
+        groups += f'<ol class="idx">{items}</ol>' if kind == 'tiles' else f'<ol class="idx2 paper">{items}</ol>'
+    story, play = GROUPS[0][1], GROUPS[1][1]
+    first_play, last_learn = play[0], play[-2]
+    howto = (f'<div class="howto paper">{BURST("COMO<br>LER!", "#ff7a1a", "sm")}<p><b>Comece pela história:</b> {fase("enredo", "O ENREDO")}, '
+             f'{fase("lutadores", "OS LUTADORES")} e {fase("comandos", "OS GOLPES")} (fases {NUM[story[0]]} a {NUM[story[-1]]}). '
+             f'<b>Nunca jogou?</b> Depois leia as fases {NUM[first_play]} a {NUM[last_learn]}, na ordem: uns 10 minutos, com o desenho de cada botão, '
+             f'e vá pro {fase("arcade", "MODO ARCADE")} (fase {NUM["arcade"]}). <b>Já sabe jogar?</b> Vá direto pro {fase("arcade", "MODO ARCADE")} ou pra {fase("online", "ARENA ONLINE")}.</p></div>')
     return f'''<main class="wrap">
 <section id="indice" class="indice">
   <h2 class="idx-h">ÍNDICE <span>ESCOLHA A FASE</span></h2>
   {howto}
-  <h3 class="idx-g"><span>FASES 1 A {TRACK}</span>A TRILHA DO NOVATO</h3>
-  <ol class="idx">{tiles}</ol>
-  <h3 class="idx-g"><span>FASES {TRACK + 1} A {len(TOC)}</span>PRA CONSULTAR</h3>
-  <ol class="idx2 paper">{rows}</ol>
+  {groups}
   {resumao()}
   {aviso()}
 </section>'''
@@ -1526,7 +1545,7 @@ def s_comandos():
               f'<li>{COND(AIR(), "")}<span><b>condição</b>: com o lutador no ar, no meio do pulo</span></li></ul>'
               f'<p>Frente troca de lado com o lutador: olhando pra direita, frente é {kb("D")}; olhando pra esquerda, {kb("A")}. No teclado este manual escreve FRENTE e TRÁS em vez da letra.</p></div>')
     return section('comandos', f'''{legend}
-{sub_h('O BÁSICO', f'JÁ VISTO NA FASE {NUM["passos"]}')}
+{sub_h('O BÁSICO', f'PASSO A PASSO NA FASE {NUM["passos"]}')}
 <div class="basics paper">{bas}</div>
 {sub_h('O RESTO', 'COM DESENHO')}
 <div class="cgroups">{out}</div>''', 'Quase todo lutador faz tudo isto; as exceções estão marcadas. Os especiais de cada um estão nas fichas.', (3250, 6150))
@@ -1689,6 +1708,7 @@ def s_lutadores():
  <li><b class="tagb">PODER</b><span>quanto batem a magia, o super e tudo o que voa{f" (inclusive o golpe longo de quem atira: {lista(shooters)})" if shooters else ""}.</span></li>
  <li><b class="tagb">PESO</b><span>quanto mais pesado, menos é empurrado e menos dano leva.</span></li>
  <li><b class="tagb">BARRINHA</b><span>a mesma da tela de escolha: enche em 1,35 e fica vazia em 0,70. Acima ou abaixo disso ela não muda; o número ao lado é o de verdade.</span></li>
+ <li><b class="tagb">GOLPES</b><span>MAGIA gasta meia barra; SUPER, a barra cheia (veja a {fase('barra')}). FRENTE é o manche na direção do adversário (veja a {fase('controle')}).</span></li>
  <li><b class="tagb">DANO</b><span>quanto o golpe inteiro tira da vida (100) de quem fica parado, sem defender, com peso 1,00. Nos golpes de vários acertos já conta o desconto do combo.</span></li></ul></div>'''
     groups = ''
     for key in ('heroi', 'neutro', 'vilao'):
@@ -2773,8 +2793,9 @@ def check(page):
 
 # ================================================================ montagem
 def build():
-    body = (cover() + toc_nav() + index() + s_luta() + s_controle() + s_passos() + s_tela() + s_barra() + s_regras() + s_dicas() + s_arcade()
-            + s_comandos() + s_lutadores() + s_online() + s_celular() + s_enredo() + back())
+    SECTIONS = {'luta': s_luta, 'controle': s_controle, 'passos': s_passos, 'tela': s_tela, 'barra': s_barra, 'regras': s_regras, 'dicas': s_dicas,
+                'arcade': s_arcade, 'comandos': s_comandos, 'lutadores': s_lutadores, 'online': s_online, 'celular': s_celular, 'enredo': s_enredo}
+    body = cover() + toc_nav() + index() + ''.join(SECTIONS[sid]() for sid, *_ in TOC) + back()
     desc = f'Manual do jogador de V4 Fighters – Trouble Work ({YEAR}): controles, golpes, regras, enredo e as fichas dos {len(ROSTER)} lutadores.'
     page = f'''<!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
