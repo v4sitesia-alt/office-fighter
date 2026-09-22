@@ -65,6 +65,7 @@ ek = ' '.join(t for _, t in pairs.get('edgard|kevin', []))
 if not re.search(r'churras|assa|grelha|carne', ek, re.I): err('edgard|kevin: o Edgard não tira sarro do churrasco do Kevin')
 if re.search(r'\baltura\b|baixinho|tampinha|nanico', txt('dener'), re.I): err('dener: piada de altura (proibido)')
 alltext = json.dumps(S, ensure_ascii=False)
+if re.search(r'cacete', alltext, re.I): err('"cacete" voltou (duplo sentido): a Laura fala "uma pisa" (o dono aprovou)')
 for w in ('Fable Ultracode', 'Astra 6'):
     if w not in alltext: warn(f'"{w}" não aparece no enredo')
 for sect in ('acts', 'factions'):
