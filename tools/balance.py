@@ -48,7 +48,9 @@ KIT = {'landim': {('special', 'projectile', 'speed'): 13, ('special', 'hitstun')
        'dede': {('long', 'startup'): 11, ('long', 'recovery'): 17,         # gaúcho: BOLEADEIRA ágil
                 ('special', 'startup'): 12, ('special', 'hitstun'): 36},     # BOLEADEIRAS enrolam as pernas (prende mais)
        'van': {('long', 'startup'): 12, ('long', 'recovery'): 18,          # FRALDA TÓXICA ágil
-               ('special', 'projectile', 'speed'): 12, ('special', 'hitstun'): 30}}   # CORAÇÃO DE MÃE mais rápido e segura mais
+               ('special', 'projectile', 'speed'): 12, ('special', 'hitstun'): 30,   # CORAÇÃO DE MÃE mais rápido e segura mais
+               ('special', 'heal'): 6,                                     # ... e cura a Van quando acerta (2026-09-24)
+               ('super', 'startup'): 60}}                                  # AMOR DE MÃE: mãe não espera (carregava 100 quadros)
 # Barra que enche sozinha (pontos por frame; 0,07 = 4,2 por segundo). Edgard: barra rápida (pedido de 2026-09-23); Kevin, o
 # atirador: barra rápida pra atirar mais (2026-09-24).
 BARRA = {'edgard': 0.07, 'kevin': 0.07}

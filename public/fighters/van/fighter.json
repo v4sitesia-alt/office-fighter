@@ -455,7 +455,8 @@
      "w": 64,
      "h": 68
     }
-   }
+   },
+   "heal": 6
   },
   "super": {
    "phases": {
@@ -473,7 +474,7 @@
      35
     ]
    },
-   "startup": 100,
+   "startup": 60,
    "active": 42,
    "recovery": 24,
    "damage": 6.0,

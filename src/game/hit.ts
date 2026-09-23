@@ -91,6 +91,7 @@ export function resolveHits(fighters: [Fighter, Fighter], projectiles: Projectil
       const owner = p.owner;
       pending.push(() => {
         def.takeHit(p.move, owner, blocked, owner.x, true);
+        if (!blocked && p.move.heal && owner.life > 0) owner.life = Math.min(100, owner.life + p.move.heal);   // o tiro que cura quem atirou
         fx.hit(p.x + p.vx * 2, p.y, blocked ? '#9ec5ff' : owner.def.colors.primary, !blocked);
         if (!blocked) fx.blood(p.x, p.y, Math.sign(p.vx), 10);
         audio.sfx(blocked ? 'block' : p.move.damage >= 20 ? 'hitHuge' : 'hitBig');

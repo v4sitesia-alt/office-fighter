@@ -32,6 +32,7 @@ export interface HitDef {
   launch?: number;             // impulso vertical (negativo = pra cima)
   knockdown?: boolean;
   hitstop?: number;
+  heal?: number;               // quem acerta recupera essa vida (CORAÇÃO DE MÃE: coração de mãe sempre cabe mais um)
   low?: boolean;               // só defende agachado
   overhead?: boolean;          // só defende em pé
 }
