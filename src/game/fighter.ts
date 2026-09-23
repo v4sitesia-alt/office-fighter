@@ -2,7 +2,7 @@ import type { Box, FighterAssets, FrameDef, HitDef, MoveDef, MoveName, ThrowDef 
 import type { Button, Controller } from '../core/input';
 import { audio } from '../core/audio';
 import {
-  ARENA_MAX, ARENA_MIN, BACK_SPEED, GRAVITY, GROUND_Y, INPUT_BUFFER, JUMP_VX, JUMP_VY,
+  ARENA_MAX, ARENA_MIN, BACK_SPEED, DAMAGE_SCALE, GRAVITY, GROUND_Y, INPUT_BUFFER, JUMP_VX, JUMP_VY,
   SPRITE_SCALE, WALK_SPEED,
 } from './consts';
 
@@ -373,12 +373,12 @@ export class Fighter {
     const tough = 1 + 0.3 * (this.def.stats.weight - 1);                       // PESO também amortece: 1,5 leva ~13% menos, 0,85 leva ~5% mais
     const combo = Math.max(0.6, 1 - 0.1 * Math.max(0, this.comboTaken - 1));   // 3º acerto seguido em diante vale menos (piso de 60%)
     if (!blocked) this.comboTaken++;
-    const dmg = (blocked ? h.damage * power * 0.25 : h.damage * power * combo) / tough;
+    const dmg = (blocked ? h.damage * power * 0.25 : h.damage * power * combo) / tough * DAMAGE_SCALE;   // DAMAGE_SCALE: a vida dura mais
     this.life = Math.max(0, this.life - dmg);
     const kb = (blocked ? h.knockback * 0.5 : h.knockback) / this.def.stats.weight;
     this.vx = kb * dir;
     if (!blocked) this.facing = dir === 1 ? -1 : 1;
-    this.meter = Math.min(100, this.meter + (blocked ? dmg * 0.6 : dmg * 1.1));
+    this.meter = Math.min(100, this.meter + (blocked ? dmg * 0.6 : dmg * 1.1) * (this.def.meterRate ?? 1));
     this.buffered = null;
     if (this.life <= 0) {
       this.setState('ko'); this.knockdownAir = true; this.vy = -8; this.vx = 4 * dir; this.y = Math.min(this.y, -0.01);

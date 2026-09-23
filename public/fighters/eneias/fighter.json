@@ -135,7 +135,7 @@
    "startup": 4,
    "active": 3,
    "recovery": 7,
-   "damage": 7.0,
+   "damage": 7.4,
    "hitstun": 12,
    "blockstun": 8,
    "hitbox": {
@@ -163,7 +163,7 @@
    "startup": 7,
    "active": 3,
    "recovery": 10,
-   "damage": 10.5,
+   "damage": 11.1,
    "hitstun": 15,
    "blockstun": 10,
    "hitbox": {
@@ -191,7 +191,7 @@
    "startup": 11,
    "active": 4,
    "recovery": 18,
-   "damage": 18.8,
+   "damage": 19.7,
    "hitstun": 24,
    "blockstun": 14,
    "hitbox": {
@@ -223,7 +223,7 @@
    "active": 14,
    "recovery": 22,
    "dash": 12,
-   "damage": 12.9,
+   "damage": 13.6,
    "hitstun": 22,
    "blockstun": 16,
    "hitbox": {
@@ -251,7 +251,7 @@
    "startup": 4,
    "active": 8,
    "recovery": 4,
-   "damage": 8.2,
+   "damage": 8.6,
    "hitstun": 14,
    "blockstun": 10,
    "overhead": true,
@@ -281,7 +281,7 @@
    "startup": 5,
    "active": 10,
    "recovery": 4,
-   "damage": 11.7,
+   "damage": 12.3,
    "hitstun": 16,
    "blockstun": 12,
    "overhead": true,
@@ -311,7 +311,7 @@
    "startup": 7,
    "active": 8,
    "recovery": 6,
-   "damage": 15.2,
+   "damage": 16.0,
    "hitstun": 22,
    "blockstun": 14,
    "overhead": true,
@@ -343,7 +343,7 @@
    "startup": 4,
    "active": 3,
    "recovery": 8,
-   "damage": 5.9,
+   "damage": 6.2,
    "hitstun": 11,
    "blockstun": 8,
    "low": true,
@@ -373,7 +373,7 @@
    "startup": 7,
    "active": 6,
    "recovery": 13,
-   "damage": 9.4,
+   "damage": 9.9,
    "hitstun": 18,
    "blockstun": 12,
    "low": true,
@@ -404,7 +404,7 @@
    "startup": 10,
    "active": 4,
    "recovery": 17,
-   "damage": 15.2,
+   "damage": 16.0,
    "hitstun": 20,
    "blockstun": 14,
    "low": true,
@@ -433,7 +433,7 @@
    "startup": 11,
    "active": 4,
    "recovery": 17,
-   "damage": 13,
+   "damage": 13.0,
    "hitstun": 22,
    "blockstun": 14,
    "hitbox": {
@@ -481,7 +481,7 @@
    "startup": 46,
    "active": 6,
    "recovery": 26,
-   "damage": 28,
+   "damage": 28.0,
    "hitstun": 30,
    "blockstun": 18,
    "hitbox": {
@@ -515,5 +515,6 @@
     "pierce": true
    }
   }
- }
+ },
+ "range": "perto"
 }

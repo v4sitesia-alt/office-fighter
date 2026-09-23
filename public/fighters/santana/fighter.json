@@ -131,7 +131,7 @@
    "startup": 4,
    "active": 3,
    "recovery": 7,
-   "damage": 7.4,
+   "damage": 7.6,
    "hitstun": 12,
    "blockstun": 8,
    "hitbox": {
@@ -159,7 +159,7 @@
    "startup": 7,
    "active": 3,
    "recovery": 10,
-   "damage": 11.1,
+   "damage": 11.4,
    "hitstun": 15,
    "blockstun": 10,
    "hitbox": {
@@ -187,7 +187,7 @@
    "startup": 11,
    "active": 4,
    "recovery": 18,
-   "damage": 19.7,
+   "damage": 20.4,
    "hitstun": 26,
    "blockstun": 14,
    "hitbox": {
@@ -218,7 +218,7 @@
    "startup": 13,
    "active": 9,
    "recovery": 22,
-   "damage": 13.5,
+   "damage": 14.0,
    "hitstun": 22,
    "blockstun": 16,
    "hitbox": {
@@ -265,7 +265,7 @@
    "startup": 13,
    "active": 4,
    "recovery": 20,
-   "damage": 15,
+   "damage": 15.0,
    "hitstun": 26,
    "blockstun": 16,
    "hitbox": {
@@ -311,7 +311,7 @@
    "active": 0,
    "recovery": 16,
    "impact": 12,
-   "damage": 10,
+   "damage": 10.0,
    "hitstun": 20,
    "blockstun": 14,
    "overhead": true,
@@ -341,7 +341,7 @@
     "hits": [
      {
       "at": 2,
-      "damage": 16,
+      "damage": 16.0,
       "knockdown": true,
       "launch": -10
      }
@@ -368,7 +368,7 @@
    "startup": 4,
    "active": 8,
    "recovery": 4,
-   "damage": 8.6,
+   "damage": 8.9,
    "hitstun": 14,
    "blockstun": 10,
    "overhead": true,
@@ -398,7 +398,7 @@
    "startup": 5,
    "active": 10,
    "recovery": 4,
-   "damage": 12.3,
+   "damage": 12.7,
    "hitstun": 16,
    "blockstun": 12,
    "overhead": true,
@@ -428,7 +428,7 @@
    "startup": 7,
    "active": 8,
    "recovery": 6,
-   "damage": 16.0,
+   "damage": 16.5,
    "hitstun": 22,
    "blockstun": 14,
    "overhead": true,
@@ -460,7 +460,7 @@
    "startup": 4,
    "active": 3,
    "recovery": 8,
-   "damage": 6.1,
+   "damage": 6.4,
    "hitstun": 11,
    "blockstun": 8,
    "low": true,
@@ -490,7 +490,7 @@
    "startup": 7,
    "active": 6,
    "recovery": 13,
-   "damage": 9.8,
+   "damage": 10.2,
    "hitstun": 18,
    "blockstun": 12,
    "low": true,
@@ -521,7 +521,7 @@
    "startup": 10,
    "active": 4,
    "recovery": 17,
-   "damage": 16.0,
+   "damage": 16.5,
    "hitstun": 22,
    "blockstun": 14,
    "low": true,
@@ -535,5 +535,6 @@
    "launch": -8,
    "hitstop": 8
   }
- }
+ },
+ "range": "perto"
 }

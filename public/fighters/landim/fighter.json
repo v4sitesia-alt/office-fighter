@@ -131,7 +131,7 @@
    "startup": 3,
    "active": 3,
    "recovery": 6,
-   "damage": 5.9,
+   "damage": 5.0,
    "hitstun": 12,
    "blockstun": 8,
    "hitbox": {
@@ -159,7 +159,7 @@
    "startup": 6,
    "active": 3,
    "recovery": 9,
-   "damage": 9.4,
+   "damage": 8.0,
    "hitstun": 15,
    "blockstun": 10,
    "hitbox": {
@@ -187,7 +187,7 @@
    "startup": 10,
    "active": 4,
    "recovery": 16,
-   "damage": 16.4,
+   "damage": 14.0,
    "hitstun": 24,
    "blockstun": 14,
    "hitbox": {
@@ -217,7 +217,7 @@
    "startup": 16,
    "active": 8,
    "recovery": 24,
-   "damage": 10.6,
+   "damage": 9.0,
    "hitstun": 22,
    "blockstun": 16,
    "hitbox": {
@@ -245,7 +245,7 @@
    "startup": 4,
    "active": 8,
    "recovery": 4,
-   "damage": 7.0,
+   "damage": 6.0,
    "hitstun": 14,
    "blockstun": 10,
    "overhead": true,
@@ -275,7 +275,7 @@
    "startup": 5,
    "active": 10,
    "recovery": 4,
-   "damage": 10.6,
+   "damage": 9.0,
    "hitstun": 16,
    "blockstun": 12,
    "overhead": true,
@@ -305,7 +305,7 @@
    "startup": 7,
    "active": 8,
    "recovery": 6,
-   "damage": 14.1,
+   "damage": 12.0,
    "hitstun": 22,
    "blockstun": 14,
    "overhead": true,
@@ -337,7 +337,7 @@
    "startup": 4,
    "active": 3,
    "recovery": 7,
-   "damage": 4.7,
+   "damage": 4.0,
    "hitstun": 11,
    "blockstun": 8,
    "low": true,
@@ -367,7 +367,7 @@
    "startup": 6,
    "active": 6,
    "recovery": 12,
-   "damage": 8.2,
+   "damage": 7.0,
    "hitstun": 18,
    "blockstun": 12,
    "low": true,
@@ -398,7 +398,7 @@
    "startup": 8,
    "active": 4,
    "recovery": 14,
-   "damage": 11.7,
+   "damage": 10.0,
    "hitstun": 20,
    "blockstun": 14,
    "low": true,
@@ -427,7 +427,7 @@
    "startup": 11,
    "active": 4,
    "recovery": 17,
-   "damage": 13,
+   "damage": 16.9,
    "hitstun": 22,
    "blockstun": 14,
    "hitbox": {
@@ -472,7 +472,7 @@
    "startup": 14,
    "active": 6,
    "recovery": 26,
-   "damage": 7,
+   "damage": 9.1,
    "hitstun": 16,
    "blockstun": 10,
    "hitbox": {
@@ -504,5 +504,7 @@
    }
   }
  },
- "gender": "f"
+ "gender": "f",
+ "range": "longe",
+ "meterRate": 1.35
 }

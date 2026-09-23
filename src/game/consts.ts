@@ -12,4 +12,5 @@ export const BACK_SPEED = 2.4;
 export const ROUND_SECONDS = 60;
 export const INPUT_BUFFER = 6;      // frames que um ataque fica guardado esperando o lutador ficar livre
 export const BLOCK_DAMAGE = 0.25;   // dano que passa na defesa
+export const DAMAGE_SCALE = 0.85;   // todo dano x 0,85: a barra de vida dura ~18% mais (mais chance de virada)
 export const BLOCK_KNOCKBACK = 0.5;

@@ -2,7 +2,7 @@
 import type { Button, Input } from '../core/input';
 import type { Difficulty, FighterAssets } from '../game/types';
 import { audio } from '../core/audio';
-import { placeOf, valeMapSvg } from './valemap';
+import { placeOf, rangeTag, valeMapSvg } from './valemap';
 import { endingOf, type Line } from '../data/dialogue';
 import { LOCKED } from '../data/roster';
 
@@ -121,7 +121,7 @@ export class Screens {
     const side = (k: string, tag: string) => `<div class="sf2-side ${k === 'p1' ? 'left' : 'right'}"><div class="sf2-bg ${k}"></div>
         <div class="sf2-hero ${k} empty"><img class="sf2-art ${k}" alt="" hidden><b class="sf2-q">?</b></div>
         <div class="sf2-tag ${k}">${tag}</div><canvas class="sf2-anim ${k}" width="230" height="230"></canvas>
-        <div class="sf2-info"><div class="sf2-name ${k}"></div><div class="sf2-region ${k}"></div><div class="sf2-stats ${k}"></div></div></div>`;
+        <div class="sf2-info"><div class="sf2-name ${k}"></div><div class="sf2-region ${k}"></div><div class="sf2-range ${k}"></div><div class="sf2-stats ${k}"></div></div></div>`;
     this.set('select', `
       <div class="sf2">
         ${side('p1', '1P')}
@@ -156,6 +156,7 @@ export class Screens {
         return `<div class="stat"><span>${label}</span><div><i style="width:${st ? pct : 0}%;background:${f?.def.colors.primary ?? '#fff'}"></i></div></div>`;
       };
       q(`.sf2-stats.${sd}`).innerHTML = bar('FORÇA', st?.power ?? 0) + bar('AGILIDADE', st?.speed ?? 0) + bar('PODER', st?.magic ?? 1);
+      q(`.sf2-range.${sd}`).innerHTML = rangeTag(f?.def.range);
     };
     // o lutador de verdade, comemorando (animação de vitória tirada do atlas)
     let clock = 0;

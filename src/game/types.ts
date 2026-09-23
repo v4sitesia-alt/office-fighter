@@ -135,6 +135,8 @@ export type MoveName =
 export interface FighterDef {
   id: string; name: string; role: string; tagline?: string; bio?: string; side?: 'heroi' | 'neutro' | 'vilao'; secret?: boolean; gender?: 'f' | 'm';
   meterRegen?: number;          // barra de especial que se recarrega sozinha (por frame)
+  meterRate?: number;           // a barra enche mais rápido batendo e apanhando (quem luta de longe vive de magia)
+  range?: 'perto' | 'medio' | 'longe';   // onde ele luta melhor (tools/balance.py): muda o jogo da CPU (ai.ts) e aparece na escolha
   colors: { primary: string; secondary: string };
   origin?: { region: string; city: string; lon: number; lat: number; label?: 'left' | 'right' | 'above' | 'below' };
   stage?: string;               // public/stages/<stage>.png (cenário do lutador)

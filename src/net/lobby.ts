@@ -10,7 +10,7 @@ import { joinRoom, ONLINE, type Msg, type Peer, type Room } from './transport';
 import { Invites } from './invites';
 import { Squad, duoConfig, soloConfig, type SquadState } from './squad';
 import { drawWinPose } from '../ui/pose';
-import { placeOf } from '../ui/valemap';
+import { placeOf, rangeTag } from '../ui/valemap';
 import * as store from './store';
 
 export interface NetMatchCfg {
@@ -401,7 +401,7 @@ export class Lobby {
     const f = this.F(fid); if (!f) return '<div class="hero empty"><b>?</b><small>ESCOLHA UM LUTADOR</small></div>';
     const st = f.def.stats, bar = (l: string, v: number) => `<div class="stat"><span>${l}</span><div><i style="width:${Math.round(Math.max(0.05, Math.min(1, (v - 0.7) / 0.65)) * 100)}%"></i></div></div>`;
     return `<div class="hero" style="--c:${f.def.colors.primary};background-image:url(${BASE}stages/${this.stageOf(fid)}.png)"><img class="hero-art${flip ? ' flip' : ''}" src="${BASE}versus/${fid}.png" alt=""><canvas data-anim="${fid}" data-flip="${flip ? 1 : 0}" width="300" height="250"></canvas>
-      <div class="hero-info"><h2>${esc(f.def.name)}</h2><small>${esc(f.def.role.toUpperCase())} · ${esc(placeOf(fid).toUpperCase())}</small><div class="hero-stats">${bar('FORÇA', st.power ?? 1)}${bar('AGILIDADE', st.speed ?? 1)}${bar('PODER', st.magic ?? 1)}</div></div></div>`;
+      <div class="hero-info"><h2>${esc(f.def.name)}</h2><small>${esc(f.def.role.toUpperCase())} · ${esc(placeOf(fid).toUpperCase())}</small>${rangeTag(f.def.range)}<div class="hero-stats">${bar('FORÇA', st.power ?? 1)}${bar('AGILIDADE', st.speed ?? 1)}${bar('PODER', st.magic ?? 1)}</div></div></div>`;
   }
   /** Grade de rostos. taken(id) devolve quem já ficou com o lutador ('' = livre). */
   private grid(act: string, taken: (id: string) => string, cols: number) {

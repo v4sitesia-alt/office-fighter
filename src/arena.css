@@ -181,3 +181,4 @@
 .hero-art.flip { transform: scaleX(-1); }
 .hero canvas { z-index: 2; left: 8%; height: 82%; }
 .hero-info { z-index: 3; }
+.hero-info .rng { margin: 5px 0 1px; }

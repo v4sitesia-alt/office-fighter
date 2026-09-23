@@ -493,3 +493,10 @@ html, body { overscroll-behavior: none; touch-action: manipulation; -webkit-touc
    (DEDÉ) ficavam de fora e sumiam. A folga aumenta a área pintada e a margem negativa devolve o lugar: nada se mexe. */
 .logo .l2 { padding: .14em .2em .06em; margin: -.14em -.2em -.06em; }
 .sf2-name, .sf2-side .sf2-name { padding: .34em .2em .08em; margin: -.34em -.2em -.08em; }
+
+/* distância em que o lutador luta melhor (escolha e arena): régua de 3 marcas com a dele acesa */
+.rng { display: inline-flex; align-items: center; gap: 6px; padding: 3px 7px 2px; font-family: var(--pix); font-size: 7px; letter-spacing: 1px; line-height: 1;
+  color: var(--rc); background: rgba(0,0,0,.6); border: 1px solid var(--rc); border-radius: 3px; text-shadow: 1px 1px 0 #000; white-space: nowrap; }
+.rng.r-perto { --rc: #ff6a3d; } .rng.r-medio { --rc: #ffd23f; } .rng.r-longe { --rc: #4ab3ff; }
+.rng-dots { display: inline-flex; gap: 2px; } .rng-dots i { width: 9px; height: 5px; background: rgba(255,255,255,.18); } .rng-dots i.on { background: var(--rc); box-shadow: 0 0 6px var(--rc); }
+.sf2-side .sf2-range { min-height: 14px; display: flex; justify-content: center; }

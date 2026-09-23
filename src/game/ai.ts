@@ -4,6 +4,7 @@ import type { Difficulty } from './types';
 import type { Fighter } from './fighter';
 import type { Projectile } from './projectile';
 import { Rng } from '../core/rng';
+import { ARENA_MAX, ARENA_MIN } from './consts';
 
 interface Profile {
   reaction: number;      // frames entre decisões
@@ -42,7 +43,9 @@ export class Ai {
     this.ctrl.begin();
     if (this.superCd > 0) this.superCd--;
     if (!enabled) return;
-    const p = PROFILES[this.difficulty];
+    const range = this.me.def.range, base = PROFILES[this.difficulty];
+    // de perto: pressiona (ataca mais, recua menos, pula pra dentro mais). As outras distâncias usam o perfil como está
+    const p = range === 'perto' ? { ...base, attackChance: Math.min(0.95, base.attackChance * 1.2), retreatChance: base.retreatChance * 0.4, jumpChance: base.jumpChance * 1.4 } : base;
     if (this.queue.length) {
       const pl = this.queue[0];
       pl.buttons.forEach((b) => this.ctrl.press(b));
@@ -112,6 +115,8 @@ export class Ai {
         this.debug = 'super'; this.superCd = 260; this.set(['special'], 2); return;
       }
     }
+    // quem luta de longe (def.range 'longe') decide aqui; se devolver false, segue a lógica de todo mundo
+    if (range === 'longe' && this.zoner(p, dx, fwd, back, reach, projectiles)) return;
     if (dx < reach) {
       if (this.rng.chance(p.attackChance)) {
         // defesa errada do oponente: rasteira contra defesa em pé, pulo+chute contra agachado
@@ -132,7 +137,7 @@ export class Ai {
       this.debug = 'espera'; this.set([], 6); return;
     }
     // meia distância: golpe longo (frente + forte), pra quem tem. Só vale a pena com o alvo no chão e dentro do alcance
-    if (M.long && ot.grounded && dx < this.longReach() && this.rng.chance(p.attackChance * 0.35)) {
+    if (M.long && ot.grounded && dx < this.longReach() && this.rng.chance(p.attackChance * (range === 'medio' ? 0.5 : 0.35))) {   // meia distância vive do golpe longo
       this.debug = 'golpe longo'; this.set([fwd, 'heavy'], 2); return;
     }
     // longe
@@ -140,7 +145,7 @@ export class Ai {
     if (me.meter >= 50 && me.meter < 100 && magicNear && !me.shield && dx < (M.special!.kind === 'throw' ? 190 : 300) && ot.grounded && this.rng.chance(p.specialChance * 0.5)) {
       this.debug = 'magia de perto'; this.set(['special'], 2); return;
     }
-    if (me.meter >= 50 && me.meter < 100 && dx > 300 && M.special && !magicNear && !me.shield && this.rng.chance(p.specialChance * 0.45)) {
+    if (me.meter >= 50 && me.meter < 100 && dx > 300 && M.special && !magicNear && !me.shield && this.rng.chance(p.specialChance * (range === 'perto' ? 0.25 : 0.45))) {   // quem luta de perto prefere chegar
       this.debug = 'especial'; this.set(['special'], 2); return;
     }
     if (dx < 330 && this.rng.chance(p.jumpChance)) {
@@ -149,6 +154,28 @@ export class Ai {
     }
     this.debug = 'aproxima';
     this.set([fwd], 8 + this.rng.range(0, 8));
+  }
+
+  /** Joga de longe (Edgard, Kevin, Landim, CRM). Com a magia pronta: solta de 200 px pra fora (uma por vez no ar) e, se o outro
+   *  está colado, abre espaço pulando ou andando pra trás. Sem barra: não vai atrás de ninguém, espera o outro vir e, de perto,
+   *  briga como todo mundo (defende, pune, bate), que é como a barra enche. Devolve false quando a decisão fica com a lógica geral. */
+  private zoner(p: Profile, dx: number, fwd: Button, back: Button, _reach: number, projectiles: Projectile[]): boolean {
+    const me = this.me, M = me.def.moves;
+    const cornered = fwd === 'right' ? me.x < ARENA_MIN + 70 : me.x > ARENA_MAX - 70;
+    const mine = projectiles.some((pr) => pr.owner === me);
+    const ready = !!M.special && me.meter >= (M.special.meterCost ?? 50) && me.meter < 100 && !me.shield;   // barra cheia fica pro super (lá em cima)
+    if (ready && dx > 200 && !mine && this.rng.chance(p.specialChance)) { this.debug = 'magia de longe'; this.set(['special'], 2); return true; }
+    // golpe longo que é tiro (o míssil da CRM): arma de longe também
+    if (M.long?.projectile && (!M.long.meterCost || me.meter >= M.long.meterCost) && this.other.grounded && dx > 200 && dx < this.longReach() && this.rng.chance(p.attackChance * 0.35)) {
+      this.debug = 'tiro longo'; this.set([fwd, 'heavy'], 2); return true;
+    }
+    if (ready && dx <= 200 && !cornered && this.rng.chance(0.5)) {                       // magia pronta e o outro colado: abre espaço pra soltar
+      if (this.rng.chance(0.5)) { this.debug = 'pulo pra trás'; this.queue.push({ buttons: ['up', back], frames: 5 }, { buttons: [back], frames: 14 }); }
+      else { this.debug = 'abre espaço'; this.set([back], 14); }
+      return true;
+    }
+    if (dx > 340 && this.rng.chance(0.6)) { this.debug = 'espera de longe'; this.set(this.rng.chance(0.25) ? [back] : [], 6 + this.rng.range(0, 6)); return true; }
+    return false;
   }
 
   /** Alcance real dos golpes comuns (o mais comprido entre soco e chute), em px de tela, mais meia largura do alvo. */

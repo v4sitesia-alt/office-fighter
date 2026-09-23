@@ -134,7 +134,7 @@
    "startup": 8,
    "active": 4,
    "recovery": 12,
-   "damage": 6.6,
+   "damage": 7.7,
    "hitstun": 14,
    "blockstun": 10,
    "hitbox": {
@@ -162,7 +162,7 @@
    "startup": 11,
    "active": 4,
    "recovery": 16,
-   "damage": 9.9,
+   "damage": 11.6,
    "hitstun": 17,
    "blockstun": 12,
    "hitbox": {
@@ -190,7 +190,7 @@
    "startup": 17,
    "active": 5,
    "recovery": 25,
-   "damage": 16.5,
+   "damage": 19.3,
    "hitstun": 28,
    "blockstun": 16,
    "hitbox": {
@@ -219,7 +219,7 @@
    "startup": 14,
    "active": 4,
    "recovery": 22,
-   "damage": 15,
+   "damage": 15.0,
    "hitstun": 24,
    "blockstun": 16,
    "hitbox": {
@@ -298,15 +298,15 @@
     "hits": [
      {
       "at": 30,
-      "damage": 8
+      "damage": 8.0
      },
      {
       "at": 40,
-      "damage": 11
+      "damage": 11.0
      },
      {
       "at": 50,
-      "damage": 10,
+      "damage": 10.0,
       "knockdown": true,
       "launch": -10
      }
@@ -342,7 +342,7 @@
    "startup": 7,
    "active": 8,
    "recovery": 6,
-   "damage": 7.7,
+   "damage": 9.0,
    "hitstun": 15,
    "blockstun": 10,
    "hitbox": {
@@ -372,7 +372,7 @@
    "startup": 8,
    "active": 10,
    "recovery": 6,
-   "damage": 11.0,
+   "damage": 12.8,
    "hitstun": 17,
    "blockstun": 12,
    "hitbox": {
@@ -402,7 +402,7 @@
    "startup": 10,
    "active": 10,
    "recovery": 8,
-   "damage": 15.4,
+   "damage": 18.0,
    "hitstun": 24,
    "blockstun": 15,
    "hitbox": {
@@ -434,7 +434,7 @@
    "startup": 8,
    "active": 4,
    "recovery": 12,
-   "damage": 5.5,
+   "damage": 6.4,
    "hitstun": 13,
    "blockstun": 9,
    "hitbox": {
@@ -464,7 +464,7 @@
    "startup": 11,
    "active": 6,
    "recovery": 17,
-   "damage": 8.8,
+   "damage": 10.3,
    "hitstun": 20,
    "blockstun": 13,
    "hitbox": {
@@ -495,7 +495,7 @@
    "startup": 13,
    "active": 5,
    "recovery": 20,
-   "damage": 13.2,
+   "damage": 15.4,
    "hitstun": 22,
    "blockstun": 15,
    "hitbox": {
@@ -527,7 +527,7 @@
    "startup": 38,
    "active": 6,
    "recovery": 38,
-   "damage": 11.0,
+   "damage": 12.8,
    "hitstun": 24,
    "blockstun": 18,
    "hitbox": {
@@ -556,5 +556,6 @@
    },
    "meterCost": 25
   }
- }
+ },
+ "range": "medio"
 }

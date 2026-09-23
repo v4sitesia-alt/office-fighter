@@ -86,6 +86,16 @@ INVITES_TS, SCHEMA = rd_opt('src/net/invites.ts'), rd_opt('supabase/schema.sql')
 
 ROUND_S = grab(CONSTS_TS, r'ROUND_SECONDS\s*=\s*(\d+)', int, 60)
 BLOCK_PCT = round(100 * grab(CONSTS_TS, r'BLOCK_DAMAGE\s*=\s*([\d.]+)', float, .25))
+DMG_SCALE = grab(CONSTS_TS, r'DAMAGE_SCALE\s*=\s*([\d.]+)', float, 1.0)     # todo dano do jogo passa por esse fator (a vida dura mais)
+RANGE_TXT = {'perto': 'LUTA DE PERTO', 'medio': 'MEIA DISTÂNCIA', 'longe': 'LUTA DE LONGE'}
+RANGE_SHORT = {'perto': 'PERTO', 'medio': 'MÉDIA', 'longe': 'LONGE'}
+
+
+def range_tag(fid):
+    r = F.get(fid, {}).get('range')
+    if r not in RANGE_TXT: return ''
+    k = ['perto', 'medio', 'longe'].index(r)
+    return f'<span class="fc-rng r-{r}"><span>' + ''.join(f'<i{" class=on" if i == k else ""}></i>' for i in range(3)) + f'</span>{RANGE_TXT[r]}</span>'
 TAG_COOL = round(grab(MATCH_TS, r'COOL:\s*(\d+)', int, 180) / 60)
 TAG_CAP = grab(MATCH_TS, r'REGEN_CAP:\s*(\d+)', int, 25)
 TAG_TIME = round(ROUND_S * grab(MATCH_TS, r'ROUND_SECONDS \* 60 \* ([\d.]+)', float, 1.65))
@@ -653,7 +663,7 @@ def dmg_of(fid, name, weight=1.0):
             total += d * mult * max(0.6, 1 - 0.1 * max(0, taken - 1)) / tough
         taken += 1
         last = fr
-    return round(total)
+    return round(total * DMG_SCALE)
 
 
 def passes_over(fid, name):
@@ -1667,7 +1677,7 @@ def card(fid):
     cis = (2200, 2900) if fid in MORPH else (1100 + 330 * (('release' in M) + any(m.get('chain') for m in M.values())) // 2, 1450 + 430 * (('release' in M) + any(m.get('chain') for m in M.values())) // 2)
     return f'''<article class="fc cv" id="lutador-{fid}" style="--c:{color(fid)};--c2:{d["colors"].get("secondary", "#fff")};--cis:{cis[0]}px;--cism:{cis[1]}px">
  <div class="fc-art" style="background-image:url({bg})">{img(a, fname(fid), 'fc-img', True) if a else spr(fid, 'idle', 'em guarda', 'px fc-img')}
-  <div class="fc-name"><span class="fc-role">{plain(d.get('role', ''))} · {html.escape(place(fid))}</span><h3>{html.escape(fname(fid))}</h3>{aka}</div>
+  <div class="fc-name"><span class="fc-role">{plain(d.get('role', ''))} · {html.escape(place(fid))}</span>{range_tag(fid)}<h3>{html.escape(fname(fid))}</h3>{aka}</div>
   <span class="fc-face">{img(face(fid), fname(fid), 'px up')}</span><span class="fc-guard">{spr(fid, 'idle', 'em guarda', 'px')}</span></div>
  <div class="fc-body">
   {f'<div class="fc-badges">{badges}</div>' if badges else ''}
@@ -1710,6 +1720,7 @@ def s_lutadores():
  <li><b class="tagb">AGILIDADE</b><span>a velocidade de andar.</span></li>
  <li><b class="tagb">PODER</b><span>quanto batem a magia, o super e tudo o que voa{f" (inclusive o golpe longo de quem atira: {lista(shooters)})" if shooters else ""}.</span></li>
  <li><b class="tagb">PESO</b><span>quanto mais pesado, menos é empurrado e menos dano leva.</span></li>
+ <li><b class="tagb">DISTÂNCIA</b><span>onde ele luta melhor. <b>DE PERTO</b>: porrada forte, FORÇA acima do PODER. <b>MEIA DISTÂNCIA</b>: vive do golpe longo, tudo equilibrado. <b>DE LONGE</b>: magia e tiro, PODER acima da FORÇA, e soco e chute tiram pouco. A CPU joga cada um do mesmo jeito.</span></li>
  <li><b class="tagb">BARRINHA</b><span>a mesma da tela de escolha: enche em 1,35 e fica vazia em 0,70. Acima ou abaixo disso ela não muda; o número ao lado é o de verdade.</span></li>
  <li><b class="tagb">GOLPES</b><span>MAGIA gasta meia barra; SUPER, a barra cheia (veja a {fase('barra')}). FRENTE é o manche na direção do adversário (veja a {fase('controle')}).</span></li>
  <li><b class="tagb">DANO</b><span>quanto o golpe inteiro tira da vida (100) de quem fica parado, sem defender, com peso 1,00. Nos golpes de vários acertos já conta o desconto do combo.</span></li></ul></div>'''
@@ -1722,7 +1733,7 @@ def s_lutadores():
     for i in ORDER + list(MORPH.values()):
         st, M = F[i]['stats'], F[i]['moves']
         nm = f'<a href="#lutador-{MORPH_OF.get(i, i)}">{html.escape(fname(i))}</a>' + ('<small>2º round</small>' if i in MORPH_OF else '')
-        rows += (f'<tr><th>{nm}</th><td>{num(st["power"])}</td><td>{num(st["speed"])}</td><td>{num(st.get("magic", 1))}</td><td>{num(st["weight"])}</td>'
+        rows += (f'<tr><th>{nm}</th><td>{RANGE_SHORT.get(F[i].get("range"), "—")}</td><td>{num(st["power"])}</td><td>{num(st["speed"])}</td><td>{num(st.get("magic", 1))}</td><td>{num(st["weight"])}</td>'
                  f'<td>{dmg_of(i, "long") if "long" in M else "—"}</td><td>{dmg_of(i, "special")}</td><td>{dmg_of(i, "super")}</td></tr>')
     return section('lutadores', f'''
 <nav class="sel" aria-label="Escolha o lutador">{grid}</nav>
@@ -1730,7 +1741,7 @@ def s_lutadores():
 {selos_html()}
 {groups}
 {sub_h('FICHA TÉCNICA', 'TODOS OS NÚMEROS')}
-<p class="swipe">↔ ARRASTE A TABELA PRO LADO</p><div class="paper tabwrap"><table class="ftab"><thead><tr><th rowspan="2">LUTADOR</th><th colspan="4">ATRIBUTOS (×)</th><th colspan="3">DANO (DE 100 DE VIDA)</th></tr>
+<p class="swipe">↔ ARRASTE A TABELA PRO LADO</p><div class="paper tabwrap"><table class="ftab"><thead><tr><th rowspan="2">LUTADOR</th><th rowspan="2">DISTÂNCIA</th><th colspan="4">ATRIBUTOS (×)</th><th colspan="3">DANO (DE 100 DE VIDA)</th></tr>
 <tr><th>FORÇA</th><th>AGILID.</th><th>PODER</th><th>PESO</th><th>LONGO</th><th>MAGIA</th><th>SUPER</th></tr></thead><tbody>{rows}</tbody></table>
 <p class="tnote">Atributos: 1,00 é o normal. Dano: o golpe inteiro, contra quem fica parado e sem defender, com peso 1,00.</p></div>''',
                    f'{len(ROSTER)} lutadores em três lados, na ordem da gente comum até os chefes. Toque num rosto pra ir direto à ficha.', (20100, 26900))
@@ -2503,6 +2514,9 @@ table{width:100%;border-collapse:collapse}
 .fc-name h3{display:inline;margin:0;font:400 italic clamp(38px,6vw,54px)/.95 var(--logo);color:var(--c);-webkit-text-stroke:1px #000;letter-spacing:.5px;overflow-wrap:anywhere}
 .fc-aka{display:inline-block;margin-left:10px;vertical-align:.4em;font:13px/1 var(--pix);color:#000;background:#fff;padding:4px 6px}
 .fc-role{display:block;margin-bottom:4px;font:700 14px/1.3 var(--cond);letter-spacing:.8px;text-transform:uppercase;color:#fff}
+.fc-rng{display:inline-flex;align-items:center;gap:7px;margin:0 0 6px;padding:4px 8px 3px;font:12px/1 var(--pix);letter-spacing:1px;color:var(--rc);background:#000;border:2px solid var(--rc)}
+.fc-rng>span{display:inline-flex;gap:3px}.fc-rng i{width:12px;height:6px;background:rgba(255,255,255,.2)}.fc-rng i.on{background:var(--rc);box-shadow:0 0 6px var(--rc)}
+.r-perto{--rc:#ff6a3d}.r-medio{--rc:#ffd23f}.r-longe{--rc:#4ab3ff}
 .fc-face{position:absolute;left:10px;top:10px}.fc-face img{width:64px;height:64px;border:3px solid #fff;box-shadow:3px 3px 0 #000}
 .fc-guard{position:absolute;right:8px;top:8px;padding:4px;background:rgba(0,0,0,.35);border:2px solid rgba(255,255,255,.6)}.fc-guard img{display:block;height:80px;width:auto}
 .fc-body{padding:18px 20px 20px;min-width:0}

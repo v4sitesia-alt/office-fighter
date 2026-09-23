@@ -5,6 +5,14 @@ import data from '../data/places.json';
 const P = data.places as Record<string, { name: string; x: number; y: number }>;
 export const placeOf = (id: string) => P[id]?.name ?? '???';
 
+/** Onde o lutador luta melhor (def.range, tools/balance.py): régua de 3 marcas (perto, meia, longe) com a dele acesa + o nome. */
+export const RANGES = { perto: 'LUTA DE PERTO', medio: 'MEIA DISTÂNCIA', longe: 'LUTA DE LONGE' } as const;
+export function rangeTag(r?: keyof typeof RANGES) {
+  if (!r) return '';
+  const k = (['perto', 'medio', 'longe'] as const).indexOf(r);
+  return `<span class="rng r-${r}"><span class="rng-dots">${[0, 1, 2].map((i) => `<i${i === k ? ' class="on"' : ''}></i>`).join('')}</span>${RANGES[r]}</span>`;
+}
+
 // contorno inventado (340x300): litoral recortado a leste, serra a oeste, um rio cortando o meio.
 // Na torre, de baixo pra cima: o elevador (Leo), o laboratório do 51º (Xablau), o 52º (Mundim) e o 53º.
 const COAST = 'M58,52 L96,34 L140,44 L178,26 L226,32 L262,20 L300,40 L318,78 L304,104 L322,138 L306,176 L316,214 L284,238 L246,262 L204,250 L170,276 L126,268 L92,280 L60,250 L36,214 L48,176 L28,138 L44,96 Z';

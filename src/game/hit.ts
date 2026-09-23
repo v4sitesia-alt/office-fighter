@@ -48,7 +48,7 @@ export function resolveHits(fighters: [Fighter, Fighter], projectiles: Projectil
       const py = (Math.max(hb.y, hurt.y) + Math.min(hb.y + hb.h, hurt.y + hurt.h)) / 2;
       pending.push(() => {
         def.takeHit(m, atk, blocked, atk.x, !!m.meterCost);
-        atk.meter = Math.min(100, atk.meter + (m.meterGain ?? m.damage) * (blocked ? 0.7 : 1.5));
+        atk.meter = Math.min(100, atk.meter + (m.meterGain ?? m.damage) * (blocked ? 0.7 : 1.5) * (atk.def.meterRate ?? 1));
         if (!blocked) { atk.comboHits++; def.lastHitBy = atk.moveName; }
         fx.hit(px, py, blocked ? '#9ec5ff' : atk.def.colors.primary, !blocked && m.damage >= 12);
         audio.sfx(blocked ? 'block' : m.damage >= 20 ? 'hitHuge' : m.damage >= 11 ? 'hitBig' : m.damage > 6 ? 'hitMed' : 'hit');   // soco fraco · chute médio · golpe forte

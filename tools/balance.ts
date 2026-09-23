@@ -35,10 +35,13 @@ function fight(a: string, b: string, seed: number) {
   const ai1 = new Ai(m.fighters[0], m.fighters[1], level, seed * 13 + 5);
   const ports = { ports: [ai1.ctrl as Controller, nullCtrl] };
   let ticks = 0; const used: Record<string, number> = {}, dmg: [Record<string, number>, Record<string, number>] = [{}, {}];
-  let last: unknown = null; let prev = [100, 100];
+  let last: unknown = null; let prev = [100, 100]; const ia: Record<string, number> = {}; let rounds = 0, byTime = 0, fightFrames = 0, ph = m.phase;
   while (result === null && ticks++ < 40000) {
-    if (m.phase === 'fight') ai1.update(m.projectiles, true);
+    if (m.phase === 'fight') { ai1.update(m.projectiles, true); if (ai1.debug) ia[ai1.debug] = (ia[ai1.debug] ?? 0) + 1; }   // tempo em cada decisão da CPU (--ia)
     m.update(ports, false);
+    if (m.phase === 'fight') fightFrames++;
+    if (ph === 'fight' && m.phase === 'ko') { rounds++; if (m.timer <= 0) byTime++; }   // round decidido: por nocaute ou no tempo
+    ph = m.phase;
     const mv = m.fighters[0].move; if (mv && mv !== last) { const n = m.fighters[0].moveName!; used[n] = (used[n] ?? 0) + 1; } last = mv;
     for (const i of [0, 1]) {                                  // de onde veio o dano que o lutador i causou
       const d = prev[1 - i] - m.fighters[1 - i].life;
@@ -46,23 +49,25 @@ function fight(a: string, b: string, seed: number) {
     }
     prev = [m.fighters[0].life, m.fighters[1].life];
   }
-  return { w: result ?? -1, life: [m.fighters[0].life, m.fighters[1].life], rounds: m.wins, ticks, used, dmg };
+  return { w: result ?? -1, life: [m.fighters[0].life, m.fighters[1].life], rounds: m.wins, ticks, used, dmg, ia, nRounds: rounds, byTime, fightFrames };
 }
 
 const stat = Object.fromEntries(ids.map((id) => [id, { w: 0, n: 0, life: 0, vs: {} as Record<string, [number, number]> }]));
+const iaT: Record<string, Record<string, number>> = {};
 const moves: Record<string, Record<string, number>> = {}, dealt: Record<string, Record<string, number>> = {}, fights: Record<string, number> = {};
-const t0 = Date.now(); let count = 0;
+const t0 = Date.now(); let count = 0; let allRounds = 0, allByTime = 0, allFight = 0;
 for (let i = 0; i < ids.length; i++) for (let j = i + 1; j < ids.length; j++) {
   const a = ids[i], b = ids[j];
   if (only.length && !only.includes(a) && !only.includes(b)) continue;
   for (let k = 0; k < N; k++) {
     const swap = k % 2 === 1, [p1, p2] = swap ? [b, a] : [a, b];           // metade das lutas de cada lado (o P1 age primeiro no frame)
-    const r = fight(p1, p2, 100 + k + i * 31 + j * 17); count++;
+    const r = fight(p1, p2, 100 + k + i * 31 + j * 17); count++; allRounds += r.nRounds; allByTime += r.byTime; allFight += r.fightFrames;
     const wa = r.w === -1 ? 0.5 : (r.w === 0) !== swap ? 1 : 0;
     stat[a].w += wa; stat[b].w += 1 - wa; stat[a].n++; stat[b].n++;
     const la = swap ? r.life[1] - r.life[0] : r.life[0] - r.life[1]; stat[a].life += la; stat[b].life -= la;
     (stat[a].vs[b] ??= [0, 0])[0] += wa; stat[a].vs[b][1]++; (stat[b].vs[a] ??= [0, 0])[0] += 1 - wa; stat[b].vs[a][1]++;
     const mu = (moves[p1] ??= {}); for (const [n, c] of Object.entries(r.used)) mu[n] = (mu[n] ?? 0) + c;
+    const it = (iaT[p1] ??= {}); for (const [n, c] of Object.entries(r.ia)) it[n] = (it[n] ?? 0) + c;
     for (const [who, d] of [[p1, r.dmg[0]], [p2, r.dmg[1]]] as const) { const t = (dealt[who] ??= {}); for (const [n, c] of Object.entries(d)) t[n] = (t[n] ?? 0) + c; fights[who] = (fights[who] ?? 0) + 1; }
   }
 }
@@ -79,5 +84,7 @@ for (const r of rows) {
 }
 const mid = rows.filter((r) => !F[r.id].def.secret); const spread = Math.max(...mid.map((r) => r.pct)) - Math.min(...mid.map((r) => r.pct));
 console.log(`\namplitude (sem o secreto): ${spread.toFixed(0)} pontos · desvio: ${Math.sqrt(mid.reduce((s, r) => s + (r.pct - 50) ** 2, 0) / mid.length).toFixed(1)}`);
+console.log(`round médio: ${(allFight / Math.max(1, allRounds) / 60).toFixed(1)} s de luta · ${(100 * allByTime / Math.max(1, allRounds)).toFixed(0)}% dos rounds acabam no tempo`);
 if (argv.includes('--dano')) { console.log('\ndano médio por luta, por origem:'); for (const r of rows) console.log(r.id.padEnd(9), Object.entries(dealt[r.id] ?? {}).sort((x, y) => y[1] - x[1]).map(([n, c]) => `${n} ${(c / fights[r.id]).toFixed(0)}`).join(' · ')); }
+if (argv.includes('--ia')) for (const [id, it] of Object.entries(iaT)) { const tot = Object.values(it).reduce((s, c) => s + c, 0); console.log(id.padEnd(9), Object.entries(it).sort((x, y) => y[1] - x[1]).map(([n, c]) => `${n} ${(100 * c / tot).toFixed(0)}%`).join(' · ')); }
 if (argv.includes('--moves')) for (const [id, mu] of Object.entries(moves)) console.log(id.padEnd(9), Object.entries(mu).sort((x, y) => y[1] - x[1]).map(([n, c]) => `${n}:${c}`).join(' '));

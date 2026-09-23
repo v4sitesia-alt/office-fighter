@@ -13,7 +13,8 @@ quem é pesado bate devagar e forte. O dano final de um golpe comum é dano x FO
   - CRM é o mais lento de todos e o mais forte; os golpes demoram mais; o especial tira muito.
   - Xablau é lento que nem o CRM. Laura e Dias são os mais rápidos; o Dias encadeia porrada. A Laura ganhou força e paga
     com magia (2026-09-23).
-  - Edgard é rápido e forte só em magia; porrada fraca (2026-09-23): o fator escondido dele fica travado (FIXO) pra FORÇA valer o que mostra.
+  - Edgard é rápido e forte só em magia; porrada fraca (2026-09-23), barra que enche sozinha (BARRA).
+  - Distâncias (DIST): de perto, meia distância e de longe; o fator escondido de quem luta de longe vai na magia.
   - Dedé quase igual ao Leo; o Leo um pouco acima nas três barras porque virou android (2026-09-23). Michael é equilibrado
     puxando pra força.
   - O especial que mais tira é o do Edgard, empatado com o do CRM.
@@ -26,9 +27,20 @@ import json, os, sys
 TUNE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'balance-tune.json')
 TUNE = json.load(open(TUNE_FILE)) if os.path.exists(TUNE_FILE) else {}
 ALVO = {'leo': 56, 'mundim': 56, 'crm': 52, 'dede': 54}
-# Fator escondido travado por pedido do dono: o calibrador não mexe. Edgard = porrada fraca de verdade (a CPU quase não usa
-# magia, então sem a trava o calibrador devolveria a força pra porrada dele).
-FIXO = {'edgard': 1.15}          # % de vitórias desejada no torneio de CPU (os demais: 50)
+# Distância em que cada um luta melhor (pedido de 2026-09-23). Muda o jogo da CPU (ai.ts: de perto pressiona, de longe segura a
+# distância e vive de magia/tiro, meia distância usa o golpe longo), aparece na escolha e no manual, e decide onde vai o fator
+# escondido: de longe ele reforça a MAGIA (a porrada fica no que a FORÇA mostra); nos outros, a porrada. Nos níveis: de perto
+# FORÇA acima de PODER, de longe o contrário, meia distância equilibrado. A CRM é meia distância: lenta demais pra fugir, vive
+# do míssil e bate forte de perto (FORÇA e PODER 1,30: a mais forte, como pede a âncora).
+DIST = {'michael': 'perto', 'eneias': 'perto', 'dias': 'perto', 'xablau': 'perto', 'laura': 'perto', 'santana': 'perto',
+        'dede': 'medio', 'leo': 'medio', 'van': 'medio', 'mundim': 'medio', 'crm': 'medio',
+        'edgard': 'longe', 'kevin': 'longe', 'landim': 'longe'}
+# Barra que enche sozinha (pontos por frame; 0,07 = 4,2 por segundo). Edgard: barra rápida (pedido de 2026-09-23).
+BARRA = {'edgard': 0.07}
+# Quem luta de longe vive de magia: a barra enche 35% mais rápido batendo e apanhando (meterRate).
+GANHO = {f: 1.35 for f, r in DIST.items() if r == 'longe'}
+# Fator escondido travado (o calibrador não mexe). Vazio: o Edgard deixou de precisar (o fator dele agora vai na magia).
+FIXO = {}
 
 #            id        FORÇA  AGIL.  PODER  PESO   ritmo      magia  super   (dano base, antes do PODER)
 FICHA = [
@@ -37,7 +49,7 @@ FICHA = [
     ('kevin',    0.90,  0.95,  1.20,  1.05, 'normal',    6,    8),          # magia RAJADA TRIPLA: 3 tiros de 6 · super: raio do canhão
     ('laura',    1.00,  1.35,  0.78,  0.85, 'rapido',   20,    36),         # mais força, paga com magia (2026-09-23) · magia = agarrão (release) · super = tsunami
     ('dede',     1.08,  1.08,  1.08,  1.00, 'normal',   13,    26),         # quase igual ao Leo (2026-09-23)
-    ('dias',     0.88,  1.30,  0.95,  1.05, 'rapido',   12,    5),          # escudo: 4 moedas de 5 (batendo ou lançadas)
+    ('dias',     0.95,  1.30,  0.88,  1.05, 'rapido',   12,    5),   # de perto: FORÇA acima do PODER (trocados em 2026-09-23)          # escudo: 4 moedas de 5 (batendo ou lançadas)
     ('michael',  1.10,  1.05,  0.95,  1.00, 'normal',   13,    27),
     ('eneias',   1.18,  0.85,  1.00,  1.30, 'firme',    13,    28),
     ('van',      0.92,  1.20,  1.10,  0.95, 'normal',   13,    6),           # raio contínuo: até 5 acertos + aura
@@ -84,15 +96,22 @@ def main(quiet=False):
     for fid, power, speed, magic, weight, ritmo, special, sup in FICHA:
         p = f'public/fighters/{fid}/fighter.json'; d = json.load(open(p)); M = d['moves']
         st = d['stats']; st.update({'speed': speed, 'power': power, 'weight': weight, 'magic': magic})
+        if fid in BARRA: d['meterRegen'] = BARRA[fid]
+        else: d.pop('meterRegen', None)
+        if fid in GANHO: d['meterRate'] = GANHO[fid]
+        else: d.pop('meterRate', None)
+        d.pop('style', None); d['range'] = DIST[fid]
+        k = TUNE.get(fid, 1.0)
+        kp, km = (1.0, k) if DIST[fid] == 'longe' else (k, 1.0)          # de longe o fator vai na magia; nos outros, na porrada
         if ritmo:
-            k = TUNE.get(fid, 1.0)
             for name, (dmg, s, a, r) in RITMO[ritmo].items():
-                if name in M: M[name].update({'damage': round(dmg * k, 1), 'startup': s, 'active': a, 'recovery': r})
-            if 'long' in M: M['long']['damage'] = round(LONGO[fid] * k, 1)
+                if name in M: M[name].update({'damage': round(dmg * kp, 1), 'startup': s, 'active': a, 'recovery': r})
+            if 'long' in M: M['long']['damage'] = round(LONGO[fid] * (km if DIST[fid] == 'longe' and M['long'].get('projectile') else kp), 1)   # de longe, o golpe longo que é tiro é arma de longe; nos outros é a porrada
         for name, (x, y, w, h) in ALCANCE.get(fid, {}).items(): M[name]['hitbox'] = {'x': x, 'y': y, 'w': w, 'h': h}
         for name, m in M.items():
             m.pop('chain', None); m.pop('chainMax', None)
             if name in CHAIN.get(fid, {}): m['chain'] = CHAIN[fid][name]; m['chainMax'] = 3
+        special = round(special * km, 1); sup = tuple(round(v * km, 1) for v in sup) if isinstance(sup, tuple) else round(sup * km, 1)
         M['special']['damage'] = special
         if 'throw' in M['special']: M['special']['throw']['release']['damage'] = special   # magia que é agarrão: o dano sai no arremesso
         su = M['super']
@@ -106,7 +125,7 @@ def main(quiet=False):
         else: su['damage'] = sup
         open(p, 'w').write(json.dumps(d, ensure_ascii=False, indent=1))
         total = sum(sup) if isinstance(sup, tuple) else sup * su.get('projectile', {}).get('count', 1)
-        if not quiet: print(f'{fid:8s} força {power:.2f} agil {speed:.2f} poder {magic:.2f} peso {weight:.2f}  {ritmo:7s} magia {special * magic:5.1f}  super {total * magic:5.1f}')
+        if not quiet: print(f'{fid:8s} {DIST[fid]:5s} força {power:.2f} agil {speed:.2f} poder {magic:.2f} peso {weight:.2f}  {ritmo:7s} fator {k:.3f} ({"magia" if km != 1 else "porrada"})  magia {special * magic:5.1f}  super {total * magic:5.1f}')
 
 
 def tune(rounds=10, n=12):
