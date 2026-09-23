@@ -18,10 +18,10 @@
  "stage": "leo",
  "scale": 1.08,
  "stats": {
-  "speed": 1.15,
-  "power": 1.15,
+  "speed": 1.12,
+  "power": 1.12,
   "weight": 1.1,
-  "magic": 1.15
+  "magic": 1.12
  },
  "hurtbox": {
   "x": -38,

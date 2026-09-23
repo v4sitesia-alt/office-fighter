@@ -2,6 +2,9 @@ import type { Match } from '../game/match';
 import type { Fighter } from '../game/fighter';
 import { audio } from '../core/audio';
 
+/** Combo que ganha a tag COMBO e a voz do locutor quando acaba: mais de 4 acertos seguidos. */
+const COMBO_MIN = 5;
+
 /** Barras de vida/especial, timer, rounds e mensagens centrais. DOM sobre o canvas. */
 export class Hud {
   el: HTMLElement;
@@ -15,7 +18,7 @@ export class Hud {
   private ghost = [100, 100];
   private portraits: HTMLElement[];
   private mates: HTMLElement[] = []; private bound: (Fighter | null)[] = [null, null]; private mateOf: (Fighter | null)[] = [null, null];
-  private combos: HTMLElement[]; private comboShown = [0, 0]; private comboHold = [0, 0];
+  private combos: HTMLElement[]; private comboShown = [0, 0]; private comboHold = [0, 0]; private comboDone = [false, false];
 
   constructor(root: HTMLElement) {
     this.el = root;
@@ -31,7 +34,7 @@ export class Hud {
           <div class="g1"><div class="fill"></div><span>MAGIA <b>OK</b></span></div>
           <div class="g2"><div class="fill"></div><span>SUPER</span></div></div>`).join('')}
       </div>
-      <div class="hud-combo p1"><b>2</b><span>HITS</span></div><div class="hud-combo p2"><b>2</b><span>HITS</span></div>
+      <div class="hud-combo p1"><b>2</b><span>HITS</span><i class="ctag">COMBO!</i></div><div class="hud-combo p2"><b>2</b><span>HITS</span><i class="ctag">COMBO!</i></div>
       <div class="hud-tally"></div>
       <div class="hud-msg"></div>`.replaceAll('__MATE__', mate);
     const q = (s: string) => root.querySelectorAll<HTMLElement>(s);
@@ -63,7 +66,7 @@ export class Hud {
     m.fighters.forEach((_, i) => this.bindSide(m, i));
     this.shownScore = [m.score[0], m.score[1]];
     this.gauges.forEach((g, i) => g.classList.toggle('local', i === this.localIndex));
-    this.comboShown = [0, 0]; this.comboHold = [0, 0]; this.combos.forEach((c) => (c.className = c.className.replace(' show', '')));
+    this.comboShown = [0, 0]; this.comboHold = [0, 0]; this.comboDone = [false, false]; this.combos.forEach((c) => c.classList.remove('show', 'done'));
     this.msg.textContent = '';
   }
 
@@ -106,14 +109,24 @@ export class Hud {
       }
       Array.from(this.rounds[i].children).forEach((dot, k) => dot.classList.toggle('won', k < m.wins[i]));
       // contagem de hits: acertos seguidos que o OUTRO está levando sem voltar ao neutro. Aparece do 2º em diante, do lado de quem bate
-      const hits = m.fighters[1 - i].comboTaken, c = this.combos[i];
-      if (hits >= 2 && hits !== this.comboShown[i]) {
+      const foe = m.fighters[1 - i], hits = foe.comboTaken, last = this.comboShown[i], c = this.combos[i];
+      if (hits >= 2 && hits !== last) {
         c.querySelector('b')!.textContent = String(hits);
-        c.classList.remove('pop'); void c.offsetWidth; c.classList.add('show', 'pop'); c.classList.toggle('big', hits >= 4);
-        this.comboHold[i] = 70;
+        c.classList.remove('pop', 'done'); void c.offsetWidth; c.classList.add('show', 'pop'); c.classList.toggle('big', hits >= 4);
+        this.comboHold[i] = 70; this.comboDone[i] = false;
+      }
+      // o combo acabou: o outro voltou ao neutro, caiu (no chão ninguém apanha) ou levou K.O. Com 5 acertos ou mais entra a tag COMBO
+      // e o locutor fala (no K.O. não: o "K.O." dele tem a vez). Só apresentação: não mexe na simulação nem no online
+      const best = Math.max(hits, last);
+      if (best >= COMBO_MIN && !this.comboDone[i] && (hits < last || foe.state === 'knockdown' || foe.state === 'ko')) {
+        this.comboDone[i] = true;
+        c.querySelector('b')!.textContent = String(best);
+        c.classList.remove('done'); void c.offsetWidth; c.classList.add('show', 'big', 'done');
+        this.comboHold[i] = 130;
+        if (foe.state !== 'ko' && m.phase === 'fight' && !audio.channelBusy('ann')) audio.voice('ann-combo', 'ann');
       }
       this.comboShown[i] = hits;
-      if (this.comboHold[i] > 0 && --this.comboHold[i] === 0) c.classList.remove('show');
+      if (this.comboHold[i] > 0 && --this.comboHold[i] === 0) c.classList.remove('show', 'done');
     });
     const sc = this.el.querySelectorAll<HTMLElement>('.score');
     m.score.forEach((v, i) => { this.shownScore[i] += Math.ceil((v - this.shownScore[i]) * 0.2); if (this.shownScore[i] > v) this.shownScore[i] = v; sc[i].textContent = String(this.shownScore[i]).padStart(6, '0'); });

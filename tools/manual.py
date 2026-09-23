@@ -793,7 +793,7 @@ for _i in list(ROSTER) + list(MORPH.values()):
     ALIAS[_n.title()] = _i
     if (S_FIGHTERS.get(_i) or {}).get('nick'):
         ALIAS[S_FIGHTERS[_i]['nick']] = _i
-# nomes de gente que aparecem no enredo (André é o Dedê; Thiago e João, o CRM...): valem só se a bio do lutador confirma
+# nomes de gente que aparecem no enredo (André é o Dedé; Thiago e João, o CRM...): valem só se a bio do lutador confirma
 _REAL = {'Felipe': 'santana', 'André': 'dede', 'Vanessa': 'van', 'Thiago': 'crm', 'João': 'crm', 'A Coisa': 'monstro'}
 for _k, _v in _REAL.items():
     if _v in F and (_k == 'A Coisa' or _k in (F[_v].get('bio') or '') or _k.upper() == F[_v]['name']):

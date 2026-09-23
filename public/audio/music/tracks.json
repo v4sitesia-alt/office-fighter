@@ -21,7 +21,7 @@
  },
  "fighter-landim": {
   "path": "audio/music/fighter-landim.m4a",
-  "vol": 0.85
+  "vol": 1.0
  },
  "fighter-laura": {
   "path": "audio/music/fighter-laura.m4a",
@@ -33,7 +33,7 @@
  },
  "fighter-michael": {
   "path": "audio/music/fighter-michael.m4a",
-  "vol": 0.85
+  "vol": 0.915
  },
  "fighter-mundim": {
   "path": "audio/music/fighter-mundim.m4a",

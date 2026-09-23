@@ -11,8 +11,11 @@ quem é pesado bate devagar e forte. O dano final de um golpe comum é dano x FO
 
 Âncoras pedidas pelo Edgard (dono do jogo):
   - CRM é o mais lento de todos e o mais forte; os golpes demoram mais; o especial tira muito.
-  - Xablau é lento que nem o CRM. Laura e Dias são os mais rápidos, com força baixa; o Dias encadeia porrada.
-  - Dedê é o equilibrado (tudo no meio). Michael é equilibrado puxando pra força. Leo é um Dedê com tudo um pouco acima.
+  - Xablau é lento que nem o CRM. Laura e Dias são os mais rápidos; o Dias encadeia porrada. A Laura ganhou força e paga
+    com magia (2026-09-23).
+  - Edgard é rápido e forte só em magia; porrada fraca (2026-09-23): o fator escondido dele fica travado (FIXO) pra FORÇA valer o que mostra.
+  - Dedé quase igual ao Leo; o Leo um pouco acima nas três barras porque virou android (2026-09-23). Michael é equilibrado
+    puxando pra força.
   - O especial que mais tira é o do Edgard, empatado com o do CRM.
 """
 import json, os, sys
@@ -22,22 +25,25 @@ import json, os, sys
 # ficha (o que o jogador vê nas barras) não mudam: muda só o quanto cada golpe comum tira, pra compensar alcance e tamanho.
 TUNE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'balance-tune.json')
 TUNE = json.load(open(TUNE_FILE)) if os.path.exists(TUNE_FILE) else {}
-ALVO = {'leo': 56, 'mundim': 56, 'crm': 52}          # % de vitórias desejada no torneio de CPU (os demais: 50)
+ALVO = {'leo': 56, 'mundim': 56, 'crm': 52, 'dede': 54}
+# Fator escondido travado por pedido do dono: o calibrador não mexe. Edgard = porrada fraca de verdade (a CPU quase não usa
+# magia, então sem a trava o calibrador devolveria a força pra porrada dele).
+FIXO = {'edgard': 1.15}          # % de vitórias desejada no torneio de CPU (os demais: 50)
 
 #            id        FORÇA  AGIL.  PODER  PESO   ritmo      magia  super   (dano base, antes do PODER)
 FICHA = [
-    ('edgard',   0.90,  1.10,  1.35,  1.00, 'normal',   15,    (7, 7, 7, 7, 12)),   # portal dos morcegos: 5 acertos (pedido do usuário); a soma é maior porque o dano do combo escala pra baixo
+    ('edgard',   0.80,  1.25,  1.35,  1.00, 'normal',   18,    (7, 7, 7, 7, 12)),   # rápido e forte só em magia, porrada fraca (pedido de 2026-09-23) · portal dos morcegos: 5 acertos; a soma é maior porque o dano do combo escala pra baixo
     ('santana',  1.12,  0.90,  1.05,  1.20, 'firme',    15,    (10, 16)),   # mergulho + explosão
     ('kevin',    0.90,  0.95,  1.20,  1.05, 'normal',    6,    8),          # magia RAJADA TRIPLA: 3 tiros de 6 · super: raio do canhão
-    ('laura',    0.85,  1.35,  0.90,  0.85, 'rapido',   20,    36),         # magia = agarrão (release) · super = tsunami
-    ('dede',     1.00,  1.00,  1.00,  1.00, 'normal',   13,    26),
+    ('laura',    1.00,  1.35,  0.78,  0.85, 'rapido',   20,    36),         # mais força, paga com magia (2026-09-23) · magia = agarrão (release) · super = tsunami
+    ('dede',     1.08,  1.08,  1.08,  1.00, 'normal',   13,    26),         # quase igual ao Leo (2026-09-23)
     ('dias',     0.88,  1.30,  0.95,  1.05, 'rapido',   12,    5),          # escudo: 4 moedas de 5 (batendo ou lançadas)
     ('michael',  1.10,  1.05,  0.95,  1.00, 'normal',   13,    27),
     ('eneias',   1.18,  0.85,  1.00,  1.30, 'firme',    13,    28),
     ('van',      0.92,  1.20,  1.10,  0.95, 'normal',   13,    6),           # raio contínuo: até 5 acertos + aura
     ('landim',   0.95,  1.05,  1.25,  0.95, 'normal',   13,    7),           # claquete bumerangue: até 4 acertos
     ('crm',      1.30,  0.60,  1.30,  1.50, 'maquina',  15,    (8, 11, 10)),   # chuva de bombas: três estouros
-    ('leo',      1.15,  1.15,  1.15,  1.10, 'normal',   13,    8),          # x3 drones
+    ('leo',      1.12,  1.12,  1.12,  1.10, 'normal',   13,    8),          # um pouco acima do Dedé: virou android · x3 drones
     ('xablau',   1.22,  0.75,  1.00,  1.40, 'lento',    13,    28),
     ('mundim',   1.10,  1.00,  1.25,  1.10, 'normal',   13,    8),          # o hóspede: 3 mordidas de 4 + soltura de 8
     # dener (secreto) fica de fora: é apelão de propósito
@@ -74,6 +80,7 @@ CHAIN = {'dias': {'punch': ['punch', 'kick'], 'kick': ['heavy'], 'lowPunch': ['p
 
 
 def main(quiet=False):
+    TUNE.update(FIXO)
     for fid, power, speed, magic, weight, ritmo, special, sup in FICHA:
         p = f'public/fighters/{fid}/fighter.json'; d = json.load(open(p)); M = d['moves']
         st = d['stats']; st.update({'speed': speed, 'power': power, 'weight': weight, 'magic': magic})
@@ -114,7 +121,7 @@ def tune(rounds=10, n=12):
         errs = {f: ALVO.get(f, 50) - p for f, p in pct.items() if f != 'dener'}
         print(f'rodada {it + 1}: amplitude {max(pct[f] for f in errs) - min(pct[f] for f in errs):.0f}  ' + ' '.join(f'{f}:{pct[f]:.0f}' for f in sorted(errs, key=lambda f: -pct[f])))
         step = 0.006 if it < 6 else 0.003
-        for f, e in errs.items(): TUNE[f] = round(min(1.30, max(0.80, TUNE.get(f, 1.0) * math.exp(step * e))), 3)
+        for f, e in errs.items(): TUNE[f] = FIXO[f] if f in FIXO else round(min(1.30, max(0.80, TUNE.get(f, 1.0) * math.exp(step * e))), 3)
         json.dump(TUNE, open(TUNE_FILE, 'w'), indent=1, sort_keys=True)
     main(quiet=True)
 

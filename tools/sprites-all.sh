@@ -33,7 +33,7 @@ run laura   $M/laura.png --fx 397,646,429,815 \
   --white-drop 954,280 --white-drop 1358,314 --white-drop 1404,296 --white-drop 1401,294 \
   --white-erase 228,598,252,620 \
   --extra $M/laura-golpenovo.png --extra-rows 1 --extra-scale 0.80 --extra-cuts 300,774,1332,1812 --white-fx 160-205 --white-erase 299,100,302,680 --white-erase 773,100,776,680 --white-erase 1331,100,1334,680     # cabeça dos tubarões: branco é dente/brilho · vãos entre a mão e o tubarão · tracinho verde solto
-# o board extra do Dedê chegou com o nome trocado (leo-golpelongo-vitoria.png); o usuário renomeou em 2026-09-20.
+# o board extra do Dedé chegou com o nome trocado (leo-golpelongo-vitoria.png); o usuário renomeou em 2026-09-20.
 # O dourado do efeito tem o mesmo matiz da roupa marrom: o brilho mínimo (v0.74) separa os dois.
 run dede    $M/dede.png --export 33:bolas.png \
   --extra $M/dede-golpelongo-vitoria.png --extra-scale 0.60,0.63 --white-fx 29-50:v0.74 \

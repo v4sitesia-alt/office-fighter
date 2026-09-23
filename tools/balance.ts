@@ -11,6 +11,7 @@
 import fs from 'node:fs';
 import { Match } from '../src/game/match';
 import { Ai } from '../src/game/ai';
+import { ROSTER, SECRET } from '../src/data/roster';
 import type { Difficulty, FighterAssets } from '../src/game/types';
 import type { StageAssets } from '../src/core/assets';
 import type { Controller } from '../src/core/input';
@@ -25,7 +26,7 @@ const nullCtrl: Controller = { held: () => false, pressed: () => false };
 
 const argv = process.argv.slice(2); const arg = (k: string, d: string) => { const i = argv.indexOf(`--${k}`); return i >= 0 ? argv[i + 1] : d; };
 const N = Math.max(2, Number(arg('n', '4'))), level = arg('level', 'hard') as Difficulty, only = arg('only', '').split(',').filter(Boolean);
-const roster = (fs.readFileSync('src/data/roster.ts', 'utf8').match(/'([a-z]+)'/g) ?? []).map((s) => s.replace(/'/g, '')).filter((id) => id !== 'office');
+const roster = [...ROSTER, ...SECRET];   // a lista de verdade (ler as aspas do arquivo pegava também os códigos secretos: 'down', 'kick'...)
 const ids = [...new Set(roster)]; const F = Object.fromEntries(ids.map((id) => [id, load(id)]));
 
 function fight(a: string, b: string, seed: number) {

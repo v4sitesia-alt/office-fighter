@@ -374,7 +374,7 @@ const loop = startLoop({
       } else if (paused) screens.update(input);   // no frame em que o menu abre, o mesmo botão não pode já confirmar/fechar
       if (!match || mode !== 'fight') return;               // saiu pela pausa
       match.update(input, paused);
-      hud.update(match);
+      if (match) hud.update(match);                          // o fim da luta pode ter voltado pro título (luta de teste) e zerado a luta
       return;
     }
     if (mode === 'netfight' && match && (session || watchSession)) {
@@ -420,15 +420,16 @@ const loop = startLoop({
   },
   render() {
     ctx.clearRect(0, 0, W, H);
-    if (mode === 'boot') { ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H); return; }
+    // carregando e INSERT COIN: tela preta. (A luta de fundo, Edgard x Laura, já existe no fim do carregamento e aparecia num lapso)
+    if (mode === 'boot' || mode === 'loading') { ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H); return; }
     if (mode === 'intro') { cinematic.render(ctx, audio.musicTime() >= 0 ? audio.musicTime() : introClock); ctx.imageSmoothingEnabled = false; return; }
     if (mode === 'fight' || mode === 'result' || mode === 'netfight') { match?.render(ctx, debug); return; }
     const intro = stages.get('mundim') ?? stages.get('intro');     // título no 52º andar: a sala do Mundim, onde tudo termina
     if (mode === 'title' && intro) { ctx.drawImage(intro.img, 0, 0, W, H); ctx.fillStyle = 'rgba(6,10,30,0.45)'; ctx.fillRect(0, 0, W, H); return; }
     const lift = stages.get('elevator');
-    if (lift && mode !== 'loading') { ctx.drawImage(lift.img, 0, 0, W, H); ctx.fillStyle = 'rgba(6,4,12,0.45)'; ctx.fillRect(0, 0, W, H); return; } // telas antes da luta: hall do elevador
-    if (demo) demo.render(ctx, false);
-    if (mode !== 'loading') { ctx.fillStyle = 'rgba(6,10,30,0.72)'; ctx.fillRect(0, 0, W, H); }
+    if (lift) { ctx.drawImage(lift.img, 0, 0, W, H); ctx.fillStyle = 'rgba(6,4,12,0.45)'; ctx.fillRect(0, 0, W, H); return; } // telas antes da luta: hall do elevador
+    if (demo) demo.render(ctx, false);                             // só se a imagem do elevador faltar
+    ctx.fillStyle = 'rgba(6,10,30,0.72)'; ctx.fillRect(0, 0, W, H);
   },
 });
 

@@ -19,6 +19,6 @@ for src in sorted(glob.glob(f'{SRC}/*.mp3')):
         x = np.frombuffer(w.readframes(w.getnframes()), dtype=np.int16).astype(float) / 32768
     os.remove(tmp)
     rms = float(np.sqrt((x ** 2).mean()))
-    tracks[name] = {'path': f'audio/music/{name}.m4a', 'vol': round(min(0.85, TARGET / rms), 3)}
+    tracks[name] = {'path': f'audio/music/{name}.m4a', 'vol': round(min(1.0, TARGET / rms), 3)}   # teto 1,0: as faixas gravadas baixas (Landim, Michael) chegam no nível das outras
     print(f'{name:18s} rms {rms:.3f} vol {tracks[name]["vol"]:.2f}  {os.path.getsize(dst) / 1e6:.1f} MB')
 json.dump(tracks, open(f'{OUT}/tracks.json', 'w'), indent=1)

@@ -1,6 +1,8 @@
+/* V4 Pixel = Press Start 2P com as maiúsculas acentuadas inteiras (tools/pixelfont.py): o É não vira "e" */
+@font-face { font-family: 'V4 Pixel'; src: url('./fonts/v4-pixel.woff') format('woff'); font-display: block; }
 :root {
   --bg: #0a1220; --cab: #3b4759; --cab-dark: #2a3443; --cab-light: #4e5c72;
-  --yellow: #ffd23f; --orange: #ff7a1a; --pix: 'Press Start 2P', monospace; --logo: 'Anton', Impact, sans-serif;
+  --yellow: #ffd23f; --orange: #ff7a1a; --pix: 'V4 Pixel', 'Press Start 2P', monospace; --logo: 'Anton', Impact, sans-serif;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; background: var(--bg); color: #fff; font-family: var(--pix); overflow-x: hidden; }
@@ -393,6 +395,16 @@ html, body { overscroll-behavior: none; touch-action: manipulation; -webkit-touc
 .hud-combo.show { opacity: 1; } .hud-combo.big b { color: #ff5a2a; }
 .hud-combo.pop b { animation: comboPop .18s ease-out; }
 @keyframes comboPop { from { transform: scale(1.7); } to { transform: scale(1); } }
+/* tag COMBO: entra quando acaba um combo de 5 acertos ou mais (hud.ts), com a voz do locutor */
+.hud-combo .ctag { position: absolute; top: 100%; margin-top: 4px; padding: 4px 20px 2px; overflow: hidden; font-size: 40px; font-style: italic; line-height: 1; letter-spacing: 3px; white-space: nowrap;
+  color: #fff; -webkit-text-stroke: 2px #5a000e; text-shadow: 3px 3px 0 #000; background: linear-gradient(180deg, #ff6a2a 0%, #e8261e 55%, #9c0a1c 100%);
+  border: 3px solid #000; box-shadow: 5px 5px 0 #000, inset 0 3px 0 rgba(255,255,255,.35); transform: skewX(-12deg); opacity: 0; }
+.hud-combo.p1 .ctag { left: 0; } .hud-combo.p2 .ctag { right: 0; }
+.hud-combo.done b { color: var(--yellow); animation: comboPop .22s ease-out; }
+.hud-combo.done .ctag { animation: comboTag .5s ease-out forwards; }
+.hud-combo.done .ctag::after { content: ''; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 35%, rgba(255,255,255,.75) 50%, transparent 65%); background-size: 260% 100%; animation: comboShine .8s .3s ease-out both; }
+@keyframes comboTag { 0% { opacity: 0; transform: skewX(-12deg) scale(2.6); } 45% { opacity: 1; transform: skewX(-12deg) scale(.9); } 70% { transform: skewX(-12deg) scale(1.06); } 100% { opacity: 1; transform: skewX(-12deg) scale(1); } }
+@keyframes comboShine { from { background-position: 130% 0; } to { background-position: -130% 0; } }
 
 /* cena final: escritório do Mundim */
 .cut-stage { position: absolute; inset: 0; overflow: hidden; background: #000; }
@@ -476,3 +488,8 @@ html, body { overscroll-behavior: none; touch-action: manipulation; -webkit-touc
 .sf2-side .sf2-region { min-height: 20px; }
 .sf2-side .sf2-stats { width: 184px; margin-top: 1px; }
 .sf2-side .sf2-tag { z-index: 4; }
+
+/* Texto em degradê (background-clip: text) só pinta dentro da própria caixa: a ponta da letra inclinada e o acento
+   (DEDÉ) ficavam de fora e sumiam. A folga aumenta a área pintada e a margem negativa devolve o lugar: nada se mexe. */
+.logo .l2 { padding: .14em .2em .06em; margin: -.14em -.2em -.06em; }
+.sf2-name, .sf2-side .sf2-name { padding: .34em .2em .08em; margin: -.34em -.2em -.08em; }

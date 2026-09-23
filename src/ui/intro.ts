@@ -13,6 +13,7 @@ export class Intro {
   private logo!: HTMLImageElement; private city!: HTMLImageElement; private tower!: HTMLImageElement;
   async load(base: string) {
     [this.logo, this.city, this.tower] = await Promise.all(['logo.jpg', 'city.jpg', 'tower.jpg'].map((f) => loadImage(`${base}intro/${f}`)));
+    await document.fonts.load("15px 'V4 Pixel'").catch(() => undefined);     // o texto da abertura é desenhado no canvas: a fonte precisa estar pronta
   }
 
   render(ctx: CanvasRenderingContext2D, t: number) {
@@ -95,20 +96,13 @@ export class Intro {
     const g = ctx.createLinearGradient(0, top - 40, 0, H);
     g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(0.35, 'rgba(0,0,10,0.62)'); g.addColorStop(1, 'rgba(0,0,10,0.8)');
     ctx.fillStyle = g; ctx.fillRect(0, top - 40, W, H - top + 40);
-    ctx.font = "15px 'Press Start 2P', monospace"; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.font = "15px 'V4 Pixel', 'Press Start 2P', monospace"; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     lines.forEach((ln, i) => {
       const y = H + 20 - k * span + i * gap;
       if (y < top || y > H + 10 || !ln) return;
       ctx.globalAlpha = Math.min(1, (y - top) / 70, (H + 10 - y) / 40);
-      // a Press Start 2P desenha Í e Ú maiúsculos com cara de minúscula: escreve I/U e põe o acento à mão (fonte mono, 15 px por letra)
-      const txt = ln.replace(/Í/g, 'I').replace(/Ú/g, 'U'), x0 = W / 2 - (ln.length * 15) / 2;
-      const accents = [...ln].flatMap((ch, j) => (ch === 'Í' || ch === 'Ú' ? [x0 + j * 15] : []));
-      const draw = (dx: number, dy: number) => {
-        ctx.fillText(txt, W / 2 + dx, y + dy);
-        for (const ax of accents) { ctx.fillRect(ax + 6 + dx, y - 11 + dy, 4, 2); ctx.fillRect(ax + 8 + dx, y - 13 + dy, 4, 2); }
-      };
-      ctx.fillStyle = '#000'; draw(2, 2);
-      ctx.fillStyle = i === lines.length - 1 ? '#ff5468' : i === 0 ? '#ffd23f' : '#fff'; draw(0, 0);
+      ctx.fillStyle = '#000'; ctx.fillText(ln, W / 2 + 2, y + 2);
+      ctx.fillStyle = i === lines.length - 1 ? '#ff5468' : i === 0 ? '#ffd23f' : '#fff'; ctx.fillText(ln, W / 2, y);
     });
     ctx.globalAlpha = 1;
   }

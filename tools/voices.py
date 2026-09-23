@@ -45,6 +45,7 @@ CLIPS = [
     ('ann-leo',     'Daniel', 'Leh-oh!', 155, 0.84),
     # risadas do Dener: tocam quando ele DERRUBA o adversário (gatilho <id>-down-N), não a cada golpe
     ('ann-secret',  'Daniel', 'Here comes a new challenger!', 165, 0.84),
+    ('ann-combo',   'Daniel', 'Combo!', 150, 0.84),                # fim de um combo de 5 acertos ou mais (hud.ts)
 ]
 
 
@@ -183,7 +184,7 @@ def main():
     #   <id>-taunt / <id>-win       provocação no FIGHT! / risada ao vencer o round
     #   <id>-down-N                 sorteado toda vez que o lutador DERRUBA o adversário (Mundim provoca ou ri, Dener ri)
     #   sfx-<nome>                  troca o efeito sintetizado (hit, hitBig, jump, land, knockdown)
-    # 2026-09-20: nas trocas de golpe o som acompanha o GOLPE: o especial antigo que virou magia leva o som junto (Dedê, Laura); a barrigada do Dias é só do golpe longo.
+    # 2026-09-20: nas trocas de golpe o som acompanha o GOLPE: o especial antigo que virou magia leva o som junto (Dedé, Laura); a barrigada do Dias é só do golpe longo.
     SONS = {'barrigada.wav': ['dias-long'], 'dede-especial.mp3': ['dede-magic'], 'landim-especial.wav': ['landim-special'],
             'mundin-especial.wav': ['mundim-special'], 'xablau-especial.wav': ['xablau-special'],
             'edgard-magia-leve.wav': ['edgard-magic'], 'magia-leve-dias.mp3': ['dias-magic'], 'xablau-magia-leve.wav': ['xablau-magic'],
