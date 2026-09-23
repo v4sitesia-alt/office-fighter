@@ -266,7 +266,7 @@
    "startup": 12,
    "active": 6,
    "recovery": 17,
-   "damage": 20.2,
+   "damage": 19.5,
    "hitstun": 26,
    "blockstun": 16,
    "hitbox": {
@@ -342,23 +342,23 @@
     "hits": [
      {
       "at": 5,
-      "damage": 7.8
+      "damage": 7.6
      },
      {
       "at": 12,
-      "damage": 7.8
+      "damage": 7.6
      },
      {
       "at": 19,
-      "damage": 7.8
+      "damage": 7.6
      },
      {
       "at": 26,
-      "damage": 7.8
+      "damage": 7.6
      },
      {
       "at": 33,
-      "damage": 13.5,
+      "damage": 13.0,
       "knockdown": true,
       "launch": -11
      }

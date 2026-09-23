@@ -44,8 +44,9 @@ ARMADURA = {'xablau': 1}
 KIT = {'landim': {('special', 'projectile', 'speed'): 13, ('special', 'hitstun'): 34,
                   ('super', 'projectile', 'lifetime'): 110, ('super', 'projectile', 'hits'): 5,
                   ('long', 'startup'): 12, ('long', 'recovery'): 20}}          # PLANO SEQUÊNCIA mais ágil: segura a meia distância
-# Barra que enche sozinha (pontos por frame; 0,07 = 4,2 por segundo). Edgard: barra rápida (pedido de 2026-09-23).
-BARRA = {'edgard': 0.07}
+# Barra que enche sozinha (pontos por frame; 0,07 = 4,2 por segundo). Edgard: barra rápida (pedido de 2026-09-23); Kevin, o
+# atirador: barra rápida pra atirar mais (2026-09-24).
+BARRA = {'edgard': 0.07, 'kevin': 0.07}
 # Quem luta de longe vive de magia: a barra enche 35% mais rápido batendo e apanhando (meterRate).
 GANHO = {f: 1.35 for f, r in DIST.items() if r == 'longe'}
 # Fator escondido travado (o calibrador não mexe). Vazio: o Edgard deixou de precisar (o fator dele agora vai na magia).

@@ -157,15 +157,16 @@ export class Ai {
     this.set([fwd], 8 + this.rng.range(0, 8));
   }
 
-  /** Joga de longe (Edgard, Kevin, Landim, CRM). Com a magia pronta: solta de 200 px pra fora (uma por vez no ar) e, se o outro
+  /** Joga de longe (Edgard, Kevin, Landim, CRM). Com a magia pronta: solta de 200 px pra fora (uma por vez no ar; de barra cheia, com ↓ + B) e, se o outro
    *  está colado, abre espaço pulando ou andando pra trás. Sem barra: não vai atrás de ninguém, espera o outro vir e, de perto,
    *  briga como todo mundo (defende, pune, bate), que é como a barra enche. Devolve false quando a decisão fica com a lógica geral. */
   private zoner(p: Profile, dx: number, fwd: Button, back: Button, _reach: number, projectiles: Projectile[]): boolean {
     const me = this.me, M = me.def.moves;
     const cornered = fwd === 'right' ? me.x < ARENA_MIN + 70 : me.x > ARENA_MAX - 70;
     const mine = projectiles.some((pr) => pr.owner === me);
-    const ready = !!M.special && me.meter >= (M.special.meterCost ?? 50) && me.meter < 100 && !me.shield;   // barra cheia fica pro super (lá em cima)
-    if (ready && dx > 200 && !mine && this.rng.chance(p.specialChance)) { this.debug = 'magia de longe'; this.set(['special'], 2); return true; }
+    const ready = !!M.special && me.meter >= (M.special.meterCost ?? 50) && !me.shield;
+    // barra cheia: o super teve a vez lá em cima; se não saiu, atira a magia assim mesmo com ↓ + B (quem luta de longe vive de tiro)
+    if (ready && dx > 200 && !mine && this.rng.chance(p.specialChance)) { this.debug = 'magia de longe'; this.set(me.meter >= 100 ? ['down', 'special'] : ['special'], 2); return true; }
     // golpe longo que é tiro (o míssil da CRM): arma de longe também
     if (M.long?.projectile && (!M.long.meterCost || me.meter >= M.long.meterCost) && this.other.grounded && dx > 200 && dx < this.longReach() && this.rng.chance(p.attackChance * 0.35)) {
       this.debug = 'tiro longo'; this.set([fwd, 'heavy'], 2); return true;
