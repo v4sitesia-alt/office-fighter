@@ -1,6 +1,38 @@
 import type { Box, FighterAssets, FrameDef, HitDef, MoveDef, MoveName, ThrowDef } from './types';
 import type { Button, Controller } from '../core/input';
 import { audio } from '../core/audio';
+
+/** Passada (2026-09-24): os boards trazem a pose de meio passo (uma perna à frente, a outra atrás), quase igual nos 3 quadros.
+ *  A caminhada sai por código: da cintura pra baixo a arte vira duas pernas, separadas no meio entre os pés. Cada uma inclina
+ *  a partir do quadril deslocando as linhas (o sapato fica reto no chão) e as duas vão da pose aberta até se juntarem embaixo
+ *  do corpo e voltam; na passagem, com as duas sobrepostas, a perna de apoio troca (de lado as duas pernas parecem iguais), então
+ *  o passo alterna sem nunca mostrar a pose "espelhada". A perna no ar sobe na passagem (joelho), o corpo sobe na passagem e desce
+ *  na pisada, e o ritmo segue a velocidade de andar: o pé de apoio anda pra trás na mesma velocidade que o corpo vai pra frente. */
+interface Gait { hip: number; base: number; pivot: number; d: number }
+const GAIT = new WeakMap<object, Gait | null>();
+function gaitOf(sheet: CanvasImageSource, fr: FrameDef): Gait | null {
+  if (GAIT.has(fr)) return GAIT.get(fr)!;
+  let g: Gait | null = null;
+  try {
+    const W = fr.sw, H = fr.sh, c = document.createElement('canvas'); c.width = W; c.height = H;
+    const x = c.getContext('2d', { willReadFrequently: true })!; x.drawImage(sheet, fr.sx, fr.sy, W, H, 0, 0, W, H);
+    const px = x.getImageData(0, 0, W, H).data;
+    const rowOn = (y: number) => { for (let i = 0; i < W; i++) if (px[(y * W + i) * 4 + 3] > 40) return true; return false; };
+    let base = H - 1; while (base > 0 && !rowOn(base)) base--;
+    let top = 0; while (top < base && !rowOn(top)) top++;
+    const band = new Array<boolean>(W).fill(false), y0 = Math.max(0, base - Math.round(H * 0.06));   // as solas: os ~6% de baixo
+    for (let y = y0; y <= base; y++) for (let i = 0; i < W; i++) if (px[(y * W + i) * 4 + 3] > 40) band[i] = true;
+    const runs: [number, number][] = [];
+    for (let i = 0; i < W; i++) if (band[i]) { const a = i; while (i < W && band[i]) i++; if (i - a >= 4) runs.push([a, i - 1]); }
+    if (runs.length) {
+      const [l, r] = [runs[0], runs[runs.length - 1]];
+      const c1 = runs.length > 1 ? (l[0] + l[1]) / 2 : l[0] + (l[1] - l[0]) * 0.25, c2 = runs.length > 1 ? (r[0] + r[1]) / 2 : l[0] + (l[1] - l[0]) * 0.75;
+      g = { base, hip: Math.round(base - (base - top) * 0.46), pivot: (c1 + c2) / 2, d: Math.max(6, (c2 - c1) / 2) };
+    }
+  } catch { g = null; }
+  GAIT.set(fr, g);
+  return g;
+}
 import {
   ARENA_MAX, ARENA_MIN, BACK_SPEED, DAMAGE_SCALE, GRAVITY, GROUND_Y, INPUT_BUFFER, JUMP_VX, JUMP_VY,
   SPRITE_SCALE, WALK_SPEED,
@@ -66,6 +98,8 @@ export class Fighter {
   private buffered: { btn: AttackBtn; frame: number } | null = null;
   private frameCounter = 0;
   private flashCanvas: HTMLCanvasElement | null = null;
+  private walkCanvas: HTMLCanvasElement | null = null;
+  gaitClock = 0;               // frames andando (negativo = pra trás): o relógio da passada; zera quando para
 
   constructor(public assets: FighterAssets, x: number, facing: 1 | -1, public playerIndex: number) {
     this.x = x; this.facing = facing;
@@ -94,6 +128,7 @@ export class Fighter {
   setState(s: State) {
     if (this.state === s) return;
     this.state = s; this.stateFrame = 0;
+    if (s !== 'walking') this.gaitClock = 0;
     if (s === 'win') this.animTime = 0;                  // a pose de vitória é uma sequência: começa do primeiro quadro
     if (s !== 'attacking' && this.victim) {            // interrompido no meio do agarrão: solta a vítima
       const v = this.victim; this.victim = null;
@@ -334,8 +369,8 @@ export class Fighter {
     const inertia = this.def.stats.inertia ?? 0, moving = ctrl.held(fwd) || ctrl.held(back);
     this.ramp = moving ? this.ramp + 1 : 0;
     const sp = this.def.stats.speed * (inertia ? Math.min(1, 0.15 + 0.85 * this.ramp / inertia) : 1);
-    if (ctrl.held(fwd)) { this.x += WALK_SPEED * sp * this.facing; this.setState('walking'); this.vx = 1; }
-    else if (ctrl.held(back)) { this.x -= BACK_SPEED * sp * this.facing; this.setState('walking'); this.vx = -1; }
+    if (ctrl.held(fwd)) { this.x += WALK_SPEED * sp * this.facing; this.setState('walking'); this.vx = 1; this.gaitClock = Math.max(0, this.gaitClock) + 1; }
+    else if (ctrl.held(back)) { this.x -= BACK_SPEED * sp * this.facing; this.setState('walking'); this.vx = -1; this.gaitClock = Math.min(0, this.gaitClock) - 1; }
     else { this.setState('idle'); this.vx = 0; }
   }
 
@@ -480,6 +515,7 @@ export class Fighter {
     switch (this.state) {
       case 'idle': return byFps('idle');
       case 'walking': {
+        if (!this.def.stats.inertia) return { frame: F[A.walk.frames[0]], anchor: 'feet' };    // a passada sai por código (gaitOf)
         const a = A.walk; const fps = (a.fps ?? 8) * Math.max(0.75, Math.min(1.35, this.def.stats.speed));   // quem é ágil dá passos mais rápidos
         const back = (this.vx < 0);
         const idx = Math.floor(this.animTime * fps / 60) % a.frames.length;
@@ -547,34 +583,45 @@ export class Fighter {
     ctx.save();
     ctx.translate(this.x, fy);
     ctx.scale(this.facing, 1);
-    // Passada: os boards trazem 3 quadros de perna aberta quase iguais. O passo de verdade sai por código: perna ABERTA (quadro 2),
-    // pernas JUNTAS na passagem (quadro 3), perna aberta de novo (quadro 4)... As pernas fecham e abrem em direção ao eixo do corpo
-    // (a largura vai afinando do quadril até os pés), o corpo sobe na passagem e desce na pisada, e inclina pro lado que anda.
     this.drawShield(ctx, false);
-    let spread = 1;
-    if (this.state === 'walking' && !this.def.stats.inertia) {
-      const a = this.def.anims.walk, fps = (a.fps ?? 8) * Math.max(0.75, Math.min(1.35, this.def.stats.speed));
-      const t = this.animTime * fps / 60, heavy = Math.min(1.4, this.def.stats.weight);
-      spread = 0.5 + 0.5 * Math.cos(Math.PI * (t - 0.5));                       // 1 = perna aberta (meio dos quadros pares), 0 = pernas juntas
-      ctx.translate(0, -(1 - spread) * 4 * s / heavy);
-      ctx.rotate((this.vx < 0 ? -1 : 1) * 0.03 + Math.sin(Math.PI * t) * 0.012);
-    }
+    const gait = this.state === 'walking' && !this.def.stats.inertia ? gaitOf(this.assets.sheet, frame) : null;
+    if (gait) ctx.rotate((this.gaitClock < 0 ? -1 : 1) * 0.02);               // inclina de leve pro lado que anda
     if (this.hue) ctx.filter = `hue-rotate(${this.hue}deg)`;
     const src: [HTMLImageElement | HTMLCanvasElement, number, number] = this.flash > 0 ? [this.flashed(frame), 0, 0] : [this.assets.sheet, frame.sx, frame.sy];
-    if (spread < 0.999) {
-      const hip = Math.round(frame.sh - Math.min(frame.sh, frame.ay) * 0.46), low = frame.sh - hip, N = 12, close = 0.4 * (1 - spread);
-      ctx.drawImage(src[0], src[1], src[2], frame.sw, hip, -ax * s, -frame.ay * s, dw, hip * s);
-      for (let k = 0; k < N; k++) {                                              // faixas do quadril aos pés, cada uma um pouco mais fechada que a de cima
-        const y0 = hip + Math.floor(low * k / N), y1 = hip + Math.floor(low * (k + 1) / N); if (y1 <= y0) continue;
-        const kx = 1 - close * ((k + 1) / N) ** 1.3;
-        ctx.drawImage(src[0], src[1], src[2] + y0, frame.sw, y1 - y0, -ax * s * kx, (-frame.ay + y0) * s, dw * kx, (y1 - y0) * s + 0.6);
-      }
+    if (gait) {
+      const { c, padX, padTop } = this.walkPose(src, frame, gait, s);
+      ctx.drawImage(c, -(ax + padX) * s, -(frame.ay + padTop) * s, c.width * s, c.height * s);
     } else ctx.drawImage(src[0], src[1], src[2], frame.sw, frame.sh, -ax * s, -frame.ay * s, dw, dh);
     this.drawBeam(ctx, s);
     ctx.filter = 'none'; ctx.setTransform(ctx.getTransform()); this.drawShield(ctx, true);
     ctx.restore();
 
     if (debug) this.drawDebug(ctx, frame);
+  }
+
+  /** Monta a pose da passada num canvas à parte (1 px da arte = 1 px), desenhado depois de uma vez (o filtro de cor do clone
+   *  vale pra pose inteira). Fase: 0 = pernas abertas (a arte), 0,5 = passagem (pés juntos embaixo do corpo), 1 = abertas de novo. */
+  private walkPose(src: [HTMLImageElement | HTMLCanvasElement, number, number], fr: FrameDef, g: Gait, s: number) {
+    const W = fr.sw, H = fr.sh, padX = Math.ceil(g.d) + 2, padTop = Math.ceil(H * 0.05) + 2;
+    const c = this.walkCanvas ?? (this.walkCanvas = document.createElement('canvas'));
+    if (c.width !== W + 2 * padX || c.height !== H + padTop) { c.width = W + 2 * padX; c.height = H + padTop; }
+    const x = c.getContext('2d')!; x.imageSmoothingEnabled = false; x.clearRect(0, 0, c.width, c.height);
+    const back = this.gaitClock < 0, v = (back ? BACK_SPEED : WALK_SPEED) * this.def.stats.speed;
+    const f = Math.min(3.4 / 60, Math.max(1.4 / 60, v / (2 * g.d * s)));      // passos por frame: o pé de apoio acompanha o chão
+    let ph = (Math.abs(this.gaitClock) * f) % 1; if (back) ph = 1 - ph;          // pra trás: o mesmo passo de trás pra frente
+    const heavy = this.def.stats.weight >= 1.3 ? 0.6 : 1;
+    let sF: number, sB: number, liftF: number, liftB: number;
+    if (ph < 0.5) { const p = ph / 0.5; sF = -g.d * p; sB = g.d * p; liftF = 0; liftB = Math.sin(Math.PI / 2 * p); }
+    else { const p = (ph - 0.5) / 0.5; sF = -g.d * (1 - p); sB = g.d * (1 - p); liftF = Math.cos(Math.PI / 2 * p); liftB = 0; }
+    const low = Math.max(1, g.base - g.hip), L = low * 0.08 * heavy, bob = Math.round(Math.sin(Math.PI * ph) * H * 0.02 * heavy);
+    const pv = Math.round(g.pivot), [img, sx, sy] = src;
+    x.drawImage(img, sx, sy, W, g.hip, padX, padTop - bob, W, g.hip);          // do quadril pra cima: sobe na passagem
+    for (let y = g.hip; y < H; y += 2) {                                       // pernas: faixas de 2 linhas, a de trás primeiro
+      const h = Math.min(2, H - y), k = Math.min(1, (y - g.hip) / low), rise = -bob * (1 - k);
+      x.drawImage(img, sx, sy + y, pv, h, padX + Math.round(sB * k), padTop + y + Math.round(rise - L * liftB * k), pv, h + 1);
+      x.drawImage(img, sx + pv, sy + y, W - pv, h, padX + pv + Math.round(sF * k), padTop + y + Math.round(rise - L * liftF * k), W - pv, h + 1);
+    }
+    return { c, padX, padTop };
   }
 
   /** Raio contínuo, no espaço local do lutador (x pra frente). Meio por baixo, início por cima (ele some na emenda), estouro no fim. */
