@@ -306,7 +306,7 @@ body.online.room-open .room { display: block; }
 @media (max-width: 720px) and (orientation: portrait) {
   body { padding: 0; }
   .cabinet { --b: clamp(48px, 15vw, 72px); width: 100vw; min-height: 100dvh; display: flex; flex-direction: column; border-radius: 0; padding: 0 6px calc(8px + env(safe-area-inset-bottom)); }
-  .marquee { grid-template-columns: 1fr auto; margin: 0 -6px; padding: 8px 10px; border-radius: 0; } .speaker { display: none; } .brand img { height: 30px; }
+  .marquee { grid-template-columns: 1fr auto; margin: 0 -6px; padding: 8px 10px; border-radius: 0; } .speaker { display: none; } .brand span { font-size: 17px; } .brand small { display: none; }
   .stage-row { padding-top: 6px; flex-direction: column; } .bezel { padding: 5px; border-radius: 10px; } .bezel::after { inset: 5px; }
   .deck { flex: 1; margin: 8px -6px 0; border-radius: 0; padding: 12px 10px 26px; grid-template-columns: auto 1fr; grid-template-rows: auto 1fr; align-items: end; gap: 6px; box-shadow: inset 0 2px 0 rgba(255,255,255,.22); }
   .pills { grid-column: 1 / -1; grid-row: 1; justify-content: center; gap: 28px; } .stick-zone { grid-row: 2; grid-column: 1; } .pad { grid-row: 2; grid-column: 2; } .coin { display: none; } .pill { flex-direction: row; } .pill u { width: 30px; height: 30px; }
@@ -501,6 +501,5 @@ html, body { overscroll-behavior: none; touch-action: manipulation; -webkit-touc
 .rng-dots { display: inline-flex; gap: 2px; } .rng-dots i { width: 9px; height: 5px; background: rgba(255,255,255,.18); } .rng-dots i.on { background: var(--rc); box-shadow: 0 0 6px var(--rc); }
 .sf2-side .sf2-range { min-height: 14px; display: flex; justify-content: center; }
 
-/* logo oficial (Personagens/intro/logo-oficial.png, fundo recortado): tela de título e letreiro do gabinete */
+/* logo oficial (Personagens/intro/logo-oficial.png, fundo recortado): tela de título (o letreiro do console fica escrito, pedido do dono) */
 .logo { margin: 0; } .logo-img { display: block; width: min(560px, 62vw); height: auto; filter: drop-shadow(0 6px 0 rgba(0,0,0,.55)) drop-shadow(0 0 26px rgba(255,120,0,.35)); }
-.brand img { display: block; height: 42px; width: auto; filter: drop-shadow(0 0 10px rgba(255,150,40,.45)); }

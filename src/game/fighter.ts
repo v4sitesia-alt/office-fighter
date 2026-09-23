@@ -602,23 +602,25 @@ export class Fighter {
   /** Monta a pose da passada num canvas à parte (1 px da arte = 1 px), desenhado depois de uma vez (o filtro de cor do clone
    *  vale pra pose inteira). Fase: 0 = pernas abertas (a arte), 0,5 = passagem (pés juntos embaixo do corpo), 1 = abertas de novo. */
   private walkPose(src: [HTMLImageElement | HTMLCanvasElement, number, number], fr: FrameDef, g: Gait, s: number) {
-    const W = fr.sw, H = fr.sh, padX = Math.ceil(g.d) + 2, padTop = Math.ceil(H * 0.05) + 2;
+    const A = 1.15, o = g.d * (A - 1);                                         // o passo abre 15% além da pose da arte
+    const W = fr.sw, H = fr.sh, padX = Math.ceil(g.d * A) + 2, padTop = Math.ceil(H * 0.05) + 2;
     const c = this.walkCanvas ?? (this.walkCanvas = document.createElement('canvas'));
     if (c.width !== W + 2 * padX || c.height !== H + padTop) { c.width = W + 2 * padX; c.height = H + padTop; }
     const x = c.getContext('2d')!; x.imageSmoothingEnabled = false; x.clearRect(0, 0, c.width, c.height);
     const back = this.gaitClock < 0, v = (back ? BACK_SPEED : WALK_SPEED) * this.def.stats.speed;
-    const f = Math.min(3.4 / 60, Math.max(1.4 / 60, v / (2 * g.d * s)));      // passos por frame: o pé de apoio acompanha o chão
+    const f = Math.min(4 / 60, Math.max(1.6 / 60, 1.3 * v / (2 * g.d * A * s)));    // passos por frame: o pé de apoio acompanha o chão, com 30% a mais de ritmo (passo mais vivo, ~13% mais rápido)
     let ph = (Math.abs(this.gaitClock) * f) % 1; if (back) ph = 1 - ph;          // pra trás: o mesmo passo de trás pra frente
     const heavy = this.def.stats.weight >= 1.3 ? 0.6 : 1;
     let sF: number, sB: number, liftF: number, liftB: number;
-    if (ph < 0.5) { const p = ph / 0.5; sF = -g.d * p; sB = g.d * p; liftF = 0; liftB = Math.sin(Math.PI / 2 * p); }
-    else { const p = (ph - 0.5) / 0.5; sF = -g.d * (1 - p); sB = g.d * (1 - p); liftF = Math.cos(Math.PI / 2 * p); liftB = 0; }
+    if (ph < 0.5) { const p = ph / 0.5; sF = o - (g.d + o) * p; sB = -o + (g.d + o) * p; liftF = 0; liftB = Math.sin(Math.PI / 2 * p); }
+    else { const p = (ph - 0.5) / 0.5; sF = -g.d + (g.d + o) * p; sB = g.d - (g.d + o) * p; liftF = Math.cos(Math.PI / 2 * p); liftB = 0; }
     const low = Math.max(1, g.base - g.hip), L = low * 0.08 * heavy, bob = Math.round(Math.sin(Math.PI * ph) * H * 0.02 * heavy);
     const pv = Math.round(g.pivot), [img, sx, sy] = src;
     x.drawImage(img, sx, sy, W, g.hip, padX, padTop - bob, W, g.hip);          // do quadril pra cima: sobe na passagem
     for (let y = g.hip; y < H; y += 2) {                                       // pernas: faixas de 2 linhas, a de trás primeiro
       const h = Math.min(2, H - y), k = Math.min(1, (y - g.hip) / low), rise = -bob * (1 - k);
-      x.drawImage(img, sx, sy + y, pv, h, padX + Math.round(sB * k), padTop + y + Math.round(rise - L * liftB * k), pv, h + 1);
+      const gap = Math.min(W - pv, Math.max(0, Math.ceil((sF - sB) * k)));      // abrindo além da arte: a de trás estica e cobre a fresta (short, saia)
+      x.drawImage(img, sx, sy + y, pv + gap, h, padX + Math.round(sB * k), padTop + y + Math.round(rise - L * liftB * k), pv + gap, h + 1);
       x.drawImage(img, sx + pv, sy + y, W - pv, h, padX + pv + Math.round(sF * k), padTop + y + Math.round(rise - L * liftF * k), W - pv, h + 1);
     }
     return { c, padX, padTop };

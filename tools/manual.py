@@ -1151,7 +1151,7 @@ def cabinet():
     pad = ''.join(f'<div class="cd-b cd-{L}">{BT(L)}<small>{BTN[L][3]}</small></div>' for L in 'GHJVB')
     pad += f'<div class="cd-b cd-T duo">{BT("T")}<small>TROCA</small><em>SÓ NAS DUPLAS</em></div>'
     return f'''<figure class="cab" aria-label="O gabinete do jogo, como aparece em volta da tela">
- <div class="cab-mq"><span class="cab-logo"><img src="intro/logo-oficial-p.webp" width="360" height="183" alt="V4 Fighters – The Tournament" loading="lazy" decoding="async"></span><span class="cab-chips"><i>INSTALAR APP</i><i>TELA CHEIA</i><i>SALA</i><i>MANUAL</i><i class="snd">🔊</i></span><span class="co c1">1</span></div>
+ <div class="cab-mq"><span class="cab-logo">V4 FIGHTERS<small>THE TOURNAMENT</small></span><span class="cab-chips"><i>INSTALAR APP</i><i>TELA CHEIA</i><i>SALA</i><i>MANUAL</i><i class="snd">🔊</i></span><span class="co c1">1</span></div>
  <div class="cab-scr" style="background-image:url({scr})">{spr(DEMO, 'idle', 'em guarda', 'px s1')}{spr(RIVAL, 'idle', 'em guarda', 'px s2 flip')}<span class="co c2">2</span></div>
  <div class="cab-deck">
   <div class="cd-stick"><span class="k ks big">{_svg(_sym('sn', lambda: _sym_stick('n')), STICK_N, 'manche', (80, 80))}</span><b>MOVER</b><span class="co c3">3</span></div>
@@ -2295,7 +2295,6 @@ kbd{display:inline-block;min-width:1.9em;padding:2px 6px 1px;font:700 13px/1.3 v
 .cab{margin:0 auto;max-width:860px;padding:14px;background:linear-gradient(#3b4759,#2a3443);border:4px solid #000;border-radius:18px;box-shadow:8px 8px 0 #000}
 .cab figcaption{margin-top:12px;font:600 15px/1.45 var(--txt);color:#cfd8ee}
 .cab-mq{position:relative;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;background:linear-gradient(#141a26,#0b0f18);border:3px solid #000;border-radius:10px}
-.cab-logo img{display:block;height:40px;width:auto}
 .mups{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 4px}.mup{display:flex;align-items:center;gap:8px;padding:6px 8px;border:3px solid #000;box-shadow:3px 3px 0 #000;font:14px/1.25 var(--cond);background:#fff}
 .mup img{width:44px;height:44px;border:2px solid #000;flex:none}.mup b{display:block;font:11px var(--pix);letter-spacing:1px}.mup.up b{color:#138a3e}.mup.down b{color:#c4122f}
 @media (max-width:560px){.mups{grid-template-columns:1fr}}
