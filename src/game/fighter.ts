@@ -36,6 +36,7 @@ export class Fighter {
   move: MoveDef | null = null;
   moveName: MoveName | null = null;
   hasHit = false;
+  armorLeft = 0;               // armadura que sobra neste golpe (def.armor, recarrega a cada golpe começado)
   air = false;                 // golpe aéreo em andamento
   lowAttack = false;           // golpe agachado (usa hurtbox baixa)
   sub: DiveSub | ThrowSub | null = null;  // sub-fase do mergulho / agarrão
@@ -125,11 +126,11 @@ export class Fighter {
         this.handleNeutral(ctrl, other);
         break;
       case 'jumping':
-        this.physicsAir();
+        this.physicsAir(this.airSlow);
         if (this.grounded) { this.land(); break; }
         if (ctrl.pressed('up') && !this.doubleJumped) {   // pulo duplo: um impulso extra no ar, com direção nova
           const l = ctrl.held('left'), r = ctrl.held('right');
-          this.doubleJumped = true; this.vy = JUMP_VY * 0.85 * (this.def.stats.jump ?? 1); if (l !== r) this.vx = JUMP_VX * (r ? 1 : -1);
+          this.doubleJumped = true; this.vy = JUMP_VY * 0.85 * (this.def.stats.jump ?? 1) * this.airSlow; if (l !== r) this.vx = JUMP_VX * this.airSlow * (r ? 1 : -1);
           audio.sfx('jump');
         }
         if (this.buffered && !this.airAttackUsed) {
@@ -167,8 +168,11 @@ export class Fighter {
     this.x = Math.max(ARENA_MIN, Math.min(ARENA_MAX, this.x));
   }
 
-  private physicsAir() {
-    this.vy += GRAVITY;
+  /** Pulo em câmera lenta (stats.air < 1): a gravidade cai com o quadrado e o impulso com o fator, então a altura e a distância
+   *  do pulo são as mesmas, só que ele demora mais no ar. Vale pro pulo e pro golpe aéreo; apanhar e cair continua normal. */
+  private get airSlow() { return this.def.stats.air ?? 1; }
+  private physicsAir(slow = 1) {
+    this.vy += GRAVITY * slow * slow;
     this.y += this.vy;
     this.x += this.vx;
   }
@@ -229,7 +233,7 @@ export class Fighter {
     }
 
     if (this.air) {
-      this.physicsAir();
+      this.physicsAir(this.airSlow);
       if (this.grounded) { this.lag = m.landingLag ?? 4; this.land(); return; }
       if (this.stateFrame >= total) this.setState('jumping'); // acabou no ar: continua caindo
       return;
@@ -322,8 +326,8 @@ export class Fighter {
     }
     if (down) { this.setState('crouching'); this.vx = 0; return; }
     if (ctrl.held('up')) {
-      this.vy = JUMP_VY * (this.def.stats.jump ?? 1);
-      this.vx = ctrl.held(fwd) ? JUMP_VX * this.facing : ctrl.held(back) ? -JUMP_VX * this.facing : 0;
+      this.vy = JUMP_VY * (this.def.stats.jump ?? 1) * this.airSlow;
+      this.vx = (ctrl.held(fwd) ? JUMP_VX * this.facing : ctrl.held(back) ? -JUMP_VX * this.facing : 0) * this.airSlow;
       this.y = -0.01; this.airAttackUsed = false; this.doubleJumped = false;
       this.setState('jumping'); audio.sfx('jump'); return;
     }
@@ -344,7 +348,7 @@ export class Fighter {
     const crouched = this.state === 'crouching' || (this.state === 'blocking' && this.crouchBlock);
     if (name === 'release') { this.releaseCount = this.shield?.coins ?? 0; this.shield = null; if (!this.releaseCount) return false; }
     this.setState('attacking'); this.stateFrame = 0;     // encadeado: já estava atacando, o relógio do golpe recomeça
-    this.move = m; this.moveName = name; this.hasHit = false; this.beamStop = null;
+    this.move = m; this.moveName = name; this.hasHit = false; this.beamStop = null; this.armorLeft = this.def.armor ?? 0;
     this.air = wasAir || m.kind === 'air';
     this.lowAttack = m.kind === 'low' || (crouched && !wasAir);
     if (!wasAir) this.vx = 0;
@@ -372,9 +376,16 @@ export class Fighter {
     const power = magic ? attacker.def.stats.magic ?? 1 : attacker.def.stats.power;
     const tough = 1 + 0.3 * (this.def.stats.weight - 1);                       // PESO também amortece: 1,5 leva ~13% menos, 0,85 leva ~5% mais
     const combo = Math.max(0.6, 1 - 0.1 * Math.max(0, this.comboTaken - 1));   // 3º acerto seguido em diante vale menos (piso de 60%)
-    if (!blocked) this.comboTaken++;
-    const dmg = (blocked ? h.damage * power * 0.25 : h.damage * power * combo) / tough * DAMAGE_SCALE;   // DAMAGE_SCALE: a vida dura mais
+    // armadura (o Xablau): no preparo e no golpe, aguenta o acerto sem parar o próprio ataque e leva 25% menos; agarrão passa
+    const armored = !blocked && this.armorLeft > 0 && this.state === 'attacking' && !this.air && (this.phase === 'startup' || this.phase === 'active');
+    if (!blocked && !armored) this.comboTaken++;
+    const dmg = (blocked ? h.damage * power * 0.25 : h.damage * power * combo) / tough * DAMAGE_SCALE * (armored ? 0.75 : 1);   // DAMAGE_SCALE: a vida dura mais
     this.life = Math.max(0, this.life - dmg);
+    if (armored && this.life > 0) {
+      this.armorLeft--; this.flash = 5;
+      this.meter = Math.min(100, this.meter + dmg * 1.1 * (this.def.meterRate ?? 1));
+      return;
+    }
     const kb = (blocked ? h.knockback * 0.5 : h.knockback) / this.def.stats.weight;
     this.vx = kb * dir;
     if (!blocked) this.facing = dir === 1 ? -1 : 1;

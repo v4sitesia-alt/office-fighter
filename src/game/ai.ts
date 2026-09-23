@@ -45,7 +45,8 @@ export class Ai {
     if (!enabled) return;
     const range = this.me.def.range, base = PROFILES[this.difficulty];
     // de perto: pressiona (ataca mais, recua menos, pula pra dentro mais). As outras distâncias usam o perfil como está
-    const p = range === 'perto' ? { ...base, attackChance: Math.min(0.95, base.attackChance * 1.2), retreatChance: base.retreatChance * 0.4, jumpChance: base.jumpChance * 1.4 } : base;
+    let p = range === 'perto' ? { ...base, attackChance: Math.min(0.95, base.attackChance * 1.2), retreatChance: base.retreatChance * 0.4, jumpChance: base.jumpChance * 1.4 } : base;
+    if ((this.me.def.stats.air ?? 1) < 0.9) p = { ...p, jumpChance: p.jumpChance * 0.3 };   // pulo em câmera lenta (Xablau): quase não pula, apanharia no ar
     if (this.queue.length) {
       const pl = this.queue[0];
       pl.buttons.forEach((b) => this.ctrl.press(b));

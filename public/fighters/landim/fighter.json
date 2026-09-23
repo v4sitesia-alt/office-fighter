@@ -19,8 +19,8 @@
  "scale": 0.98,
  "stats": {
   "power": 0.95,
-  "speed": 1.05,
-  "magic": 1.25,
+  "speed": 1.15,
+  "magic": 1.3,
   "weight": 0.95
  },
  "hurtbox": {
@@ -214,9 +214,9 @@
      34
     ]
    },
-   "startup": 16,
+   "startup": 12,
    "active": 8,
-   "recovery": 24,
+   "recovery": 20,
    "damage": 9.0,
    "hitstun": 22,
    "blockstun": 16,
@@ -427,8 +427,8 @@
    "startup": 11,
    "active": 4,
    "recovery": 17,
-   "damage": 16.9,
-   "hitstun": 22,
+   "damage": 20.8,
+   "hitstun": 34,
    "blockstun": 14,
    "hitbox": {
     "x": 0,
@@ -443,7 +443,7 @@
    "projectile": {
     "x": 95,
     "y": -120,
-    "speed": 9,
+    "speed": 13,
     "lifetime": 100,
     "style": "ball",
     "color": "#ffe95a",
@@ -489,11 +489,11 @@
     "x": 102,
     "y": -116,
     "speed": 15,
-    "lifetime": 80,
+    "lifetime": 110,
     "sprite": "claquete.png",
     "scale": 0.9,
     "boomerang": true,
-    "hits": 4,
+    "hits": 5,
     "rehit": 9,
     "hitbox": {
      "x": -45,

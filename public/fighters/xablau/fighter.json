@@ -18,10 +18,12 @@
  "stage": "xablau",
  "scale": 1.15,
  "stats": {
-  "power": 1.22,
-  "speed": 0.75,
-  "magic": 1.0,
-  "weight": 1.4
+  "power": 1.35,
+  "speed": 0.62,
+  "magic": 0.75,
+  "weight": 1.45,
+  "jump": 0.9,
+  "air": 0.68
  },
  "hurtbox": {
   "x": -42,
@@ -125,10 +127,10 @@
      0
     ]
    },
-   "startup": 5,
-   "active": 3,
-   "recovery": 8,
-   "damage": 7.8,
+   "startup": 8,
+   "active": 4,
+   "recovery": 12,
+   "damage": 9.1,
    "hitstun": 12,
    "blockstun": 8,
    "hitbox": {
@@ -153,10 +155,10 @@
      0
     ]
    },
-   "startup": 8,
+   "startup": 11,
    "active": 4,
-   "recovery": 12,
-   "damage": 13.0,
+   "recovery": 16,
+   "damage": 14.3,
    "hitstun": 15,
    "blockstun": 10,
    "hitbox": {
@@ -181,10 +183,10 @@
      0
     ]
    },
-   "startup": 13,
+   "startup": 17,
    "active": 5,
-   "recovery": 20,
-   "damage": 20.8,
+   "recovery": 24,
+   "damage": 23.4,
    "hitstun": 24,
    "blockstun": 14,
    "hitbox": {
@@ -209,10 +211,10 @@
      20
     ]
    },
-   "startup": 5,
+   "startup": 7,
    "active": 8,
-   "recovery": 5,
-   "damage": 9.1,
+   "recovery": 6,
+   "damage": 10.4,
    "hitstun": 14,
    "blockstun": 10,
    "overhead": true,
@@ -239,10 +241,10 @@
      22
     ]
    },
-   "startup": 6,
+   "startup": 8,
    "active": 10,
-   "recovery": 5,
-   "damage": 13.0,
+   "recovery": 6,
+   "damage": 15.6,
    "hitstun": 16,
    "blockstun": 12,
    "overhead": true,
@@ -269,10 +271,10 @@
      24
     ]
    },
-   "startup": 8,
-   "active": 8,
+   "startup": 10,
+   "active": 10,
    "recovery": 8,
-   "damage": 18.2,
+   "damage": 20.8,
    "hitstun": 22,
    "blockstun": 14,
    "overhead": true,
@@ -301,10 +303,10 @@
      25
     ]
    },
-   "startup": 5,
-   "active": 3,
-   "recovery": 9,
-   "damage": 6.5,
+   "startup": 8,
+   "active": 4,
+   "recovery": 12,
+   "damage": 7.8,
    "hitstun": 11,
    "blockstun": 8,
    "low": true,
@@ -331,10 +333,10 @@
      28
     ]
    },
-   "startup": 8,
+   "startup": 11,
    "active": 6,
-   "recovery": 14,
-   "damage": 11.7,
+   "recovery": 17,
+   "damage": 13.0,
    "hitstun": 18,
    "blockstun": 12,
    "low": true,
@@ -362,10 +364,10 @@
      26
     ]
    },
-   "startup": 11,
-   "active": 4,
-   "recovery": 18,
-   "damage": 16.9,
+   "startup": 13,
+   "active": 5,
+   "recovery": 20,
+   "damage": 19.5,
    "hitstun": 20,
    "blockstun": 14,
    "low": true,
@@ -456,5 +458,6 @@
    "name": "LÍNGUA DE FOGO"
   }
  },
- "range": "perto"
+ "range": "perto",
+ "armor": 1
 }

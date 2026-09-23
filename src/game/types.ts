@@ -136,13 +136,14 @@ export interface FighterDef {
   id: string; name: string; role: string; tagline?: string; bio?: string; side?: 'heroi' | 'neutro' | 'vilao'; secret?: boolean; gender?: 'f' | 'm';
   meterRegen?: number;          // barra de especial que se recarrega sozinha (por frame)
   meterRate?: number;           // a barra enche mais rápido batendo e apanhando (quem luta de longe vive de magia)
+  armor?: number;               // armadura: quantos golpes aguenta sem parar o próprio ataque (preparo e golpe; na recuperação não)
   range?: 'perto' | 'medio' | 'longe';   // onde ele luta melhor (tools/balance.py): muda o jogo da CPU (ai.ts) e aparece na escolha
   colors: { primary: string; secondary: string };
   origin?: { region: string; city: string; lon: number; lat: number; label?: 'left' | 'right' | 'above' | 'below' };
   stage?: string;               // public/stages/<stage>.png (cenário do lutador)
   morph?: string;               // metamorfose: no 2º round vira este outro lutador (public/fighters/<morph>), com a cena da transformação
   scale: number;
-  stats: { speed: number; power: number; weight: number; magic?: number; jump?: number; inertia?: number }   // inertia = frames pra máquina pesada pegar a velocidade cheia ao andar;   // força = power, agilidade = speed, poder = magic
+  stats: { speed: number; power: number; weight: number; magic?: number; jump?: number; inertia?: number; air?: number }   // air = tempo no ar do pulo: < 1 = pulo em câmera lenta (mesma altura e distância)   // inertia = frames pra máquina pesada pegar a velocidade cheia ao andar;   // força = power, agilidade = speed, poder = magic
   hurtbox: Box; crouchHurtbox: Box;
   pushbox: { x: number; w: number };
   anims: Record<string, AnimDef>;

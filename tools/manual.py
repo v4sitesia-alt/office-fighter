@@ -1667,6 +1667,13 @@ def card(fid):
     if fid in LOCKED:
         how = f'vença o {tname(BOSSES[-1])} no arcade pra liberar' if fid in BY_ARCADE and BOSSES else 'ainda não dá pra jogar com ele'
         badges += f'<span class="fc-badge lk">{ICON("lock", "travado", "kc")} TRAVADO · {how}</span>'
+    # traços que mudam o jeito de jogar (tools/balance.py): armadura, pulo em câmera lenta, barra que enche sozinha
+    if d.get('armor'):
+        badges += f'<span class="fc-badge tr">ARMADURA · aguenta {d["armor"]} golpe no meio do próprio golpe (não na recuperação) e leva menos dano nele</span>'
+    if d['stats'].get('air', 1) < 1:
+        badges += '<span class="fc-badge tr">PULO LENTO · pesado, fica mais tempo no ar</span>'
+    if d.get('meterRegen'):
+        badges += '<span class="fc-badge tr">BARRA QUE ENCHE SOZINHA</span>'
     aka = f'<span class="fc-aka">{html.escape(AKA[fid])}</span>' if fid in AKA else ''
     tag = plain(d.get('tagline', ''))
     if fid in GRUNTS and GRUNTS[fid]:
@@ -1720,7 +1727,7 @@ def s_lutadores():
  <li><b class="tagb">AGILIDADE</b><span>a velocidade de andar.</span></li>
  <li><b class="tagb">PODER</b><span>quanto batem a magia, o super e tudo o que voa{f" (inclusive o golpe longo de quem atira: {lista(shooters)})" if shooters else ""}.</span></li>
  <li><b class="tagb">PESO</b><span>quanto mais pesado, menos é empurrado e menos dano leva.</span></li>
- <li><b class="tagb">DISTÂNCIA</b><span>onde ele luta melhor. <b>DE PERTO</b>: porrada forte, FORÇA acima do PODER. <b>MEIA DISTÂNCIA</b>: vive do golpe longo, tudo equilibrado. <b>DE LONGE</b>: magia e tiro, PODER acima da FORÇA, e soco e chute tiram pouco. A CPU joga cada um do mesmo jeito.</span></li>
+ <li><b class="tagb">DISTÂNCIA</b><span>onde ele luta melhor. <b>DE PERTO</b>: porrada forte, FORÇA acima do PODER. <b>MEIA DISTÂNCIA</b>: vive do golpe longo, tudo equilibrado. <b>DE LONGE</b>: magia e tiro, PODER acima da FORÇA, soco e chute tiram pouco, e a barra enche mais rápido batendo e apanhando. A CPU joga cada um do mesmo jeito.</span></li>
  <li><b class="tagb">BARRINHA</b><span>a mesma da tela de escolha: enche em 1,35 e fica vazia em 0,70. Acima ou abaixo disso ela não muda; o número ao lado é o de verdade.</span></li>
  <li><b class="tagb">GOLPES</b><span>MAGIA gasta meia barra; SUPER, a barra cheia (veja a {fase('barra')}). FRENTE é o manche na direção do adversário (veja a {fase('controle')}).</span></li>
  <li><b class="tagb">DANO</b><span>quanto o golpe inteiro tira da vida (100) de quem fica parado, sem defender, com peso 1,00. Nos golpes de vários acertos já conta o desconto do combo.</span></li></ul></div>'''
@@ -2522,7 +2529,7 @@ table{width:100%;border-collapse:collapse}
 .fc-body{padding:18px 20px 20px;min-width:0}
 .fc-badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
 .fc-badge{display:inline-flex;align-items:center;gap:4px;font:700 14px/1.2 var(--cond);letter-spacing:.5px;text-transform:uppercase;padding:5px 9px;border:3px solid #000;box-shadow:3px 3px 0 #000}
-.fc-badge.st{background:var(--y);color:#000;white-space:nowrap}.fc-badge.lk{background:#16141f;color:var(--y);padding-left:4px}.fc-badge .kc svg{width:20px;height:20px}
+.fc-badge.st{background:var(--y);color:#000;white-space:nowrap}.fc-badge.tr{background:#fff;color:#000;border-left:9px solid var(--c)}.fc-badge.lk{background:#16141f;color:var(--y);padding-left:4px}.fc-badge .kc svg{width:20px;height:20px}
 .fc-tag{margin:0;font:800 italic 21px/1.2 var(--cond);color:var(--ink)}
 .fc-tag.nar{font:700 16px/1.3 var(--cond);letter-spacing:.8px;text-transform:uppercase;color:var(--mute)}
 .fc-grunt{margin:4px 0 0;font:400 italic 26px/1.1 var(--logo);color:#3a7d0c;letter-spacing:1px}.fc-grunt small{font:700 13px var(--cond);color:var(--mute);letter-spacing:.4px;margin-left:6px}

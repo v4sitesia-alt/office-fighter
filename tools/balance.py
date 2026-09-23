@@ -35,6 +35,15 @@ ALVO = {'leo': 56, 'mundim': 56, 'crm': 52, 'dede': 54}
 DIST = {'michael': 'perto', 'eneias': 'perto', 'dias': 'perto', 'xablau': 'perto', 'laura': 'perto', 'santana': 'perto',
         'dede': 'medio', 'leo': 'medio', 'van': 'medio', 'mundim': 'medio', 'crm': 'medio',
         'edgard': 'longe', 'kevin': 'longe', 'landim': 'longe'}
+# Pulo: jump = altura (1 = normal), air = tempo no ar (< 1 = pulo em câmera lenta, mesma altura e distância). Xablau: pesado e lento no ar.
+PULO = {'xablau': {'jump': 0.9, 'air': 0.68}}
+# Armadura: quantos golpes aguenta sem parar o próprio ataque (no preparo e no golpe). Xablau: o monstro que não para.
+ARMADURA = {'xablau': 1}
+# Ajustes de golpe por lutador, pelo caminho no fighter.json (o que a ficha acima não cobre). Landim, a cineasta: o FLASH é luz
+# (tiro rápido) e cega (atordoa mais); a claquete voa mais longe antes de voltar e bate até 5 vezes.
+KIT = {'landim': {('special', 'projectile', 'speed'): 13, ('special', 'hitstun'): 34,
+                  ('super', 'projectile', 'lifetime'): 110, ('super', 'projectile', 'hits'): 5,
+                  ('long', 'startup'): 12, ('long', 'recovery'): 20}}          # PLANO SEQUÊNCIA mais ágil: segura a meia distância
 # Barra que enche sozinha (pontos por frame; 0,07 = 4,2 por segundo). Edgard: barra rápida (pedido de 2026-09-23).
 BARRA = {'edgard': 0.07}
 # Quem luta de longe vive de magia: a barra enche 35% mais rápido batendo e apanhando (meterRate).
@@ -53,10 +62,10 @@ FICHA = [
     ('michael',  1.10,  1.05,  0.95,  1.00, 'normal',   13,    27),
     ('eneias',   1.18,  0.85,  1.00,  1.30, 'firme',    13,    28),
     ('van',      0.92,  1.20,  1.10,  0.95, 'normal',   13,    6),           # raio contínuo: até 5 acertos + aura
-    ('landim',   0.95,  1.05,  1.25,  0.95, 'normal',   13,    7),           # claquete bumerangue: até 4 acertos
+    ('landim',   0.95,  1.15,  1.30,  0.95, 'normal',   16,    7),           # cineasta: anda pelo set (AGIL), FLASH que cega, claquete bumerangue: até 5 acertos (2026-09-24)
     ('crm',      1.30,  0.60,  1.30,  1.50, 'maquina',  15,    (8, 11, 10)),   # chuva de bombas: três estouros
     ('leo',      1.12,  1.12,  1.12,  1.10, 'normal',   13,    8),          # um pouco acima do Dedé: virou android · x3 drones
-    ('xablau',   1.22,  0.75,  1.00,  1.40, 'lento',    13,    28),
+    ('xablau',   1.35,  0.62,  0.75,  1.45, 'bruto',    13,    28),         # lento e fortíssimo estilo CRM, golpe demorado, pouco poder, pulo em câmera lenta (2026-09-24)
     ('mundim',   1.10,  1.00,  1.25,  1.10, 'normal',   13,    8),          # o hóspede: 3 mordidas de 4 + soltura de 8
     # dener (secreto) fica de fora: é apelão de propósito
 ]
@@ -70,6 +79,8 @@ RITMO = {
             'lowPunch': (5, 4, 3, 8), 'lowKick': (8, 7, 6, 13), 'lowHeavy': (13, 10, 4, 17)},
  'maquina': {'punch': (6, 8, 4, 12), 'kick': (9, 11, 4, 16), 'heavy': (15, 17, 5, 25), 'airPunch': (7, 7, 8, 6), 'airKick': (10, 8, 10, 6), 'airHeavy': (14, 10, 10, 8),
             'lowPunch': (5, 8, 4, 12), 'lowKick': (8, 11, 6, 17), 'lowHeavy': (12, 13, 5, 20)},
+ 'bruto':  {'punch': (7, 8, 4, 12), 'kick': (11, 11, 4, 16), 'heavy': (18, 17, 5, 24), 'airPunch': (8, 7, 8, 6), 'airKick': (12, 8, 10, 6), 'airHeavy': (16, 10, 10, 8),
+            'lowPunch': (6, 8, 4, 12), 'lowKick': (10, 11, 6, 17), 'lowHeavy': (15, 13, 5, 20)},   # o Xablau: demora como a máquina, bate mais que todo mundo
  'lento':  {'punch': (6, 5, 3, 8),  'kick': (10, 8, 4, 12), 'heavy': (16, 13, 5, 20), 'airPunch': (7, 5, 8, 5), 'airKick': (10, 6, 10, 5), 'airHeavy': (14, 8, 8, 8),
             'lowPunch': (5, 5, 3, 9), 'lowKick': (9, 8, 6, 14), 'lowHeavy': (13, 11, 4, 18)},
 }
@@ -96,6 +107,13 @@ def main(quiet=False):
     for fid, power, speed, magic, weight, ritmo, special, sup in FICHA:
         p = f'public/fighters/{fid}/fighter.json'; d = json.load(open(p)); M = d['moves']
         st = d['stats']; st.update({'speed': speed, 'power': power, 'weight': weight, 'magic': magic})
+        st.update(PULO.get(fid, {}))
+        for path, v in KIT.get(fid, {}).items():
+            node = M
+            for key in path[:-1]: node = node[key]
+            node[path[-1]] = v
+        if fid in ARMADURA: d['armor'] = ARMADURA[fid]
+        else: d.pop('armor', None)
         if fid in BARRA: d['meterRegen'] = BARRA[fid]
         else: d.pop('meterRegen', None)
         if fid in GANHO: d['meterRate'] = GANHO[fid]
