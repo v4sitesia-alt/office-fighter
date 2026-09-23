@@ -2,7 +2,7 @@
 """Confere as regras do enredo e das falas do V4 Fighters (pedidos do dono). Sai com erro se alguma regra quebrar.
 
   python3 tools/story-check.py          # tudo
-Regras: ano 2026 (nada de 199X); crawl curto; falas de par com 3 linhas dos dois lutadores do par; tamanho das falas;
+Regras: ano 2026 (nada de 199X); abertura curta (teaser de até 8 linhas com texto); falas de par com 3 linhas dos dois lutadores do par; tamanho das falas;
 o Xablau só grunhe; o Michael sem casamento; a Van fala da FILHA; o Kevin e o churrasco (com o sarro do Edgard);
 o Dener fora do manual; o laboratório do Xablau no 51º andar, logo abaixo do Mundim (nada de subsolo);
 bios e frases de efeito no tamanho que cabe nas telas."""
@@ -22,7 +22,9 @@ for path in ['src/data/story.json', 'src/ui/screens.ts', 'src/ui/intro.ts', 'too
 if S['crawl'] and S['crawl'][0].strip() != '2026.': err(f"crawl: a primeira linha deveria ser '2026.' (está '{S['crawl'][0]}')")
 for i, ln in enumerate(S['crawl']):
     if len(ln) > 28: err(f'crawl linha {i + 1}: {len(ln)} caracteres (máx 28): {ln}')
-if not 10 <= len(S['crawl']) <= 16: warn(f"crawl com {len(S['crawl'])} linhas (o ideal é 12 a 14)")
+# a abertura dura uns 12 s de texto rolando sobre a música: é só um teaser (pedido do dono, 2026-09-23)
+crawl_txt = [ln for ln in S['crawl'] if ln.strip()]
+if len(crawl_txt) > 8: err(f'crawl: {len(crawl_txt)} linhas com texto (máx 8): a abertura é um teaser breve, não dá tempo de ler muito texto')
 if len(S['acts']) != 4: warn(f"acts: {len(S['acts'])} atos (o manual espera 4)")
 
 # ---------- falas de cada lutador
