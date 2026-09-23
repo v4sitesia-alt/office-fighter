@@ -26,7 +26,7 @@ import json, os, sys
 # ficha (o que o jogador vê nas barras) não mudam: muda só o quanto cada golpe comum tira, pra compensar alcance e tamanho.
 TUNE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'balance-tune.json')
 TUNE = json.load(open(TUNE_FILE)) if os.path.exists(TUNE_FILE) else {}
-ALVO = {'leo': 56, 'mundim': 56, 'crm': 52, 'dede': 54}
+ALVO = {'leo': 56, 'mundim': 58, 'crm': 52, 'dede': 54, 'xablau': 52}   # o chefe (Mundim) no topo; Xablau e CRM fortes, abaixo dele
 # Distância em que cada um luta melhor (pedido de 2026-09-23). Muda o jogo da CPU (ai.ts: de perto pressiona, de longe segura a
 # distância e vive de magia/tiro, meia distância usa o golpe longo), aparece na escolha e no manual, e decide onde vai o fator
 # escondido: de longe ele reforça a MAGIA (a porrada fica no que a FORÇA mostra); nos outros, a porrada. Nos níveis: de perto
@@ -44,7 +44,9 @@ ARMADURA = {'xablau': 1, 'crm': 1}   # a CRM é um tanque: blindada também (202
 KIT = {'landim': {('special', 'projectile', 'speed'): 13, ('special', 'hitstun'): 34,
                   ('super', 'projectile', 'lifetime'): 110, ('super', 'projectile', 'hits'): 5,
                   ('long', 'startup'): 12, ('long', 'recovery'): 20},          # PLANO SEQUÊNCIA mais ágil: segura a meia distância
-       'laura': {('special', 'startup'): 7},                                 # agarrão da faixa-preta sai mais rápido
+       'laura': {('special', 'startup'): 7, ('long', 'dash'): 12},           # agarrão da faixa-preta mais rápido; MORDIDA DO TUBARÃO vira bote (avança)
+       'dede': {('long', 'startup'): 11, ('long', 'recovery'): 17,         # gaúcho: BOLEADEIRA ágil
+                ('special', 'startup'): 12, ('special', 'hitstun'): 36},     # BOLEADEIRAS enrolam as pernas (prende mais)
        'van': {('long', 'startup'): 12, ('long', 'recovery'): 18,          # FRALDA TÓXICA ágil
                ('special', 'projectile', 'speed'): 12, ('special', 'hitstun'): 30}}   # CORAÇÃO DE MÃE mais rápido e segura mais
 # Barra que enche sozinha (pontos por frame; 0,07 = 4,2 por segundo). Edgard: barra rápida (pedido de 2026-09-23); Kevin, o
@@ -60,7 +62,7 @@ FICHA = [
     ('edgard',   0.80,  1.25,  1.35,  1.00, 'normal',   18,    (7, 7, 7, 7, 12)),   # rápido e forte só em magia, porrada fraca (pedido de 2026-09-23) · portal dos morcegos: 5 acertos; a soma é maior porque o dano do combo escala pra baixo
     ('santana',  1.12,  0.90,  1.05,  1.20, 'firme',    15,    (10, 16)),   # mergulho + explosão
     ('kevin',    0.90,  0.95,  1.20,  1.05, 'normal',    6,    8),          # magia RAJADA TRIPLA: 3 tiros de 6 · super: raio do canhão
-    ('laura',    1.00,  1.35,  0.78,  0.85, 'rapido',   20,    36),         # mais força, paga com magia (2026-09-23) · magia = agarrão (release) · super = tsunami
+    ('laura',    1.10,  1.35,  0.78,  0.85, 'rapido',   20,    36),         # mais força, paga com magia (2026-09-23) · magia = agarrão (release) · super = tsunami
     ('dede',     1.08,  1.08,  1.08,  1.00, 'normal',   13,    26),         # quase igual ao Leo (2026-09-23)
     ('dias',     0.95,  1.30,  0.88,  1.05, 'rapido',   12,    5),   # de perto: FORÇA acima do PODER (trocados em 2026-09-23)          # escudo: 4 moedas de 5 (batendo ou lançadas)
     ('michael',  1.10,  1.05,  0.95,  1.00, 'normal',   13,    27),

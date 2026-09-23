@@ -1151,7 +1151,7 @@ def cabinet():
     pad = ''.join(f'<div class="cd-b cd-{L}">{BT(L)}<small>{BTN[L][3]}</small></div>' for L in 'GHJVB')
     pad += f'<div class="cd-b cd-T duo">{BT("T")}<small>TROCA</small><em>SÓ NAS DUPLAS</em></div>'
     return f'''<figure class="cab" aria-label="O gabinete do jogo, como aparece em volta da tela">
- <div class="cab-mq"><span class="cab-logo">V4 FIGHTERS<small>THE TOURNAMENT</small></span><span class="cab-chips"><i>INSTALAR APP</i><i>TELA CHEIA</i><i>SALA</i><i>MANUAL</i><i class="snd">🔊</i></span><span class="co c1">1</span></div>
+ <div class="cab-mq"><span class="cab-logo"><img src="intro/logo-oficial-p.webp" width="360" height="183" alt="V4 Fighters – The Tournament" loading="lazy" decoding="async"></span><span class="cab-chips"><i>INSTALAR APP</i><i>TELA CHEIA</i><i>SALA</i><i>MANUAL</i><i class="snd">🔊</i></span><span class="co c1">1</span></div>
  <div class="cab-scr" style="background-image:url({scr})">{spr(DEMO, 'idle', 'em guarda', 'px s1')}{spr(RIVAL, 'idle', 'em guarda', 'px s2 flip')}<span class="co c2">2</span></div>
  <div class="cab-deck">
   <div class="cd-stick"><span class="k ks big">{_svg(_sym('sn', lambda: _sym_stick('n')), STICK_N, 'manche', (80, 80))}</span><b>MOVER</b><span class="co c3">3</span></div>
@@ -1579,6 +1579,58 @@ def bar(label, v, col):
     return f'<div class="st"><span>{label}</span><div class="sb"><i style="width:{pct}%;background:{col}"></i></div><b>{num(v)}</b></div>'
 
 
+def _hungarian(cost):
+    """Atribuição de custo mínimo (n x n): devolve col[i] pra cada linha i."""
+    n = len(cost); INF = float('inf')
+    u, v, p, way = [0.0] * (n + 1), [0.0] * (n + 1), [0] * (n + 1), [0] * (n + 1)
+    for i in range(1, n + 1):
+        p[0] = i; j0 = 0; minv = [INF] * (n + 1); used = [False] * (n + 1)
+        while True:
+            used[j0] = True; i0 = p[j0]; delta = INF; j1 = 0
+            for j in range(1, n + 1):
+                if not used[j]:
+                    cur = cost[i0 - 1][j - 1] - u[i0] - v[j]
+                    if cur < minv[j]: minv[j] = cur; way[j] = j0
+                    if minv[j] < delta: delta = minv[j]; j1 = j
+            for j in range(n + 1):
+                if used[j]: u[p[j]] += delta; v[j] -= delta
+                else: minv[j] -= delta
+            j0 = j1
+            if p[j0] == 0: break
+        while True:
+            j1 = way[j0]; p[j0] = p[j1]; j0 = j1
+            if j0 == 0: break
+    col = [0] * n
+    for j in range(1, n + 1): col[p[j] - 1] = j - 1
+    return col
+
+
+def _matchups():
+    """Presa e carrasco de cada um (tools/matchups.json, do torneio de CPU): uma presa diferente pra cada lutador, escolhida pra somar
+    o máximo de vitórias de verdade. Então todo mundo é o ponto forte de alguém (a presa de alguém) e tem um ponto fraco (quem o tem de presa)."""
+    p = os.path.join(ROOT, 'tools', 'matchups.json')
+    if not os.path.exists(p): return {}
+    vs = json.load(open(p))['vs']
+    ids = [i for i in ORDER if i in vs]
+    cost = [[1e6 if a == b else -vs[a].get(b, 50) for b in ids] for a in ids]
+    col = _hungarian(cost)
+    prey = {a: ids[col[k]] for k, a in enumerate(ids)}
+    hunter = {b: a for a, b in prey.items()}
+    return {a: (prey[a], vs[a][prey[a]], hunter[a], vs[hunter[a]][a]) for a in ids}
+
+
+MATCH = None
+
+
+def matchup_html(fid):
+    global MATCH
+    if MATCH is None: MATCH = _matchups()
+    if fid not in MATCH: return ''
+    pr, pw, hu, hw = MATCH[fid]
+    return (f'<div class="mups"><div class="mup up">{img(face(pr), fname(pr), "px")}<span><b>LEVA VANTAGEM</b>contra {html.escape(fname(pr))} · vence {round(pw)}%</span></div>'
+            f'<div class="mup down">{img(face(hu), fname(hu), "px")}<span><b>SOFRE CONTRA</b>{html.escape(fname(hu))} · perde {round(hw)}%</span></div></div>')
+
+
 def stats_html(fid):
     st, c = F[fid]['stats'], color(fid)
     return f'<div class="stats">{bar("FORÇA", st["power"], c)}{bar("AGILIDADE", st["speed"], c)}{bar("PODER", st.get("magic", 1), c)}{bar("PESO", st["weight"], c)}</div>'
@@ -1698,6 +1750,7 @@ def card(fid):
   <p class="fc-bio">{plain(d.get('bio', ''))}</p>
   {links_html(fid)}
   {stats_html(fid)}
+  {matchup_html(fid)}
   <p class="swipe mv-swipe">↔ ARRASTE PRO LADO: LONGO · MAGIA · SUPER</p>
   <div class="moves">{moves_html(fid)}</div>
   {extras_html(fid)}
@@ -1734,6 +1787,7 @@ def s_lutadores():
  <li><b class="tagb">PODER</b><span>quanto batem a magia, o super e tudo o que voa{f" (inclusive o golpe longo de quem atira: {lista(shooters)})" if shooters else ""}.</span></li>
  <li><b class="tagb">PESO</b><span>quanto mais pesado, menos é empurrado e menos dano leva.</span></li>
  <li><b class="tagb">DISTÂNCIA</b><span>onde ele luta melhor. <b>DE PERTO</b>: porrada forte, FORÇA acima do PODER. <b>MEIA DISTÂNCIA</b>: vive do golpe longo, tudo equilibrado. <b>DE LONGE</b>: magia e tiro, PODER acima da FORÇA, soco e chute tiram pouco, e a barra enche mais rápido batendo e apanhando. A CPU joga cada um do mesmo jeito.</span></li>
+ <li><b class="tagb">VANTAGEM</b><span>todo lutador leva vantagem contra alguém e sofre contra outro: ninguém ganha de todos, ninguém perde pra todos. Os números saem de milhares de lutas entre CPUs no nível mais difícil.</span></li>
  <li><b class="tagb">BARRINHA</b><span>a mesma da tela de escolha: enche em 1,35 e fica vazia em 0,70. Acima ou abaixo disso ela não muda; o número ao lado é o de verdade.</span></li>
  <li><b class="tagb">GOLPES</b><span>MAGIA gasta meia barra; SUPER, a barra cheia (veja a {fase('barra')}). FRENTE é o manche na direção do adversário (veja a {fase('controle')}).</span></li>
  <li><b class="tagb">DANO</b><span>quanto o golpe inteiro tira da vida (100) de quem fica parado, sem defender, com peso 1,00. Nos golpes de vários acertos já conta o desconto do combo.</span></li></ul></div>'''
@@ -2241,6 +2295,10 @@ kbd{display:inline-block;min-width:1.9em;padding:2px 6px 1px;font:700 13px/1.3 v
 .cab{margin:0 auto;max-width:860px;padding:14px;background:linear-gradient(#3b4759,#2a3443);border:4px solid #000;border-radius:18px;box-shadow:8px 8px 0 #000}
 .cab figcaption{margin-top:12px;font:600 15px/1.45 var(--txt);color:#cfd8ee}
 .cab-mq{position:relative;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;background:linear-gradient(#141a26,#0b0f18);border:3px solid #000;border-radius:10px}
+.cab-logo img{display:block;height:40px;width:auto}
+.mups{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 4px}.mup{display:flex;align-items:center;gap:8px;padding:6px 8px;border:3px solid #000;box-shadow:3px 3px 0 #000;font:14px/1.25 var(--cond);background:#fff}
+.mup img{width:44px;height:44px;border:2px solid #000;flex:none}.mup b{display:block;font:11px var(--pix);letter-spacing:1px}.mup.up b{color:#138a3e}.mup.down b{color:#c4122f}
+@media (max-width:560px){.mups{grid-template-columns:1fr}}
 .cab-logo{font:400 italic 24px/1 var(--logo);letter-spacing:2px;color:#fff3b0;text-shadow:0 0 10px rgba(255,190,60,.9),2px 2px 0 #7a2a00}
 .cab-logo small{margin-left:8px;font:11px var(--pix);font-style:normal;color:#ff9db0;letter-spacing:2px}
 .cab-chips{display:flex;flex-wrap:wrap;gap:5px}.cab-chips i{font:11px/1 var(--pix);font-style:normal;padding:6px 7px;border:2px solid #3d4a63;border-radius:6px;background:#1a2233;color:#dfe7f3}

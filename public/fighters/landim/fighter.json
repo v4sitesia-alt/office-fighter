@@ -427,7 +427,7 @@
    "startup": 11,
    "active": 4,
    "recovery": 17,
-   "damage": 20.1,
+   "damage": 20.8,
    "hitstun": 34,
    "blockstun": 14,
    "hitbox": {
@@ -472,7 +472,7 @@
    "startup": 14,
    "active": 6,
    "recovery": 26,
-   "damage": 8.8,
+   "damage": 9.1,
    "hitstun": 16,
    "blockstun": 10,
    "hitbox": {

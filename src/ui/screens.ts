@@ -68,7 +68,7 @@ export class Screens {
     this.set('title', `
       <div class="center">
         <div class="pix small">MUNDIM CORP · 2026</div>
-        <div class="logo"><span class="l1">V4</span><span class="l2">FIGHTERS</span><span class="l3">THE TOURNAMENT</span></div>
+        <h1 class="logo"><img class="logo-img" src="${import.meta.env.BASE_URL}intro/logo-oficial.webp" width="1100" height="562" alt="V4 Fighters – The Tournament"></h1>
         <div class="pix small tag">O DEADLINE É HOJE. O NOCAUTE TAMBÉM.</div>
         <div class="pix press">PRESS START</div>
         <div class="pix tiny">${fighters} LUTADORES · CAMPANHA · UMA TORRE</div>

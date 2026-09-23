@@ -73,6 +73,10 @@ for (let i = 0; i < ids.length; i++) for (let j = i + 1; j < ids.length; j++) {
 }
 const rows = ids.filter((id) => stat[id].n).map((id) => ({ id, pct: 100 * stat[id].w / stat[id].n, life: stat[id].life / stat[id].n, s: F[id].def.stats }))
   .sort((x, y) => y.pct - x.pct);
+if (argv.includes('--matriz')) {                                   // quem ganha de quem (% de vitórias de A contra B): o manual usa pra VANTAGEM/DESVANTAGEM
+  const mx = Object.fromEntries(ids.filter((id) => stat[id].n).map((a) => [a, Object.fromEntries(Object.entries(stat[a].vs).map(([b, [w, n]]) => [b, Math.round(1000 * w / n) / 10]))]));
+  fs.writeFileSync('tools/matchups.json', JSON.stringify({ n: N, pct: Object.fromEntries(rows.map((r) => [r.id, Math.round(r.pct * 10) / 10])), vs: mx }, null, 1));
+}
 if (argv.includes('--json')) { console.log('JSON ' + JSON.stringify(Object.fromEntries(rows.map((r) => [r.id, Math.round(r.pct * 10) / 10])))); process.exit(0); }
 console.log(`\n${count} lutas · CPU ${level} · ${((Date.now() - t0) / 1000).toFixed(0)} s\n`);
 console.log('lutador   vitórias  saldo de vida   força agil. poder peso   piores / melhores confrontos');
