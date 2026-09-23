@@ -38,7 +38,7 @@ DIST = {'michael': 'perto', 'eneias': 'perto', 'dias': 'perto', 'xablau': 'perto
 # Pulo: jump = altura (1 = normal), air = tempo no ar (< 1 = pulo em câmera lenta, mesma altura e distância). Xablau: pesado e lento no ar.
 PULO = {'xablau': {'jump': 0.9, 'air': 0.68}}
 # Armadura: quantos golpes aguenta sem parar o próprio ataque (no preparo e no golpe). Xablau: o monstro que não para.
-ARMADURA = {'xablau': 1}
+ARMADURA = {'xablau': 1, 'crm': 1}   # a CRM é um tanque: blindada também (2026-09-24)
 # Ajustes de golpe por lutador, pelo caminho no fighter.json (o que a ficha acima não cobre). Landim, a cineasta: o FLASH é luz
 # (tiro rápido) e cega (atordoa mais); a claquete voa mais longe antes de voltar e bate até 5 vezes.
 KIT = {'landim': {('special', 'projectile', 'speed'): 13, ('special', 'hitstun'): 34,

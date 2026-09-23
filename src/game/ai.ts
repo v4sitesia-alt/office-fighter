@@ -137,6 +137,11 @@ export class Ai {
       if (this.rng.chance(p.retreatChance)) { this.debug = 'recua'; this.set([back], 14); return; }
       this.debug = 'espera'; this.set([], 6); return;
     }
+    // sem golpe longo mas com um forte que vai bem além do soco (a língua do Xablau): o forte é o golpe de meia distância dele
+    if (!M.long && M.heavy && ot.grounded) {
+      const far = (M.heavy.hitbox.x + M.heavy.hitbox.w) * me.scale;
+      if (far > reach * 1.8 && dx < far - 10 && this.rng.chance(p.attackChance * 0.3)) { this.debug = 'forte de longe'; this.set(['heavy'], 2); return; }
+    }
     // meia distância: golpe longo (frente + forte), pra quem tem. Só vale a pena com o alvo no chão e dentro do alcance
     if (M.long && ot.grounded && dx < this.longReach() && this.rng.chance(p.attackChance * (range === 'medio' ? 0.5 : 0.35))) {   // meia distância vive do golpe longo
       this.debug = 'golpe longo'; this.set([fwd, 'heavy'], 2); return;

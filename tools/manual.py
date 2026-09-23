@@ -1019,16 +1019,22 @@ def cover():
             '<circle cx="60" cy="60" r="57" fill="#e5383b" stroke="#000" stroke-width="4"/><circle cx="60" cy="60" r="31" fill="#ffd23f" stroke="#000" stroke-width="3"/>'
             f'<text class="seal-t"><textPath href="#sealp" startOffset="0">MANUAL OFICIAL · MUNDIM CORP · {YEAR} ·</textPath></text>'
             '<text x="60" y="71" text-anchor="middle" class="seal-v">V4</text></svg>')
+    # capa nova (Personagens/intro/capa manual.png, 2026-09-24): a arte já tem o logo, o elenco e a frase; sem ela, a montagem antiga
+    if os.path.exists(os.path.join(PUB, 'intro', 'capa-manual.jpg')):
+        big, small = picture('intro/capa-manual.jpg', 'capa.jpg', 1600, 84), picture('intro/capa-manual.jpg', 'capa-m.jpg', 800, 80)
+        keyart = (f'<h1 class="sr">V4 FIGHTERS – THE TOURNAMENT. O deadline é hoje. O nocaute também.</h1>'
+                  f'<picture class="keyart"><source media="(max-width: 700px)" srcset="{small[0]}"><img src="{big[0]}" width="{big[1]}" height="{big[2]}" '
+                  f'alt="V4 Fighters – The Tournament: o elenco em volta do logo" fetchpriority="high" decoding="async"></picture>')
+    else:
+        keyart = (f'<img class="cv-logo" src="{logo[0]}" width="{logo[1]}" height="{logo[2]}" alt="V4" decoding="async">'
+                  f'<h1 class="logo">V4 FIGHTERS<span>THE TOURNAMENT</span></h1><p class="cv-sub">O deadline é hoje. O nocaute também.</p><div class="lineup">{arts}</div>')
     return f'''<header class="cover" id="capa" style="--bg:url({bg[0]});--bgm:url({bgm[0]})">
 <div class="topband"><span>MANUAL DE INSTRUÇÕES</span><span>EDIÇÃO {YEAR}</span></div>
 <div class="cv-in">
-  <img class="cv-logo" src="{logo[0]}" width="{logo[1]}" height="{logo[2]}" alt="V4" decoding="async">
   <p class="cv-tag">MANUAL DO JOGADOR · {YEAR}</p>
-  <h1 class="logo">V4 FIGHTERS<span>THE TOURNAMENT</span></h1>
-  <p class="cv-sub">O deadline é hoje. O nocaute também.</p>
+  {keyart}
   <div class="cv-burst">{BURST('PARA<br>QUEM<br>NUNCA<br>JOGOU!', '#ffd23f')}</div>
   <div class="cv-seal">{seal}</div>
-  <div class="lineup">{arts}</div>
   <div class="cv-cta"><a class="cta" href="./">▶ JOGAR AGORA</a><a class="cta ghost" href="#indice">LER O MANUAL ▼</a></div>
   <ul class="feats">{feats}</ul>
 </div></header>'''
@@ -2094,6 +2100,8 @@ kbd{display:inline-block;min-width:1.9em;padding:2px 6px 1px;font:700 13px/1.3 v
 .cover::after{content:'';position:absolute;inset:-25%;z-index:-1;background:repeating-conic-gradient(from 0deg at 50% 45%,rgba(255,210,63,.13) 0 2.6deg,transparent 2.6deg 10deg);-webkit-mask:radial-gradient(circle at 50% 45%,#000 8%,transparent 58%);mask:radial-gradient(circle at 50% 45%,#000 8%,transparent 58%)}
 .topband{position:absolute;left:0;right:0;top:0;display:flex;justify-content:space-between;gap:10px;padding:10px 16px;background:#000;border-bottom:4px solid var(--r);font:13px/1.2 var(--pix);color:#fff;letter-spacing:1px}
 .cv-in{position:relative;width:100%;max-width:1040px}
+.keyart img{display:block;width:100%;height:auto;margin:8px auto 0;border:5px solid #000;box-shadow:8px 8px 0 #000,0 0 60px rgba(255,120,0,.35)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .cv-logo{width:78px;height:78px;border:4px solid #000;box-shadow:5px 5px 0 #000;transform:rotate(-6deg);display:block;margin:0 auto 6px}
 .cv-tag{display:inline-block;margin:8px 0 0;font:15px/1.2 var(--pix);background:var(--y);color:#000;padding:8px 12px;border:3px solid #000;box-shadow:4px 4px 0 #000;transform:rotate(-1.5deg)}
 .logo{margin:14px 0 0;font:400 italic clamp(56px,14.2vw,168px)/.86 var(--logo);letter-spacing:1px;background:linear-gradient(#fff7b8 8%,#ffd23f 40%,#ff8a00 70%,#e5383b 94%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-stroke:3px #000;filter:drop-shadow(6px 7px 0 #000)}
