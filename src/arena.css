@@ -106,7 +106,7 @@
 .fcell img { width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; display: block; } .fcell span { position: absolute; left: 0; right: 0; bottom: 0; font-size: 5px; padding: 3px 1px 2px; text-align: center; background: linear-gradient(transparent, rgba(0,0,0,.85)); }
 .fcell[data-act]:hover { transform: scale(1.06); border-color: #fff; z-index: 2; } .fcell.on { border-color: var(--yellow); box-shadow: 0 0 0 2px var(--yellow), 0 0 14px var(--c); transform: scale(1.06); z-index: 2; }
 .fcell.taken img { filter: grayscale(1) brightness(.35); } .fcell.taken em { position: absolute; inset: 0; display: grid; place-items: center; font-style: normal; font-size: 5px; line-height: 1.6; text-align: center; color: #ffd0d8; padding: 2px; }
-.fcell.secret { display: grid; place-items: center; } .fcell.secret b { font-family: var(--logo); font-size: 24px; color: #33406b; }
+.fcell.secret { display: grid; place-items: center; } .fcell.secret.art { cursor: default; border-color: rgba(255,255,255,.12); } .fcell.secret b { font-family: var(--logo); font-size: 24px; color: #33406b; }
 
 /* duplas: escolha */
 .draft { position: absolute; inset: 0; display: grid; grid-template-columns: 172px 1fr 172px; gap: 10px; padding: 10px 12px; }

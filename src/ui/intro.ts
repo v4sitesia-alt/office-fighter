@@ -100,8 +100,15 @@ export class Intro {
       const y = H + 20 - k * span + i * gap;
       if (y < top || y > H + 10 || !ln) return;
       ctx.globalAlpha = Math.min(1, (y - top) / 70, (H + 10 - y) / 40);
-      ctx.fillStyle = '#000'; ctx.fillText(ln, W / 2 + 2, y + 2);
-      ctx.fillStyle = i === lines.length - 1 ? '#ff5468' : i === 0 ? '#ffd23f' : '#fff'; ctx.fillText(ln, W / 2, y);
+      // a Press Start 2P desenha Í e Ú maiúsculos com cara de minúscula: escreve I/U e põe o acento à mão (fonte mono, 15 px por letra)
+      const txt = ln.replace(/Í/g, 'I').replace(/Ú/g, 'U'), x0 = W / 2 - (ln.length * 15) / 2;
+      const accents = [...ln].flatMap((ch, j) => (ch === 'Í' || ch === 'Ú' ? [x0 + j * 15] : []));
+      const draw = (dx: number, dy: number) => {
+        ctx.fillText(txt, W / 2 + dx, y + dy);
+        for (const ax of accents) { ctx.fillRect(ax + 6 + dx, y - 11 + dy, 4, 2); ctx.fillRect(ax + 8 + dx, y - 13 + dy, 4, 2); }
+      };
+      ctx.fillStyle = '#000'; draw(2, 2);
+      ctx.fillStyle = i === lines.length - 1 ? '#ff5468' : i === 0 ? '#ffd23f' : '#fff'; draw(0, 0);
     });
     ctx.globalAlpha = 1;
   }

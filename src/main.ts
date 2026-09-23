@@ -423,8 +423,8 @@ const loop = startLoop({
     if (mode === 'boot') { ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H); return; }
     if (mode === 'intro') { cinematic.render(ctx, audio.musicTime() >= 0 ? audio.musicTime() : introClock); ctx.imageSmoothingEnabled = false; return; }
     if (mode === 'fight' || mode === 'result' || mode === 'netfight') { match?.render(ctx, debug); return; }
-    const intro = stages.get('intro');
-    if (mode === 'title' && intro) { ctx.drawImage(intro.img, 0, 0, W, H); ctx.fillStyle = 'rgba(6,10,30,0.35)'; ctx.fillRect(0, 0, W, H); return; }
+    const intro = stages.get('mundim') ?? stages.get('intro');     // título no 52º andar: a sala do Mundim, onde tudo termina
+    if (mode === 'title' && intro) { ctx.drawImage(intro.img, 0, 0, W, H); ctx.fillStyle = 'rgba(6,10,30,0.45)'; ctx.fillRect(0, 0, W, H); return; }
     const lift = stages.get('elevator');
     if (lift && mode !== 'loading') { ctx.drawImage(lift.img, 0, 0, W, H); ctx.fillStyle = 'rgba(6,4,12,0.45)'; ctx.fillRect(0, 0, W, H); return; } // telas antes da luta: hall do elevador
     if (demo) demo.render(ctx, false);

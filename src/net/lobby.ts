@@ -407,7 +407,7 @@ export class Lobby {
   private grid(act: string, taken: (id: string) => string, cols: number) {
     return `<div class="fgrid" style="--cols:${cols}">${this.roster.map((f) => {
       const id = f.def.id, who = taken(id), lock = this.hooks.locked(id);
-      if (lock) return '<div class="fcell secret"><b>?</b></div>';
+      if (lock) return f.secretPortrait ? `<div class="fcell secret art"><img src="${f.secretPortrait.src}" alt=""></div>` : '<div class="fcell secret"><b>?</b></div>';   // a mesma silhueta com cadeado da escolha
       return `<div class="fcell${this.pick === id ? ' on' : ''}${who ? ' taken' : ''}" style="--c:${f.def.colors.primary}" ${who ? '' : `data-act="${act}" data-arg="${id}" data-hover="${id}"`}><img src="${BASE}fighters/${id}/face.png" alt=""><span>${esc(f.def.name)}</span>${who ? `<em>🔒 ${esc(who)}</em>` : ''}</div>`;
     }).join('')}</div>`;
   }

@@ -1,4 +1,5 @@
 import type { FighterAssets, FighterDef, FramesFile } from '../game/types';
+import { LOCKED } from '../data/roster';
 
 export function loadImage(url: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -37,7 +38,8 @@ export async function loadFighter(id: string, onProgress?: () => void): Promise<
   const fx: Record<string, HTMLImageElement> = {};
   await Promise.all([...fxFiles].map((f) => loadImage(dir + f).then((img) => { fx[f] = img; }).catch(() => undefined))); tick();
   const portrait = await loadImage(dir + 'portrait.png').catch(() => undefined); tick();
-  const secretPortrait = def.secret ? await loadImage(dir + 'secret.png').catch(() => undefined) : undefined;
+  // thumb do quadro travado (silhueta com cadeado): o secreto e os que começam travados no lançamento
+  const secretPortrait = def.secret || def.id in LOCKED ? await loadImage(dir + 'secret.png').catch(() => undefined) : undefined;
   const morph = def.morph ? await loadFighter(def.morph).catch(() => undefined) : undefined;
   return { def, frames, sheet, fx, portrait, secretPortrait, morph };
 }

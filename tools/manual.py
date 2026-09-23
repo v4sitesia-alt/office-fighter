@@ -1420,15 +1420,18 @@ def cpu_words(lv):
 def locked_box():
     if not LOCKED:
         return ''
-    faces = ''.join(f'<span class="lk-f">{img(face(i), fname(i), "px")}<i>?</i></span>' for i in LOCKED)
+    def lk(i):                                   # a mesma silhueta com cadeado que aparece no quadro travado
+        p = os.path.join(PUB, 'fighters', i, 'secret.png')
+        return f'<span class="lk-f art">{img(picture(f"fighters/{i}/secret.png", f"{i}-secret.jpg", 168, 80), "Travado", "px")}</span>' if os.path.exists(p) else f'<span class="lk-f">{img(face(i), fname(i), "px")}<i>?</i></span>'
+    faces = ''.join(lk(i) for i in LOCKED)
     names = lista(tname(i) for i in LOCKED)
     arc = lista(tname(i) for i in BY_ARCADE)
     boss = tname(BOSSES[-1]) if BOSSES else 'o chefe'
     how = (f'Zere o arcade (vença o {boss} no último andar) e {"os dois ficam liberados" if len(BY_ARCADE) == 2 else "eles ficam liberados" if len(BY_ARCADE) > 2 else arc + " fica liberado"} '
            f'neste aparelho, no arcade e na arena. A tela do final avisa: <b>{" E ".join(fname(i) for i in BY_ARCADE)} {"DESBLOQUEADOS" if len(BY_ARCADE) > 1 else "DESBLOQUEADO"}</b>.') if BY_ARCADE else ''
     return (f'<div class="paper locked">{ICON("lock", "cadeado", "ka lk-i")}<div class="lk-t"><h4>TRAVADOS: {names.upper()}</h4><div class="lk-faces">{faces}</div>'
-            f'<p>{names} {"começam" if len(LOCKED) > 1 else "começa"} com o quadro escuro e o <b>?</b> na escolha de lutador e na arena: aparecem como adversários, mas ainda não dá pra jogar com {"eles" if len(LOCKED) > 1 else "ele"}. {how}</p>'
-            '<p class="lk-rumor">E tem gente que jura que existem códigos, digitados na tela de escolha, que acendem os quadros escuros...</p></div></div>')
+            f'<p>{names} {"começam" if len(LOCKED) > 1 else "começa"} com o quadro trancado (a silhueta com o cadeado) na escolha de lutador e na arena: aparecem como adversários, mas ainda não dá pra jogar com {"eles" if len(LOCKED) > 1 else "ele"}. {how}</p>'
+            '<p class="lk-rumor">E tem gente que jura que existem códigos, digitados na tela de escolha, que abrem os cadeados...</p></div></div>')
 
 
 def s_arcade():
@@ -2435,7 +2438,7 @@ table{width:100%;border-collapse:collapse}
 .lk-t h4{margin:0 0 8px;font:400 italic 26px/1.05 var(--logo)}
 .lk-t p{margin:8px 0 0;font-size:16px;line-height:1.5}
 .lk-faces{display:flex;gap:8px}
-.lk-f{position:relative;display:block;width:60px;height:60px;border:3px solid #000;background:#000}.lk-f img{width:100%;height:100%;filter:brightness(.18) grayscale(1)}
+.lk-f{position:relative;display:block;width:60px;height:60px;border:3px solid #000;background:#000}.lk-f.art{width:84px;height:84px}.lk-f.art img{filter:none}.lk-f img{width:100%;height:100%;filter:brightness(.18) grayscale(1)}
 .lk-f i{position:absolute;inset:0;display:grid;place-items:center;font:22px var(--pix8);font-style:normal;color:#fff}
 .lk-rumor{font:700 italic 17px/1.4 var(--cond)!important;color:#b3161a}
 .ramp h4,.score h4{margin:0 0 10px;font:400 italic 25px/1 var(--logo)}
