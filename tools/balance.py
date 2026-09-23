@@ -43,7 +43,10 @@ ARMADURA = {'xablau': 1}
 # (tiro rápido) e cega (atordoa mais); a claquete voa mais longe antes de voltar e bate até 5 vezes.
 KIT = {'landim': {('special', 'projectile', 'speed'): 13, ('special', 'hitstun'): 34,
                   ('super', 'projectile', 'lifetime'): 110, ('super', 'projectile', 'hits'): 5,
-                  ('long', 'startup'): 12, ('long', 'recovery'): 20}}          # PLANO SEQUÊNCIA mais ágil: segura a meia distância
+                  ('long', 'startup'): 12, ('long', 'recovery'): 20},          # PLANO SEQUÊNCIA mais ágil: segura a meia distância
+       'laura': {('special', 'startup'): 7},                                 # agarrão da faixa-preta sai mais rápido
+       'van': {('long', 'startup'): 12, ('long', 'recovery'): 18,          # FRALDA TÓXICA ágil
+               ('special', 'projectile', 'speed'): 12, ('special', 'hitstun'): 30}}   # CORAÇÃO DE MÃE mais rápido e segura mais
 # Barra que enche sozinha (pontos por frame; 0,07 = 4,2 por segundo). Edgard: barra rápida (pedido de 2026-09-23); Kevin, o
 # atirador: barra rápida pra atirar mais (2026-09-24).
 BARRA = {'edgard': 0.07, 'kevin': 0.07}
@@ -100,7 +103,8 @@ ALCANCE = {
 # Golpe longo (frente + forte): é um cutucão de longe, tira menos que o forte.
 LONGO = {'edgard': 10, 'santana': 11, 'kevin': 11, 'laura': 9, 'dede': 10, 'michael': 11, 'dias': 9, 'landim': 9, 'van': 9, 'eneias': 11, 'crm': 10, 'leo': 10}
 # Dias: combo de porrada. O golpe que encostou pode ser cortado no seguinte (soco -> soco/chute -> forte), até 3 emendas.
-CHAIN = {'dias': {'punch': ['punch', 'kick'], 'kick': ['heavy'], 'lowPunch': ['punch', 'kick']}}
+CHAIN = {'dias': {'punch': ['punch', 'kick'], 'kick': ['heavy'], 'lowPunch': ['punch', 'kick']},
+         'laura': {'punch': ['punch', 'kick'], 'kick': ['heavy'], 'lowPunch': ['punch', 'kick']}}   # a faixa-preta também encadeia (2026-09-24)
 
 
 def main(quiet=False):

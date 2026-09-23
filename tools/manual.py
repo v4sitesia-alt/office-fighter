@@ -1024,7 +1024,7 @@ def cover():
 <div class="cv-in">
   <img class="cv-logo" src="{logo[0]}" width="{logo[1]}" height="{logo[2]}" alt="V4" decoding="async">
   <p class="cv-tag">MANUAL DO JOGADOR · {YEAR}</p>
-  <h1 class="logo">V4 FIGHTERS<span>TROUBLE WORK</span></h1>
+  <h1 class="logo">V4 FIGHTERS<span>THE TOURNAMENT</span></h1>
   <p class="cv-sub">O deadline é hoje. O nocaute também.</p>
   <div class="cv-burst">{BURST('PARA<br>QUEM<br>NUNCA<br>JOGOU!', '#ffd23f')}</div>
   <div class="cv-seal">{seal}</div>
@@ -1145,7 +1145,7 @@ def cabinet():
     pad = ''.join(f'<div class="cd-b cd-{L}">{BT(L)}<small>{BTN[L][3]}</small></div>' for L in 'GHJVB')
     pad += f'<div class="cd-b cd-T duo">{BT("T")}<small>TROCA</small><em>SÓ NAS DUPLAS</em></div>'
     return f'''<figure class="cab" aria-label="O gabinete do jogo, como aparece em volta da tela">
- <div class="cab-mq"><span class="cab-logo">V4 FIGHTERS<small>TROUBLE WORK</small></span><span class="cab-chips"><i>INSTALAR APP</i><i>TELA CHEIA</i><i>SALA</i><i>MANUAL</i><i class="snd">🔊</i></span><span class="co c1">1</span></div>
+ <div class="cab-mq"><span class="cab-logo">V4 FIGHTERS<small>THE TOURNAMENT</small></span><span class="cab-chips"><i>INSTALAR APP</i><i>TELA CHEIA</i><i>SALA</i><i>MANUAL</i><i class="snd">🔊</i></span><span class="co c1">1</span></div>
  <div class="cab-scr" style="background-image:url({scr})">{spr(DEMO, 'idle', 'em guarda', 'px s1')}{spr(RIVAL, 'idle', 'em guarda', 'px s2 flip')}<span class="co c2">2</span></div>
  <div class="cab-deck">
   <div class="cd-stick"><span class="k ks big">{_svg(_sym('sn', lambda: _sym_stick('n')), STICK_N, 'manche', (80, 80))}</span><b>MOVER</b><span class="co c3">3</span></div>
@@ -2016,7 +2016,7 @@ def back():
  <p class="bk-soon">EM BREVE</p>
  <ul class="bk-feats">{ff}</ul>
  <a class="cta" href="./">▶ JOGAR AGORA</a>
- <p class="bk-small">V4 Fighters – Trouble Work · {YEAR} · manual gerado a partir dos dados do jogo, sempre em dia com os golpes e o elenco.</p>
+ <p class="bk-small">V4 Fighters – The Tournament · {YEAR} · manual gerado a partir dos dados do jogo, sempre em dia com os golpes e o elenco.</p>
 </div></footer>'''
 
 
@@ -2820,7 +2820,7 @@ def build():
     SECTIONS = {'luta': s_luta, 'controle': s_controle, 'passos': s_passos, 'tela': s_tela, 'barra': s_barra, 'regras': s_regras, 'dicas': s_dicas,
                 'arcade': s_arcade, 'comandos': s_comandos, 'lutadores': s_lutadores, 'online': s_online, 'celular': s_celular, 'enredo': s_enredo}
     body = cover() + toc_nav() + index() + ''.join(SECTIONS[sid]() for sid, *_ in TOC) + back()
-    desc = f'Manual do jogador de V4 Fighters – Trouble Work ({YEAR}): controles, golpes, regras, enredo e as fichas dos {len(ROSTER)} lutadores.'
+    desc = f'Manual do jogador de V4 Fighters – The Tournament ({YEAR}): controles, golpes, regras, enredo e as fichas dos {len(ROSTER)} lutadores.'
     page = f'''<!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Manual do Jogador · V4 Fighters</title>

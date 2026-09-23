@@ -28,7 +28,7 @@
   ],
   [
    "52 ANDARES",
-   "Com o Vale trancado, a torre anunciou o torneio <b>Trouble Work</b>: quem chegar ao 52º andar leva o prêmio e a chave das portas. Nas letras miúdas, cada golpe treina as máquinas. <b>Vanessa</b> quer abrir o Vale; <b>Laura</b>, salvar o recife; <b>Eneias</b>, o bar; <b>Dedé</b>, o fogo de chão; <b>Michael</b>, a academia; <b>Landim</b>, mostrar a fita; <b>Thiago</b> e <b>João</b>, o emprego. <b>Edgard</b> sobe pelo Sant'Anna; <b>Kevin</b>, pelas três notas. No topo espera o Mundim. <i>Ou o que está usando o Mundim de marionete.</i>"
+   "Com o Vale trancado, a torre anunciou o torneio <b>The Tournament</b>: quem chegar ao 52º andar leva o prêmio e a chave das portas. Nas letras miúdas, cada golpe treina as máquinas. <b>Vanessa</b> quer abrir o Vale; <b>Laura</b>, salvar o recife; <b>Eneias</b>, o bar; <b>Dedé</b>, o fogo de chão; <b>Michael</b>, a academia; <b>Landim</b>, mostrar a fita; <b>Thiago</b> e <b>João</b>, o emprego. <b>Edgard</b> sobe pelo Sant'Anna; <b>Kevin</b>, pelas três notas. No topo espera o Mundim. <i>Ou o que está usando o Mundim de marionete.</i>"
   ]
  ],
  "crawl": [
@@ -76,7 +76,7 @@
   },
   {
    "when": "SET 2026 · CONTENÇÃO",
-   "event": "A torre sela o Vale Quatro: portas, pontes e sinal. A <b>Vanessa</b> abre no braço a saída do Shopping Meia-Sola e leva as famílias pro Bar do Zé, do <b>Eneias</b>. No 52º andar, a torre anuncia o torneio <b>Trouble Work</b>."
+   "event": "A torre sela o Vale Quatro: portas, pontes e sinal. A <b>Vanessa</b> abre no braço a saída do Shopping Meia-Sola e leva as famílias pro Bar do Zé, do <b>Eneias</b>. No 52º andar, a torre anuncia o torneio <b>The Tournament</b>."
   },
   {
    "when": "HOJE",
@@ -93,7 +93,7 @@
    "def": "O estado fictício onde tudo acontece: um pedaço de cada canto do Brasil (o morro carioca, o pampa gaúcho, o recife pernambucano, o cassino manezinho) e, no meio, a torre de 52 andares da Mundim Corp. No mapa da tela de escolha, cada lutador tem o seu canto."
   },
   {
-   "term": "TROUBLE WORK",
+   "term": "THE TOURNAMENT",
    "def": "O torneio da torre. Com o Vale selado pelo protocolo de contenção, quem chegar ao 52º andar leva o prêmio e a chave das portas. No modo ARCADE, cada luta vencida é um andar a mais."
   },
   {
@@ -514,7 +514,7 @@
     "Ação!",
     "Isso vai pro making of!"
    ],
-   "ending": "O documentário 'Trouble Work' estreou com tudo que a torre tentou apagar: o tanque, a gosma, o olho abrindo. Lotou as salas do Vale inteiro. Nenhum ator tinha seis dedos. A crítica chamou de 'humano'. O Kevin mandou a nota do cachê. Landim chamou de 'primeiro take' e já escreve a continuação.",
+   "ending": "O documentário 'The Tournament' estreou com tudo que a torre tentou apagar: o tanque, a gosma, o olho abrindo. Lotou as salas do Vale inteiro. Nenhum ator tinha seis dedos. A crítica chamou de 'humano'. O Kevin mandou a nota do cachê. Landim chamou de 'primeiro take' e já escreve a continuação.",
    "nick": "Landim",
    "links": [
     {

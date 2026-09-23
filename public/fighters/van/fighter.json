@@ -215,9 +215,9 @@
      34
     ]
    },
-   "startup": 16,
+   "startup": 12,
    "active": 8,
-   "recovery": 22,
+   "recovery": 18,
    "damage": 11.7,
    "hitstun": 22,
    "blockstun": 16,
@@ -429,7 +429,7 @@
    "active": 4,
    "recovery": 17,
    "damage": 13.0,
-   "hitstun": 22,
+   "hitstun": 30,
    "blockstun": 14,
    "hitbox": {
     "x": 0,
@@ -444,7 +444,7 @@
    "projectile": {
     "x": 95,
     "y": -120,
-    "speed": 9,
+    "speed": 12,
     "lifetime": 100,
     "style": "heart",
     "color": "#ff4fa0",

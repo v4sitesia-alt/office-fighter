@@ -142,7 +142,12 @@
     "h": 45
    },
    "knockback": 4,
-   "hitstop": 5
+   "hitstop": 5,
+   "chain": [
+    "punch",
+    "kick"
+   ],
+   "chainMax": 3
   },
   "kick": {
    "phases": {
@@ -170,7 +175,11 @@
     "h": 60
    },
    "knockback": 6,
-   "hitstop": 6
+   "hitstop": 6,
+   "chain": [
+    "heavy"
+   ],
+   "chainMax": 3
   },
   "heavy": {
    "phases": {
@@ -267,7 +276,7 @@
      31
     ]
    },
-   "startup": 10,
+   "startup": 7,
    "active": 6,
    "recovery": 24,
    "damage": 20.0,
@@ -479,7 +488,12 @@
     "h": 50
    },
    "knockback": 3,
-   "hitstop": 4
+   "hitstop": 4,
+   "chain": [
+    "punch",
+    "kick"
+   ],
+   "chainMax": 3
   },
   "lowKick": {
    "kind": "low",

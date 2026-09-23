@@ -1,4 +1,4 @@
-# V4 Fighters – Trouble Work
+# V4 Fighters – The Tournament
 
 Jogo de luta 2D estilo arcade anos 90, no navegador (antes "Office Fighter"). Vite + TypeScript + Canvas 2D, sem engine.
 Spec completa em `HANDOFF-office-fighter_1.md`.
