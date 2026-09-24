@@ -1480,7 +1480,7 @@ def s_arcade():
         last = ' last' if b == BOSSES[-1] else ''
         stops += (f'<li class="fl boss{last}" style="--c:{color(b)}"><span class="fl-n">{k}</span><div class="fl-faces">{img(face(b), fname(b))}</div>'
                   f'<div class="fl-t"><small>{html.escape(place(b)).upper()}</small><h4>{html.escape(fname(b))}</h4><p>{boss_txt.get(b, plain(F[b].get("role", "")))}</p>{extra}{lk}</div></li>')
-    stops += '<li class="fl secret"><span class="fl-n">?</span><div class="fl-faces"><i>?</i></div><div class="fl-t"><h4>???</h4><p>Dizem que o elevador ainda sobe mais um andar... só pra quem chega ao topo <b>sem perder nenhuma luta</b>. E que, mesmo depois de zerar, o último quadro escuro da escolha continua escuro.</p></div></li>'
+    stops += '<li class="fl secret"><span class="fl-n">?</span><div class="fl-faces"><i>?</i></div><div class="fl-t"><h4>???</h4><p>Dizem que o elevador ainda sobe mais um andar... mas só pra quem primeiro acende o <b>último quadro escuro</b> da escolha (tem gente que jura que é com um código, digitado ali mesmo) e depois chega ao topo <b>sem perder nenhuma luta</b>. Zerar não acende esse quadro.</p></div></li>'
     score = ''.join(f'<li><b>{k}</b><span>{v}</span></li>' for k, v in (('GOLPE', f'{PER_DMG} pontos por ponto de dano'), ('VITÓRIA', f'+{BONUS["VITÓRIA"]}'), ('VIDA', f'+{BONUS["VIDA"]} por ponto de vida que sobrou'),
                                                                          ('TEMPO', f'+{BONUS["TEMPO"]} por segundo que sobrou'), ('PERFECT', f'+{BONUS["PERFECT"]}')))
     unl = f' e libera {lista(tname(i) for i in BY_ARCADE)}' if BY_ARCADE else ''

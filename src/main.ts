@@ -152,10 +152,11 @@ function startFight() {
         }
         fightNo++; tries = 0;
         if (fightNo < campaign.length) { showVersus(); return; }
-        if (!secretFight) arcadeUnlocks = unlockByArcade();          // venceu o Mundim: Xablau e Mundim liberados
-        // zerou sem perder nenhuma luta: o elevador sobe mais um andar
+        if (!secretFight) arcadeUnlocks = unlockByArcade();          // venceu o Mundim: libera quem tem byArcade (hoje ninguém)
+        // zerou sem perder nenhuma luta: o elevador sobe mais um andar. Só pra quem já destravou o Dener no código (pedido de
+        // 2026-09-24: o Dener fica todo atrás do código, inclusive no arcade)
         const boss = roster.findIndex((f) => f.def.secret);
-        if (!secretFight && continues === 0 && boss >= 0 && boss !== playerIdx) {
+        if (!secretFight && continues === 0 && boss >= 0 && boss !== playerIdx && !secret.isLocked(roster[boss].def.id)) {
           secretFight = true; campaign.push({ idx: boss, hue: 0 });
           audio.voice('ann-secret', 'ann'); showVersus(); return;
         }
