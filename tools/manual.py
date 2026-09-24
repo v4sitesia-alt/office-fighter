@@ -1271,7 +1271,7 @@ def s_passos():
     return section('passos', f'''
 {sub_h('DA TELA INICIAL ATÉ A LUTA', 'CAMINHO')}
 <ol class="flow">{fl}</ol>
-<p class="more">Os quadros escuros com <b>?</b> na escolha estão travados: veja o {fase('arcade', 'MODO ARCADE')}.</p>
+{f'<p class="more">Os quadros escuros com <b>?</b> na escolha estão travados: veja o {fase("arcade", "MODO ARCADE")}.</p>' if LOCKED else ''}
 {sub_h(f'AGORA, MEXA O LUTADOR · COM A {fname(DEMO)}', f'{len(steps)} LIÇÕES')}
 <div class="steps">{st}</div>
 <div class="paper drill">{BURST('ONDE<br>TREINAR?', '#2bb673', 'sm')}<div><ol>{"".join(f"<li>{x}</li>" for x in drill)}</ol>{fkeys}</div></div>''',

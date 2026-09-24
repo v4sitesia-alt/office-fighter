@@ -6,12 +6,11 @@ export const ROSTER = ['edgard', 'laura', 'landim', 'eneias', 'santana',
   'leo', 'dias', 'xablau', 'mundim'];
 /** Lutadores secretos: carregados sempre (aparecem como adversário e online), mas só escolhíveis depois de destravados. */
 export const SECRET = ['dener'];
-/** Travados no lançamento: aparecem como adversários, mas só dá pra jogar com eles depois de destravar.
- *  Xablau e Mundim: zerando o arcade (vencendo o Mundim) ou com o código. Dener: só com o código.
+/** Travados: aparecem como adversários, mas só dá pra jogar com eles depois de destravar. Dener: só com o código.
+ *  (Xablau e Mundim começaram travados no lançamento e foram liberados pra todo mundo em 2026-09-24; os códigos deles eram
+ *  ↓ ↓ ↓ H H H e ↑ ↑ ↑ ↑ ↑ B J. Pra voltar a travar alguém: uma entrada aqui, com byArcade = sai zerando o arcade.)
  *  Código = sequência digitada na tela de seleção. Só direções, H (chute), J (forte) e B (especial): G confirma e V volta. */
 export const LOCKED: Record<string, { code: string[]; byArcade: boolean }> = {
-  xablau: { code: ['down', 'down', 'down', 'kick', 'kick', 'kick'], byArcade: true },                       // ↓ ↓ ↓ H H H   (pisa, pisa, pisa e chuta)
-  mundim: { code: ['up', 'up', 'up', 'up', 'up', 'special', 'heavy'], byArcade: true },                    // ↑ ↑ ↑ ↑ ↑ B J (sobe a torre e solta o especial)
   dener: { code: ['up', 'up', 'down', 'down', 'left', 'right', 'left', 'right', 'special', 'heavy'], byArcade: false },  // ↑ ↑ ↓ ↓ ← → ← → B J
 };
 /** Cenário usado quando o lutador não define o seu. */

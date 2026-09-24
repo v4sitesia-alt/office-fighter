@@ -94,7 +94,8 @@ const paintMute = () => { muteBtn.textContent = audio.muted ? '🔇' : '🔊'; m
 muteBtn.addEventListener('click', () => { audio.unlock(); audio.toggleMute(); paintMute(); });
 paintMute();
 
-// ---------- lutadores travados (LOCKED em roster.ts): código na seleção; Xablau e Mundim também saem zerando o arcade.
+// ---------- lutadores travados (LOCKED em roster.ts): código na seleção; quem tem byArcade também sai zerando o arcade
+// (hoje só o Dener, e só no código: Xablau e Mundim foram liberados pra todo mundo em 2026-09-24).
 // A chave do armazenamento mudou no lançamento: quem já tinha destravado o Dener antes começa travado de novo.
 const UNLOCK_KEY = 'v4f-unlocked-lancamento';
 const unlockedIds = new Set<string>((() => { try { return JSON.parse(localStorage.getItem(UNLOCK_KEY) ?? '[]') as string[]; } catch { return []; } })());
