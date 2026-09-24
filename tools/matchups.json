@@ -1,21 +1,21 @@
 {
  "n": 20,
  "pct": {
-  "mundim": 56.1,
-  "dede": 54.3,
-  "eneias": 53.6,
+  "mundim": 61.1,
+  "dede": 55,
+  "eneias": 53.2,
   "edgard": 52.9,
-  "dener": 51.4,
-  "crm": 51.1,
-  "leo": 50.7,
-  "van": 50.4,
-  "laura": 48.9,
-  "xablau": 48.2,
-  "michael": 47.5,
+  "crm": 50.7,
+  "leo": 50.4,
+  "dener": 50.4,
+  "van": 50,
+  "laura": 49.3,
+  "xablau": 47.9,
+  "michael": 47.1,
   "kevin": 46.8,
-  "dias": 46.8,
-  "santana": 46.4,
-  "landim": 45
+  "dias": 45.4,
+  "landim": 45,
+  "santana": 45
  },
  "vs": {
   "edgard": {
@@ -47,7 +47,7 @@
    "leo": 50,
    "dias": 70,
    "xablau": 85,
-   "mundim": 25,
+   "mundim": 30,
    "dener": 35
   },
   "landim": {
@@ -79,7 +79,7 @@
    "leo": 45,
    "dias": 85,
    "xablau": 55,
-   "mundim": 30,
+   "mundim": 25,
    "dener": 85
   },
   "santana": {
@@ -95,7 +95,7 @@
    "leo": 65,
    "dias": 30,
    "xablau": 60,
-   "mundim": 50,
+   "mundim": 30,
    "dener": 70
   },
   "michael": {
@@ -111,7 +111,7 @@
    "leo": 45,
    "dias": 60,
    "xablau": 85,
-   "mundim": 15,
+   "mundim": 10,
    "dener": 20
   },
   "dede": {
@@ -127,7 +127,7 @@
    "leo": 45,
    "dias": 45,
    "xablau": 20,
-   "mundim": 35,
+   "mundim": 45,
    "dener": 70
   },
   "van": {
@@ -143,7 +143,7 @@
    "leo": 30,
    "dias": 55,
    "xablau": 40,
-   "mundim": 55,
+   "mundim": 50,
    "dener": 70
   },
   "kevin": {
@@ -175,7 +175,7 @@
    "leo": 50,
    "dias": 80,
    "xablau": 20,
-   "mundim": 55,
+   "mundim": 50,
    "dener": 50
   },
   "leo": {
@@ -191,7 +191,7 @@
    "crm": 50,
    "dias": 60,
    "xablau": 20,
-   "mundim": 55,
+   "mundim": 50,
    "dener": 75
   },
   "dias": {
@@ -207,7 +207,7 @@
    "crm": 20,
    "leo": 40,
    "xablau": 75,
-   "mundim": 40,
+   "mundim": 20,
    "dener": 20
   },
   "xablau": {
@@ -223,24 +223,24 @@
    "crm": 80,
    "leo": 80,
    "dias": 25,
-   "mundim": 55,
+   "mundim": 50,
    "dener": 5
   },
   "mundim": {
    "edgard": 50,
-   "laura": 75,
+   "laura": 70,
    "landim": 50,
-   "eneias": 70,
-   "santana": 50,
-   "michael": 85,
-   "dede": 65,
-   "van": 45,
+   "eneias": 75,
+   "santana": 70,
+   "michael": 90,
+   "dede": 55,
+   "van": 50,
    "kevin": 50,
-   "crm": 45,
-   "leo": 45,
-   "dias": 60,
-   "xablau": 45,
-   "dener": 50
+   "crm": 50,
+   "leo": 50,
+   "dias": 80,
+   "xablau": 50,
+   "dener": 65
   },
   "dener": {
    "edgard": 65,
@@ -256,7 +256,7 @@
    "leo": 25,
    "dias": 80,
    "xablau": 95,
-   "mundim": 50
+   "mundim": 35
   }
  }
 }

@@ -51,6 +51,10 @@ KIT = {'landim': {('special', 'projectile', 'speed'): 13, ('special', 'hitstun')
                ('special', 'projectile', 'speed'): 12, ('special', 'hitstun'): 30,   # CORAÇÃO DE MÃE mais rápido e segura mais
                ('special', 'heal'): 6,                                     # ... e cura a Van quando acerta (2026-09-24)
                ('super', 'startup'): 60}}                                  # AMOR DE MÃE: mãe não espera (carregava 100 quadros)
+# A COISA (o hóspede, o 2º round do Mundim): a mais forte e a mais rápida do jogo (pedido de 2026-09-24). Não é escolhível, fica fora
+# da FICHA; aplicada à parte. Golpes: (preparo, recuperação) mais curtos que o ritmo normal, com o dano que já tinha.
+COISA = {'stats': {'power': 1.5, 'speed': 1.45, 'magic': 1.35, 'weight': 1.5},
+         'moves': {'punch': (3, 6), 'kick': (5, 8), 'heavy': (8, 14), 'long': (10, 16), 'lowPunch': (3, 7), 'lowKick': (5, 9), 'lowHeavy': (8, 13)}}
 # Barra que enche sozinha (pontos por frame; 0,07 = 4,2 por segundo). Edgard: barra rápida (pedido de 2026-09-23); Kevin, o
 # atirador: barra rápida pra atirar mais (2026-09-24).
 BARRA = {'edgard': 0.035, 'kevin': 0.07}   # Edgard: 0,07 enchia rápido demais (2026-09-24): metade, e cada magia tira mais (fator 1,30)
@@ -155,6 +159,14 @@ def main(quiet=False):
         if not quiet: print(f'{fid:8s} {DIST[fid]:5s} força {power:.2f} agil {speed:.2f} poder {magic:.2f} peso {weight:.2f}  {ritmo:7s} fator {k:.3f} ({"magia" if km != 1 else "porrada"})  magia {special * magic:5.1f}  super {total * magic:5.1f}')
 
 
+def coisa():
+    p = 'public/fighters/monstro/fighter.json'; d = json.load(open(p)); M = d['moves']
+    d['stats'].update(COISA['stats']); d['range'] = 'perto'
+    for name, (s, r) in COISA['moves'].items():
+        if name in M: M[name].update({'startup': s, 'recovery': r})
+    open(p, 'w').write(json.dumps(d, ensure_ascii=False, indent=1))
+
+
 def tune(rounds=10, n=12):
     """Calibrador: roda o torneio de CPU, mede as vitórias e corrige o dano comum de cada um na direção do alvo."""
     import subprocess, math
@@ -175,3 +187,4 @@ def tune(rounds=10, n=12):
 if __name__ == '__main__':
     if '--tune' in sys.argv: tune()
     else: main()
+    coisa()
