@@ -8,7 +8,29 @@ import { audio } from '../core/audio';
  *  do corpo e voltam; na passagem, com as duas sobrepostas, a perna de apoio troca (de lado as duas pernas parecem iguais), então
  *  o passo alterna sem nunca mostrar a pose "espelhada". A perna no ar sobe na passagem (joelho), o corpo sobe na passagem e desce
  *  na pisada, e o ritmo segue a velocidade de andar: o pé de apoio anda pra trás na mesma velocidade que o corpo vai pra frente. */
-interface Gait { hip: number; base: number; pivot: number; d: number }
+interface Gait { hip: number; base: number; pivot: number; d: number; legs?: Legs | null }
+/** As duas pernas recortadas com a emenda suave (sem linha reta no alto da coxa quando uma passa por cima da outra): a da frente
+ *  entra em degradê; a de trás segue cheia um pouco além do meio e sai em degradê. Parado, cada ponto tem uma das duas cheia,
+ *  então a arte fica idêntica. Só as linhas do quadril pra baixo; feito uma vez por quadro de caminhada. */
+interface Legs { back: HTMLCanvasElement; front: HTMLCanvasElement; f0: number }
+function legsOf(sheet: CanvasImageSource, fr: FrameDef, g: Gait): Legs | null {
+  if (g.legs !== undefined) return g.legs;
+  try {
+    const W = fr.sw, rows = fr.sh - g.hip, pv = Math.round(g.pivot), w = Math.max(5, Math.round(W * 0.06)), half = w >> 1;
+    const f0 = Math.max(0, pv - half), b1 = Math.min(W, pv + w);
+    const cut = (x0: number, x1: number, ramp: [number, number, number, number]) => {
+      const c = document.createElement('canvas'); c.width = x1 - x0; c.height = rows;
+      const k = c.getContext('2d')!; k.drawImage(sheet, fr.sx + x0, fr.sy + g.hip, c.width, rows, 0, 0, c.width, rows);
+      k.globalCompositeOperation = 'destination-in';                       // multiplica o alfa pela rampa (e mantém o resto cheio)
+      const gr = k.createLinearGradient(ramp[0] - x0, 0, ramp[1] - x0, 0);
+      gr.addColorStop(0, `rgba(0,0,0,${ramp[2]})`); gr.addColorStop(1, `rgba(0,0,0,${ramp[3]})`);
+      k.fillStyle = gr; k.fillRect(0, 0, c.width, rows);
+      return c;
+    };
+    g.legs = { back: cut(0, b1, [pv + half, b1, 1, 0]), front: cut(f0, W, [f0, pv + half, 0, 1]), f0 };
+  } catch { g.legs = null; }
+  return g.legs;
+}
 const GAIT = new WeakMap<object, Gait | null>();
 function gaitOf(sheet: CanvasImageSource, fr: FrameDef): Gait | null {
   if (GAIT.has(fr)) return GAIT.get(fr)!;
@@ -617,11 +639,19 @@ export class Fighter {
     const low = Math.max(1, g.base - g.hip), L = low * 0.08 * heavy, bob = Math.round(Math.sin(Math.PI * ph) * H * 0.02 * heavy);
     const pv = Math.round(g.pivot), [img, sx, sy] = src;
     x.drawImage(img, sx, sy, W, g.hip, padX, padTop - bob, W, g.hip);          // do quadril pra cima: sobe na passagem
+    const legs = this.flash > 0 ? null : legsOf(this.assets.sheet, fr, g);     // piscando (golpe levado) usa o corte simples
     for (let y = g.hip; y < H; y += 2) {                                       // pernas: faixas de 2 linhas, a de trás primeiro
-      const h = Math.min(2, H - y), k = Math.min(1, (y - g.hip) / low), rise = -bob * (1 - k);
-      const gap = Math.min(W - pv, Math.max(0, Math.ceil((sF - sB) * k)));      // abrindo além da arte: a de trás estica e cobre a fresta (short, saia)
-      x.drawImage(img, sx, sy + y, pv + gap, h, padX + Math.round(sB * k), padTop + y + Math.round(rise - L * liftB * k), pv + gap, h + 1);
-      x.drawImage(img, sx + pv, sy + y, W - pv, h, padX + pv + Math.round(sF * k), padTop + y + Math.round(rise - L * liftF * k), W - pv, h + 1);
+      // k = quanto a linha anda: cresce devagar no alto (cinto e mãos quase parados, sem emenda) e forte embaixo (o joelho dobra, o pé faz o passo)
+      const kl = Math.min(1, (y - g.hip) / low), k = kl ** 1.7, h = Math.min(2, H - y), rise = -bob * (1 - kl), r = y - g.hip;
+      const yB = padTop + y + Math.round(rise - L * liftB * k), yF = padTop + y + Math.round(rise - L * liftF * k);
+      if (legs) {
+        x.drawImage(legs.back, 0, r, legs.back.width, h, padX + Math.round(sB * k), yB, legs.back.width, h + 1);
+        x.drawImage(legs.front, 0, r, legs.front.width, h, padX + legs.f0 + Math.round(sF * k), yF, legs.front.width, h + 1);
+      } else {
+        const gap = Math.min(W - pv, Math.max(0, Math.ceil((sF - sB) * k)));    // abrindo além da arte: a de trás estica e cobre a fresta
+        x.drawImage(img, sx, sy + y, pv + gap, h, padX + Math.round(sB * k), yB, pv + gap, h + 1);
+        x.drawImage(img, sx + pv, sy + y, W - pv, h, padX + pv + Math.round(sF * k), yF, W - pv, h + 1);
+      }
     }
     return { c, padX, padTop };
   }
