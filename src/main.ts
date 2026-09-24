@@ -72,7 +72,9 @@ let playerIdx = 0;
 let campaign: { idx: number; hue: number }[] = [];
 let fightNo = 0;
 
-const DIFF_RAMP: Difficulty[][] = [['easy', 'easy', 'normal', 'normal'], ['normal', 'normal', 'hard', 'hard'], ['hard', 'hard', 'hard', 'hard']];
+// nível da CPU luta a luta (8 lutas: 4 rivais, o subchefe Dias, o elevador do Leo, o laboratório do Xablau e o Mundim)
+const DIFF_RAMP: Difficulty[][] = [['easy', 'easy', 'normal', 'normal', 'normal', 'hard', 'hard', 'hard'],
+  ['normal', 'normal', 'hard', 'hard', 'hard', 'boss', 'boss', 'boss'], ['hard', 'hard', 'hard', 'hard', 'boss', 'boss', 'boss', 'boss']];
 
 const MUSIC: Record<Mode, 'intro' | 'select' | 'fight' | null> = {
   loading: null, boot: null, intro: 'intro', lobby: 'select', netfight: 'fight', title: 'intro', difficulty: 'intro', select: 'select', versus: 'select', fight: 'fight', result: null, ending: null,
@@ -126,7 +128,8 @@ function buildCampaign() {
 
 function startFight() {
   const opp = campaign[fightNo];
-  const level = secretFight ? 'hard' : DIFF_RAMP[['easy', 'normal', 'hard'].indexOf(difficulty)][Math.min(fightNo, 3)];
+  const ramp = DIFF_RAMP[Math.max(0, ['easy', 'normal', 'hard'].indexOf(difficulty))];
+  const level: Difficulty = secretFight ? 'boss' : ramp[Math.min(fightNo, ramp.length - 1)];
   const isLast = fightNo === campaign.length - 1;
   const owner = opp.hue ? roster[playerIdx] : roster[opp.idx]; // luta no cenário (e com a música) do oponente
   const stage = stageOf(owner);

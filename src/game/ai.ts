@@ -20,8 +20,11 @@ interface Profile {
 
 export const PROFILES: Record<Difficulty, Profile> = {
   easy:   { reaction: 18, attackChance: 0.35, blockChance: 0.2, jumpChance: 0.06, specialChance: 0.3, retreatChance: 0.15, punishBlock: false, mixup: 0.2, chain: 0.3 },
-  normal: { reaction: 10, attackChance: 0.55, blockChance: 0.5, jumpChance: 0.1,  specialChance: 0.6, retreatChance: 0.12, punishBlock: true,  mixup: 0.5, chain: 0.65 },
+  // 2026-09-24: arcade um pouco mais difícil. O normal subiu (era 10 · 0,55 · 0,5 · 0,6 · 0,5 · 0,65) e o 'boss' é novo, mais esperto
+  // que o difícil, só nos andares de cima do arcade. O difícil fica como está: é a régua do torneio de equilíbrio (npm run balance).
+  normal: { reaction: 8,  attackChance: 0.62, blockChance: 0.6,  jumpChance: 0.1,  specialChance: 0.7,  retreatChance: 0.11, punishBlock: true,  mixup: 0.6,  chain: 0.75 },
   hard:   { reaction: 5,  attackChance: 0.75, blockChance: 0.8, jumpChance: 0.14, specialChance: 0.9, retreatChance: 0.08, punishBlock: true,  mixup: 0.8, chain: 0.9 },
+  boss:   { reaction: 4,  attackChance: 0.8,  blockChance: 0.85, jumpChance: 0.14, specialChance: 0.95, retreatChance: 0.08, punishBlock: true,  mixup: 0.85, chain: 0.95 },
 };
 
 type Plan = { buttons: Button[]; frames: number };

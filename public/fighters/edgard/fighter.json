@@ -266,7 +266,7 @@
    "startup": 12,
    "active": 6,
    "recovery": 17,
-   "damage": 19.5,
+   "damage": 23.4,
    "hitstun": 26,
    "blockstun": 16,
    "hitbox": {
@@ -342,23 +342,23 @@
     "hits": [
      {
       "at": 5,
-      "damage": 7.6
+      "damage": 9.1
      },
      {
       "at": 12,
-      "damage": 7.6
+      "damage": 9.1
      },
      {
       "at": 19,
-      "damage": 7.6
+      "damage": 9.1
      },
      {
       "at": 26,
-      "damage": 7.6
+      "damage": 9.1
      },
      {
       "at": 33,
-      "damage": 13.0,
+      "damage": 15.6,
       "knockdown": true,
       "launch": -11
      }
@@ -561,7 +561,7 @@
    "hitstop": 8
   }
  },
- "meterRegen": 0.07,
+ "meterRegen": 0.035,
  "range": "longe",
  "meterRate": 1.35
 }

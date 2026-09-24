@@ -117,7 +117,7 @@ BOSSES = [i for i in (re.findall(r"'(\w+)'", _b.group(1)) if _b else ['dias', 'l
 _dr = re.search(r'DIFF_RAMP[^=]*=\s*\[(.*?)\];', MAIN_TS, re.S)
 _ramps = [re.findall(r"'(\w+)'", x) for x in re.findall(r'\[([^\[\]]+)\]', _dr.group(1))] if _dr else []
 _cur = grab(MAIN_TS, r"let difficulty: Difficulty = '(\w+)'", str, 'normal')
-RAMP = _ramps[['easy', 'normal', 'hard'].index(_cur)] if len(_ramps) == 3 and _cur in ('easy', 'normal', 'hard') else ['normal', 'normal', 'hard', 'hard']
+RAMP = _ramps[['easy', 'normal', 'hard'].index(_cur)] if len(_ramps) == 3 and _cur in ('easy', 'normal', 'hard') else ['normal', 'normal', 'hard', 'hard', 'hard', 'boss', 'boss', 'boss']
 
 
 def _ai(level):
@@ -125,7 +125,7 @@ def _ai(level):
     return dict(re.findall(r'(\w+):\s*([\d.]+|true|false)', m.group(1))) if m else {}
 
 
-AI = {lv: _ai(lv) for lv in ('easy', 'normal', 'hard')}
+AI = {lv: _ai(lv) for lv in ('easy', 'normal', 'hard', 'boss')}
 _mf = MATCH_TS.split('export const MORPH')[1].split('];')[0] if 'export const MORPH' in MATCH_TS else ''
 MORPH_FRAMES = [int(x) for x in re.findall(r'frame:\s*(\d+)', _mf)]
 MORPH_MSGS = re.findall(r"t === \d+\) this\.ev\.message\('([^']+)'", MATCH_TS)
@@ -1428,9 +1428,10 @@ def cpu_words(lv):
     except ValueError:
         rf, bc = 10, .5
     react = 'quase na hora, em menos de 1/10 de segundo' if rf / 60 < .1 else f'em cerca de 1/{round(60 / rf)} de segundo'
-    block = 'quase todos os golpes' if bc >= .75 else 'mais ou menos metade dos golpes' if bc >= .4 else 'poucos golpes'
+    block = 'quase todos os golpes' if bc >= .75 else 'a maior parte dos golpes' if bc >= .55 else 'mais ou menos metade dos golpes' if bc >= .4 else 'poucos golpes'
     pun = ' e revida quando você erra' if a.get('punishBlock') == 'true' else ''
-    return f'Defende {block}{pun}. Reage {react}.'
+    combo = ' Emenda quase todos os combos: é o nível dos chefes.' if float(a.get('chain', 0)) >= .95 else ''
+    return f'Defende {block}{pun}. Reage {react}.{combo}'
 
 
 def locked_box():

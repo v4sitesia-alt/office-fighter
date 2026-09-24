@@ -162,4 +162,4 @@ export interface FighterAssets {
   portrait?: HTMLImageElement;
 }
 
-export type Difficulty = 'easy' | 'normal' | 'hard';
+export type Difficulty = 'easy' | 'normal' | 'hard' | 'boss';   // boss: só no arcade, nos andares de cima e na luta secreta

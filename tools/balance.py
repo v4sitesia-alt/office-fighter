@@ -53,7 +53,7 @@ KIT = {'landim': {('special', 'projectile', 'speed'): 13, ('special', 'hitstun')
                ('super', 'startup'): 60}}                                  # AMOR DE MÃE: mãe não espera (carregava 100 quadros)
 # Barra que enche sozinha (pontos por frame; 0,07 = 4,2 por segundo). Edgard: barra rápida (pedido de 2026-09-23); Kevin, o
 # atirador: barra rápida pra atirar mais (2026-09-24).
-BARRA = {'edgard': 0.07, 'kevin': 0.07}
+BARRA = {'edgard': 0.035, 'kevin': 0.07}   # Edgard: 0,07 enchia rápido demais (2026-09-24): metade, e cada magia tira mais (fator 1,30)
 # Quem luta de longe vive de magia: a barra enche 35% mais rápido batendo e apanhando (meterRate).
 GANHO = {f: 1.35 for f, r in DIST.items() if r == 'longe'}
 # Fator escondido travado (o calibrador não mexe). Vazio: o Edgard deixou de precisar (o fator dele agora vai na magia).

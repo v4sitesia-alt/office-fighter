@@ -3,39 +3,39 @@
  "pct": {
   "mundim": 56.1,
   "dede": 54.3,
-  "eneias": 53.2,
-  "leo": 52.5,
+  "eneias": 53.6,
+  "edgard": 52.9,
   "dener": 51.4,
-  "van": 51.1,
-  "crm": 50.4,
-  "laura": 50,
-  "xablau": 48.6,
-  "landim": 47.5,
-  "kevin": 47.5,
-  "dias": 47.5,
-  "michael": 47.1,
-  "edgard": 46.4,
-  "santana": 46.4
+  "crm": 51.1,
+  "leo": 50.7,
+  "van": 50.4,
+  "laura": 48.9,
+  "xablau": 48.2,
+  "michael": 47.5,
+  "kevin": 46.8,
+  "dias": 46.8,
+  "santana": 46.4,
+  "landim": 45
  },
  "vs": {
   "edgard": {
-   "laura": 45,
-   "landim": 40,
-   "eneias": 30,
+   "laura": 60,
+   "landim": 75,
+   "eneias": 25,
    "santana": 85,
-   "michael": 35,
+   "michael": 30,
    "dede": 50,
-   "van": 50,
-   "kevin": 55,
-   "crm": 65,
-   "leo": 40,
-   "dias": 35,
-   "xablau": 35,
+   "van": 60,
+   "kevin": 65,
+   "crm": 55,
+   "leo": 65,
+   "dias": 45,
+   "xablau": 40,
    "mundim": 50,
    "dener": 35
   },
   "laura": {
-   "edgard": 55,
+   "edgard": 40,
    "landim": 60,
    "eneias": 50,
    "santana": 45,
@@ -51,7 +51,7 @@
    "dener": 35
   },
   "landim": {
-   "edgard": 60,
+   "edgard": 25,
    "laura": 40,
    "eneias": 45,
    "santana": 55,
@@ -67,7 +67,7 @@
    "dener": 55
   },
   "eneias": {
-   "edgard": 70,
+   "edgard": 75,
    "laura": 50,
    "landim": 55,
    "santana": 55,
@@ -99,7 +99,7 @@
    "dener": 70
   },
   "michael": {
-   "edgard": 65,
+   "edgard": 70,
    "laura": 40,
    "landim": 50,
    "eneias": 45,
@@ -131,7 +131,7 @@
    "dener": 70
   },
   "van": {
-   "edgard": 50,
+   "edgard": 40,
    "laura": 65,
    "landim": 60,
    "eneias": 25,
@@ -147,7 +147,7 @@
    "dener": 70
   },
   "kevin": {
-   "edgard": 45,
+   "edgard": 35,
    "laura": 40,
    "landim": 65,
    "eneias": 60,
@@ -163,7 +163,7 @@
    "dener": 40
   },
   "crm": {
-   "edgard": 35,
+   "edgard": 45,
    "laura": 65,
    "landim": 35,
    "eneias": 80,
@@ -179,7 +179,7 @@
    "dener": 50
   },
   "leo": {
-   "edgard": 60,
+   "edgard": 35,
    "laura": 50,
    "landim": 30,
    "eneias": 55,
@@ -195,7 +195,7 @@
    "dener": 75
   },
   "dias": {
-   "edgard": 65,
+   "edgard": 55,
    "laura": 30,
    "landim": 75,
    "eneias": 15,
@@ -211,7 +211,7 @@
    "dener": 20
   },
   "xablau": {
-   "edgard": 65,
+   "edgard": 60,
    "laura": 15,
    "landim": 50,
    "eneias": 45,
