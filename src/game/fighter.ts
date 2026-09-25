@@ -664,7 +664,7 @@ export class Fighter {
     if (!st || !mid || !end) return;
     const x0 = b.x * s, cy = b.y * s;
     if (this.beamStop !== null) len = Math.min(len, Math.max(8, Math.abs(this.beamStop - this.x) - x0));
-    const xEnd = x0 + len, flick = Math.floor(this.animTime / 3) % 2 === 1;
+    const xEnd = x0 + len, flick = !b.still && Math.floor(this.animTime / 3) % 2 === 1;
     let x = x0 + Math.max(0, st.width - (b.overlap ?? 12)) * s;
     ctx.save();
     if (flick) { ctx.translate(0, cy * 2); ctx.scale(1, -1); }                 // faíscas de cima e de baixo trocam de lugar: o raio "vibra"
@@ -676,8 +676,9 @@ export class Fighter {
     const sw = Math.min(st.width * s, len);
     ctx.drawImage(st, 0, 0, sw / s, st.height, x0, cy - st.height * s / 2, sw, st.height * s);
     ctx.restore();
-    const k = s * (flick ? 1.08 : 0.94);
-    ctx.drawImage(end, xEnd - end.width * k / 2, cy - end.height * k / 2, end.width * k, end.height * k);
+    const k = b.still ? s : s * (flick ? 1.08 : 0.94);
+    const ex = xEnd - end.width * k * (b.endAt ?? 0.5), cut = b.still ? Math.max(0, x0 - ex) : 0;   // mão/boca não aparecem atrás de onde nascem
+    if (end.width * k > cut) ctx.drawImage(end, cut / k, 0, end.width - cut / k, end.height, ex + cut, cy - end.height * k / 2, end.width * k - cut, end.height * k);
   }
 
   private flashed(frame: FrameDef) {

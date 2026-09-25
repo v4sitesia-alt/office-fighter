@@ -200,52 +200,7 @@
    "launch": -5,
    "hitstop": 9
   },
-  "special": {
-   "phases": {
-    "startup": [
-     15
-    ],
-    "active": [
-     13
-    ],
-    "recovery": [
-     13,
-     0
-    ]
-   },
-   "startup": 8,
-   "active": 4,
-   "recovery": 12,
-   "damage": 12,
-   "hitstun": 22,
-   "blockstun": 14,
-   "hitbox": {
-    "x": 0,
-    "y": 0,
-    "w": 0,
-    "h": 0
-   },
-   "knockback": 11,
-   "meterCost": 50,
-   "hitstop": 7,
-   "name": "CORTE DE CUSTOS",
-   "projectile": {
-    "x": 90,
-    "y": -115,
-    "speed": 13,
-    "lifetime": 90,
-    "style": "slash",
-    "color": "#ff2a4a",
-    "size": 34,
-    "hitbox": {
-     "x": -32,
-     "y": -40,
-     "w": 64,
-     "h": 80
-    }
-   }
-  },
-  "super": {
+  "long": {
    "kind": "throw",
    "phases": {
     "startup": [
@@ -280,7 +235,6 @@
     "h": 160
    },
    "knockback": 0,
-   "meterCost": 100,
    "name": "FEEDBACK 360",
    "throw": {
     "speed": 12,
@@ -291,7 +245,7 @@
     "throw": 22,
     "whiff": 20,
     "air": 150,
-    "ticks": 5,
+    "ticks": 3,
     "tickDamage": 2,
     "holdOffset": {
      "x": 50,
@@ -302,11 +256,100 @@
      "y": -20
     },
     "release": {
-     "damage": 12,
+     "damage": 8,
      "knockback": 26,
      "launch": 9,
      "hitstop": 12
     }
+   }
+  },
+  "special": {
+   "name": "MICROGERENCIAMENTO",
+   "phases": {
+    "startup": [
+     35,
+     36
+    ],
+    "active": [
+     37
+    ],
+    "recovery": [
+     38,
+     39
+    ]
+   },
+   "startup": 10,
+   "active": 14,
+   "recovery": 14,
+   "damage": 12,
+   "hitstun": 26,
+   "blockstun": 14,
+   "knockback": 6,
+   "hitbox": {
+    "x": 0,
+    "y": 0,
+    "w": 0,
+    "h": 0
+   },
+   "meterCost": 50,
+   "hitstop": 8,
+   "beam": {
+    "x": 43.5,
+    "y": -97.0,
+    "reach": 730,
+    "grow": 70,
+    "thick": 40,
+    "start": "braco-inicio.png",
+    "mid": "braco-meio.png",
+    "end": "mao.png",
+    "overlap": 12,
+    "still": true,
+    "endAt": 0.72
+   }
+  },
+  "super": {
+   "name": "AQUISIÇÃO HOSTIL",
+   "phases": {
+    "startup": [
+     40,
+     41,
+     42,
+     43
+    ],
+    "active": [
+     44
+    ],
+    "recovery": [
+     40
+    ]
+   },
+   "startup": 14,
+   "active": 36,
+   "recovery": 18,
+   "damage": 8,
+   "hitstun": 20,
+   "blockstun": 12,
+   "knockback": 3,
+   "hitbox": {
+    "x": 0,
+    "y": 0,
+    "w": 0,
+    "h": 0
+   },
+   "meterCost": 100,
+   "hitstop": 6,
+   "beam": {
+    "x": 118.0,
+    "y": -90.9,
+    "reach": 1050,
+    "grow": 60,
+    "thick": 110,
+    "start": "boca-inicio.png",
+    "mid": "boca-meio.png",
+    "end": "boca-fim.png",
+    "overlap": 12,
+    "still": true,
+    "every": 11
    }
   },
   "airPunch": {
@@ -494,5 +537,5 @@
    "launch": -8
   }
  },
- "laugh": 3
+ "laugh": 5
 }

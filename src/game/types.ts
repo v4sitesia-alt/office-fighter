@@ -87,6 +87,8 @@ export interface BeamDef {
   start: string; mid: string; end: string;   // peças em public/fighters/<id>/
   every?: number;              // raio contínuo: acerta de novo a cada N frames enquanto estiver ativo
   overlap?: number;            // quanto o trecho do meio entra por baixo do início, onde o início vai sumindo (px da peça)
+  still?: boolean;             // corpo, não energia (braço, boca do Dener): não vibra (sem espelhar a cada 3 quadros) nem pulsa a ponta
+  endAt?: number;              // que fração da largura da ponta fica ANTES do fim do raio (padrão 0,5 = centrada; a mão: a palma no alvo)
 }
 
 export type MoveKind = 'ground' | 'air' | 'low' | 'portal' | 'dive' | 'throw';

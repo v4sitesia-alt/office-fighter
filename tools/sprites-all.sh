@@ -77,7 +77,12 @@ run landim  $M/landim.png --wide 6,2 \
 python3 tools/pieces.py $M/landim-golpelongo-vitoria.png public/fighters/landim --scale 0.745 --fx-hue 48-66:v0.85:s0.08 \
   --keep 0,0,1254,1254 --fx-drop 460,290,1050,500 --piece claquete.png:792,312,948,492
 run xablau  $M/xablau.png --wide 2,3 --wide 6,2
-run dener   $M/dener.png --alpha 150 --grow 22
+# Dener (2026-09-25): golpes novos (magia = o braço que vira tentáculo e estica; especial = a bocarra de verme). O dener-golpes.py
+# tira o fundo preto do board do especial, monta um board regular 2x5 (frames 35-44) e grava as peças dos dois raios; depois do
+# atlas, --aplica grava no fighter.json de onde cada raio sai (ombro e mão, relativos aos pés).
+python3 tools/dener-golpes.py
+run dener   $M/dener.png --alpha 150 --grow 22 --extra $M/dener-golpes-novos-board.png --extra-scale 1 --extra-cuts 340,680,1020,1360
+python3 tools/dener-golpes.py --aplica
 # CRM War Machine e Leo: boards principais com FUNDO BRANCO (recorte do whiteboard.py). Coordenadas em px do board.
 run crm     $M/CRM-warmachine.png --axis-ignore-smoke --crop missil.png:712,1200,860,1275:erase:rot=-8 \
   --extra $M/crm-golpeespecial-vitoria.png --extra-scale 0.75,0.70 --extra-cuts 250,548,795,1143 \

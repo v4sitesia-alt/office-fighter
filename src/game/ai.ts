@@ -213,6 +213,7 @@ export class Ai {
       return (m.projectile.x + m.projectile.hitbox.x + m.projectile.hitbox.w + m.projectile.speed * m.projectile.lifetime * 0.5) * this.me.scale;
     }
     const far = Math.max(...(m.hitboxes ?? [m.hitbox]).map((b) => b.x + b.w));
+    if (m.kind === 'throw' && m.throw) return far * this.me.scale + m.throw.speed * m.throw.dash;   // agarrão que avança (o FEEDBACK 360 do Dener)
     return far * this.me.scale + (m.dash ?? 0) * (m.startup + m.active * 0.5) + 15;      // golpe com avanço (direto, barrigada) alcança mais longe
   }
 
