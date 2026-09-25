@@ -117,7 +117,8 @@ BOSSES = [i for i in (re.findall(r"'(\w+)'", _b.group(1)) if _b else ['dias', 'l
 _dr = re.search(r'DIFF_RAMP[^=]*=\s*\[(.*?)\];', MAIN_TS, re.S)
 _ramps = [re.findall(r"'(\w+)'", x) for x in re.findall(r'\[([^\[\]]+)\]', _dr.group(1))] if _dr else []
 _cur = grab(MAIN_TS, r"let difficulty: Difficulty = '(\w+)'", str, 'normal')
-RAMP = _ramps[['easy', 'normal', 'hard'].index(_cur)] if len(_ramps) == 3 and _cur in ('easy', 'normal', 'hard') else ['normal', 'normal', 'hard', 'hard', 'hard', 'boss', 'boss', 'boss']
+RAMP = _ramps[['easy', 'normal', 'hard'].index(_cur)] if len(_ramps) == 3 and _cur in ('easy', 'normal', 'hard') else ['normal', 'normal', 'normal', 'hard', 'hard', 'hard', 'hard', 'boss']
+MERCY = grab(MAIN_TS, r'const MERCY = (\d+)', int, 0)          # a cada MERCY derrotas na mesma luta, a CPU dela desce um nível
 
 
 def _ai(level):
@@ -1465,6 +1466,8 @@ def s_arcade():
     def span_txt(a, b):
         return f'LUTA {a}' if a == b else f'LUTAS {a} E {b}' if b == a + 1 else f'LUTAS {a} A {b}'
     ramp_html = ''.join(f'<li><b>{span_txt(a, b)}</b><span>{cpu_words(lv)}</span></li>' for a, b, lv in spans)
+    cada = 'derrota' if MERCY == 1 else f'{ {2: "duas", 3: "três"}.get(MERCY, MERCY)} derrotas seguidas'
+    mercy_txt = f' Travou numa luta? A cada {cada} pro mesmo adversário, ele fica um nível mais fácil (até o nível mais fácil).' if MERCY else ''
     music = all(has_music(i) for i in ROSTER if i not in BOSSES)
     stops = (f'<li class="fl"><span class="fl-n">1-{RIVALS}</span><div class="fl-faces">' + ''.join('<i>?</i>' for _ in range(RIVALS)) +
              f'</div><div class="fl-t"><h4>{RIVALS} RIVAIS DO ELENCO</h4><p>{RIVALS} lutadores diferentes, cada um no seu cenário{" e com a sua música" if music else ""}. Quem são depende do lutador que você escolher.</p></div></li>')
@@ -1497,7 +1500,7 @@ def s_arcade():
 </div>
 {locked_box()}
 <div class="two">
- <div class="paper ramp"><h4>A CPU FICA MAIS ESPERTA</h4><ol>{ramp_html}</ol><p class="tnote">Não dá pra escolher a dificuldade: ela sobe sozinha, luta a luta.</p></div>
+ <div class="paper ramp"><h4>A CPU FICA MAIS ESPERTA</h4><ol>{ramp_html}</ol><p class="tnote">Não dá pra escolher a dificuldade: ela sobe sozinha, luta a luta.{mercy_txt}</p></div>
  <div class="paper score"><h4>PONTUAÇÃO</h4><ul>{score}</ul><p class="tnote">No fim do round os bônus aparecem somados. A pontuação do arcade vai pro RANKING, que vale por temporada: quando começa uma temporada nova, todo mundo volta pro zero.</p></div>
 </div>
 <div class="acards">{cc}</div>''', f'A campanha contra a CPU: {total} lutas, um andar por luta, até o topo da torre da Mundim Corp.', (2250, 3950))

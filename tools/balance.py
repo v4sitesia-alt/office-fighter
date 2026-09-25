@@ -26,7 +26,7 @@ import json, os, sys
 # ficha (o que o jogador vê nas barras) não mudam: muda só o quanto cada golpe comum tira, pra compensar alcance e tamanho.
 TUNE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'balance-tune.json')
 TUNE = json.load(open(TUNE_FILE)) if os.path.exists(TUNE_FILE) else {}
-ALVO = {'leo': 56, 'mundim': 58, 'crm': 52, 'dede': 54, 'xablau': 52}   # o chefe (Mundim) no topo; Xablau e CRM fortes, abaixo dele
+ALVO = {'leo': 56, 'mundim': 63, 'crm': 52, 'dede': 54, 'xablau': 52}   # o chefe (Mundim) no topo; Xablau e CRM fortes, abaixo dele
 # Distância em que cada um luta melhor (pedido de 2026-09-23). Muda o jogo da CPU (ai.ts: de perto pressiona, de longe segura a
 # distância e vive de magia/tiro, meia distância usa o golpe longo), aparece na escolha e no manual, e decide onde vai o fator
 # escondido: de longe ele reforça a MAGIA (a porrada fica no que a FORÇA mostra); nos outros, a porrada. Nos níveis: de perto
@@ -52,16 +52,34 @@ KIT = {'landim': {('special', 'projectile', 'speed'): 13, ('special', 'hitstun')
                ('special', 'heal'): 6,                                     # ... e cura a Van quando acerta (2026-09-24)
                ('super', 'startup'): 60}}                                  # AMOR DE MÃE: mãe não espera (carregava 100 quadros)
 # A COISA (o hóspede, o 2º round do Mundim): a mais forte e a mais rápida do jogo (pedido de 2026-09-24). Não é escolhível, fica fora
-# da FICHA; aplicada à parte. Golpes: (preparo, recuperação) mais curtos que o ritmo normal, com o dano que já tinha.
-COISA = {'stats': {'power': 1.5, 'speed': 1.45, 'magic': 1.35, 'weight': 1.5},
-         'moves': {'punch': (3, 6), 'kick': (5, 8), 'heavy': (8, 14), 'long': (10, 16), 'lowPunch': (3, 7), 'lowKick': (5, 9), 'lowHeavy': (8, 13)}}
+# da FICHA; aplicada à parte. Golpes: (preparo, recuperação) mais curtos que o ritmo normal.
+# 2026-09-25 ("a equipe está reclamando que está muito difícil"): o medidor tinha um erro (depois da metamorfose a CPU do outro
+# lado seguia o Mundim antigo, parado) que escondia o tamanho do problema: A COISA ganhava 97% dos rounds e o Mundim 98% das
+# lutas. Continua a mais forte e a mais rápida (FORÇA 1,50 e AGILIDADE 1,45, as maiores do jogo; golpes com a velocidade do
+# ritmo rápido e o dano base do ritmo normal, e a FORÇA multiplica), mas agora dá pra vencer: PESO 1,00 (era 1,50: quase não
+# sentia os golpes), golpes comuns com 80% do alcance (fica de fora só a ponta fina das garras; o bote de longe, o golpe longo,
+# segue inteiro) e a barra enchendo na metade da velocidade (meterRate 0,5): a FÚRIA DO VERME, o agarrão que não se defende, era
+# a maior fonte de dano dela; segue com o dano todo, mas sai menos vezes. Rounds dela contra a CPU difícil: 97% -> ~65%;
+# o Mundim (1º round + A COISA) no geral: ~65%, o melhor do jogo.
+COISA = {'stats': {'power': 1.5, 'speed': 1.45, 'magic': 1.35, 'weight': 1.0},
+         'moves': {'punch': (3, 6), 'kick': (5, 8), 'heavy': (8, 14), 'long': (10, 16), 'lowPunch': (3, 7), 'lowKick': (5, 9), 'lowHeavy': (8, 13)},
+         # dano de cada golpe comum (antes do FORÇA) e a caixa de acerto (x, y, largura, altura em unidades do sprite)
+         'dano': {'punch': 5, 'kick': 7, 'heavy': 12.5, 'long': 8, 'airPunch': 5, 'airKick': 7, 'airHeavy': 10,
+                  'lowPunch': 4, 'lowKick': 6.5, 'lowHeavy': 10},
+         'alcance': {'punch': (40, -160, 80, 55), 'kick': (36, -125, 76, 85), 'heavy': (16, -120, 76, 120),
+                     'airPunch': (24, -140, 84, 110), 'airKick': (32, -90, 92, 70), 'airHeavy': (-32, -200, 160, 190),
+                     'lowPunch': (32, -70, 60, 60), 'lowKick': (36, -60, 64, 55), 'lowHeavy': (16, -70, 92, 70)},
+         'magia': 10, 'super': (5, 14),     # CUSPE ÁCIDO; FÚRIA DO VERME = 3 mordidas de 5 + o arremesso
+         'barra': 0.5}                      # meterRate: a barra (que ela herda cheia do Mundim) enche na metade da velocidade
 # Barra que enche sozinha (pontos por frame; 0,07 = 4,2 por segundo). Edgard: barra rápida (pedido de 2026-09-23); Kevin, o
 # atirador: barra rápida pra atirar mais (2026-09-24).
 BARRA = {'edgard': 0.035, 'kevin': 0.07}   # Edgard: 0,07 enchia rápido demais (2026-09-24): metade, e cada magia tira mais (fator 1,30)
 # Quem luta de longe vive de magia: a barra enche 35% mais rápido batendo e apanhando (meterRate).
 GANHO = {f: 1.35 for f, r in DIST.items() if r == 'longe'}
-# Fator escondido travado (o calibrador não mexe). Vazio: o Edgard deixou de precisar (o fator dele agora vai na magia).
-FIXO = {}
+# Fator escondido travado (o calibrador não mexe). Mundim (2026-09-25): o calibrador tinha baixado a porrada dele pra 0,92 pra
+# compensar A COISA que o medidor não enxergava; no 1º round ele ganhava só 31%. Com 1,05 é luta de chefe (~41% contra a CPU
+# difícil) e A COISA faz o resto. Travado porque a conta dele é o 1º round + A COISA, não só o fator.
+FIXO = {'mundim': 1.05}
 
 #            id        FORÇA  AGIL.  PODER  PESO   ritmo      magia  super   (dano base, antes do PODER)
 FICHA = [
@@ -164,6 +182,13 @@ def coisa():
     d['stats'].update(COISA['stats']); d['range'] = 'perto'
     for name, (s, r) in COISA['moves'].items():
         if name in M: M[name].update({'startup': s, 'recovery': r})
+    for name, v in COISA['dano'].items():
+        if name in M: M[name]['damage'] = v
+    for name, (x, y, w, h) in COISA['alcance'].items():
+        if name in M: M[name]['hitbox'] = {'x': x, 'y': y, 'w': w, 'h': h}
+    M['special']['damage'] = COISA['magia']
+    M['super']['throw']['tickDamage'], M['super']['throw']['release']['damage'] = COISA['super']
+    d['meterRate'] = COISA['barra']
     open(p, 'w').write(json.dumps(d, ensure_ascii=False, indent=1))
 
 

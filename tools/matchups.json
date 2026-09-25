@@ -1,21 +1,21 @@
 {
  "n": 20,
  "pct": {
-  "mundim": 61.1,
-  "dede": 55,
-  "eneias": 53.2,
-  "edgard": 52.9,
-  "crm": 50.7,
-  "leo": 50.4,
-  "dener": 50.4,
-  "van": 50,
-  "laura": 49.3,
-  "xablau": 47.9,
+  "mundim": 64.3,
+  "dede": 54.6,
+  "eneias": 52.5,
+  "dener": 52.5,
+  "edgard": 51.4,
+  "leo": 49.3,
+  "kevin": 48.9,
+  "crm": 48.9,
+  "van": 48.6,
+  "laura": 47.9,
   "michael": 47.1,
-  "kevin": 46.8,
-  "dias": 45.4,
-  "landim": 45,
-  "santana": 45
+  "landim": 46.4,
+  "santana": 46.4,
+  "xablau": 46.4,
+  "dias": 44.6
  },
  "vs": {
   "edgard": {
@@ -31,7 +31,7 @@
    "leo": 65,
    "dias": 45,
    "xablau": 40,
-   "mundim": 50,
+   "mundim": 30,
    "dener": 35
   },
   "laura": {
@@ -47,7 +47,7 @@
    "leo": 50,
    "dias": 70,
    "xablau": 85,
-   "mundim": 30,
+   "mundim": 10,
    "dener": 35
   },
   "landim": {
@@ -63,7 +63,7 @@
    "leo": 70,
    "dias": 25,
    "xablau": 50,
-   "mundim": 50,
+   "mundim": 70,
    "dener": 55
   },
   "eneias": {
@@ -79,7 +79,7 @@
    "leo": 45,
    "dias": 85,
    "xablau": 55,
-   "mundim": 25,
+   "mundim": 15,
    "dener": 85
   },
   "santana": {
@@ -95,7 +95,7 @@
    "leo": 65,
    "dias": 30,
    "xablau": 60,
-   "mundim": 30,
+   "mundim": 50,
    "dener": 70
   },
   "michael": {
@@ -127,7 +127,7 @@
    "leo": 45,
    "dias": 45,
    "xablau": 20,
-   "mundim": 45,
+   "mundim": 40,
    "dener": 70
   },
   "van": {
@@ -143,7 +143,7 @@
    "leo": 30,
    "dias": 55,
    "xablau": 40,
-   "mundim": 50,
+   "mundim": 30,
    "dener": 70
   },
   "kevin": {
@@ -159,7 +159,7 @@
    "leo": 35,
    "dias": 25,
    "xablau": 35,
-   "mundim": 50,
+   "mundim": 80,
    "dener": 40
   },
   "crm": {
@@ -175,7 +175,7 @@
    "leo": 50,
    "dias": 80,
    "xablau": 20,
-   "mundim": 50,
+   "mundim": 25,
    "dener": 50
   },
   "leo": {
@@ -191,7 +191,7 @@
    "crm": 50,
    "dias": 60,
    "xablau": 20,
-   "mundim": 50,
+   "mundim": 35,
    "dener": 75
   },
   "dias": {
@@ -207,7 +207,7 @@
    "crm": 20,
    "leo": 40,
    "xablau": 75,
-   "mundim": 20,
+   "mundim": 10,
    "dener": 20
   },
   "xablau": {
@@ -223,24 +223,24 @@
    "crm": 80,
    "leo": 80,
    "dias": 25,
-   "mundim": 50,
+   "mundim": 30,
    "dener": 5
   },
   "mundim": {
-   "edgard": 50,
-   "laura": 70,
-   "landim": 50,
-   "eneias": 75,
-   "santana": 70,
+   "edgard": 70,
+   "laura": 90,
+   "landim": 30,
+   "eneias": 85,
+   "santana": 50,
    "michael": 90,
-   "dede": 55,
-   "van": 50,
-   "kevin": 50,
-   "crm": 50,
-   "leo": 50,
-   "dias": 80,
-   "xablau": 50,
-   "dener": 65
+   "dede": 60,
+   "van": 70,
+   "kevin": 20,
+   "crm": 75,
+   "leo": 65,
+   "dias": 90,
+   "xablau": 70,
+   "dener": 35
   },
   "dener": {
    "edgard": 65,
@@ -256,7 +256,7 @@
    "leo": 25,
    "dias": 80,
    "xablau": 95,
-   "mundim": 35
+   "mundim": 65
   }
  }
 }

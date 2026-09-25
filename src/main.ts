@@ -72,9 +72,15 @@ let playerIdx = 0;
 let campaign: { idx: number; hue: number }[] = [];
 let fightNo = 0;
 
-// nível da CPU luta a luta (8 lutas: 4 rivais, o subchefe Dias, o elevador do Leo, o laboratório do Xablau e o Mundim)
-const DIFF_RAMP: Difficulty[][] = [['easy', 'easy', 'normal', 'normal', 'normal', 'hard', 'hard', 'hard'],
-  ['normal', 'normal', 'hard', 'hard', 'hard', 'boss', 'boss', 'boss'], ['hard', 'hard', 'hard', 'hard', 'boss', 'boss', 'boss', 'boss']];
+// nível da CPU luta a luta (8 lutas: 4 rivais, o subchefe Dias, o elevador do Leo, o laboratório do Xablau e o Mundim).
+// 2026-09-25 ("a equipe está reclamando que está muito difícil"): o nível dos chefes ficou só na luta final, a 3ª luta voltou
+// pro normal e a CPU alivia pra quem está travado (MERCY). Medir com `npm run balance -- --arcade`.
+const DIFF_RAMP: Difficulty[][] = [['easy', 'easy', 'easy', 'normal', 'normal', 'normal', 'normal', 'hard'],
+  ['normal', 'normal', 'normal', 'hard', 'hard', 'hard', 'hard', 'boss'], ['hard', 'hard', 'hard', 'hard', 'boss', 'boss', 'boss', 'boss']];
+/** A cada MERCY derrotas seguidas na mesma luta, a CPU dessa luta desce um nível (até o fácil). Quem vence de primeira não sente. */
+const MERCY = 2;
+const LEVELS: Difficulty[] = ['easy', 'normal', 'hard', 'boss'];
+const eased = (lv: Difficulty, losses: number) => LEVELS[Math.max(0, LEVELS.indexOf(lv) - Math.floor(losses / MERCY))];
 
 const MUSIC: Record<Mode, 'intro' | 'select' | 'fight' | null> = {
   loading: null, boot: null, intro: 'intro', lobby: 'select', netfight: 'fight', title: 'intro', difficulty: 'intro', select: 'select', versus: 'select', fight: 'fight', result: null, ending: null,
@@ -130,7 +136,7 @@ function buildCampaign() {
 function startFight() {
   const opp = campaign[fightNo];
   const ramp = DIFF_RAMP[Math.max(0, ['easy', 'normal', 'hard'].indexOf(difficulty))];
-  const level: Difficulty = secretFight ? 'boss' : ramp[Math.min(fightNo, ramp.length - 1)];
+  const level: Difficulty = secretFight ? 'boss' : eased(ramp[Math.min(fightNo, ramp.length - 1)], tries);   // tries = derrotas nesta luta
   const isLast = fightNo === campaign.length - 1;
   const owner = opp.hue ? roster[playerIdx] : roster[opp.idx]; // luta no cenário (e com a música) do oponente
   const stage = stageOf(owner);

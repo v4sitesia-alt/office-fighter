@@ -10,7 +10,7 @@
 // merece ajuste na ficha (tools/balance.py). O Dener é apelão de propósito e fica fora da média.
 import fs from 'node:fs';
 import { Match } from '../src/game/match';
-import { Ai } from '../src/game/ai';
+import { Ai, PROFILES } from '../src/game/ai';
 import { ROSTER, SECRET } from '../src/data/roster';
 import type { Difficulty, FighterAssets } from '../src/game/types';
 import type { StageAssets } from '../src/core/assets';
@@ -29,14 +29,17 @@ const N = Math.max(2, Number(arg('n', '4'))), level = arg('level', 'hard') as Di
 const roster = [...ROSTER, ...SECRET];   // a lista de verdade (ler as aspas do arquivo pegava também os códigos secretos: 'down', 'kick'...)
 const ids = [...new Set(roster)]; const F = Object.fromEntries(ids.map((id) => [id, load(id)]));
 
-function fight(a: string, b: string, seed: number) {
+function fight(a: string, b: string, seed: number, lv1: Difficulty = level, lv2: Difficulty = level) {
   let result: 0 | 1 | -1 | null = null;
-  const m = new Match(F[a], F[b], STAGE, { cpu: level, seed: seed * 7 + 3 }, { message() {}, end: (w) => { result = w; } });
-  const ai1 = new Ai(m.fighters[0], m.fighters[1], level, seed * 13 + 5);
+  const m = new Match(F[a], F[b], STAGE, { cpu: lv2, seed: seed * 7 + 3 }, { message() {}, end: (w) => { result = w; } });
+  const ai1 = new Ai(m.fighters[0], m.fighters[1], lv1, seed * 13 + 5);
   const ports = { ports: [ai1.ctrl as Controller, nullCtrl] };
   let ticks = 0; const used: Record<string, number> = {}, dmg: [Record<string, number>, Record<string, number>] = [{}, {}];
   let last: unknown = null; let prev = [100, 100]; const ia: Record<string, number> = {}; let rounds = 0, byTime = 0, fightFrames = 0, ph = m.phase;
   while (result === null && ticks++ < 40000) {
+    // a metamorfose (Mundim -> A COISA) troca o objeto do lutador: a CPU do P1 precisa olhar pros lutadores que estão em campo
+    // agora (antes ela seguia o Mundim antigo, parado no lugar da transformação, e apanhava às cegas no 2º e 3º rounds)
+    ai1.me = m.fighters[0]; ai1.other = m.fighters[1];
     if (m.phase === 'fight') { ai1.update(m.projectiles, true); if (ai1.debug) ia[ai1.debug] = (ia[ai1.debug] ?? 0) + 1; }   // tempo em cada decisão da CPU (--ia)
     m.update(ports, false);
     if (m.phase === 'fight') fightFrames++;
@@ -50,6 +53,71 @@ function fight(a: string, b: string, seed: number) {
     prev = [m.fighters[0].life, m.fighters[1].life];
   }
   return { w: result ?? -1, life: [m.fighters[0].life, m.fighters[1].life], rounds: m.wins, ticks, used, dmg, ia, nRounds: rounds, byTime, fightFrames };
+}
+
+// ---------- --arcade: o termômetro da dificuldade do arcade. Um "jogador" (CPU com perfil de gente, mais lenta e que defende
+// menos) joga as 8 paradas com cada lutador, contra a CPU no nível da rampa (DIFF_RAMP do main.ts) — a régua é relativa:
+// serve pra comparar uma rampa com outra, não pra prever a taxa de vitória de ninguém.
+//   npm run balance -- --arcade                  jogador médio (reage em 10 quadros, defende metade)
+//   npm run balance -- --arcade novato           jogador novato (reage em 16, defende 1 em 4, não pune)
+//   npm run balance -- --arcade --rampa normal,normal,hard,hard,hard,hard,hard,boss     testa outra rampa sem mexer no jogo
+//   npm run balance -- --arcade --alivio 0     sem o alívio (MERCY do main.ts: a cada N derrotas na mesma luta, a CPU desce um nível)
+if (argv.includes('--arcade')) {
+  const PLAYER = {
+    bom:    { ...PROFILES.hard },
+    medio:  { reaction: 10, attackChance: 0.55, blockChance: 0.5,  jumpChance: 0.1,  specialChance: 0.6,  retreatChance: 0.12, punishBlock: true,  mixup: 0.5, chain: 0.65 },
+    novato: { reaction: 16, attackChance: 0.45, blockChance: 0.25, jumpChance: 0.12, specialChance: 0.4,  retreatChance: 0.1,  punishBlock: false, mixup: 0.2, chain: 0.35 },
+  };
+  const who = (arg('arcade', 'medio') in PLAYER ? arg('arcade', 'medio') : 'medio') as keyof typeof PLAYER;
+  const tweak = Object.fromEntries(arg('perfil', '').split(',').filter(Boolean).map((kv) => kv.split('=')).map(([k, v]) => [k, v === 'true' ? true : v === 'false' ? false : Number(v)]));
+  Object.assign(PROFILES, { jogador: { ...PLAYER[who], ...tweak } });   // --perfil reaction=7,blockChance=0.6 ajusta o jogador
+  const main = fs.readFileSync('src/main.ts', 'utf8');
+  const ramps = (main.match(/DIFF_RAMP[^=]*=\s*\[([\s\S]*?)\];/)?.[1] ?? '').match(/\[[^\[\]]+\]/g)?.map((r) => r.match(/'(\w+)'/g)!.map((s) => s.slice(1, -1))) ?? [];
+  const cur = main.match(/let difficulty: Difficulty = '(\w+)'/)?.[1] ?? 'normal';
+  const ramp = (arg('rampa', '') ? arg('rampa', '').split(',') : ramps[['easy', 'normal', 'hard'].indexOf(cur)]) as Difficulty[];
+  const bossIds = main.match(/const bosses = \[([^\]]+)\]/)![1].match(/'(\w+)'/g)!.map((s) => s.slice(1, -1));
+  const NA = argv.includes('--n') ? N : 12;
+  const mercy = arg('alivio', '') ? Number(arg('alivio', '')) : Number(main.match(/const MERCY = (\d+)/)?.[1] ?? 0);   // --alivio 0 desliga
+  const LV: Difficulty[] = ['easy', 'normal', 'hard', 'boss'];
+  const bosses = bossIds.map((id) => ROSTER.indexOf(id));
+  const perFight: number[][] = [], perFighter: Record<string, number[]> = {}, lostBy: Record<string, number[]> = {};
+  const t1 = Date.now();
+  ROSTER.forEach((pid, pi) => {                      // a mesma conta do buildCampaign: 4 rivais a partir da posição do jogador, depois os chefes
+    const pool = ROSTER.map((_, i) => i).filter((i) => i !== pi && !bosses.includes(i));
+    const camp = [...pool.map((_, k) => pool[(k + pi) % pool.length]).slice(0, 4), ...bosses];
+    lostBy[pid] = [];
+    perFighter[pid] = camp.map((oi, k) => {
+      if (arg('luta', '') && Number(arg('luta', '')) !== k + 1) { lostBy[pid].push(0); return 1; }   // --luta 8: só essa parada
+      const memo = new Map<Difficulty, number>();
+      const pAt = (lv: Difficulty) => {                // taxa de vitória do jogador contra a CPU nesse nível (simulada uma vez por nível)
+        if (!memo.has(lv)) { let w = 0; for (let s = 0; s < NA; s++) if (fight(pid, ROSTER[oi], 500 + s * 37 + k * 11 + pi * 101, 'jogador' as Difficulty, lv).w === 0) w++; memo.set(lv, w / NA); }
+        return memo.get(lv)!;
+      };
+      const lv0 = ramp[Math.min(k, ramp.length - 1)], p0 = pAt(lv0);
+      // derrotas esperadas até vencer: a cada `mercy` derrotas a CPU desce um nível (MERCY do main.ts); 0 vitórias conta como meia
+      let e = 0, surv = 1;
+      for (let i = 0; i < 400 && surv > 1e-6; i++) {
+        const lv = mercy ? LV[Math.max(0, LV.indexOf(lv0) - Math.floor(i / mercy))] : lv0;
+        surv *= 1 - Math.max(pAt(lv), 0.5 / NA); e += surv;
+      }
+      lostBy[pid].push(e);
+      (perFight[k] ??= []).push(p0);
+      return p0;
+    });
+  });
+  if (argv.includes('--json')) { console.log('JSON ' + JSON.stringify(perFighter)); process.exit(0); }
+  console.log(`\narcade · jogador ${who} · rampa ${ramp.join(' ')} · ${mercy ? `a cada ${mercy} derrotas a CPU desce 1 nível` : 'sem alívio'} · ${NA} lutas por parada · ${((Date.now() - t1) / 1000).toFixed(0)} s\n`);
+  console.log('luta  CPU     o jogador vence de primeira   derrotas até passar');
+  perFight.forEach((ps, k) => {
+    const p = ps.reduce((s, x) => s + x, 0) / ps.length, l = ROSTER.reduce((s, id) => s + lostBy[id][k], 0) / ROSTER.length;
+    const vs = k >= 4 ? ROSTER[bosses[k - 4]] : 'rival';
+    console.log(`${String(k + 1).padStart(3)}   ${ramp[Math.min(k, ramp.length - 1)].padEnd(7)} ${(100 * p).toFixed(0).padStart(3)}%  ${'█'.repeat(Math.round(p * 20)).padEnd(20, '·')}  ${l.toFixed(1).padStart(5)}   ${vs}`);
+  });
+  const rows2 = ROSTER.map((id) => ({ id, flaw: perFighter[id].reduce((s, p) => s * p, 1), cont: lostBy[id].reduce((s, x) => s + x, 0) }));
+  const avg = (f: (r: typeof rows2[number]) => number) => rows2.reduce((s, r) => s + f(r), 0) / rows2.length;
+  console.log(`\nzerar sem perder nenhuma luta: ${(100 * avg((r) => r.flaw)).toFixed(1)}% · derrotas até zerar (continues): ${avg((r) => r.cont).toFixed(1)} em média`);
+  console.log(rows2.sort((a, b) => a.cont - b.cont).map((r) => `${r.id} ${r.cont.toFixed(1)}`).join(' · '));
+  process.exit(0);
 }
 
 const stat = Object.fromEntries(ids.map((id) => [id, { w: 0, n: 0, life: 0, vs: {} as Record<string, [number, number]> }]));
