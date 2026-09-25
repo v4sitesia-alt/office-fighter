@@ -1,18 +1,21 @@
 #!/usr/bin/env python3
 """Converte as músicas de Personagens/musicas pra AAC (m4a, 128 kbps), mede o volume (RMS) de cada uma
 e grava public/audio/music/tracks.json com o ganho que deixa todas no mesmo nível.
-  intro.mp3 -> intro · select.mp3 -> select · <id>-song.mp3 -> fighter-<id> (toca na luta no cenário desse lutador)
+  intro.mp3 -> intro · select.mp3 -> select · <id>-song.mp3 ou <id>-music.mp3 -> fighter-<id> (toca na luta no cenário desse lutador)
+Só converte o que mudou (o m4a novo leva a data no cabeçalho: reconverter tudo mudaria todos os arquivos à toa); o volume de
+todas é medido de novo a cada vez.
 Uso: python3 tools/music.py   (precisa do afconvert do macOS)"""
-import glob, json, os, subprocess, tempfile, wave
+import glob, json, os, re, subprocess, tempfile, wave
 import numpy as np
 SRC, OUT, TARGET = 'Personagens/musicas', 'public/audio/music', 0.1215   # RMS*vol alvo (intro a 0.55)
 os.makedirs(OUT, exist_ok=True)
 tracks = {}
 for src in sorted(glob.glob(f'{SRC}/*.mp3')):
     base = os.path.basename(src)[:-4]
-    name = base if base in ('intro', 'select') else 'fighter-' + base.replace('-song', '').lower()   # CRM-song.mp3 -> fighter-crm
+    name = base if base in ('intro', 'select') else 'fighter-' + re.sub(r'-(song|music)$', '', base, flags=re.I).lower()   # CRM-song.mp3 -> fighter-crm
     dst = f'{OUT}/{name}.m4a'
-    subprocess.run(['afconvert', '-f', 'm4af', '-d', 'aac', '-b', '128000', src, dst], check=True)
+    if not os.path.exists(dst) or os.path.getmtime(dst) < os.path.getmtime(src):
+        subprocess.run(['afconvert', '-f', 'm4af', '-d', 'aac', '-b', '128000', src, dst], check=True)
     tmp = tempfile.mktemp(suffix='.wav')
     subprocess.run(['afconvert', '-f', 'WAVE', '-d', 'LEI16@22050', '-c', '1', src, tmp], check=True)
     with wave.open(tmp) as w:

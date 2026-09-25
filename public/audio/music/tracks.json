@@ -1,4 +1,12 @@
 {
+ "fighter-crm": {
+  "path": "audio/music/fighter-crm.m4a",
+  "vol": 0.642
+ },
+ "fighter-dede": {
+  "path": "audio/music/fighter-dede.m4a",
+  "vol": 0.702
+ },
  "fighter-dias": {
   "path": "audio/music/fighter-dias.m4a",
   "vol": 0.401
@@ -54,9 +62,5 @@
  "fighter-xablau": {
   "path": "audio/music/fighter-xablau.m4a",
   "vol": 0.796
- },
- "fighter-crm": {
-  "path": "audio/music/fighter-crm.m4a",
-  "vol": 0.642
  }
 }
