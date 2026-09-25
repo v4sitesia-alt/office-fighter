@@ -225,6 +225,7 @@ export class Match {
         } else { p1.life = Math.max(p1.life, 50); p1.meter = 100; p2.life = Math.max(p2.life, 50); }
       }
       this.fx.update();
+      this.laughs();
 
       this.fighters.forEach((f, i) => { const d = this.prevLife[i] - f.life; if (d > 0) this.score[1 - i] += Math.round(d * 10); this.prevLife[i] = f.life; });   // 10 pontos por ponto de dano
       const dead = this.fighters.findIndex((f, i) => f.life <= 0 && !this.partnerOf(i));   // nas duplas, só acaba quando cai o último
@@ -313,6 +314,17 @@ export class Match {
   }
 
   /** Lutadores parados respirando (intro / telas de menu). */
+  /** Risada maníaca (def.laugh, o Dener): além de rir a cada golpe que acerta (hit.ts), ri sozinho de vez em quando, sem
+   *  precisar bater. Só som (Math.random fora da simulação: não mexe no resultado da luta nem na rede). */
+  private laughs() {
+    if (!audio.ready) return;
+    for (const f of this.fighters) {
+      const s = f.def.laugh;
+      if (!s || f.life <= 0 || f.state === 'hitstun' || f.state === 'knockdown' || f.state === 'grabbed' || audio.channelBusy(f.voiceChannel)) continue;
+      if (Math.random() < 1 / (s * 60)) audio.voiceRandom(`${f.def.id}-laugh`, f.voiceChannel);
+    }
+  }
+
   idleUpdate() {
     const [p1, p2] = this.fighters;
     p1.update(nullCtrl, p2, false); p2.update(nullCtrl, p1, false);

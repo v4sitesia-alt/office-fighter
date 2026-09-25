@@ -80,10 +80,11 @@
   "monstro-long.wav",
   "monstro-hurt.wav",
   "ko-monstro.wav",
-  "dener-taunt.wav",
+  "dener-laugh-1.wav",
   "dener-win.wav",
   "dener-down-1.wav",
-  "dener-down-2.wav",
-  "dener-down-3.wav"
+  "dener-laugh-2.wav",
+  "dener-taunt.wav",
+  "dener-down-2.wav"
  ]
 }

@@ -56,7 +56,7 @@ export function resolveHits(fighters: [Fighter, Fighter], projectiles: Projectil
           fx.blood(px, py, atk.facing, m.damage >= 11 ? 16 : m.damage > 6 ? 9 : 5);
           if (!audio.channelBusy(atk.voiceChannel)) {
             if (m.damage > 6 && audio.hasVoice(`${atk.def.id}-hit`)) audio.voice(`${atk.def.id}-hit`, atk.voiceChannel, 0.9);   // som do lutador: do chute médio pra cima
-            else if (Math.random() < 0.5) audio.voiceRandom(`${atk.def.id}-laugh`, atk.voiceChannel);
+            else if (atk.def.laugh || Math.random() < 0.5) audio.voiceRandom(`${atk.def.id}-laugh`, atk.voiceChannel);   // o Dener (def.laugh) ri a cada acerto
           }
         }
       });
@@ -96,6 +96,7 @@ export function resolveHits(fighters: [Fighter, Fighter], projectiles: Projectil
         if (!blocked) fx.blood(p.x, p.y, Math.sign(p.vx), 10);
         audio.sfx(blocked ? 'block' : p.move.damage >= 20 ? 'hitHuge' : 'hitBig');
         const hv = p.move.projectile?.hitVoice; if (hv) audio.voice(hv, 'fx');
+        if (!blocked && owner.def.laugh && !audio.channelBusy(owner.voiceChannel)) audio.voiceRandom(`${owner.def.id}-laugh`, owner.voiceChannel);   // tiro que acerta também
       });
       hitstop = Math.max(hitstop, blocked ? 4 : (p.move.hitstop ?? 8));
     }

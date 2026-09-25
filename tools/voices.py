@@ -216,22 +216,28 @@ def main():
             if ext == '.wav': level(src, os.path.join(OUT, dst), cut=TRIM.get(target))
             else: shutil.copy(src, os.path.join(OUT, dst))
             ids.append(dst); print(f'{dst:20s} <- {src}')
-    # Risada do Dener: a MESMA risada do Mundim, só que mais fina e trêmula (pedido do usuário: "mais medonha").
-    LAUGH, DENER = 'Personagens/sons/risada-mundim.wav', [('dener-taunt', 1.20), ('dener-win', 1.26), ('dener-down-1', 1.22), ('dener-down-2', 1.30), ('dener-down-3', 1.26)]
-    if os.path.exists(LAUGH):
-        with wave.open(LAUGH) as w:
+    # Risada do Dener (2026-09-25, "crazy laugh": ele ri o tempo todo). As duas gargalhadas enviadas viram TODAS as risadas dele:
+    # a cada golpe que acerta e sozinho de vez em quando (<id>-laugh-N; def.laugh no fighter.json), na provocação, na vitória e ao
+    # derrubar (antes eram a risada do Mundim mais fina e trêmula). Mono, 22050 Hz e sem o silêncio do começo e do fim: o canal de
+    # voz fica ocupado até o arquivo acabar, e o silêncio no fim atrasava a próxima risada.
+    CRAZY = {'crazy laugh.wav': ['dener-laugh-1', 'dener-win', 'dener-down-1'], 'crazy laugh 2.wav': ['dener-laugh-2', 'dener-taunt', 'dener-down-2']}
+    for fn, targets in CRAZY.items():
+        src = os.path.join('Personagens/sons', fn)
+        if not os.path.exists(src): continue
+        with wave.open(src) as w:
             nch, sr = w.getnchannels(), w.getframerate()
-            src = np.frombuffer(w.readframes(w.getnframes()), np.int16).astype(np.float32) / 32768
-        if nch > 1: src = src.reshape(-1, nch).mean(axis=1)
-        if sr != SR: src = resample(src, sr / SR)
-        src = trim(src)
-        for cid, p in DENER:
-            y = resample(src, p)                                                       # > 1 = mais fina (e mais curta)
-            y = y * (1 + 0.22 * np.sin(np.arange(len(y)) * 2 * np.pi * 6.0 / SR))      # tremor
-            y = reverb(normalize(y), 0.42, tail=0.45)                                  # eco do 53º andar
-            write(os.path.join(OUT, cid + '.wav'), fade(normalize(y)))
+            x = np.frombuffer(w.readframes(w.getnframes()), np.int16).astype(np.float32) / 32768
+        if nch > 1: x = x.reshape(-1, nch).mean(axis=1)
+        if sr != SR: x = resample(x, sr / SR)
+        y = fade(normalize(trim(normalize(x), thr=0.02, pad=0.04)))
+        for cid in targets:
+            write(os.path.join(OUT, cid + '.wav'), y.copy())
             ids[:] = [i for i in ids if os.path.splitext(i)[0] != cid]
-            ids.append(cid); print(f'{cid:20s} <- risada do Mundim, tom {p:.2f}')
+            ids.append(cid); print(f'{cid:20s} <- {fn} ({len(y) / SR:.2f}s)')
+    for cid in ('dener-down-3',):                                  # sobra da risada antiga (eram 3 variações)
+        old = os.path.join(OUT, cid + '.wav')
+        if os.path.exists(old): os.remove(old)
+        ids[:] = [i for i in ids if os.path.splitext(i)[0] != cid]
 
     files = [i if '.' in i else i + '.wav' for i in ids]
     with open(os.path.join(OUT, 'manifest.json'), 'w') as f:

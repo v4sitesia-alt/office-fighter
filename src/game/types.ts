@@ -139,6 +139,7 @@ export interface FighterDef {
   meterRate?: number;           // a barra enche mais rápido batendo e apanhando (quem luta de longe vive de magia)
   armor?: number;               // armadura: quantos golpes aguenta sem parar o próprio ataque (preparo e golpe; na recuperação não)
   range?: 'perto' | 'medio' | 'longe';   // onde ele luta melhor (tools/balance.py): muda o jogo da CPU (ai.ts) e aparece na escolha
+  laugh?: number;               // risada maníaca (o Dener): ri a cada golpe que acerta e sozinho, em média a cada `laugh` segundos
   colors: { primary: string; secondary: string };
   origin?: { region: string; city: string; lon: number; lat: number; label?: 'left' | 'right' | 'above' | 'below' };
   stage?: string;               // public/stages/<stage>.png (cenário do lutador)
